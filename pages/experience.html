@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trải nghiệm - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+          <div><h1 class="page-title">Lịch trải nghiệm</h1><p class="page-subtitle">Quản lý lịch hẹn trải nghiệm</p></div>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
+          <button class="btn btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Thêm lịch</button>
+          <div class="user-menu" onclick="auth.logout()">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="stats-grid" id="statsGrid"></div>
+        
+        <div class="calendar-container">
+          <div class="calendar-header">
+            <div class="calendar-nav">
+              <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+              <span class="calendar-title" id="calendarTitle">Tháng 12, 2024</span>
+              <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="goToday()">Hôm nay</button>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create/Edit Modal -->
+  <div class="modal-overlay" id="formModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Thêm lịch trải nghiệm</h3>
+        <button class="modal-close" onclick="modal.hide('formModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="expForm">
+          <input type="hidden" id="expId">
+          
+          <!-- Branch Selection - Always visible, will be populated -->
+          <div class="form-group" id="branchFormGroup">
+            <label class="form-label required"><i class="fas fa-building"></i> Cơ sở</label>
+            <select name="branchId" id="branchFormSelect" class="form-control" required>
+              <option value="">Đang tải...</option>
+            </select>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Tên khách hàng</label><input type="text" name="customerName" class="form-control" required></div>
+            <div class="form-group"><label class="form-label required">SĐT</label><input type="tel" name="customerPhone" class="form-control" required></div>
+          </div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" name="customerEmail" class="form-control"></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Tên học sinh</label><input type="text" name="studentName" class="form-control" required></div>
+            <div class="form-group"><label class="form-label">Năm sinh</label><input type="number" name="studentBirthYear" class="form-control" min="2005" max="2020"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Môn học</label><select name="subjectId" class="form-control" id="subjectSelect"><option value="">Chọn môn</option></select></div>
+            <div class="form-group"><label class="form-label">Cấp độ</label><select name="levelId" class="form-control" id="levelSelect"><option value="">Chọn</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Ngày</label><input type="date" name="scheduledDate" class="form-control" required></div>
+            <div class="form-group"><label class="form-label required">Giờ</label><input type="time" name="scheduledTime" class="form-control" required></div>
+          </div>
+          <div class="form-group"><label class="form-label">Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="modal.hide('formModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveExp()"><i class="fas fa-save"></i> Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Modal -->
+  <div class="modal-overlay" id="viewModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-calendar-check"></i> Chi tiết lịch trải nghiệm</h3>
+        <button class="modal-close" onclick="modal.hide('viewModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="viewContent"></div>
+      <div class="modal-footer" id="viewFooter"></div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+    let experiences = [];
+
+    async function init() {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+      setupBranchSelect();
+      await loadSubjects();
+      await loadLevels();
+      await loadStats();
+      await loadCalendar();
+    }
+
+    function setupBranchSelect() {
+      const branchGroup = document.getElementById('branchFormGroup');
+      const branchSelect = document.getElementById('branchFormSelect');
+      
+      // Luôn load branches từ API cho mọi user
+      loadBranchOptions();
+    }
+
+    async function loadBranchOptions() {
+      const branchGroup = document.getElementById('branchFormGroup');
+      const branchSelect = document.getElementById('branchFormSelect');
+      
+      try {
+        const result = await api.get('/branches');
+        const allBranches = result.data || [];
+        
+        if (allBranches.length === 0) {
+          branchSelect.innerHTML = '<option value="">Chưa có cơ sở</option>';
+          return;
+        }
+        
+        const userBranches = auth.user?.branches || [];
+        const isAdmin = auth.user?.is_system_wide;
+        
+        // User có branches riêng và không phải admin
+        if (userBranches.length > 0 && !isAdmin) {
+          if (userBranches.length === 1) {
+            // Chỉ có 1 cơ sở - ẨN dropdown (display:none vẫn gửi được value)
+            branchGroup.style.display = 'none';
+            branchSelect.innerHTML = `<option value="${userBranches[0].id}">${userBranches[0].name}</option>`;
+            branchSelect.value = userBranches[0].id;
+            branchSelect.disabled = false; // Đảm bảo không bị disabled
+          } else {
+            // Nhiều cơ sở - cho phép chọn
+            branchGroup.style.display = 'block';
+            branchSelect.disabled = false;
+            const primaryId = auth.user?.primaryBranch?.id || userBranches[0]?.id;
+            branchSelect.innerHTML = userBranches.map(b => 
+              `<option value="${b.id}" ${b.id == primaryId ? 'selected' : ''}>${b.name}</option>`
+            ).join('');
+          }
+        } else {
+          // Admin - hiển thị tất cả
+          branchGroup.style.display = 'block';
+          branchSelect.disabled = false;
+          const currentBranchId = branch.getId() || allBranches[0]?.id;
+          branchSelect.innerHTML = allBranches.map(b => 
+            `<option value="${b.id}" ${b.id == currentBranchId ? 'selected' : ''}>${b.name}</option>`
+          ).join('');
+        }
+      } catch (e) { 
+        console.error('Load branches error:', e);
+      }
+    }
+
+    async function loadAllBranches() {
+      // Deprecated - use loadBranchOptions instead
+      await loadBranchOptions();
+    }
+
+    async function loadSubjects() {
+      try {
+        const result = await api.get('/common/subjects');
+        document.getElementById('subjectSelect').innerHTML = '<option value="">Chọn môn</option>' +
+          (result.data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+      } catch (e) {}
+    }
+
+    async function loadLevels() {
+      try {
+        const result = await api.get('/common/levels');
+        document.getElementById('levelSelect').innerHTML = '<option value="">Chọn</option>' +
+          (result.data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+      } catch (e) {}
+    }
+
+    async function loadStats() {
+      try {
+        const query = branch.buildQuery({});
+        const result = await api.get('/experience/stats' + query);
+        const s = result.data || {};
+        document.getElementById('statsGrid').innerHTML = `
+          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-calendar-plus"></i></div><div class="stat-content"><div class="stat-value">${s.total || 0}</div><div class="stat-label">Tổng lịch</div></div></div>
+          <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-clock"></i></div><div class="stat-content"><div class="stat-value">${s.pending || 0}</div><div class="stat-label">Chờ TN</div></div></div>
+          <div class="stat-card"><div class="stat-icon info"><i class="fas fa-calendar-day"></i></div><div class="stat-content"><div class="stat-value">${s.today || 0}</div><div class="stat-label">Hôm nay</div></div></div>
+          <div class="stat-card"><div class="stat-icon success"><i class="fas fa-user-check"></i></div><div class="stat-content"><div class="stat-value">${s.converted || 0}</div><div class="stat-label">Đã chuyển đổi</div></div></div>
+        `;
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadCalendar() {
+      document.getElementById('calendarTitle').textContent = `Tháng ${currentMonth}, ${currentYear}`;
+      
+      try {
+        const query = branch.buildQuery({ year: currentYear, month: currentMonth });
+        const result = await api.get('/experience/month' + query);
+        experiences = result.data || [];
+      } catch (e) { experiences = []; }
+
+      renderCalendar();
+    }
+
+    function loadData() { loadStats(); loadCalendar(); }
+
+    function getDateString(dateValue) {
+      if (!dateValue) return '';
+      if (typeof dateValue === 'string') return dateValue.substring(0, 10);
+      const d = new Date(dateValue);
+      return d.toISOString().substring(0, 10);
+    }
+
+    function renderCalendar() {
+      const firstDay = new Date(currentYear, currentMonth - 1, 1);
+      const lastDay = new Date(currentYear, currentMonth, 0);
+      const startDay = firstDay.getDay() || 7;
+      const totalDays = lastDay.getDate();
+      const today = new Date();
+      const showBranch = auth.user?.is_system_wide && !branch.getId();
+
+      let html = `<div class="calendar-weekday">T2</div><div class="calendar-weekday">T3</div><div class="calendar-weekday">T4</div><div class="calendar-weekday">T5</div><div class="calendar-weekday">T6</div><div class="calendar-weekday">T7</div><div class="calendar-weekday">CN</div>`;
+
+      const prevMonth = new Date(currentYear, currentMonth - 1, 0);
+      for (let i = startDay - 1; i > 0; i--) {
+        html += `<div class="calendar-day other-month"><div class="day-number">${prevMonth.getDate() - i + 1}</div></div>`;
+      }
+
+      for (let d = 1; d <= totalDays; d++) {
+        const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const isToday = today.getFullYear() === currentYear && today.getMonth() + 1 === currentMonth && today.getDate() === d;
+        const dayExps = experiences.filter(e => getDateString(e.scheduled_date) === dateStr);
+        
+        let eventsHtml = dayExps.slice(0, 3).map(e => {
+          const branchLabel = showBranch && e.branch_code ? `<small>[${e.branch_code}]</small> ` : '';
+          return `<div class="calendar-event status-${e.status}" onclick="viewExp(${e.id})">${branchLabel}${e.scheduled_time?.substring(0,5)} - ${e.student_name}</div>`;
+        }).join('');
+        
+        if (dayExps.length > 3) eventsHtml += `<div class="calendar-more">+${dayExps.length - 3} lịch khác</div>`;
+
+        html += `<div class="calendar-day ${isToday ? 'today' : ''}" onclick="openCreateModal('${dateStr}')"><div class="day-number">${d}</div><div class="calendar-events">${eventsHtml}</div></div>`;
+      }
+
+      const remaining = (7 - (startDay - 1 + totalDays) % 7) % 7;
+      for (let i = 1; i <= remaining; i++) {
+        html += `<div class="calendar-day other-month"><div class="day-number">${i}</div></div>`;
+      }
+
+      document.getElementById('calendarGrid').innerHTML = html;
+    }
+
+    function changeMonth(delta) {
+      currentMonth += delta;
+      if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+      if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+      loadCalendar();
+    }
+
+    function goToday() {
+      const now = new Date();
+      currentYear = now.getFullYear();
+      currentMonth = now.getMonth() + 1;
+      loadCalendar();
+    }
+
+    function openCreateModal(date) {
+      document.getElementById('modalTitle').textContent = 'Thêm lịch trải nghiệm';
+      document.getElementById('expId').value = '';
+      form.reset(document.getElementById('expForm'));
+      
+      const branchSelect = document.getElementById('branchFormSelect');
+      if (branchSelect && branch.getId()) branchSelect.value = branch.getId();
+      
+      if (date) document.querySelector('[name="scheduledDate"]').value = date;
+      modal.show('formModal');
+    }
+
+    async function saveExp() {
+      const formEl = document.getElementById('expForm');
+      if (!form.validate(formEl)) { ui.error('Vui lòng điền đầy đủ'); return; }
+      const data = form.getData(formEl);
+      const id = document.getElementById('expId').value;
+
+      // Debug logs
+      const branchSelect = document.getElementById('branchFormSelect');
+      console.log('=== DEBUG BRANCH ===');
+      console.log('branchSelect element:', branchSelect);
+      console.log('branchSelect.value:', branchSelect?.value);
+      console.log('branchSelect.disabled:', branchSelect?.disabled);
+      console.log('data.branchId from form:', data.branchId);
+      console.log('auth.user.branches:', auth.user?.branches);
+      console.log('branch.getId():', branch.getId());
+      
+      // Lấy branchId từ select (display:none vẫn gửi được nếu không disabled)
+      data.branchId = branchSelect?.value || data.branchId || branch.getId() || auth.user?.branches?.[0]?.id;
+      
+      console.log('Final branchId:', data.branchId);
+      console.log('===================');
+
+      if (!data.branchId) {
+        ui.error('Cần chọn cơ sở');
+        return;
+      }
+
+      try {
+        if (id) await api.put(`/experience/${id}`, data);
+        else await api.post('/experience', data);
+        ui.success('Lưu thành công');
+        modal.hide('formModal');
+        loadStats();
+        loadCalendar();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function viewExp(id) {
+      event.stopPropagation();
+      try {
+        const result = await api.get(`/experience/${id}`);
+        const e = result.data;
+        
+        const statusMap = { pending: { text: 'Chờ trải nghiệm', class: 'warning' }, completed: { text: 'Đã hoàn thành', class: 'success' }, converted: { text: 'Đã chuyển đổi', class: 'info' }, cancelled: { text: 'Đã hủy', class: 'secondary' }, no_show: { text: 'Không đến', class: 'danger' } };
+        const status = statusMap[e.status] || { text: e.status, class: 'secondary' };
+
+        document.getElementById('viewContent').innerHTML = `
+          <div class="detail-grid">
+            <div class="detail-item"><label>Mã</label><span><code>${e.code}</code></span></div>
+            <div class="detail-item"><label>Trạng thái</label><span class="badge badge-${status.class}">${status.text}</span></div>
+            <div class="detail-item"><label>Cơ sở</label><span class="branch-tag"><i class="fas fa-building"></i> ${e.branch_name || '-'}</span></div>
+            <div class="detail-item"><label>Khách hàng</label><span>${e.customer_name}</span></div>
+            <div class="detail-item"><label>SĐT</label><span>${e.customer_phone}</span></div>
+            <div class="detail-item"><label>Email</label><span>${e.customer_email || '-'}</span></div>
+            <div class="detail-item"><label>Học sinh</label><span>${e.student_name}</span></div>
+            <div class="detail-item"><label>Năm sinh</label><span>${e.student_birth_year || '-'}</span></div>
+            <div class="detail-item"><label>Môn</label><span>${e.subject_name || '-'}</span></div>
+            <div class="detail-item"><label>Cấp độ</label><span>${e.level_name || '-'}</span></div>
+            <div class="detail-item"><label>Ngày</label><span>${ui.formatDate(e.scheduled_date)}</span></div>
+            <div class="detail-item"><label>Giờ</label><span>${e.scheduled_time?.substring(0, 5) || '-'}</span></div>
+            <div class="detail-item full"><label>Ghi chú</label><span>${e.note || '-'}</span></div>
+          </div>
+        `;
+
+        let footerHtml = '';
+        
+        if (e.status === 'pending') {
+          footerHtml = `
+            <button class="btn btn-danger" onclick="deleteExp(${e.id})"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-secondary" onclick="editExp(${e.id})"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-warning" onclick="noShowExp(${e.id})"><i class="fas fa-user-slash"></i> K.đến</button>
+            <button class="btn btn-success" onclick="completeExp(${e.id})"><i class="fas fa-check"></i> Xong</button>
+            <button class="btn btn-primary" onclick="convertToTrial(${e.id})"><i class="fas fa-user-plus"></i> Học thử</button>
+          `;
+        } else if (e.status === 'completed' && !e.trialStudent) {
+          footerHtml = `
+            <button class="btn btn-secondary" onclick="modal.hide('viewModal')">Đóng</button>
+            <button class="btn btn-danger" onclick="deleteExp(${e.id})"><i class="fas fa-trash"></i> Xóa</button>
+            <button class="btn btn-primary" onclick="convertToTrial(${e.id})"><i class="fas fa-user-plus"></i> Tạo học thử</button>
+          `;
+        } else {
+          footerHtml = `
+            <button class="btn btn-secondary" onclick="modal.hide('viewModal')">Đóng</button>
+            <button class="btn btn-danger" onclick="deleteExp(${e.id})"><i class="fas fa-trash"></i> Xóa</button>
+          `;
+        }
+        
+        document.getElementById('viewFooter').innerHTML = footerHtml;
+        modal.show('viewModal');
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function editExp(id) {
+      modal.hide('viewModal');
+      try {
+        const result = await api.get(`/experience/${id}`);
+        const e = result.data;
+        document.getElementById('modalTitle').textContent = 'Sửa lịch trải nghiệm';
+        document.getElementById('expId').value = id;
+        form.setData(document.getElementById('expForm'), { branchId: e.branch_id, customerName: e.customer_name, customerPhone: e.customer_phone, customerEmail: e.customer_email, studentName: e.student_name, studentBirthYear: e.student_birth_year, subjectId: e.subject_id, levelId: e.level_id, scheduledDate: getDateString(e.scheduled_date), scheduledTime: e.scheduled_time?.substring(0, 5), note: e.note });
+        modal.show('formModal');
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function completeExp(id) {
+      if (!confirm('Xác nhận hoàn thành?')) return;
+      try { await api.put(`/experience/${id}`, { status: 'completed' }); ui.success('Đã hoàn thành'); modal.hide('viewModal'); loadStats(); loadCalendar(); } catch (e) { ui.error(e.message); }
+    }
+
+    async function noShowExp(id) {
+      if (!confirm('Xác nhận không đến?')) return;
+      try { await api.put(`/experience/${id}`, { status: 'no_show' }); ui.success('Đã đánh dấu'); modal.hide('viewModal'); loadStats(); loadCalendar(); } catch (e) { ui.error(e.message); }
+    }
+
+    async function deleteExp(id) {
+      if (!confirm('Xóa lịch này?')) return;
+      try { await api.delete(`/experience/${id}`); ui.success('Đã xóa'); modal.hide('viewModal'); loadStats(); loadCalendar(); } catch (e) { ui.error(e.message); }
+    }
+
+    async function convertToTrial(id) {
+      if (!confirm('Tạo học sinh thử?')) return;
+      try { await api.post('/trial-students', { experienceId: id }); ui.success('Đã tạo'); modal.hide('viewModal'); loadStats(); loadCalendar(); } catch (e) { ui.error(e.message); }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

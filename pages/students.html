@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Học sinh - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+          <div><h1 class="page-title">Học sinh</h1></div>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
+          <button class="btn btn-primary" onclick="openModal()" id="btnCreate"><i class="fas fa-plus"></i> Thêm</button>
+          <div class="user-menu" onclick="auth.logout()"><div class="user-avatar" id="userAvatar">U</div><div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div></div>
+        </div>
+      </header>
+      <div class="page-content">
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="filters-bar">
+          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Tìm..."></div>
+          <select id="statusFilter" class="filter-select"><option value="">Tất cả</option><option value="active">Đang học</option><option value="paused">Tạm dừng</option></select>
+          <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="table-container" id="dataTable"></div>
+        <div id="pagination"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="formModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header"><h3 class="modal-title" id="modalTitle">Thêm học sinh</h3><button class="modal-close" onclick="modal.hide('formModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="dataForm">
+          <input type="hidden" id="itemId">
+          
+          <!-- Cơ sở -->
+          <div class="form-row" id="branchRow">
+            <div class="form-group">
+              <label class="form-label required"><i class="fas fa-building"></i> Cơ sở</label>
+              <select name="branchId" id="branchSelect" class="form-control" required>
+                <option value="">Đang tải...</option>
+              </select>
+            </div>
+          </div>
+          
+          <h4 style="margin: 16px 0 12px; color: var(--primary-color);"><i class="fas fa-user-graduate"></i> Thông tin học sinh</h4>
+          
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Họ tên</label><input type="text" name="fullName" class="form-control" required></div>
+            <div class="form-group"><label class="form-label required">Năm sinh</label><input type="number" name="birthYear" class="form-control" min="2005" max="2022" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Giới tính</label>
+              <select name="gender" class="form-control">
+                <option value="">Chọn</option>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Địa chỉ</label><input type="text" name="address" class="form-control"></div>
+          </div>
+          
+          <h4 style="margin: 20px 0 12px; color: var(--primary-color);"><i class="fas fa-user-friends"></i> Thông tin phụ huynh</h4>
+          
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Tên phụ huynh</label><input type="text" name="parentName" class="form-control" required></div>
+            <div class="form-group"><label class="form-label required">SĐT phụ huynh</label><input type="tel" name="parentPhone" class="form-control" required></div>
+          </div>
+          <div class="form-group"><label class="form-label">Email phụ huynh</label><input type="email" name="parentEmail" class="form-control"></div>
+          
+          <h4 style="margin: 20px 0 12px; color: var(--primary-color);"><i class="fas fa-book"></i> Thông tin học tập</h4>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Môn học</label>
+              <select name="subjectId" id="subjectSelect" class="form-control">
+                <option value="">Chọn môn</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cấp độ</label>
+              <select name="levelId" id="levelSelect" class="form-control">
+                <option value="">Chọn cấp độ</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Lộ trình học</label><input type="text" name="learningPath" class="form-control" placeholder="VD: Robotics Beginner 6 tháng"></div>
+          
+          <div class="form-group"><label class="form-label">Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="modal.hide('formModal')">Hủy</button><button class="btn btn-primary" onclick="saveData()"><i class="fas fa-save"></i> Lưu</button></div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let currentPage = 1;
+    
+    async function init() {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+      if (!auth.hasRole('SALE', 'ADMIN')) document.getElementById('btnCreate').style.display = 'none';
+      
+      setupBranchSelect();
+      await loadOptions();
+      await loadStats();
+      await loadData();
+    }
+
+    async function loadOptions() {
+      try {
+        const [subjects, levels] = await Promise.all([
+          api.get('/common/subjects'),
+          api.get('/common/levels')
+        ]);
+        document.getElementById('subjectSelect').innerHTML = '<option value="">Chọn môn</option>' + 
+          (subjects.data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        document.getElementById('levelSelect').innerHTML = '<option value="">Chọn cấp độ</option>' + 
+          (levels.data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadStats() {
+      try {
+        const query = branch.buildQuery({});
+        const result = await api.get('/students/stats' + query);
+        const s = result.data || {};
+        document.getElementById('statsGrid').innerHTML = `
+          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-user-graduate"></i></div><div class="stat-content"><div class="stat-value">${s.total || 0}</div><div class="stat-label">Tổng</div></div></div>
+          <div class="stat-card"><div class="stat-icon info"><i class="fas fa-user-check"></i></div><div class="stat-content"><div class="stat-value">${s.active || 0}</div><div class="stat-label">Đang học</div></div></div>
+          <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-pause"></i></div><div class="stat-content"><div class="stat-value">${s.paused || 0}</div><div class="stat-label">Tạm dừng</div></div></div>
+        `;
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadData(page = 1) {
+      currentPage = page;
+      const search = document.getElementById('searchInput').value;
+      const status = document.getElementById('statusFilter').value;
+      const container = document.getElementById('dataTable');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+      try {
+        const params = { page, limit: 20 };
+        if (search) params.search = search;
+        if (status) params.status = status;
+        const query = branch.buildQuery(params);
+        const result = await api.get('/students' + query);
+        renderTable(result.data || [], result.pagination);
+      } catch (e) { container.innerHTML = '<p>Lỗi: ' + e.message + '</p>'; }
+    }
+
+    function renderTable(items, pagination) {
+      const showBranch = auth.user?.is_system_wide && !branch.getId();
+      
+      if (!items.length) { 
+        document.getElementById('dataTable').innerHTML = '<div class="empty-state"><p>Chưa có dữ liệu</p></div>'; 
+        document.getElementById('pagination').innerHTML = ''; 
+        return; 
+      }
+      
+      let html = `<table class="table"><thead><tr>
+        <th>Mã</th>
+        ${showBranch ? '<th>Cơ sở</th>' : ''}
+        <th>Họ tên</th>
+        <th>SĐT PH</th>
+        <th>Lớp</th>
+        <th>Trạng thái</th>
+        <th></th>
+      </tr></thead><tbody>`;
+      
+      items.forEach(s => {
+        html += `<tr>
+          <td>${s.student_code || '-'}</td>
+          ${showBranch ? `<td><span class="branch-tag"><i class="fas fa-building"></i> ${s.branch_name || '-'}</span></td>` : ''}
+          <td><strong>${s.full_name}</strong><br><small class="text-muted">${s.subject_name || ''}</small></td>
+          <td>${s.parent_phone || '-'}</td>
+          <td>${s.class_name || '<span class="text-muted">Chưa xếp</span>'}</td>
+          <td><span class="badge badge-${s.status}">${s.status}</span></td>
+          <td><button class="btn btn-sm btn-secondary" onclick="editItem(${s.id})"><i class="fas fa-edit"></i></button></td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      document.getElementById('dataTable').innerHTML = html;
+      document.getElementById('pagination').innerHTML = ui.pagination ? ui.pagination(pagination?.page || 1, pagination?.totalPages || 1, 'loadData') : '';
+    }
+
+    function openModal() {
+      document.getElementById('modalTitle').textContent = 'Thêm học sinh';
+      document.getElementById('itemId').value = '';
+      form.reset(document.getElementById('dataForm'));
+      
+      // Set default branch
+      const branchSelect = document.getElementById('branchSelect');
+      if (branchSelect && branch.getId()) {
+        branchSelect.value = branch.getId();
+      }
+      
+      modal.show('formModal');
+    }
+
+    async function editItem(id) {
+      try {
+        const result = await api.get(`/students/${id}`);
+        const s = result.data;
+        document.getElementById('modalTitle').textContent = 'Sửa học sinh';
+        document.getElementById('itemId').value = id;
+        form.setData(document.getElementById('dataForm'), { 
+          branchId: s.branch_id,
+          fullName: s.full_name, 
+          birthYear: s.birth_year,
+          gender: s.gender,
+          address: s.address,
+          parentName: s.parent_name, 
+          parentPhone: s.parent_phone, 
+          parentEmail: s.parent_email,
+          subjectId: s.subject_id,
+          levelId: s.level_id,
+          learningPath: s.learning_path,
+          note: s.note 
+        });
+        modal.show('formModal');
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function saveData() {
+      const formEl = document.getElementById('dataForm');
+      if (!form.validate(formEl)) { ui.error('Điền đầy đủ'); return; }
+      const data = form.getData(formEl);
+      const id = document.getElementById('itemId').value;
+      
+      // Set branch if not editing
+      if (!id && !data.branchId) {
+        data.branchId = branch.getId();
+      }
+      
+      try {
+        if (id) await api.put(`/students/${id}`, data);
+        else await api.post('/students', data);
+        ui.success('Lưu thành công');
+        modal.hide('formModal');
+        loadStats();
+        loadData(currentPage);
+      } catch (e) { ui.error(e.message); }
+    }
+
+    function setupBranchSelect() {
+      loadBranchOptions();
+    }
+
+    async function loadBranchOptions() {
+      const branchRow = document.getElementById('branchRow');
+      const branchSelect = document.getElementById('branchSelect');
+      
+      try {
+        const result = await api.get('/branches');
+        const allBranches = result.data || [];
+        
+        if (allBranches.length === 0) {
+          branchSelect.innerHTML = '<option value="">Chưa có cơ sở</option>';
+          return;
+        }
+        
+        const userBranches = auth.user?.branches || [];
+        const isAdmin = auth.user?.is_system_wide;
+        let displayBranches = isAdmin ? allBranches : (userBranches.length ? userBranches : allBranches);
+        
+        if (displayBranches.length === 1 && !isAdmin) {
+          branchRow.style.display = 'none';
+          branchSelect.innerHTML = `<option value="${displayBranches[0].id}" selected>${displayBranches[0].name}</option>`;
+        } else {
+          branchRow.style.display = 'flex';
+          const currentBranchId = branch.getId() || displayBranches[0]?.id;
+          branchSelect.innerHTML = displayBranches.map(b => 
+            `<option value="${b.id}" ${b.id == currentBranchId ? 'selected' : ''}>${b.name}</option>`
+          ).join('');
+        }
+      } catch (e) { 
+        console.error('Load branches error:', e);
+        branchSelect.innerHTML = '<option value="">Lỗi tải</option>';
+      }
+    }
+
+    async function loadAllBranches() {
+      await loadBranchOptions();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Điểm danh - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+          <div><h1 class="page-title">Điểm danh</h1><p class="page-subtitle" id="sessionInfo">Chọn buổi học để điểm danh</p></div>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
+          <div class="user-menu" onclick="auth.logout()"><div class="user-avatar" id="userAvatar">U</div><div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div></div>
+        </div>
+      </header>
+      <div class="page-content">
+        <div class="filters-bar">
+          <select id="sessionSelect" class="filter-select" onchange="loadStudents()" style="min-width:300px;"><option value="">-- Chọn buổi học --</option></select>
+        </div>
+        <div class="table-container" id="attendanceTable"></div>
+        <div id="saveBtn" style="display:none;margin-top:20px;text-align:right;">
+          <button class="btn btn-primary" onclick="saveAttendance()"><i class="fas fa-save"></i> Lưu điểm danh</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let currentSessionId = null;
+
+    async function init() {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+      await loadSessions();
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('sessionId');
+      if (sessionId) {
+        document.getElementById('sessionSelect').value = sessionId;
+        await loadStudents();
+      }
+    }
+
+    async function loadSessions() {
+      try {
+        const query = branch.buildQuery({ limit: 100 });
+        const result = await api.get('/sessions' + query);
+        const showBranch = auth.user?.is_system_wide && !branch.getId();
+        
+        document.getElementById('sessionSelect').innerHTML = '<option value="">-- Chọn buổi học --</option>' +
+          (result.data || []).map(s => {
+            const branchInfo = showBranch && s.branch_name ? ` [${s.branch_name}]` : '';
+            return `<option value="${s.id}">${s.class_name}${branchInfo} - Buổi ${s.session_number} (${ui.formatDate(s.session_date)})</option>`;
+          }).join('');
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadStudents() {
+      const sessionId = document.getElementById('sessionSelect').value;
+      const container = document.getElementById('attendanceTable');
+      const saveBtn = document.getElementById('saveBtn');
+      
+      if (!sessionId) {
+        container.innerHTML = '<div class="empty-state"><p>Chọn buổi học để điểm danh</p></div>';
+        saveBtn.style.display = 'none';
+        return;
+      }
+
+      currentSessionId = sessionId;
+      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+      try {
+        const result = await api.get(`/attendance/session/${sessionId}/students`);
+        const students = result.data || [];
+        if (!students.length) {
+          container.innerHTML = '<div class="empty-state"><p>Chưa có học sinh trong lớp</p></div>';
+          saveBtn.style.display = 'none';
+          return;
+        }
+
+        let html = '<table class="table"><thead><tr><th>Họ tên</th><th>Mã</th><th>Loại</th><th>Trạng thái</th><th>Ghi chú</th></tr></thead><tbody>';
+        students.forEach((s, i) => {
+          const id = s.student_id || s.trial_student_id;
+          const idType = s.student_id ? 'student' : 'trial';
+          html += `<tr>
+            <td><strong>${s.full_name}</strong></td>
+            <td>${s.student_code || '-'}</td>
+            <td>${s.type === 'trial' ? '<span class="badge badge-warning">Học thử</span>' : '<span class="badge badge-active">Chính thức</span>'}</td>
+            <td>
+              <select class="form-control" id="status_${idType}_${id}" style="width:120px;">
+                <option value="present" ${s.status === 'present' ? 'selected' : ''}>Có mặt</option>
+                <option value="late" ${s.status === 'late' ? 'selected' : ''}>Đi muộn</option>
+                <option value="excused" ${s.status === 'excused' ? 'selected' : ''}>Có phép</option>
+                <option value="absent" ${s.status === 'absent' ? 'selected' : ''}>Vắng</option>
+              </select>
+            </td>
+            <td><input type="text" class="form-control" id="note_${idType}_${id}" value="${s.note || ''}" placeholder="Ghi chú"></td>
+          </tr>`;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+        saveBtn.style.display = 'block';
+      } catch (e) { container.innerHTML = '<p>Lỗi: ' + e.message + '</p>'; }
+    }
+
+    async function saveAttendance() {
+      if (!currentSessionId) return;
+
+      const rows = document.querySelectorAll('#attendanceTable tbody tr');
+      const attendances = [];
+
+      rows.forEach(row => {
+        const statusSelect = row.querySelector('select');
+        const noteInput = row.querySelector('input');
+        if (statusSelect && noteInput) {
+          const [prefix, type, id] = statusSelect.id.split('_');
+          const data = { status: statusSelect.value, note: noteInput.value };
+          if (type === 'student') data.studentId = parseInt(id);
+          else data.trialStudentId = parseInt(id);
+          attendances.push(data);
+        }
+      });
+
+      try {
+        await api.post(`/attendance/session/${currentSessionId}/mark`, { attendances });
+        ui.success('Lưu điểm danh thành công');
+      } catch (e) { ui.error(e.message); }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

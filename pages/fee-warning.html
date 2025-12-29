@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cảnh báo học phí - ARMY Tech LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .info-box { background: var(--bg-secondary); padding: 15px; border-radius: 8px; margin: 15px 0; }
+    .info-row { display: flex; justify-content: space-between; padding: 5px 0; }
+    .info-row span { color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+  <nav class="sidebar" id="sidebar"></nav>
+  <main class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+        <h1><i class="fas fa-exclamation-triangle text-warning"></i> Cảnh báo học phí</h1>
+      </div>
+      <div class="topbar-right">
+        <select id="filterBranch" class="form-control" style="width:180px"><option value="">Tất cả cơ sở</option></select>
+        <select id="filterStatus" class="form-control" style="width:150px">
+          <option value="">Tất cả</option>
+          <option value="expiring_soon" selected>Sắp hết phí</option>
+          <option value="expired">Đã hết phí</option>
+        </select>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card warning"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-info"><span class="stat-value" id="expiringSoon">0</span><span class="stat-label">Sắp hết (≤4 buổi)</span></div></div>
+      <div class="stat-card danger"><div class="stat-icon"><i class="fas fa-times-circle"></i></div><div class="stat-info"><span class="stat-value" id="expired">0</span><span class="stat-label">Đã hết phí</span></div></div>
+      <div class="stat-card info"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-info"><span class="stat-value" id="totalWarning">0</span><span class="stat-label">Tổng cần xử lý</span></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3><i class="fas fa-list"></i> Danh sách học viên cần gia hạn</h3></div>
+      <div class="card-body">
+        <table class="table">
+          <thead><tr><th>Học viên</th><th>SĐT PH</th><th>Cơ sở</th><th>Lớp</th><th class="text-center">Buổi còn</th><th class="text-center">Trạng thái</th><th class="text-center">Thao tác</th></tr></thead>
+          <tbody id="studentsTable"><tr><td colspan="7" class="text-center">Đang tải...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+  <div class="modal" id="renewModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header"><h3><i class="fas fa-redo"></i> Gia hạn học phí</h3><button class="modal-close" onclick="closeRenewModal()">&times;</button></div>
+      <div class="modal-body">
+        <form id="renewForm">
+          <input type="hidden" id="studentId">
+          <div class="form-row">
+            <div class="form-group"><label>Học viên</label><input type="text" id="studentName" class="form-control" readonly></div>
+            <div class="form-group"><label>Buổi còn lại</label><input type="text" id="currentSessions" class="form-control" readonly></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Gói gia hạn *</label><select id="packageId" class="form-control" required onchange="calculatePackage()"><option value="">-- Chọn gói --</option></select></div>
+            <div class="form-group"><label>Học bổng (tháng)</label><input type="number" id="scholarshipMonths" class="form-control" value="0" min="0" onchange="calculatePackage()"></div>
+          </div>
+          <div class="info-box" id="packageInfo" style="display:none">
+            <div class="info-row"><span>Buổi gói học:</span><strong id="packageSessions">0</strong></div>
+            <div class="info-row"><span>Buổi học bổng:</span><strong id="scholarshipSessions">0</strong></div>
+            <div class="info-row"><span>Tổng buổi thêm:</span><strong id="totalSessions" class="text-success">0</strong></div>
+            <hr>
+            <div class="info-row"><span>Giá gói:</span><strong id="packagePrice">0đ</strong></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Giảm giá</label><input type="number" id="discountAmount" class="form-control" value="0" min="0" onchange="calculateFinal()"></div>
+            <div class="form-group"><label>Tiền cọc</label><input type="number" id="depositAmount" class="form-control" value="0" min="0" onchange="calculateFinal()"></div>
+          </div>
+          <div class="info-box">
+            <div class="info-row"><span>Thành tiền:</span><strong id="finalPrice" class="text-primary">0đ</strong></div>
+            <div class="info-row"><span>Dự thu còn:</span><strong id="remainingAmount" class="text-warning">0đ</strong></div>
+          </div>
+          <div class="form-group"><label>Ghi chú</label><textarea id="note" class="form-control" rows="2"></textarea></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeRenewModal()">Hủy</button>
+        <button class="btn btn-warning" onclick="saveRenewal('deposited')"><i class="fas fa-hand-holding-usd"></i> Lưu cọc</button>
+        <button class="btn btn-success" onclick="saveRenewal('paid')"><i class="fas fa-check"></i> Thanh toán đủ</button>
+      </div>
+    </div>
+  </div>
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let packages = [], currentBranchId = null, selectedPackage = null;
+    async function init() { await auth.requireAuth(); buildSidebar('sidebar'); await Promise.all([loadBranches(), loadPackages()]); await loadData(); }
+    async function loadBranches() { try { const res = await api.get('/branches'); res.data.forEach(b => { document.getElementById('filterBranch').innerHTML += `<option value="${b.id}">${b.code} - ${b.name}</option>`; }); } catch(e){} }
+    async function loadPackages() { try { const res = await api.get('/packages'); packages = res.data; packages.forEach(p => { document.getElementById('packageId').innerHTML += `<option value="${p.id}" data-sessions="${p.sessions_count}" data-price="${p.price || p.base_price}">${p.name} (${p.sessions_count} buổi)</option>`; }); } catch(e){} }
+    async function loadData() {
+      const branchId = document.getElementById('filterBranch').value;
+      const status = document.getElementById('filterStatus').value;
+      try {
+        const params = new URLSearchParams({ status: 'active' });
+        if (branchId) params.append('branch_id', branchId);
+        if (status) params.append('fee_status', status);
+        const res = await api.get('/students?' + params);
+        const students = res.data?.data || [];
+        const filtered = status ? students.filter(s => s.fee_status === status) : students.filter(s => ['expiring_soon','expired'].includes(s.fee_status));
+        document.getElementById('expiringSoon').textContent = students.filter(s => s.fee_status === 'expiring_soon').length;
+        document.getElementById('expired').textContent = students.filter(s => s.fee_status === 'expired').length;
+        document.getElementById('totalWarning').textContent = filtered.length;
+        const tbody = document.getElementById('studentsTable');
+        if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="text-center text-success"><i class="fas fa-check-circle"></i> Không có học viên cần gia hạn</td></tr>'; return; }
+        tbody.innerHTML = filtered.map(s => `<tr>
+          <td><strong>${s.full_name}</strong><br><small class="text-muted">${s.student_code}</small></td>
+          <td>${s.parent_phone || '-'}</td>
+          <td><span class="badge badge-light">${s.branch_code || '-'}</span></td>
+          <td>${s.class_name || '<span class="text-muted">-</span>'}</td>
+          <td class="text-center"><strong class="${s.remaining_sessions <= 0 ? 'text-danger' : 'text-warning'}">${s.remaining_sessions || 0}</strong></td>
+          <td class="text-center">${s.fee_status === 'expired' ? '<span class="badge badge-danger">Hết phí</span>' : '<span class="badge badge-warning">Sắp hết</span>'}</td>
+          <td class="text-center"><button class="btn btn-sm btn-success" onclick="openRenewModal(${s.id},'${s.full_name}',${s.remaining_sessions||0},${s.branch_id})"><i class="fas fa-redo"></i></button> <a href="tel:${s.parent_phone}" class="btn btn-sm btn-info"><i class="fas fa-phone"></i></a></td>
+        </tr>`).join('');
+      } catch(e) { console.error(e); }
+    }
+    function openRenewModal(id,name,rem,branchId) {
+      document.getElementById('studentId').value=id; document.getElementById('studentName').value=name; document.getElementById('currentSessions').value=rem+' buổi'; currentBranchId=branchId;
+      document.getElementById('packageId').value=''; document.getElementById('scholarshipMonths').value=0; document.getElementById('discountAmount').value=0; document.getElementById('depositAmount').value=0; document.getElementById('note').value=''; document.getElementById('packageInfo').style.display='none';
+      document.getElementById('renewModal').classList.add('show');
+    }
+    function closeRenewModal() { document.getElementById('renewModal').classList.remove('show'); }
+    function calculatePackage() {
+      const pkgId = document.getElementById('packageId').value; const schMonths = parseInt(document.getElementById('scholarshipMonths').value)||0;
+      if (!pkgId) { document.getElementById('packageInfo').style.display='none'; return; }
+      const pkg = packages.find(p=>p.id==pkgId); if(!pkg)return; selectedPackage=pkg;
+      const schSessions = schMonths*4, total = pkg.sessions_count+schSessions, price = pkg.price||pkg.base_price;
+      document.getElementById('packageSessions').textContent = pkg.sessions_count+' buổi';
+      document.getElementById('scholarshipSessions').textContent = schSessions+' buổi';
+      document.getElementById('totalSessions').textContent = total+' buổi';
+      document.getElementById('packagePrice').textContent = formatCurrency(price);
+      document.getElementById('packageInfo').style.display='block'; calculateFinal();
+    }
+    function calculateFinal() {
+      if(!selectedPackage)return; const price=selectedPackage.price||selectedPackage.base_price, disc=parseInt(document.getElementById('discountAmount').value)||0, dep=parseInt(document.getElementById('depositAmount').value)||0;
+      document.getElementById('finalPrice').textContent=formatCurrency(price-disc); document.getElementById('remainingAmount').textContent=formatCurrency(Math.max(0,price-disc-dep));
+    }
+    async function saveRenewal(status) {
+      const studentId=document.getElementById('studentId').value, packageId=document.getElementById('packageId').value;
+      if(!packageId){ui.warning('Chọn gói gia hạn');return;}
+      const price=selectedPackage.price||selectedPackage.base_price, disc=parseInt(document.getElementById('discountAmount').value)||0, dep=parseInt(document.getElementById('depositAmount').value)||0;
+      try {
+        await api.post(`/students/${studentId}/renew`,{package_id:packageId,scholarship_months:parseInt(document.getElementById('scholarshipMonths').value)||0,discount_amount:disc,deposit_amount:dep,paid_amount:status==='paid'?price-disc:dep,note:document.getElementById('note').value,start_date:new Date().toISOString().slice(0,10)});
+        ui.success(status==='paid'?'Gia hạn thành công!':'Đã lưu cọc!'); closeRenewModal(); loadData();
+      } catch(e){ui.error('Lỗi: '+(e.message||'Không thể gia hạn'));}
+    }
+    function formatCurrency(v){return v?new Intl.NumberFormat('vi-VN').format(v)+'đ':'0đ';}
+    document.getElementById('filterBranch').addEventListener('change',loadData);
+    document.getElementById('filterStatus').addEventListener('change',loadData);
+    init();
+  </script>
+</body>
+</html>

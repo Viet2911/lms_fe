@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thư viện File - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .upload-area:hover { border-color: var(--primary); background: var(--bg-main); }
+    .upload-icon { font-size: 48px; color: var(--primary); margin-bottom: 16px; }
+    .file-card { background: white; border-radius: 12px; padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; text-align: center; transition: all 0.2s; }
+    .file-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .file-icon { width: 64px; height: 64px; background: var(--bg-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; font-size: 24px; color: var(--primary); }
+    .file-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; margin-bottom: 4px; }
+    .file-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .selected-file { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg-main); border-radius: 8px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+          <div><h1 class="page-title">Thư viện File</h1><p class="page-subtitle">Quản lý file bài tập, tài liệu (Cloudinary)</p></div>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
+          <button class="btn btn-primary" onclick="openUploadModal()"><i class="fas fa-upload"></i> Tải lên</button>
+          <div class="user-menu" onclick="auth.logout()">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="filters-bar">
+          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Tìm kiếm..." onkeyup="if(event.key==='Enter') loadData()"></div>
+          <select id="typeFilter" class="filter-select" onchange="loadData()">
+            <option value="">Tất cả loại</option>
+            <option value="pdf">PDF</option>
+            <option value="image">Hình ảnh</option>
+            <option value="doc">Word</option>
+          </select>
+          <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="cards-grid" id="filesGrid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Upload Modal -->
+  <div class="modal-overlay" id="uploadModal">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">Tải file lên Cloudinary</h3><button class="modal-close" onclick="modal.hide('uploadModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="uploadForm">
+          <div class="form-group">
+            <label class="form-label required">Chọn file</label>
+            <div class="upload-area" id="uploadArea">
+              <i class="fas fa-cloud-upload-alt upload-icon"></i>
+              <p>Kéo thả file hoặc click để chọn</p>
+              <input type="file" id="fileInput" style="display:none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif">
+            </div>
+            <div id="selectedFiles"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Mô tả</label><input type="text" name="description" class="form-control" placeholder="Mô tả file..."></div>
+          <div class="form-group">
+            <label class="form-label">Danh mục</label>
+            <select name="category" class="form-control">
+              <option value="assignment">Bài tập</option>
+              <option value="material">Tài liệu</option>
+              <option value="other">Khác</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="modal.hide('uploadModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="uploadFiles()" id="btnUpload"><i class="fas fa-upload"></i> Tải lên</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let selectedFiles = [];
+
+    async function init() {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+      setupUpload();
+      await loadData();
+    }
+
+    function setupUpload() {
+      const area = document.getElementById('uploadArea');
+      const input = document.getElementById('fileInput');
+
+      area.addEventListener('click', () => input.click());
+      area.addEventListener('dragover', (e) => { e.preventDefault(); area.style.borderColor = 'var(--primary)'; });
+      area.addEventListener('dragleave', () => { area.style.borderColor = 'var(--border)'; });
+      area.addEventListener('drop', (e) => { e.preventDefault(); area.style.borderColor = 'var(--border)'; handleFiles(e.dataTransfer.files); });
+      input.addEventListener('change', (e) => handleFiles(e.target.files));
+    }
+
+    function handleFiles(files) {
+      selectedFiles = Array.from(files);
+      const container = document.getElementById('selectedFiles');
+      if (!selectedFiles.length) { container.innerHTML = ''; return; }
+      container.innerHTML = selectedFiles.map((f, i) => `
+        <div class="selected-file">
+          <i class="fas ${getFileIcon(f.name)}"></i>
+          <span>${f.name}</span>
+          <span class="text-muted">(${formatSize(f.size)})</span>
+          <button type="button" onclick="removeFile(${i})" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--danger);"><i class="fas fa-times"></i></button>
+        </div>
+      `).join('');
+    }
+
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      handleFiles(selectedFiles);
+    }
+
+    function getFileIcon(name) {
+      const ext = name.split('.').pop().toLowerCase();
+      if (['pdf'].includes(ext)) return 'fa-file-pdf';
+      if (['doc', 'docx'].includes(ext)) return 'fa-file-word';
+      if (['xls', 'xlsx'].includes(ext)) return 'fa-file-excel';
+      if (['ppt', 'pptx'].includes(ext)) return 'fa-file-powerpoint';
+      if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) return 'fa-file-image';
+      return 'fa-file';
+    }
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    async function loadData() {
+      const search = document.getElementById('searchInput').value;
+      const type = document.getElementById('typeFilter').value;
+      const container = document.getElementById('filesGrid');
+      container.innerHTML = '<div class="loading" style="grid-column:1/-1;"><div class="spinner"></div></div>';
+
+      try {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (type) params.append('type', type);
+        const result = await api.get(`/files?${params}`);
+        renderFiles(result.data || []);
+        updateStats(result.data || []);
+      } catch (e) { container.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Không thể tải</p></div>'; }
+    }
+
+    function updateStats(files) {
+      const total = files.length;
+      const pdf = files.filter(f => f.mime_type?.includes('pdf')).length;
+      const image = files.filter(f => f.mime_type?.includes('image')).length;
+      const doc = files.filter(f => f.mime_type?.includes('word') || f.mime_type?.includes('document')).length;
+      document.getElementById('statsGrid').innerHTML = `
+        <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-file"></i></div><div class="stat-content"><div class="stat-value">${total}</div><div class="stat-label">Tổng file</div></div></div>
+        <div class="stat-card"><div class="stat-icon danger"><i class="fas fa-file-pdf"></i></div><div class="stat-content"><div class="stat-value">${pdf}</div><div class="stat-label">PDF</div></div></div>
+        <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-file-image"></i></div><div class="stat-content"><div class="stat-value">${image}</div><div class="stat-label">Hình ảnh</div></div></div>
+        <div class="stat-card"><div class="stat-icon info"><i class="fas fa-file-word"></i></div><div class="stat-content"><div class="stat-value">${doc}</div><div class="stat-label">Tài liệu</div></div></div>
+      `;
+    }
+
+    function renderFiles(files) {
+      if (!files.length) {
+        document.getElementById('filesGrid').innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon"><i class="fas fa-folder-open"></i></div><h3>Chưa có file</h3><button class="btn btn-primary" onclick="openUploadModal()"><i class="fas fa-upload"></i> Tải lên</button></div>`;
+        return;
+      }
+
+      document.getElementById('filesGrid').innerHTML = files.map(f => `
+        <div class="file-card">
+          <div class="file-icon"><i class="fas ${getFileIcon(f.original_name || f.filename)}"></i></div>
+          <div class="file-name" title="${f.original_name || f.filename}">${f.original_name || f.filename}</div>
+          <div class="text-muted" style="font-size:12px;">${formatSize(f.file_size || 0)}</div>
+          <div class="file-actions">
+            <a href="${f.file_url}" target="_blank" class="btn btn-sm btn-secondary"><i class="fas fa-external-link-alt"></i></a>
+            <button class="btn btn-sm btn-danger" onclick="deleteFile(${f.id})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openUploadModal() {
+      selectedFiles = [];
+      document.getElementById('selectedFiles').innerHTML = '';
+      document.getElementById('fileInput').value = '';
+      form.reset(document.getElementById('uploadForm'));
+      modal.show('uploadModal');
+    }
+
+    async function uploadFiles() {
+      if (!selectedFiles.length) { ui.error('Chọn file để tải lên'); return; }
+
+      const btn = document.getElementById('btnUpload');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải...';
+
+      const formData = new FormData();
+      selectedFiles.forEach(f => formData.append('files', f));
+      formData.append('description', document.querySelector('[name="description"]').value);
+      formData.append('category', document.querySelector('[name="category"]').value);
+
+      try {
+        await api.upload('/files/upload', formData);
+        ui.success('Tải file thành công');
+        modal.hide('uploadModal');
+        loadData();
+      } catch (e) { ui.error(e.message); }
+      finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-upload"></i> Tải lên';
+      }
+    }
+
+    async function deleteFile(id) {
+      if (!await ui.confirm('Xóa file này?')) return;
+      try {
+        await api.delete(`/files/${id}`);
+        ui.success('Xóa thành công');
+        loadData();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

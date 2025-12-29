@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gói học phí - ARMY Tech LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1><i class="fas fa-box"></i> Gói học phí</h1>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-primary" onclick="openAddModal()">
+          <i class="fas fa-plus"></i> Thêm gói mới
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="packages">
+          <i class="fas fa-box"></i> Gói học phí
+        </button>
+        <button class="tab-btn" data-tab="prices">
+          <i class="fas fa-tags"></i> Giá theo cơ sở
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab: Packages -->
+    <div class="tab-content active" id="tab-packages">
+      <div class="card">
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Mã</th>
+                <th>Tên gói</th>
+                <th class="text-center">Số tháng</th>
+                <th class="text-center">Số buổi</th>
+                <th class="text-right">Giá cơ bản</th>
+                <th class="text-center">Trạng thái</th>
+                <th class="text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="packagesTable">
+              <tr><td colspan="7" class="text-center">Đang tải...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Prices by Branch -->
+    <div class="tab-content" id="tab-prices">
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-tags"></i> Giá gói học theo từng cơ sở</h3>
+          <select id="branchSelect" class="form-control" style="width:200px" onchange="loadBranchPrices()">
+            <option value="">-- Chọn cơ sở --</option>
+          </select>
+        </div>
+        <div class="card-body">
+          <table class="table" id="pricesTable">
+            <thead>
+              <tr>
+                <th>Gói học</th>
+                <th class="text-center">Số tháng</th>
+                <th class="text-center">Số buổi</th>
+                <th class="text-right">Giá cơ bản</th>
+                <th class="text-right">Giá cơ sở</th>
+                <th class="text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="pricesTableBody">
+              <tr><td colspan="6" class="text-center text-muted">Chọn cơ sở để xem giá</td></tr>
+            </tbody>
+          </table>
+          <div class="text-right" style="margin-top:15px">
+            <button class="btn btn-primary" onclick="saveBranchPrices()" id="savePricesBtn" style="display:none">
+              <i class="fas fa-save"></i> Lưu giá cơ sở
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Add/Edit Package -->
+  <div class="modal" id="packageModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle"><i class="fas fa-box"></i> Thêm gói học phí</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="packageForm">
+          <input type="hidden" id="packageId">
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Mã gói *</label>
+              <input type="text" id="code" class="form-control" placeholder="VD: PKG-6M" required>
+            </div>
+            <div class="form-group">
+              <label>Tên gói *</label>
+              <input type="text" id="name" class="form-control" placeholder="VD: 6 tháng" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Số tháng *</label>
+              <input type="number" id="months" class="form-control" min="1" required onchange="calculateSessions()">
+            </div>
+            <div class="form-group">
+              <label>Số buổi *</label>
+              <input type="number" id="sessionsCount" class="form-control" min="1" required>
+              <small class="text-muted">1 tháng = 4 buổi</small>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Giá cơ bản (VNĐ) *</label>
+            <input type="number" id="basePrice" class="form-control" min="0" step="100000" required>
+          </div>
+          
+          <div class="form-group">
+            <label>Mô tả</label>
+            <textarea id="description" class="form-control" rows="2"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="isActive" checked>
+              <span>Đang hoạt động</span>
+            </label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+        <button class="btn btn-primary" onclick="savePackage()">
+          <i class="fas fa-save"></i> Lưu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let packages = [];
+    let branches = [];
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    async function init() {
+      await auth.requireAuth();
+      buildSidebar('sidebar');
+      await Promise.all([loadPackages(), loadBranches()]);
+    }
+
+    async function loadPackages() {
+      try {
+        const res = await api.get('/packages');
+        packages = res.data;
+        
+        const tbody = document.getElementById('packagesTable');
+        if (packages.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Chưa có gói học phí nào</td></tr>';
+          return;
+        }
+        
+        tbody.innerHTML = packages.map(p => `
+          <tr>
+            <td><span class="badge badge-primary">${p.code}</span></td>
+            <td><strong>${p.name}</strong></td>
+            <td class="text-center">${p.months} tháng</td>
+            <td class="text-center">${p.sessions_count} buổi</td>
+            <td class="text-right"><strong>${formatCurrency(p.base_price)}</strong></td>
+            <td class="text-center">
+              ${p.is_active ? '<span class="badge badge-success">Hoạt động</span>' : '<span class="badge badge-secondary">Tắt</span>'}
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-info" onclick="editPackage(${p.id})">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="deletePackage(${p.id}, '${p.name}')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error('Error loading packages:', e);
+      }
+    }
+
+    async function loadBranches() {
+      try {
+        const res = await api.get('/branches');
+        branches = res.data;
+        
+        const select = document.getElementById('branchSelect');
+        branches.forEach(b => {
+          select.innerHTML += `<option value="${b.id}">${b.code} - ${b.name}</option>`;
+        });
+      } catch (e) {}
+    }
+
+    async function loadBranchPrices() {
+      const branchId = document.getElementById('branchSelect').value;
+      const tbody = document.getElementById('pricesTableBody');
+      const saveBtn = document.getElementById('savePricesBtn');
+      
+      if (!branchId) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Chọn cơ sở để xem giá</td></tr>';
+        saveBtn.style.display = 'none';
+        return;
+      }
+      
+      try {
+        const res = await api.get('/packages?branch_id=' + branchId);
+        const data = res.data;
+        
+        tbody.innerHTML = data.map(p => `
+          <tr>
+            <td><strong>${p.name}</strong> <span class="badge badge-light">${p.code}</span></td>
+            <td class="text-center">${p.months} tháng</td>
+            <td class="text-center">${p.sessions_count} buổi</td>
+            <td class="text-right text-muted">${formatCurrency(p.base_price)}</td>
+            <td class="text-right">
+              <input type="number" class="form-control price-input" data-package="${p.id}" 
+                     value="${p.price || p.base_price}" step="100000" style="width:150px;display:inline-block">
+            </td>
+            <td class="text-center">
+              ${p.price && p.price != p.base_price ? '<span class="badge badge-info">Tùy chỉnh</span>' : '<span class="badge badge-light">Mặc định</span>'}
+            </td>
+          </tr>
+        `).join('');
+        
+        saveBtn.style.display = 'inline-block';
+      } catch (e) {
+        console.error('Error loading branch prices:', e);
+      }
+    }
+
+    async function saveBranchPrices() {
+      const branchId = document.getElementById('branchSelect').value;
+      if (!branchId) return;
+      
+      const prices = [];
+      document.querySelectorAll('.price-input').forEach(input => {
+        prices.push({
+          package_id: parseInt(input.dataset.package),
+          price: parseFloat(input.value) || 0
+        });
+      });
+      
+      try {
+        await api.post('/packages/branch-prices/bulk', { branch_id: branchId, prices });
+        ui.success('Lưu giá thành công');
+        loadBranchPrices();
+      } catch (e) {
+        ui.error('Lỗi: ' + (e.message || 'Không thể lưu'));
+      }
+    }
+
+    function openAddModal() {
+      document.getElementById('packageId').value = '';
+      document.getElementById('packageForm').reset();
+      document.getElementById('isActive').checked = true;
+      document.getElementById('modalTitle').innerHTML = '<i class="fas fa-box"></i> Thêm gói học phí';
+      document.getElementById('packageModal').classList.add('show');
+    }
+
+    function editPackage(id) {
+      const p = packages.find(x => x.id === id);
+      if (!p) return;
+      
+      document.getElementById('packageId').value = p.id;
+      document.getElementById('code').value = p.code;
+      document.getElementById('name').value = p.name;
+      document.getElementById('months').value = p.months;
+      document.getElementById('sessionsCount').value = p.sessions_count;
+      document.getElementById('basePrice').value = p.base_price;
+      document.getElementById('description').value = p.description || '';
+      document.getElementById('isActive').checked = p.is_active;
+      document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa gói: ' + p.name;
+      document.getElementById('packageModal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('packageModal').classList.remove('show');
+    }
+
+    function calculateSessions() {
+      const months = parseInt(document.getElementById('months').value) || 0;
+      document.getElementById('sessionsCount').value = months * 4;
+    }
+
+    async function savePackage() {
+      const id = document.getElementById('packageId').value;
+      const data = {
+        code: document.getElementById('code').value,
+        name: document.getElementById('name').value,
+        months: parseInt(document.getElementById('months').value),
+        sessions_count: parseInt(document.getElementById('sessionsCount').value),
+        base_price: parseFloat(document.getElementById('basePrice').value),
+        description: document.getElementById('description').value,
+        is_active: document.getElementById('isActive').checked ? 1 : 0
+      };
+      
+      try {
+        if (id) {
+          await api.put('/packages/' + id, data);
+          ui.success('Cập nhật gói thành công');
+        } else {
+          await api.post('/packages', data);
+          ui.success('Thêm gói thành công');
+        }
+        closeModal();
+        loadPackages();
+      } catch (e) {
+        ui.error('Lỗi: ' + (e.message || 'Không thể lưu'));
+      }
+    }
+
+    async function deletePackage(id, name) {
+      if (!confirm(`Xóa gói "${name}"?`)) return;
+      
+      try {
+        await api.delete('/packages/' + id);
+        ui.success('Đã xóa gói');
+        loadPackages();
+      } catch (e) {
+        ui.error('Lỗi: ' + (e.message || 'Không thể xóa'));
+      }
+    }
+
+    function formatCurrency(val) {
+      if (!val) return '0đ';
+      return new Intl.NumberFormat('vi-VN').format(val) + 'đ';
+    }
+
+    init();
+  </script>
+</body>
+</html>

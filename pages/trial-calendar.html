@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lịch trải nghiệm - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Calendar Grid */
+    .calendar-wrapper { background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); }
+    .calendar-nav { display: flex; align-items: center; gap: 12px; }
+    .calendar-title { font-size: 18px; font-weight: 600; min-width: 180px; text-align: center; }
+    
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .calendar-weekday { padding: 12px; text-align: center; font-weight: 600; font-size: 13px; color: var(--text-muted); background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); }
+    .calendar-day { min-height: 120px; padding: 8px; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; }
+    .calendar-day:nth-child(7n) { border-right: none; }
+    .calendar-day:hover { background: var(--bg-hover); }
+    .calendar-day.other-month { background: var(--bg-secondary); opacity: 0.5; }
+    .calendar-day.today { background: #eff6ff; }
+    .calendar-day.today .day-number { background: var(--primary-color); color: white; }
+    .day-number { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    
+    /* Trial Session Events */
+    .trial-event { padding: 4px 8px; margin-bottom: 4px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .trial-event:hover { transform: scale(1.02); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .trial-event .session-badge { background: rgba(255,255,255,0.3); padding: 1px 6px; border-radius: 10px; font-weight: 700; font-size: 10px; }
+    
+    /* Session colors */
+    .trial-event.session-1 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+    .trial-event.session-2 { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; }
+    .trial-event.session-3 { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+    .trial-event.completed { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
+    .trial-event.waiting { background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; } /* Cyan - chờ đặt lịch tiếp */
+    .trial-event.no-show { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; opacity: 0.7; }
+    .trial-event.converted { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+    
+    .calendar-more { font-size: 11px; color: var(--primary-color); cursor: pointer; padding: 2px 8px; }
+    
+    /* Legend */
+    .calendar-legend { display: flex; gap: 16px; padding: 12px 20px; background: var(--bg-secondary); border-top: 1px solid var(--border-color); flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .legend-color { width: 16px; height: 16px; border-radius: 4px; }
+    
+    /* Stats cards */
+    .trial-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .trial-stat { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; text-align: center; }
+    .trial-stat .value { font-size: 28px; font-weight: 700; }
+    .trial-stat .label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .trial-stat.blue .value { color: #3b82f6; }
+    .trial-stat.purple .value { color: #8b5cf6; }
+    .trial-stat.orange .value { color: #f59e0b; }
+    .trial-stat.green .value { color: #22c55e; }
+    
+    /* Session detail card */
+    .session-detail { background: var(--bg-secondary); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    .session-detail h4 { margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+    .session-timeline { display: flex; gap: 8px; margin-top: 12px; }
+    .session-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: white; }
+    .session-dot.done { background: #22c55e; }
+    .session-dot.current { background: #3b82f6; animation: pulse 2s infinite; }
+    .session-dot.pending { background: #d1d5db; color: #6b7280; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    
+    /* Form styles */
+    .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+          <div><h1 class="page-title">Lịch trải nghiệm</h1><p class="page-subtitle">Theo dõi lịch học thử của khách hàng</p></div>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
+          <div class="user-menu" onclick="auth.logout()">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <!-- Stats -->
+        <div class="trial-stats" id="statsGrid"></div>
+        
+        <!-- Calendar -->
+        <div class="calendar-wrapper">
+          <div class="calendar-header">
+            <div class="calendar-nav">
+              <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+              <span class="calendar-title" id="calendarTitle">Tháng 12, 2025</span>
+              <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="goToday()"><i class="fas fa-calendar-day"></i> Hôm nay</button>
+            </div>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+          <div class="calendar-legend">
+            <div class="legend-item"><div class="legend-color" style="background:linear-gradient(135deg, #3b82f6, #1d4ed8);"></div> Buổi 1</div>
+            <div class="legend-item"><div class="legend-color" style="background:linear-gradient(135deg, #8b5cf6, #6d28d9);"></div> Buổi 2</div>
+            <div class="legend-item"><div class="legend-color" style="background:linear-gradient(135deg, #f59e0b, #d97706);"></div> Buổi 3</div>
+            <div class="legend-item"><div class="legend-color" style="background:linear-gradient(135deg, #06b6d4, #0891b2);"></div> Chờ đặt lịch</div>
+            <div class="legend-item"><div class="legend-color" style="background:linear-gradient(135deg, #22c55e, #16a34a);"></div> Hoàn thành</div>
+            <div class="legend-item"><div class="legend-color" style="background:linear-gradient(135deg, #10b981, #059669);"></div> Đã chuyển đổi</div>
+            <div class="legend-item"><div class="legend-color" style="background:linear-gradient(135deg, #ef4444, #dc2626);"></div> Không đến</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- View/Action Modal -->
+  <div class="modal-overlay" id="viewModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" id="viewModalTitle"><i class="fas fa-user-clock"></i> Chi tiết buổi học thử</h3>
+        <button class="modal-close" onclick="modal.hide('viewModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="viewContent"></div>
+      <div class="modal-footer" id="viewFooter"></div>
+    </div>
+  </div>
+
+  <!-- Schedule Next Session Modal -->
+  <div class="modal-overlay" id="scheduleModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-calendar-plus"></i> Đặt lịch buổi tiếp theo</h3>
+        <button class="modal-close" onclick="modal.hide('scheduleModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="scheduleLeadId">
+        <input type="hidden" id="scheduleSessionNum">
+        
+        <div class="session-detail" id="scheduleInfo"></div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label required">Ngày học</label>
+            <input type="date" id="scheduleDate" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label required">Giờ học</label>
+            <input type="time" id="scheduleTime" class="form-control" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Lớp học</label>
+          <select id="scheduleClass" class="form-control">
+            <option value="">Chọn lớp (nếu có)</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Ghi chú</label>
+          <textarea id="scheduleNote" class="form-control" rows="2" placeholder="Ghi chú đặc biệt..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="modal.hide('scheduleModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveSchedule()"><i class="fas fa-save"></i> Lưu lịch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Convert to Student Modal - Full Form -->
+  <div class="modal-overlay" id="convertModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white;">
+        <h3 class="modal-title"><i class="fas fa-user-graduate"></i> Chuyển đổi học viên chính thức</h3>
+        <button class="modal-close" onclick="modal.hide('convertModal')" style="color:white;">&times;</button>
+      </div>
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <input type="hidden" id="convertLeadId">
+        
+        <!-- Lead Info Summary -->
+        <div class="session-detail" id="convertInfo" style="background:#dcfce7; margin-bottom: 20px;"></div>
+        
+        <!-- Student Info -->
+        <div style="background: var(--bg-secondary); padding: 16px; border-radius: 10px; margin-bottom: 16px;">
+          <h4 style="margin: 0 0 12px; color: var(--primary-color);"><i class="fas fa-child"></i> Thông tin học sinh</h4>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Họ tên học sinh</label><input type="text" id="convertStudentName" class="form-control" required></div>
+            <div class="form-group"><label class="form-label">Năm sinh</label><input type="number" id="convertBirthYear" class="form-control" min="2005" max="2022"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Giới tính</label>
+              <select id="convertGender" class="form-control">
+                <option value="">Chọn</option>
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Trường học</label><input type="text" id="convertSchool" class="form-control" placeholder="Tên trường"></div>
+          </div>
+        </div>
+        
+        <!-- Parent Info -->
+        <div style="background: var(--bg-secondary); padding: 16px; border-radius: 10px; margin-bottom: 16px;">
+          <h4 style="margin: 0 0 12px; color: var(--primary-color);"><i class="fas fa-user"></i> Thông tin phụ huynh</h4>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Họ tên PH</label><input type="text" id="convertParentName" class="form-control" required></div>
+            <div class="form-group"><label class="form-label required">SĐT</label><input type="tel" id="convertParentPhone" class="form-control" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Email</label><input type="email" id="convertParentEmail" class="form-control"></div>
+            <div class="form-group"><label class="form-label">Địa chỉ</label><input type="text" id="convertAddress" class="form-control"></div>
+          </div>
+        </div>
+        
+        <!-- Course Registration -->
+        <div style="background: var(--bg-secondary); padding: 16px; border-radius: 10px; margin-bottom: 16px;">
+          <h4 style="margin: 0 0 12px; color: var(--primary-color);"><i class="fas fa-route"></i> Lộ trình đăng ký</h4>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Môn học</label>
+              <select id="convertSubject" class="form-control" required></select>
+            </div>
+            <div class="form-group"><label class="form-label required">Cấp độ</label>
+              <select id="convertLevel" class="form-control" required></select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Số buổi/tuần</label>
+              <select id="convertSessionsPerWeek" class="form-control">
+                <option value="1">1 buổi/tuần</option>
+                <option value="2" selected>2 buổi/tuần</option>
+                <option value="3">3 buổi/tuần</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Ngày bắt đầu dự kiến</label><input type="date" id="convertStartDate" class="form-control"></div>
+          </div>
+        </div>
+        
+        <!-- Fee Info -->
+        <div style="background: var(--bg-secondary); padding: 16px; border-radius: 10px; margin-bottom: 16px;">
+          <h4 style="margin: 0 0 12px; color: var(--primary-color);"><i class="fas fa-money-bill-wave"></i> Học phí</h4>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Gói đăng ký</label>
+              <select id="convertPackage" class="form-control" onchange="updateFeeDisplay()">
+                <option value="monthly" data-price="800000">Tháng - 800,000đ</option>
+                <option value="quarter" data-price="2200000">Quý (3 tháng) - 2,200,000đ</option>
+                <option value="semester" data-price="4000000">Học kỳ (6 tháng) - 4,000,000đ</option>
+                <option value="year" data-price="7500000">Năm - 7,500,000đ</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Giảm giá (%)</label><input type="number" id="convertDiscount" class="form-control" value="0" min="0" max="100" onchange="updateFeeDisplay()"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Học phí gốc</label><input type="text" id="convertFeeOriginal" class="form-control" readonly style="background: var(--bg-primary);"></div>
+            <div class="form-group"><label class="form-label">Thành tiền</label><input type="text" id="convertFeeTotal" class="form-control" readonly style="background: #dcfce7; font-weight: 700; color: #15803d;"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Trạng thái thanh toán</label>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <label class="branch-checkbox" style="flex: 1; min-width: 120px;">
+                <input type="radio" name="paymentStatus" value="pending" checked>
+                <i class="fas fa-clock" style="color: #f59e0b;"></i>
+                <span>Chưa đóng</span>
+              </label>
+              <label class="branch-checkbox" style="flex: 1; min-width: 120px;">
+                <input type="radio" name="paymentStatus" value="partial">
+                <i class="fas fa-adjust" style="color: #3b82f6;"></i>
+                <span>Đóng 1 phần</span>
+              </label>
+              <label class="branch-checkbox" style="flex: 1; min-width: 120px;">
+                <input type="radio" name="paymentStatus" value="paid">
+                <i class="fas fa-check-circle" style="color: #22c55e;"></i>
+                <span>Đã đóng đủ</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group" id="partialAmountGroup" style="display: none;">
+            <label class="form-label">Số tiền đã đóng</label>
+            <input type="number" id="convertPaidAmount" class="form-control" placeholder="Nhập số tiền">
+          </div>
+        </div>
+        
+        <!-- Notes -->
+        <div class="form-group">
+          <label class="form-label">Ghi chú (ưu đãi, yêu cầu đặc biệt...)</label>
+          <textarea id="convertNote" class="form-control" rows="2" placeholder="VD: Ưu đãi 10% học sinh cũ, yêu cầu lớp buổi tối..."></textarea>
+        </div>
+        
+        <div style="background: #fef3c7; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+          <i class="fas fa-info-circle" style="color: #f59e0b;"></i>
+          <span style="font-size: 13px; color: #92400e;">Sau khi chuyển đổi, CM sẽ xếp học sinh vào lớp phù hợp.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="modal.hide('convertModal')">Hủy</button>
+        <button class="btn btn-success" onclick="confirmConvert()"><i class="fas fa-check"></i> Xác nhận chuyển đổi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mark Attendance Modal -->
+  <div class="modal-overlay" id="attendanceModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-clipboard-check"></i> Điểm danh buổi học thử</h3>
+        <button class="modal-close" onclick="modal.hide('attendanceModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="attendanceLeadId">
+        <input type="hidden" id="attendanceSessionId">
+        
+        <div class="session-detail" id="attendanceInfo"></div>
+        
+        <div class="form-group">
+          <label class="form-label required">Trạng thái</label>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <label class="branch-checkbox" style="flex:1; min-width:120px;">
+              <input type="radio" name="attendanceStatus" value="attended" checked>
+              <i class="fas fa-check" style="color:#22c55e;"></i>
+              <span>Có mặt</span>
+            </label>
+            <label class="branch-checkbox" style="flex:1; min-width:120px;">
+              <input type="radio" name="attendanceStatus" value="no_show">
+              <i class="fas fa-times" style="color:#ef4444;"></i>
+              <span>Không đến</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Đánh giá (1-5)</label>
+          <div style="display:flex; gap:8px;" id="ratingStars">
+            <i class="fas fa-star rating-star" data-value="1" onclick="setRating(1)"></i>
+            <i class="fas fa-star rating-star" data-value="2" onclick="setRating(2)"></i>
+            <i class="fas fa-star rating-star" data-value="3" onclick="setRating(3)"></i>
+            <i class="fas fa-star rating-star" data-value="4" onclick="setRating(4)"></i>
+            <i class="fas fa-star rating-star" data-value="5" onclick="setRating(5)"></i>
+          </div>
+          <input type="hidden" id="attendanceRating" value="0">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Nhận xét</label>
+          <textarea id="attendanceFeedback" class="form-control" rows="2" placeholder="Nhận xét về buổi học..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="modal.hide('attendanceModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveAttendance()"><i class="fas fa-save"></i> Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+    let trialSessions = [];
+    let classes = [];
+    let currentRating = 0;
+
+    async function init() {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+      await loadClasses();
+      await loadStats();
+      await loadCalendar();
+    }
+
+    async function loadClasses() {
+      try {
+        const result = await api.get('/classes?status=active&limit=100');
+        classes = result.data || [];
+        
+        const classOptions = '<option value="">Chọn lớp</option>' + 
+          classes.map(c => `<option value="${c.id}">${c.class_name} - ${c.subject_name || ''} (${c.study_days || ''})</option>`).join('');
+        
+        const scheduleClassEl = document.getElementById('scheduleClass');
+        if (scheduleClassEl) scheduleClassEl.innerHTML = classOptions;
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadStats() {
+      try {
+        const query = branch.buildQuery({});
+        const result = await api.get('/leads/stats' + query);
+        const s = result.data || {};
+        
+        document.getElementById('statsGrid').innerHTML = `
+          <div class="trial-stat blue">
+            <div class="value">${s.scheduled || 0}</div>
+            <div class="label">Chờ TN</div>
+          </div>
+          <div class="trial-stat" style="border-left: 4px solid #06b6d4;">
+            <div class="value" style="color: #06b6d4;">${s.waiting || 0}</div>
+            <div class="label">Chờ tiếp theo</div>
+          </div>
+          <div class="trial-stat purple">
+            <div class="value">${s.trial || 0}</div>
+            <div class="label">Đang học thử</div>
+          </div>
+          <div class="trial-stat green">
+            <div class="value">${s.converted || 0}</div>
+            <div class="label">Đã chuyển đổi</div>
+          </div>
+        `;
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadCalendar() {
+      document.getElementById('calendarTitle').textContent = `Tháng ${currentMonth}, ${currentYear}`;
+      
+      try {
+        const query = branch.buildQuery({ year: currentYear, month: currentMonth });
+        const result = await api.get('/leads/month' + query);
+        trialSessions = result.data || [];
+      } catch (e) { trialSessions = []; }
+      
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const firstDay = new Date(currentYear, currentMonth - 1, 1);
+      const lastDay = new Date(currentYear, currentMonth, 0);
+      const startDay = firstDay.getDay() || 7;
+      const totalDays = lastDay.getDate();
+      const today = new Date();
+
+      let html = `
+        <div class="calendar-weekday">T2</div>
+        <div class="calendar-weekday">T3</div>
+        <div class="calendar-weekday">T4</div>
+        <div class="calendar-weekday">T5</div>
+        <div class="calendar-weekday">T6</div>
+        <div class="calendar-weekday">T7</div>
+        <div class="calendar-weekday">CN</div>
+      `;
+
+      // Previous month days
+      const prevMonth = new Date(currentYear, currentMonth - 1, 0);
+      for (let i = startDay - 1; i > 0; i--) {
+        html += `<div class="calendar-day other-month"><div class="day-number">${prevMonth.getDate() - i + 1}</div></div>`;
+      }
+
+      // Current month days
+      for (let d = 1; d <= totalDays; d++) {
+        const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const isToday = today.getFullYear() === currentYear && today.getMonth() + 1 === currentMonth && today.getDate() === d;
+        const daySessions = trialSessions.filter(s => s.scheduled_date?.substring(0, 10) === dateStr);
+        
+        // Sort by time (sáng tới tối)
+        const sortedSessions = daySessions.sort((a, b) => {
+          const timeA = a.scheduled_time || '99:99';
+          const timeB = b.scheduled_time || '99:99';
+          return timeA.localeCompare(timeB);
+        });
+        
+        let eventsHtml = sortedSessions.slice(0, 4).map(s => {
+          const sessionNum = (s.trial_sessions_attended || 0) + 1;
+          let statusClass = `session-${Math.min(sessionNum, 3)}`;
+          let badgeText = `B${sessionNum}`;
+          
+          if (s.status === 'converted') {
+            statusClass = 'converted';
+            badgeText = '✓';
+          } else if (s.status === 'no_show') {
+            statusClass = 'no-show';
+            badgeText = '✗';
+          } else if (s.status === 'waiting') {
+            statusClass = 'waiting';
+            badgeText = `✓B${s.trial_sessions_attended || 1}`;
+          } else if (s.status === 'attended' && !s.scheduled_date) {
+            statusClass = 'waiting';
+            badgeText = `✓B${s.trial_sessions_attended || 1}`;
+          }
+          
+          const branchCode = s.branch_code || '';
+          const timeStr = s.scheduled_time ? s.scheduled_time.substring(0, 5) : '';
+          
+          return `
+            <div class="trial-event ${statusClass}" onclick="viewSession(${s.id}); event.stopPropagation();">
+              ${timeStr ? `<span style="font-size:10px;opacity:0.9;margin-right:4px;">${timeStr}</span>` : ''}
+              <span class="session-badge">${badgeText}</span>
+              <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${s.student_name}</span>
+              ${branchCode ? `<span style="font-size:9px;opacity:0.8;">${branchCode}</span>` : ''}
+            </div>
+          `;
+        }).join('');
+        
+        if (sortedSessions.length > 4) {
+          eventsHtml += `<div class="calendar-more" onclick="showDayDetail('${dateStr}'); event.stopPropagation();">+${sortedSessions.length - 4} khác</div>`;
+        }
+
+        html += `
+          <div class="calendar-day ${isToday ? 'today' : ''}">
+            <div class="day-number">${d}</div>
+            <div class="calendar-events">${eventsHtml}</div>
+          </div>
+        `;
+      }
+
+      // Next month days
+      const remaining = (7 - (startDay - 1 + totalDays) % 7) % 7;
+      for (let i = 1; i <= remaining; i++) {
+        html += `<div class="calendar-day other-month"><div class="day-number">${i}</div></div>`;
+      }
+
+      document.getElementById('calendarGrid').innerHTML = html;
+    }
+
+    function changeMonth(delta) {
+      currentMonth += delta;
+      if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+      if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+      loadCalendar();
+    }
+
+    function goToday() {
+      const now = new Date();
+      currentYear = now.getFullYear();
+      currentMonth = now.getMonth() + 1;
+      loadCalendar();
+    }
+
+    async function viewSession(leadId) {
+      try {
+        const result = await api.get(`/leads/${leadId}`);
+        const l = result.data;
+        
+        const sessionNum = (l.trial_sessions_attended || 0) + 1;
+        const maxSessions = l.trial_sessions_max || 3;
+        const completedSessions = l.trial_sessions_attended || 0;
+        
+        // Build session timeline
+        let timelineHtml = '';
+        for (let i = 1; i <= maxSessions; i++) {
+          let dotClass = 'pending';
+          if (i <= completedSessions) dotClass = 'done';
+          else if (i === sessionNum && (l.status === 'trial' || l.status === 'scheduled')) dotClass = 'current';
+          timelineHtml += `<div class="session-dot ${dotClass}">${i}</div>`;
+        }
+        
+        // Status display
+        const statusMap = {
+          'new': { text: 'Mới', class: 'secondary' },
+          'scheduled': { text: 'Chờ TN', class: 'warning' },
+          'attended': { text: 'Đã TN', class: 'info' },
+          'waiting': { text: 'Chờ tiếp theo', class: 'warning', icon: 'fa-clock' },
+          'trial': { text: 'Đang học thử', class: 'info' },
+          'converted': { text: 'Đã chuyển đổi', class: 'success' },
+          'cancelled': { text: 'Đã hủy', class: 'danger' },
+          'no_show': { text: 'Không đến', class: 'danger' }
+        };
+        const statusInfo = statusMap[l.status] || statusMap.new;
+        
+        // Waiting status notice
+        let waitingNotice = '';
+        if (l.status === 'waiting') {
+          waitingNotice = `
+            <div style="background: #fef3c7; padding: 12px 16px; border-radius: 8px; margin-top: 16px; border-left: 4px solid #f59e0b;">
+              <i class="fas fa-clock" style="color: #f59e0b;"></i>
+              <span style="font-size: 13px; color: #92400e;">
+                <strong>Đang chờ:</strong> Đã hoàn thành ${completedSessions} buổi. 
+                Vui lòng đặt lịch buổi tiếp hoặc chuyển đổi thành học viên.
+              </span>
+            </div>
+          `;
+        }
+        
+        document.getElementById('viewContent').innerHTML = `
+          <div class="session-detail">
+            <h4>
+              <i class="fas fa-user"></i> ${l.student_name}
+              <span class="badge badge-${statusInfo.class}" style="margin-left:auto;">
+                ${statusInfo.icon ? `<i class="fas ${statusInfo.icon}"></i> ` : ''}${statusInfo.text}
+              </span>
+            </h4>
+            <div class="detail-grid" style="margin-top:12px;">
+              <div class="detail-item"><label>Mã</label><span><code>${l.code}</code> <span class="branch-tag-sm">${l.branch_code || ''}</span></span></div>
+              <div class="detail-item"><label>Phụ huynh</label><span>${l.customer_name} - <a href="tel:${l.customer_phone}">${l.customer_phone}</a></span></div>
+              <div class="detail-item"><label>Môn</label><span>${l.subject_name || '-'}</span></div>
+              <div class="detail-item"><label>Nguồn</label><span>${l.source || '-'}</span></div>
+              ${l.trial_class_name ? `<div class="detail-item"><label>Lớp</label><span>${l.trial_class_name}</span></div>` : ''}
+              ${l.scheduled_date ? `<div class="detail-item"><label><i class="fas fa-calendar"></i> Ngày</label><span>${ui.formatDate(l.scheduled_date)}</span></div>` : ''}
+              ${l.scheduled_time ? `<div class="detail-item"><label><i class="fas fa-clock"></i> Giờ</label><span><strong>${l.scheduled_time?.substring(0,5)}</strong></span></div>` : ''}
+            </div>
+            
+            <div style="margin-top:16px;">
+              <label style="font-size:13px;color:var(--text-muted);margin-bottom:8px;display:block;">Tiến độ học thử</label>
+              <div class="session-timeline">${timelineHtml}</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">
+                Đã hoàn thành: <strong>${completedSessions}</strong> / ${maxSessions} buổi
+              </div>
+            </div>
+            
+            ${waitingNotice}
+            
+            ${l.note ? `<div style="margin-top:12px;padding:10px;background:var(--bg-primary);border-radius:6px;font-size:13px;"><i class="fas fa-sticky-note" style="color:var(--text-muted);"></i> ${l.note}</div>` : ''}
+          </div>
+        `;
+
+        // Footer buttons based on status and completed sessions
+        let footerHtml = '<button class="btn btn-secondary" onclick="modal.hide(\'viewModal\')">Đóng</button>';
+        
+        if (l.status === 'scheduled' || l.status === 'new') {
+          // Chưa trải nghiệm - Buổi 1
+          footerHtml += `
+            <button class="btn btn-danger" onclick="markCancelled(${l.id})"><i class="fas fa-times"></i> Hủy</button>
+            <button class="btn btn-warning" onclick="markNoShow(${l.id})"><i class="fas fa-user-slash"></i> K.đến</button>
+            <button class="btn btn-success" onclick="markSessionComplete(${l.id}, 1)"><i class="fas fa-check"></i> Hoàn thành B1</button>
+          `;
+        } else if (l.status === 'waiting') {
+          // Đã hoàn thành buổi, chờ quyết định tiếp theo
+          const nextSession = completedSessions + 1;
+          footerHtml += `
+            <button class="btn btn-primary" onclick="openSchedule(${l.id}, ${nextSession})"><i class="fas fa-calendar-plus"></i> Đặt lịch B${Math.min(nextSession, maxSessions)}</button>
+            <button class="btn btn-success" onclick="openConvert(${l.id})"><i class="fas fa-user-graduate"></i> Chuyển đổi</button>
+          `;
+        } else if (l.status === 'trial') {
+          // Đang trong quá trình học thử (đã có lịch)
+          const nextSession = completedSessions + 1;
+          
+          if (nextSession <= maxSessions) {
+            footerHtml += `
+              <button class="btn btn-warning" onclick="markNoShow(${l.id})"><i class="fas fa-user-slash"></i> K.đến</button>
+              <button class="btn btn-success" onclick="markSessionComplete(${l.id}, ${nextSession})"><i class="fas fa-check"></i> Hoàn thành B${nextSession}</button>
+            `;
+          }
+          
+          if (completedSessions >= 1) {
+            footerHtml += `
+              <button class="btn btn-primary" onclick="openConvert(${l.id})"><i class="fas fa-user-graduate"></i> Chuyển đổi</button>
+            `;
+          }
+        } else if (l.status === 'converted') {
+          footerHtml += `<span class="badge badge-success" style="padding: 10px 16px;"><i class="fas fa-check-circle"></i> Đã chuyển đổi thành học viên</span>`;
+        }
+        
+        document.getElementById('viewFooter').innerHTML = footerHtml;
+        modal.show('viewModal');
+      } catch (e) { ui.error(e.message); }
+    }
+
+    // Đánh dấu hoàn thành buổi học
+    async function markSessionComplete(leadId, sessionNum) {
+      if (!confirm(`Xác nhận hoàn thành Buổi ${sessionNum}?`)) return;
+      
+      try {
+        await api.post(`/leads/${leadId}/complete-session`, { sessionNum });
+        ui.success(`Đã hoàn thành Buổi ${sessionNum}`);
+        modal.hide('viewModal');
+        loadCalendar();
+        loadStats();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    // Đánh dấu hủy
+    async function markCancelled(leadId) {
+      if (!confirm('Xác nhận hủy lịch này?')) return;
+      try {
+        await api.put(`/leads/${leadId}`, { status: 'cancelled' });
+        ui.success('Đã hủy');
+        modal.hide('viewModal');
+        loadCalendar();
+        loadStats();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    // Đánh dấu không đến
+    async function markNoShow(leadId) {
+      if (!confirm('Xác nhận không đến?')) return;
+      try {
+        await api.post(`/leads/${leadId}/no-show`);
+        ui.success('Đã đánh dấu không đến');
+        modal.hide('viewModal');
+        loadCalendar();
+        loadStats();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    function openSchedule(leadId, sessionNum) {
+      document.getElementById('scheduleLeadId').value = leadId;
+      document.getElementById('scheduleSessionNum').value = sessionNum;
+      
+      const lead = trialSessions.find(s => s.id === leadId);
+      document.getElementById('scheduleInfo').innerHTML = `
+        <h4><i class="fas fa-user"></i> ${lead?.student_name || ''}</h4>
+        <p style="margin:0;color:var(--text-muted);">Đặt lịch <strong>Buổi ${sessionNum}</strong></p>
+      `;
+      
+      // Set default date to tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      document.getElementById('scheduleDate').value = tomorrow.toISOString().split('T')[0];
+      document.getElementById('scheduleTime').value = lead?.scheduled_time?.substring(0,5) || '09:00';
+      document.getElementById('scheduleNote').value = '';
+      
+      if (lead?.trial_class_id) {
+        document.getElementById('scheduleClass').value = lead.trial_class_id;
+      }
+      
+      modal.hide('viewModal');
+      modal.show('scheduleModal');
+    }
+
+    async function saveSchedule() {
+      const leadId = document.getElementById('scheduleLeadId').value;
+      const date = document.getElementById('scheduleDate').value;
+      const time = document.getElementById('scheduleTime').value;
+      const classId = document.getElementById('scheduleClass').value;
+      const note = document.getElementById('scheduleNote').value;
+      
+      if (!date || !time) {
+        ui.error('Vui lòng chọn ngày và giờ');
+        return;
+      }
+      
+      try {
+        const data = { 
+          scheduledDate: date, 
+          scheduledTime: time,
+          status: 'trial'
+        };
+        if (classId) data.trialClassId = classId;
+        if (note) data.note = note;
+        
+        await api.put(`/leads/${leadId}`, data);
+        ui.success('Đã đặt lịch thành công');
+        modal.hide('scheduleModal');
+        loadCalendar();
+        loadStats();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    function openAttendance(leadId, sessionNum) {
+      document.getElementById('attendanceLeadId').value = leadId;
+      document.getElementById('attendanceSessionId').value = sessionNum;
+      
+      const lead = trialSessions.find(s => s.id === leadId);
+      document.getElementById('attendanceInfo').innerHTML = `
+        <h4><i class="fas fa-user"></i> ${lead?.student_name || ''}</h4>
+        <p style="margin:0;color:var(--text-muted);">Điểm danh <strong>Buổi ${sessionNum}</strong> - ${ui.formatDate(lead?.scheduled_date)}</p>
+      `;
+      
+      currentRating = 0;
+      updateRatingStars();
+      document.getElementById('attendanceFeedback').value = '';
+      document.querySelector('input[name="attendanceStatus"][value="attended"]').checked = true;
+      
+      modal.hide('viewModal');
+      modal.show('attendanceModal');
+    }
+
+    function setRating(value) {
+      currentRating = value;
+      document.getElementById('attendanceRating').value = value;
+      updateRatingStars();
+    }
+
+    function updateRatingStars() {
+      document.querySelectorAll('.rating-star').forEach((star, index) => {
+        star.style.color = index < currentRating ? '#f59e0b' : '#d1d5db';
+        star.style.cursor = 'pointer';
+        star.style.fontSize = '24px';
+      });
+    }
+
+    async function saveAttendance() {
+      const leadId = document.getElementById('attendanceLeadId').value;
+      const status = document.querySelector('input[name="attendanceStatus"]:checked').value;
+      const rating = document.getElementById('attendanceRating').value;
+      const feedback = document.getElementById('attendanceFeedback').value;
+      
+      try {
+        if (status === 'attended') {
+          await api.post(`/leads/${leadId}/attended`, { rating, feedback });
+          ui.success('Đã điểm danh - Có mặt');
+        } else {
+          await api.post(`/leads/${leadId}/no-show`);
+          ui.success('Đã điểm danh - Không đến');
+        }
+        
+        modal.hide('attendanceModal');
+        loadCalendar();
+        loadStats();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function openConvert(leadId) {
+      document.getElementById('convertLeadId').value = leadId;
+      
+      const lead = trialSessions.find(s => s.id === leadId) || await api.get(`/leads/${leadId}`).then(r => r.data);
+      
+      // Fill lead info summary
+      document.getElementById('convertInfo').innerHTML = `
+        <h4 style="color:#15803d; margin:0;"><i class="fas fa-graduation-cap"></i> Chuyển đổi học viên</h4>
+        <div style="margin-top:8px; display:flex; gap:20px; flex-wrap:wrap;">
+          <span><strong>${lead?.student_name || lead.student_name}</strong></span>
+          <span><i class="fas fa-phone"></i> ${lead?.customer_phone || lead.customer_phone}</span>
+          <span><i class="fas fa-book"></i> ${lead?.subject_name || '-'}</span>
+          <span>Đã học: ${lead?.trial_sessions_attended || 0} buổi</span>
+        </div>
+      `;
+      
+      // Pre-fill form from lead data
+      document.getElementById('convertStudentName').value = lead?.student_name || '';
+      document.getElementById('convertBirthYear').value = lead?.student_birth_year || '';
+      document.getElementById('convertParentName').value = lead?.customer_name || '';
+      document.getElementById('convertParentPhone').value = lead?.customer_phone || '';
+      document.getElementById('convertParentEmail').value = lead?.customer_email || '';
+      
+      // Load subjects & levels
+      try {
+        const [subjectsRes, levelsRes] = await Promise.all([
+          api.get('/common/subjects'),
+          api.get('/common/levels')
+        ]);
+        
+        const subjects = subjectsRes.data || [];
+        const levels = levelsRes.data || [];
+        
+        document.getElementById('convertSubject').innerHTML = '<option value="">Chọn môn</option>' + 
+          subjects.map(s => `<option value="${s.id}" ${s.id == lead?.subject_id ? 'selected' : ''}>${s.name}</option>`).join('');
+        
+        document.getElementById('convertLevel').innerHTML = '<option value="">Chọn cấp độ</option>' + 
+          levels.map(l => `<option value="${l.id}" ${l.id == lead?.level_id ? 'selected' : ''}>${l.name}</option>`).join('');
+      } catch (e) { console.error(e); }
+      
+      // Set default start date
+      const nextWeek = new Date();
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      document.getElementById('convertStartDate').value = nextWeek.toISOString().split('T')[0];
+      
+      // Reset other fields
+      document.getElementById('convertGender').value = '';
+      document.getElementById('convertSchool').value = '';
+      document.getElementById('convertAddress').value = '';
+      document.getElementById('convertPackage').value = 'monthly';
+      document.getElementById('convertDiscount').value = '0';
+      document.getElementById('convertNote').value = '';
+      document.querySelector('input[name="paymentStatus"][value="pending"]').checked = true;
+      document.getElementById('partialAmountGroup').style.display = 'none';
+      
+      updateFeeDisplay();
+      
+      modal.hide('viewModal');
+      modal.show('convertModal');
+    }
+
+    function updateFeeDisplay() {
+      const packageSelect = document.getElementById('convertPackage');
+      const discount = parseInt(document.getElementById('convertDiscount').value) || 0;
+      const price = parseInt(packageSelect.options[packageSelect.selectedIndex].dataset.price) || 0;
+      
+      const discountedPrice = price * (1 - discount / 100);
+      
+      document.getElementById('convertFeeOriginal').value = price.toLocaleString('vi-VN') + 'đ';
+      document.getElementById('convertFeeTotal').value = discountedPrice.toLocaleString('vi-VN') + 'đ';
+    }
+
+    // Show/hide partial payment amount
+    document.addEventListener('change', function(e) {
+      if (e.target.name === 'paymentStatus') {
+        document.getElementById('partialAmountGroup').style.display = 
+          e.target.value === 'partial' ? 'block' : 'none';
+      }
+    });
+
+    async function confirmConvert() {
+      // Validate required fields
+      const studentName = document.getElementById('convertStudentName').value.trim();
+      const parentName = document.getElementById('convertParentName').value.trim();
+      const parentPhone = document.getElementById('convertParentPhone').value.trim();
+      const subjectId = document.getElementById('convertSubject').value;
+      const levelId = document.getElementById('convertLevel').value;
+      
+      if (!studentName || !parentName || !parentPhone || !subjectId || !levelId) {
+        ui.error('Vui lòng điền đầy đủ thông tin bắt buộc');
+        return;
+      }
+      
+      const leadId = document.getElementById('convertLeadId').value;
+      const packageSelect = document.getElementById('convertPackage');
+      const discount = parseInt(document.getElementById('convertDiscount').value) || 0;
+      const price = parseInt(packageSelect.options[packageSelect.selectedIndex].dataset.price) || 0;
+      const paymentStatus = document.querySelector('input[name="paymentStatus"]:checked').value;
+      
+      const data = {
+        studentName,
+        birthYear: document.getElementById('convertBirthYear').value || null,
+        gender: document.getElementById('convertGender').value || null,
+        school: document.getElementById('convertSchool').value || null,
+        parentName,
+        parentPhone,
+        parentEmail: document.getElementById('convertParentEmail').value || null,
+        address: document.getElementById('convertAddress').value || null,
+        subjectId,
+        levelId,
+        sessionsPerWeek: document.getElementById('convertSessionsPerWeek').value,
+        startDate: document.getElementById('convertStartDate').value || null,
+        feePackage: document.getElementById('convertPackage').value,
+        feeOriginal: price,
+        feeDiscount: discount,
+        feeTotal: price * (1 - discount / 100),
+        paymentStatus,
+        paidAmount: paymentStatus === 'partial' ? (document.getElementById('convertPaidAmount').value || 0) : (paymentStatus === 'paid' ? price * (1 - discount / 100) : 0),
+        note: document.getElementById('convertNote').value || null
+      };
+      
+      try {
+        const result = await api.post(`/leads/${leadId}/convert`, data);
+        ui.success(`🎉 Chuyển đổi thành công! Mã HS: ${result.data.studentCode}`);
+        modal.hide('convertModal');
+        loadCalendar();
+        loadStats();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    function showDayDetail(dateStr) {
+      const daySessions = trialSessions.filter(s => s.scheduled_date?.substring(0, 10) === dateStr);
+      // TODO: Show modal with all sessions for this day
+      alert(`Có ${daySessions.length} buổi học thử ngày ${dateStr}`);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

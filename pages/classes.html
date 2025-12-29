@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lớp học - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .class-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; }
+    .class-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .class-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .class-card-title { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+    .class-card-code { font-size: 12px; color: var(--text-muted); font-family: monospace; }
+    .class-card-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 13px; color: var(--text-secondary); }
+    .class-card-info i { width: 16px; color: var(--primary-color); }
+    .class-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-color); }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+    
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border-color); margin-bottom: 20px; }
+    .tab-btn { padding: 12px 20px; background: none; border: none; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-secondary); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+    .tab-btn:hover { color: var(--primary-color); background: var(--bg-secondary); }
+    .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+    .tab-btn .badge { background: var(--primary-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    
+    /* Session card */
+    .session-card { background: var(--bg-secondary); border-radius: 8px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; }
+    .session-number { background: var(--primary-color); color: white; width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+    .session-info { flex: 1; }
+    .session-info h4 { margin: 0 0 4px; font-size: 15px; }
+    .session-info p { margin: 0; font-size: 13px; color: var(--text-muted); }
+    .session-actions { display: flex; gap: 8px; }
+    
+    /* Attendance grid */
+    .attendance-grid { display: grid; gap: 8px; }
+    .attendance-row { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-secondary); border-radius: 8px; }
+    .attendance-row .student-name { flex: 1; font-weight: 500; }
+    .attendance-row select { width: 130px; }
+    
+    /* Assignment card */
+    .assignment-card { background: var(--bg-secondary); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+    .assignment-card h4 { margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+    .assignment-card p { margin: 0; font-size: 13px; color: var(--text-muted); }
+    .assignment-meta { display: flex; gap: 16px; margin-top: 12px; font-size: 12px; color: var(--text-secondary); }
+    
+    /* Stats mini */
+    .stats-mini { display: flex; gap: 16px; margin-bottom: 20px; }
+    .stat-mini { background: var(--bg-secondary); padding: 12px 16px; border-radius: 8px; text-align: center; flex: 1; }
+    .stat-mini .value { font-size: 24px; font-weight: 700; color: var(--primary-color); }
+    .stat-mini .label { font-size: 12px; color: var(--text-muted); }
+    
+    /* Attendance Session Cards */
+    .attendance-sessions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+    .attendance-session-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; transition: all 0.2s; cursor: pointer; }
+    .attendance-session-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .attendance-session-card.completed { border-left: 4px solid #22c55e; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
+    .attendance-session-card.pending { border-left: 4px solid #f59e0b; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); }
+    .attendance-session-card.future { border-left: 4px solid #9ca3af; background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); }
+    .attendance-session-card .session-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .attendance-session-card .session-num { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+    .attendance-session-card .session-status { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px; }
+    .attendance-session-card.completed .session-status { background: #22c55e; color: white; }
+    .attendance-session-card.pending .session-status { background: #f59e0b; color: white; }
+    .attendance-session-card.future .session-status { background: #9ca3af; color: white; }
+    .attendance-session-card .session-details { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-secondary); }
+    .attendance-session-card .session-details i { width: 16px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+          <div><h1 class="page-title">Lớp học</h1><p class="page-subtitle">Quản lý các lớp học</p></div>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
+          <button class="btn btn-primary" onclick="openCreateModal()" id="btnCreate"><i class="fas fa-plus"></i> Thêm lớp</button>
+          <div class="user-menu" onclick="auth.logout()">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="filters-bar">
+          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Tìm kiếm..." onkeyup="if(event.key==='Enter') loadData()"></div>
+          <select id="statusFilter" class="filter-select" onchange="loadData()"><option value="">Tất cả</option><option value="active">Đang hoạt động</option><option value="inactive">Ngừng</option></select>
+          <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="cards-grid" id="classesGrid"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create/Edit Modal -->
+  <div class="modal-overlay" id="formModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header"><h3 class="modal-title" id="modalTitle">Thêm lớp học</h3><button class="modal-close" onclick="modal.hide('formModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="classForm">
+          <input type="hidden" id="classId">
+          <div class="form-group" id="branchFormGroup">
+            <label class="form-label required"><i class="fas fa-building"></i> Cơ sở</label>
+            <select name="branchId" id="branchFormSelect" class="form-control" required><option value="">Đang tải...</option></select>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Tên lớp</label><input type="text" name="className" class="form-control" required></div>
+            <div class="form-group"><label class="form-label">Môn học</label><select name="subjectId" class="form-control" id="subjectSelect"><option value="">Chọn</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Cấp độ</label><select name="levelId" class="form-control" id="levelSelect"><option value="">Chọn</option></select></div>
+            <div class="form-group"><label class="form-label">Giáo viên</label><select name="teacherId" class="form-control" id="teacherSelect"><option value="">Chọn</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">CM</label><select name="cmId" class="form-control" id="cmSelect"><option value="">Chọn</option></select></div>
+            <div class="form-group"><label class="form-label">Phòng</label><input type="text" name="room" class="form-control"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Ngày học</label><input type="text" name="studyDays" class="form-control" placeholder="T2, T4, T6"></div>
+            <div class="form-group"><label class="form-label">Số buổi</label><input type="number" name="totalSessions" class="form-control" value="15"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Giờ bắt đầu</label><input type="time" name="startTime" class="form-control"></div>
+            <div class="form-group"><label class="form-label">Giờ kết thúc</label><input type="time" name="endTime" class="form-control"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Ngày khai giảng</label><input type="date" name="startDate" class="form-control"></div>
+            <div class="form-group"><label class="form-label">Sĩ số tối đa</label><input type="number" name="maxStudents" class="form-control" value="15"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="modal.hide('formModal')">Hủy</button><button class="btn btn-primary" onclick="saveClass()"><i class="fas fa-save"></i> Lưu</button></div>
+    </div>
+  </div>
+
+  <!-- Detail Modal with Tabs -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal xl" style="max-width: 900px;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border-radius: 12px 12px 0 0;">
+        <div>
+          <h3 class="modal-title" id="detailTitle">Chi tiết lớp học</h3>
+          <p id="detailCode" style="opacity:0.8; font-size:13px; margin:0;"></p>
+        </div>
+        <button class="modal-close" onclick="modal.hide('detailModal')" style="color:white;">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 0;">
+        <!-- Tabs Navigation -->
+        <div class="tabs" style="padding: 0 20px; background: var(--bg-secondary);">
+          <button class="tab-btn active" onclick="switchTab('info')"><i class="fas fa-info-circle"></i> Thông tin</button>
+          <button class="tab-btn" onclick="switchTab('sessions')"><i class="fas fa-calendar-alt"></i> Buổi học <span class="badge" id="sessionCount">0</span></button>
+          <button class="tab-btn" onclick="switchTab('attendance')"><i class="fas fa-clipboard-check"></i> Điểm danh</button>
+          <button class="tab-btn" onclick="switchTab('assignments')"><i class="fas fa-tasks"></i> Bài tập <span class="badge" id="assignmentCount">0</span></button>
+        </div>
+        
+        <!-- Tab Contents -->
+        <div style="padding: 20px; max-height: 60vh; overflow-y: auto;">
+          <div id="tab-info" class="tab-content active"></div>
+          <div id="tab-sessions" class="tab-content"></div>
+          <div id="tab-attendance" class="tab-content"></div>
+          <div id="tab-assignments" class="tab-content"></div>
+        </div>
+      </div>
+      <div class="modal-footer" id="detailFooter"></div>
+    </div>
+  </div>
+
+  <!-- Add Assignment Modal -->
+  <div class="modal-overlay" id="assignmentModal">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">Giao bài tập</h3><button class="modal-close" onclick="modal.hide('assignmentModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="assignmentForm">
+          <input type="hidden" id="assignmentClassId">
+          <div class="form-group">
+            <label class="form-label">Buổi học</label>
+            <select name="sessionId" id="assignmentSessionSelect" class="form-control"><option value="">-- Không gắn buổi cụ thể --</option></select>
+          </div>
+          <div class="form-group"><label class="form-label required">Tiêu đề</label><input type="text" name="title" class="form-control" required></div>
+          <div class="form-group"><label class="form-label">Mô tả</label><textarea name="description" class="form-control" rows="3"></textarea></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Hạn nộp</label><input type="date" name="dueDate" class="form-control"></div>
+            <div class="form-group"><label class="form-label">Giờ</label><input type="time" name="dueTime" class="form-control"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="modal.hide('assignmentModal')">Hủy</button><button class="btn btn-primary" onclick="saveAssignment()"><i class="fas fa-save"></i> Lưu</button></div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let classes = [];
+    let currentClass = null;
+    let currentSessions = [];
+    let currentStudents = [];
+    let currentAssignments = [];
+
+    async function init() {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+      if (!auth.hasRole('CM', 'ADMIN')) document.getElementById('btnCreate').style.display = 'none';
+      setupBranchSelect();
+      await loadOptions();
+      await loadData();
+    }
+
+    function setupBranchSelect() { loadBranchOptions(); }
+
+    async function loadBranchOptions() {
+      const branchGroup = document.getElementById('branchFormGroup');
+      const branchSelect = document.getElementById('branchFormSelect');
+      try {
+        const result = await api.get('/branches');
+        const allBranches = result.data || [];
+        if (allBranches.length === 0) { branchSelect.innerHTML = '<option value="">Chưa có cơ sở</option>'; return; }
+        
+        const userBranches = auth.user?.branches || [];
+        const isAdmin = auth.user?.is_system_wide;
+        
+        if (userBranches.length > 0 && !isAdmin) {
+          if (userBranches.length === 1) {
+            // Chỉ có 1 cơ sở - ẨN dropdown
+            branchGroup.style.display = 'none';
+            branchSelect.innerHTML = `<option value="${userBranches[0].id}">${userBranches[0].name}</option>`;
+            branchSelect.value = userBranches[0].id;
+            branchSelect.disabled = false;
+          } else {
+            branchGroup.style.display = 'block';
+            branchSelect.disabled = false;
+            const primaryId = auth.user?.primaryBranch?.id || userBranches[0]?.id;
+            branchSelect.innerHTML = userBranches.map(b => 
+              `<option value="${b.id}" ${b.id == primaryId ? 'selected' : ''}>${b.name}</option>`
+            ).join('');
+          }
+        } else {
+          branchGroup.style.display = 'block';
+          branchSelect.disabled = false;
+          const currentBranchId = branch.getId() || allBranches[0]?.id;
+          branchSelect.innerHTML = allBranches.map(b => 
+            `<option value="${b.id}" ${b.id == currentBranchId ? 'selected' : ''}>${b.name}</option>`
+          ).join('');
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadOptions() {
+      try {
+        const [subjects, levels, teachers, cms] = await Promise.all([
+          api.get('/common/subjects'), api.get('/common/levels'),
+          api.get('/users/by-role/TEACHER'), api.get('/users/by-role/CM')
+        ]);
+        document.getElementById('subjectSelect').innerHTML = '<option value="">Chọn</option>' + (subjects.data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        document.getElementById('levelSelect').innerHTML = '<option value="">Chọn</option>' + (levels.data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+        document.getElementById('teacherSelect').innerHTML = '<option value="">Chọn</option>' + (teachers.data || []).map(t => `<option value="${t.id}">${t.full_name}</option>`).join('');
+        document.getElementById('cmSelect').innerHTML = '<option value="">Chọn</option>' + (cms.data || []).map(c => `<option value="${c.id}">${c.full_name}</option>`).join('');
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadData() {
+      const search = document.getElementById('searchInput').value;
+      const status = document.getElementById('statusFilter').value;
+      const container = document.getElementById('classesGrid');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      try {
+        const params = {};
+        if (search) params.search = search;
+        if (status) params.status = status;
+        const query = branch.buildQuery(params);
+        const result = await api.get('/classes' + query);
+        classes = result.data || [];
+        renderClasses();
+      } catch (e) { container.innerHTML = '<p>Lỗi: ' + e.message + '</p>'; }
+    }
+
+    function renderClasses() {
+      const container = document.getElementById('classesGrid');
+      const showBranch = auth.user?.is_system_wide && !branch.getId();
+      if (!classes.length) { container.innerHTML = '<div class="empty-state"><i class="fas fa-chalkboard"></i><p>Chưa có lớp học</p></div>'; return; }
+      container.innerHTML = classes.map(c => `
+        <div class="class-card" onclick="viewClass(${c.id})">
+          <div class="class-card-header">
+            <div>
+              <div class="class-card-title">${c.class_name}</div>
+              <div class="class-card-code">${c.class_code}</div>
+            </div>
+            <span class="badge badge-${c.status === 'active' ? 'success' : 'secondary'}">${c.status === 'active' ? 'Hoạt động' : 'Ngừng'}</span>
+          </div>
+          ${showBranch && c.branch_name ? `<div class="branch-tag" style="margin-bottom:8px;"><i class="fas fa-building"></i> ${c.branch_name}</div>` : ''}
+          <div class="class-card-info">
+            <div><i class="fas fa-book"></i> ${c.subject_name || 'Chưa chọn môn'}</div>
+            <div><i class="fas fa-layer-group"></i> ${c.level_name || 'Chưa chọn cấp độ'}</div>
+            <div><i class="fas fa-chalkboard-teacher"></i> ${c.teacher_name || 'Chưa có GV'}</div>
+            <div><i class="fas fa-door-open"></i> ${c.room || 'Chưa có phòng'}</div>
+            <div><i class="fas fa-calendar-alt"></i> ${c.study_days || 'Chưa xếp lịch'}</div>
+            <div><i class="fas fa-clock"></i> ${c.start_time ? c.start_time.substring(0,5) + ' - ' + (c.end_time?.substring(0,5) || '') : 'Chưa có giờ'}</div>
+          </div>
+          <div class="class-card-footer">
+            <div><i class="fas fa-users"></i> <strong>${c.student_count || 0}</strong> / ${c.max_students || 15} học sinh</div>
+            <div><i class="fas fa-calendar-check"></i> ${c.completed_sessions || 0} / ${c.total_sessions || 15} buổi</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openCreateModal() {
+      document.getElementById('modalTitle').textContent = 'Thêm lớp học';
+      document.getElementById('classId').value = '';
+      form.reset(document.getElementById('classForm'));
+      const branchSelect = document.getElementById('branchFormSelect');
+      if (branchSelect && branch.getId()) branchSelect.value = branch.getId();
+      modal.show('formModal');
+    }
+
+    async function editClass(id) {
+      try {
+        const result = await api.get(`/classes/${id}`);
+        const c = result.data;
+        document.getElementById('modalTitle').textContent = 'Sửa lớp học';
+        document.getElementById('classId').value = id;
+        form.setData(document.getElementById('classForm'), {
+          branchId: c.branch_id, className: c.class_name, subjectId: c.subject_id, levelId: c.level_id,
+          teacherId: c.teacher_id, cmId: c.cm_id, room: c.room, studyDays: c.study_days,
+          startTime: c.start_time?.substring(0,5), endTime: c.end_time?.substring(0,5),
+          startDate: c.start_date?.substring(0,10), totalSessions: c.total_sessions, maxStudents: c.max_students
+        });
+        modal.hide('detailModal');
+        modal.show('formModal');
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function saveClass() {
+      const formEl = document.getElementById('classForm');
+      if (!form.validate(formEl)) { ui.error('Vui lòng điền đầy đủ'); return; }
+      const data = form.getData(formEl);
+      const id = document.getElementById('classId').value;
+      
+      // Lấy branchId từ select (disabled select không gửi qua FormData)
+      const branchSelect = document.getElementById('branchFormSelect');
+      data.branchId = branchSelect?.value || data.branchId || branch.getId() || auth.user?.branches?.[0]?.id;
+      
+      if (!data.branchId) {
+        ui.error('Cần chọn cơ sở');
+        return;
+      }
+      
+      try {
+        if (id) await api.put(`/classes/${id}`, data);
+        else await api.post('/classes', data);
+        ui.success('Lưu thành công');
+        modal.hide('formModal');
+        loadData();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    // ============================================
+    // VIEW CLASS WITH TABS
+    // ============================================
+    async function viewClass(id) {
+      try {
+        const [classResult, studentsResult, sessionsResult, assignmentsResult] = await Promise.all([
+          api.get(`/classes/${id}`),
+          api.get(`/classes/${id}/students`),
+          api.get(`/sessions?classId=${id}&limit=100`),
+          api.get(`/assignments?classId=${id}`)
+        ]);
+        
+        currentClass = classResult.data;
+        currentStudents = studentsResult.data || [];
+        currentSessions = sessionsResult.data || [];
+        currentAssignments = assignmentsResult.data || [];
+
+        document.getElementById('detailTitle').textContent = currentClass.class_name;
+        document.getElementById('detailCode').textContent = `${currentClass.class_code} | ${currentClass.branch_name || ''}`;
+        document.getElementById('sessionCount').textContent = currentSessions.length;
+        document.getElementById('assignmentCount').textContent = currentAssignments.length;
+
+        renderInfoTab();
+        renderSessionsTab();
+        renderAttendanceTab();
+        renderAssignmentsTab();
+
+        document.getElementById('detailFooter').innerHTML = `
+          <button class="btn btn-secondary" onclick="modal.hide('detailModal')">Đóng</button>
+          ${auth.hasRole('CM', 'ADMIN') ? `<button class="btn btn-secondary" onclick="editClass(${currentClass.id})"><i class="fas fa-edit"></i> Sửa</button>` : ''}
+        `;
+
+        switchTab('info');
+        modal.show('detailModal');
+      } catch (e) { ui.error(e.message); }
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.querySelector(`.tab-btn[onclick="switchTab('${tabName}')"]`).classList.add('active');
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    // ============================================
+    // TAB: THÔNG TIN
+    // ============================================
+    function renderInfoTab() {
+      const c = currentClass;
+      document.getElementById('tab-info').innerHTML = `
+        <div class="stats-mini">
+          <div class="stat-mini"><div class="value">${currentStudents.length}</div><div class="label">Học sinh</div></div>
+          <div class="stat-mini"><div class="value">${currentSessions.filter(s => s.attendance_submitted).length}/${currentSessions.length}</div><div class="label">Đã điểm danh</div></div>
+          <div class="stat-mini"><div class="value">${currentAssignments.length}</div><div class="label">Bài tập</div></div>
+        </div>
+        
+        <div class="detail-grid" style="margin-bottom:24px;">
+          <div class="detail-item"><label>Môn học</label><span>${c.subject_name || '-'}</span></div>
+          <div class="detail-item"><label>Cấp độ</label><span>${c.level_name || '-'}</span></div>
+          <div class="detail-item"><label>Giáo viên</label><span>${c.teacher_name || '-'}</span></div>
+          <div class="detail-item"><label>CM</label><span>${c.cm_name || '-'}</span></div>
+          <div class="detail-item"><label>Phòng</label><span>${c.room || '-'}</span></div>
+          <div class="detail-item"><label>Lịch học</label><span>${c.study_days || '-'} (${c.start_time?.substring(0,5) || ''} - ${c.end_time?.substring(0,5) || ''})</span></div>
+          <div class="detail-item"><label>Ngày khai giảng</label><span>${ui.formatDate(c.start_date)}</span></div>
+          <div class="detail-item"><label>Sĩ số</label><span>${currentStudents.length} / ${c.max_students || 15}</span></div>
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h4><i class="fas fa-users"></i> Danh sách học sinh</h4>
+          ${auth.hasRole('CM', 'ADMIN') ? `<button class="btn btn-sm btn-primary" onclick="openAddStudent()"><i class="fas fa-user-plus"></i> Thêm HS</button>` : ''}
+        </div>
+        ${currentStudents.length ? `
+          <table class="table">
+            <thead><tr><th>Mã</th><th>Họ tên</th><th>SĐT PH</th><th>Điểm danh</th><th></th></tr></thead>
+            <tbody>
+              ${currentStudents.map(s => `
+                <tr>
+                  <td><code>${s.student_code || '-'}</code></td>
+                  <td><strong>${s.full_name}</strong></td>
+                  <td>${s.parent_phone || '-'}</td>
+                  <td><span class="badge badge-success">${s.present_count || 0}</span> / <span class="badge badge-danger">${s.absent_count || 0}</span></td>
+                  <td>${auth.hasRole('CM', 'ADMIN') ? `<button class="btn btn-sm btn-danger" onclick="removeStudent(${s.id})"><i class="fas fa-times"></i></button>` : ''}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        ` : '<p class="text-muted">Chưa có học sinh</p>'}
+      `;
+    }
+
+    // ============================================
+    // TAB: BUỔI HỌC
+    // ============================================
+    function renderSessionsTab() {
+      if (!currentSessions.length) {
+        document.getElementById('tab-sessions').innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-calendar-alt"></i>
+            <p>Chưa có buổi học</p>
+            ${auth.hasRole('CM', 'ADMIN') ? `<button class="btn btn-primary" onclick="generateSessions()"><i class="fas fa-magic"></i> Tạo buổi học tự động</button>` : ''}
+          </div>
+        `;
+        return;
+      }
+
+      document.getElementById('tab-sessions').innerHTML = `
+        ${auth.hasRole('CM', 'ADMIN') ? `<div style="margin-bottom:16px;"><button class="btn btn-primary" onclick="generateSessions()"><i class="fas fa-magic"></i> Tạo thêm buổi học</button></div>` : ''}
+        <div class="sessions-list">
+          ${currentSessions.map(s => `
+            <div class="session-card">
+              <div class="session-number">${s.session_number}</div>
+              <div class="session-info">
+                <h4>Buổi ${s.session_number} - ${ui.formatDate(s.session_date)}</h4>
+                <p><i class="fas fa-clock"></i> ${s.start_time?.substring(0,5) || ''} - ${s.end_time?.substring(0,5) || ''} | <i class="fas fa-chalkboard-teacher"></i> ${s.teacher_name || 'Chưa có GV'}</p>
+              </div>
+              <div class="session-actions">
+                ${s.attendance_submitted 
+                  ? '<span class="badge badge-success"><i class="fas fa-check"></i> Đã điểm danh</span>' 
+                  : `<button class="btn btn-sm btn-primary" onclick="markAttendance(${s.id})"><i class="fas fa-clipboard-check"></i> Điểm danh</button>`
+                }
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    async function generateSessions() {
+      if (!confirm('Tạo buổi học tự động dựa trên lịch học?')) return;
+      try {
+        await api.post('/sessions/generate', { classId: currentClass.id });
+        ui.success('Đã tạo buổi học');
+        viewClass(currentClass.id);
+      } catch (e) { ui.error(e.message); }
+    }
+
+    // ============================================
+    // TAB: ĐIỂM DANH
+    // ============================================
+    function renderAttendanceTab() {
+      if (!currentSessions.length) {
+        document.getElementById('tab-attendance').innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-clipboard-check"></i>
+            <p>Chưa có buổi học để điểm danh</p>
+          </div>
+        `;
+        return;
+      }
+
+      const completedCount = currentSessions.filter(s => s.attendance_submitted).length;
+      const pendingCount = currentSessions.length - completedCount;
+
+      document.getElementById('tab-attendance').innerHTML = `
+        <div class="attendance-stats" style="display:flex; gap:12px; margin-bottom:16px;">
+          <div class="stat-mini" style="background: #dcfce7; flex:1;">
+            <div class="value" style="color: #16a34a;">${completedCount}</div>
+            <div class="label">Đã điểm danh</div>
+          </div>
+          <div class="stat-mini" style="background: #fef3c7; flex:1;">
+            <div class="value" style="color: #d97706;">${pendingCount}</div>
+            <div class="label">Chưa điểm danh</div>
+          </div>
+          <div class="stat-mini" style="background: #f3f4f6; flex:1;">
+            <div class="value" style="color: #6b7280;">${currentSessions.length}</div>
+            <div class="label">Tổng buổi</div>
+          </div>
+        </div>
+        
+        <div class="attendance-sessions-grid">
+          ${currentSessions.map(s => {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const sessionDate = new Date(s.session_date);
+            sessionDate.setHours(0,0,0,0);
+            
+            let statusClass, statusText;
+            if (s.attendance_submitted) {
+              statusClass = 'completed';
+              statusText = '✓ Đã điểm danh';
+            } else if (sessionDate > today) {
+              statusClass = 'future';
+              statusText = 'Chưa đến';
+            } else {
+              statusClass = 'pending';
+              statusText = '⚠ Cần điểm danh';
+            }
+            
+            return `
+              <div class="attendance-session-card ${statusClass}" onclick="openAttendanceModal(${s.id})">
+                <div class="session-header">
+                  <div class="session-num">Buổi ${s.session_number}</div>
+                  <div class="session-status">${statusText}</div>
+                </div>
+                <div class="session-details">
+                  <div><i class="fas fa-calendar"></i> ${ui.formatDate(s.session_date)}</div>
+                  <div><i class="fas fa-clock"></i> ${s.start_time?.substring(0,5) || ''} - ${s.end_time?.substring(0,5) || ''}</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    async function openAttendanceModal(sessionId) {
+      const session = currentSessions.find(s => s.id === sessionId);
+      if (!session) return;
+
+      try {
+        const result = await api.get(`/attendance/session/${sessionId}/students`);
+        const students = result.data || [];
+
+        const modalHtml = `
+          <div class="modal-overlay" id="attendanceFormModal" style="display:flex;">
+            <div class="modal-content modal-lg">
+              <div class="modal-header" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white;">
+                <div>
+                  <h3 class="modal-title">Điểm danh Buổi ${session.session_number}</h3>
+                  <p style="margin:0; opacity:0.8; font-size:13px;">
+                    ${ui.formatDate(session.session_date)} | ${session.start_time?.substring(0,5) || ''} - ${session.end_time?.substring(0,5) || ''}
+                  </p>
+                </div>
+                <button class="modal-close" onclick="closeAttendanceModal()" style="color:white;">&times;</button>
+              </div>
+              <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
+                ${students.length ? `
+                  <div class="attendance-grid">
+                    ${students.map(s => {
+                      const id = s.student_id || s.trial_student_id;
+                      const idType = s.student_id ? 'student' : 'trial';
+                      return `
+                        <div class="attendance-row">
+                          <div class="student-info" style="flex:1;">
+                            <strong>${s.full_name}</strong>
+                            ${s.type === 'trial' ? '<span class="badge badge-warning" style="margin-left:8px;">Học thử</span>' : ''}
+                            <div style="font-size:12px; color:var(--text-muted);">${s.student_code || ''}</div>
+                          </div>
+                          <select class="form-control attendance-status" data-type="${idType}" data-id="${id}" style="width:130px;">
+                            <option value="present" ${s.status === 'present' ? 'selected' : ''}>✓ Có mặt</option>
+                            <option value="late" ${s.status === 'late' ? 'selected' : ''}>⏰ Đi muộn</option>
+                            <option value="excused" ${s.status === 'excused' ? 'selected' : ''}>📝 Có phép</option>
+                            <option value="absent" ${s.status === 'absent' ? 'selected' : ''}>✗ Vắng</option>
+                          </select>
+                          <input type="text" class="form-control attendance-note" data-type="${idType}" data-id="${id}" 
+                                 value="${s.note || ''}" placeholder="Ghi chú" style="width:150px;">
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                ` : '<div class="empty-state"><p>Chưa có học sinh trong lớp</p></div>'}
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAttendanceModal()">Hủy</button>
+                ${students.length ? `
+                  <button class="btn btn-success" onclick="quickMarkAll('present')"><i class="fas fa-check-double"></i> Tất cả có mặt</button>
+                  <button class="btn btn-primary" onclick="saveAttendanceForm(${sessionId})"><i class="fas fa-save"></i> Lưu điểm danh</button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Remove existing modal if any
+        const existingModal = document.getElementById('attendanceFormModal');
+        if (existingModal) existingModal.remove();
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+      } catch (e) { ui.error(e.message); }
+    }
+
+    function closeAttendanceModal() {
+      const modal = document.getElementById('attendanceFormModal');
+      if (modal) modal.remove();
+    }
+
+    function quickMarkAll(status) {
+      document.querySelectorAll('.attendance-status').forEach(select => {
+        select.value = status;
+      });
+    }
+
+    async function saveAttendanceForm(sessionId) {
+      const attendances = [];
+      
+      document.querySelectorAll('.attendance-status').forEach(select => {
+        const type = select.dataset.type;
+        const id = select.dataset.id;
+        const noteInput = document.querySelector(`.attendance-note[data-type="${type}"][data-id="${id}"]`);
+        
+        const data = { status: select.value, note: noteInput?.value || '' };
+        if (type === 'student') data.studentId = parseInt(id);
+        else data.trialStudentId = parseInt(id);
+        attendances.push(data);
+      });
+
+      try {
+        await api.post(`/attendance/session/${sessionId}/mark`, { attendances });
+        ui.success('Lưu điểm danh thành công');
+        closeAttendanceModal();
+        viewClass(currentClass.id);
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function markAttendance(sessionId) {
+      switchTab('attendance');
+      openAttendanceModal(sessionId);
+    }
+    // ============================================
+    // TAB: BÀI TẬP
+    // ============================================
+    function renderAssignmentsTab() {
+      document.getElementById('tab-assignments').innerHTML = `
+        ${auth.hasRole('TEACHER', 'CM', 'ADMIN') ? `
+          <div style="margin-bottom:16px;">
+            <button class="btn btn-primary" onclick="openAddAssignment()"><i class="fas fa-plus"></i> Giao bài tập</button>
+          </div>
+        ` : ''}
+        ${currentAssignments.length ? `
+          <div class="assignments-list">
+            ${currentAssignments.map(a => `
+              <div class="assignment-card">
+                <h4><i class="fas fa-tasks"></i> ${a.title}</h4>
+                <p>${a.description || 'Không có mô tả'}</p>
+                <div class="assignment-meta">
+                  ${a.session_number ? `<span><i class="fas fa-calendar"></i> Buổi ${a.session_number}</span>` : ''}
+                  <span><i class="fas fa-clock"></i> Hạn: ${a.due_date ? ui.formatDate(a.due_date) : 'Không giới hạn'}</span>
+                  <span><i class="fas fa-user-check"></i> ${a.submission_count || 0} nộp</span>
+                </div>
+                ${auth.hasRole('TEACHER', 'CM', 'ADMIN') ? `
+                  <div style="margin-top:12px;">
+                    <button class="btn btn-sm btn-danger" onclick="deleteAssignment(${a.id})"><i class="fas fa-trash"></i></button>
+                  </div>
+                ` : ''}
+              </div>
+            `).join('')}
+          </div>
+        ` : '<div class="empty-state"><i class="fas fa-tasks"></i><p>Chưa có bài tập</p></div>'}
+      `;
+    }
+
+    function openAddAssignment() {
+      document.getElementById('assignmentClassId').value = currentClass.id;
+      document.getElementById('assignmentSessionSelect').innerHTML = '<option value="">-- Không gắn buổi cụ thể --</option>' +
+        currentSessions.map(s => `<option value="${s.id}">Buổi ${s.session_number} - ${ui.formatDate(s.session_date)}</option>`).join('');
+      form.reset(document.getElementById('assignmentForm'));
+      modal.show('assignmentModal');
+    }
+
+    async function saveAssignment() {
+      const formEl = document.getElementById('assignmentForm');
+      if (!form.validate(formEl)) { ui.error('Vui lòng điền tiêu đề'); return; }
+      const data = form.getData(formEl);
+      data.classId = document.getElementById('assignmentClassId').value;
+
+      try {
+        await api.post('/assignments', data);
+        ui.success('Giao bài tập thành công');
+        modal.hide('assignmentModal');
+        viewClass(currentClass.id);
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function deleteAssignment(id) {
+      if (!confirm('Xóa bài tập này?')) return;
+      try {
+        await api.delete(`/assignments/${id}`);
+        ui.success('Đã xóa');
+        viewClass(currentClass.id);
+      } catch (e) { ui.error(e.message); }
+    }
+
+    // ============================================
+    // STUDENT MANAGEMENT
+    // ============================================
+    async function openAddStudent() {
+      const studentCode = prompt('Nhập mã học sinh:');
+      if (!studentCode) return;
+      try {
+        const result = await api.get(`/students?search=${studentCode}`);
+        const students = result.data || [];
+        if (!students.length) { ui.error('Không tìm thấy học sinh'); return; }
+        const student = students[0];
+        if (confirm(`Thêm học sinh "${student.full_name}" vào lớp?`)) {
+          await api.post(`/classes/${currentClass.id}/students`, { studentId: student.id });
+          ui.success('Đã thêm học sinh');
+          viewClass(currentClass.id);
+        }
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function removeStudent(studentId) {
+      if (!confirm('Xóa học sinh khỏi lớp?')) return;
+      try {
+        await api.delete(`/classes/${currentClass.id}/students/${studentId}`);
+        ui.success('Đã xóa');
+        viewClass(currentClass.id);
+      } catch (e) { ui.error(e.message); }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

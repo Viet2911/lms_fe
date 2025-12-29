@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buổi học - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+          <div><h1 class="page-title">Buổi học</h1></div>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
+          <div class="user-menu" onclick="auth.logout()"><div class="user-avatar" id="userAvatar">U</div><div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div></div>
+        </div>
+      </header>
+      <div class="page-content">
+        <div class="filters-bar">
+          <select id="classFilter" class="filter-select" onchange="loadData()"><option value="">Tất cả lớp</option></select>
+          <input type="date" id="fromDate" class="form-control" style="width:auto;">
+          <input type="date" id="toDate" class="form-control" style="width:auto;">
+          <select id="statusFilter" class="filter-select" onchange="loadData()"><option value="">Tất cả</option><option value="pending">Chưa điểm danh</option><option value="completed">Đã điểm danh</option></select>
+          <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="table-container" id="dataTable"></div>
+        <div id="pagination"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let currentPage = 1;
+
+    async function init() {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+      await loadClasses();
+      await loadData();
+    }
+
+    async function loadClasses() {
+      try {
+        const query = branch.buildQuery({});
+        const result = await api.get('/classes' + query);
+        document.getElementById('classFilter').innerHTML = '<option value="">Tất cả lớp</option>' +
+          (result.data || []).map(c => `<option value="${c.id}">${c.class_name}</option>`).join('');
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadData(page = 1) {
+      currentPage = page;
+      const classId = document.getElementById('classFilter').value;
+      const fromDate = document.getElementById('fromDate').value;
+      const toDate = document.getElementById('toDate').value;
+      const status = document.getElementById('statusFilter').value;
+      const container = document.getElementById('dataTable');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+      try {
+        const params = { page, limit: 20 };
+        if (classId) params.classId = classId;
+        if (fromDate) params.fromDate = fromDate;
+        if (toDate) params.toDate = toDate;
+        if (status) params.status = status;
+        
+        const query = branch.buildQuery(params);
+        const result = await api.get('/sessions' + query);
+        renderTable(result.data || [], result.pagination);
+      } catch (e) { container.innerHTML = '<p>Lỗi: ' + e.message + '</p>'; }
+    }
+
+    function renderTable(items, pagination) {
+      const showBranch = auth.user?.is_system_wide && !branch.getId();
+      
+      if (!items.length) { 
+        document.getElementById('dataTable').innerHTML = '<div class="empty-state"><p>Chưa có buổi học</p></div>'; 
+        document.getElementById('pagination').innerHTML = '';
+        return; 
+      }
+      
+      let html = `<table class="table"><thead><tr>
+        ${showBranch ? '<th>Cơ sở</th>' : ''}
+        <th>Lớp</th><th>Buổi</th><th>Ngày</th><th>Giờ</th><th>GV</th><th>Điểm danh</th><th></th>
+      </tr></thead><tbody>`;
+      
+      items.forEach(s => {
+        html += `<tr>
+          ${showBranch ? `<td><span class="branch-tag"><i class="fas fa-building"></i> ${s.branch_name || '-'}</span></td>` : ''}
+          <td><strong>${s.class_name}</strong><br><small class="text-muted">${s.class_code || ''}</small></td>
+          <td>Buổi ${s.session_number || '-'}</td>
+          <td>${ui.formatDate(s.session_date)}</td>
+          <td>${s.start_time?.substring(0,5) || ''} - ${s.end_time?.substring(0,5) || ''}</td>
+          <td>${s.teacher_name || '-'}</td>
+          <td>${s.attendance_submitted ? '<span class="badge badge-completed">Đã điểm danh</span>' : '<span class="badge badge-pending">Chưa</span>'}</td>
+          <td><a href="attendance.html?sessionId=${s.id}" class="btn btn-sm btn-secondary"><i class="fas fa-clipboard-check"></i></a></td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      document.getElementById('dataTable').innerHTML = html;
+      document.getElementById('pagination').innerHTML = ui.pagination ? ui.pagination(pagination?.page || 1, pagination?.totalPages || 1, 'loadData') : '';
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

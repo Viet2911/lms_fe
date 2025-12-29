@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Người dùng - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .branch-checkboxes { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; background: var(--bg-secondary); border-radius: 8px; }
+    .branch-checkbox { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; }
+    .branch-checkbox:hover { border-color: var(--primary-color); }
+    .branch-checkbox input { width: 18px; height: 18px; }
+    .branch-checkbox.primary { border-color: var(--primary-color); background: rgba(34, 197, 94, 0.1); }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+          <div><h1 class="page-title">Người dùng</h1></div>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
+          <button class="btn btn-primary" onclick="openModal()"><i class="fas fa-plus"></i> Thêm</button>
+          <div class="user-menu" onclick="auth.logout()"><div class="user-avatar" id="userAvatar">U</div><div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div></div>
+        </div>
+      </header>
+      <div class="page-content">
+        <div class="filters-bar">
+          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Tìm..." onkeyup="if(event.key==='Enter') loadData()"></div>
+          <select id="roleFilter" class="filter-select" onchange="loadData()"><option value="">Tất cả role</option></select>
+          <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="table-container" id="dataTable"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="formModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header"><h3 class="modal-title" id="modalTitle">Thêm người dùng</h3><button class="modal-close" onclick="modal.hide('formModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="dataForm">
+          <input type="hidden" id="itemId">
+          <div class="form-group"><label class="form-label required">Họ tên</label><input type="text" name="fullName" class="form-control" required></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Username</label><input type="text" name="username" class="form-control" required id="usernameInput"></div>
+            <div class="form-group"><label class="form-label">Email</label><input type="email" name="email" class="form-control"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Mật khẩu</label><input type="password" name="password" class="form-control" id="passwordInput"></div>
+            <div class="form-group"><label class="form-label required">Role</label><select name="roleId" class="form-control" id="roleSelect" required onchange="toggleBranchSection()"></select></div>
+          </div>
+          <div class="form-group"><label class="form-label">SĐT</label><input type="tel" name="phone" class="form-control"></div>
+          
+          <!-- Branch Assignment -->
+          <div class="form-group" id="branchSection">
+            <label class="form-label">Cơ sở làm việc <small class="text-muted">(Click để chọn cơ sở chính)</small></label>
+            <div class="branch-checkboxes" id="branchCheckboxes"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="modal.hide('formModal')">Hủy</button><button class="btn btn-primary" onclick="saveData()"><i class="fas fa-save"></i> Lưu</button></div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let roles = [];
+    let branches = [];
+    let selectedBranches = [];
+    let primaryBranchId = null;
+
+    async function init() {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+      await loadRoles();
+      await loadBranches();
+      await loadData();
+    }
+
+    async function loadRoles() {
+      try {
+        const result = await api.get('/users/roles');
+        roles = result.data || [];
+        const options = roles.map(r => `<option value="${r.id}" data-system-wide="${r.is_system_wide || 0}">${r.display_name || r.name}</option>`).join('');
+        document.getElementById('roleSelect').innerHTML = options;
+        document.getElementById('roleFilter').innerHTML = '<option value="">Tất cả</option>' + options;
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadBranches() {
+      try {
+        const result = await api.get('/branches');
+        branches = result.data || [];
+        renderBranchCheckboxes();
+      } catch (e) { console.error(e); }
+    }
+
+    function renderBranchCheckboxes() {
+      const container = document.getElementById('branchCheckboxes');
+      container.innerHTML = branches.map(b => `
+        <label class="branch-checkbox ${selectedBranches.includes(b.id) ? 'selected' : ''} ${primaryBranchId === b.id ? 'primary' : ''}" 
+               onclick="toggleBranch(${b.id}, event)">
+          <input type="checkbox" ${selectedBranches.includes(b.id) ? 'checked' : ''}>
+          <i class="fas fa-building"></i>
+          <span>${b.name}</span>
+          ${primaryBranchId === b.id ? '<i class="fas fa-star text-warning" title="Cơ sở chính"></i>' : ''}
+        </label>
+      `).join('');
+    }
+
+    function toggleBranch(branchId, event) {
+      event.preventDefault();
+      const index = selectedBranches.indexOf(branchId);
+      
+      if (index > -1) {
+        // Already selected - check if clicking to make primary or to remove
+        if (primaryBranchId !== branchId && selectedBranches.length > 1) {
+          // Make it primary
+          primaryBranchId = branchId;
+        } else {
+          // Remove it
+          selectedBranches.splice(index, 1);
+          if (primaryBranchId === branchId) {
+            primaryBranchId = selectedBranches[0] || null;
+          }
+        }
+      } else {
+        // Add new branch
+        selectedBranches.push(branchId);
+        if (!primaryBranchId) {
+          primaryBranchId = branchId;
+        }
+      }
+      
+      renderBranchCheckboxes();
+    }
+
+    function toggleBranchSection() {
+      const roleSelect = document.getElementById('roleSelect');
+      const selectedOption = roleSelect.options[roleSelect.selectedIndex];
+      const isSystemWide = selectedOption?.dataset.systemWide === '1';
+      
+      const branchSection = document.getElementById('branchSection');
+      if (isSystemWide) {
+        branchSection.style.display = 'none';
+      } else {
+        branchSection.style.display = 'block';
+      }
+    }
+
+    async function loadData() {
+      const search = document.getElementById('searchInput').value;
+      const roleId = document.getElementById('roleFilter').value;
+      const container = document.getElementById('dataTable');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+      try {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (roleId) params.append('roleId', roleId);
+        const result = await api.get(`/users?${params}`);
+        renderTable(result.data || []);
+      } catch (e) { container.innerHTML = '<p>Lỗi: ' + e.message + '</p>'; }
+    }
+
+    function renderTable(items) {
+      if (!items.length) { 
+        document.getElementById('dataTable').innerHTML = '<div class="empty-state"><p>Chưa có</p></div>'; 
+        return; 
+      }
+      
+      let html = `<table class="table"><thead><tr>
+        <th>Họ tên</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Cơ sở</th>
+        <th>Trạng thái</th>
+        <th></th>
+      </tr></thead><tbody>`;
+      
+      items.forEach(u => {
+        html += `<tr>
+          <td><strong>${u.full_name}</strong></td>
+          <td>${u.username}</td>
+          <td>${u.email || '-'}</td>
+          <td><span class="badge badge-info">${u.role_display || u.role_name}</span></td>
+          <td>${u.is_system_wide ? '<span class="badge badge-warning">Tất cả</span>' : (u.branches || '-')}</td>
+          <td>${u.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-inactive">Inactive</span>'}</td>
+          <td><button class="btn btn-sm btn-secondary" onclick="editItem(${u.id})"><i class="fas fa-edit"></i></button></td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      document.getElementById('dataTable').innerHTML = html;
+    }
+
+    function openModal() {
+      document.getElementById('modalTitle').textContent = 'Thêm người dùng';
+      document.getElementById('itemId').value = '';
+      document.getElementById('usernameInput').disabled = false;
+      document.getElementById('passwordInput').required = true;
+      form.reset(document.getElementById('dataForm'));
+      selectedBranches = [];
+      primaryBranchId = null;
+      renderBranchCheckboxes();
+      toggleBranchSection();
+      modal.show('formModal');
+    }
+
+    async function editItem(id) {
+      try {
+        const result = await api.get(`/users/${id}`);
+        const u = result.data;
+        document.getElementById('modalTitle').textContent = 'Sửa người dùng';
+        document.getElementById('itemId').value = id;
+        document.getElementById('usernameInput').disabled = true;
+        document.getElementById('passwordInput').required = false;
+        
+        form.setData(document.getElementById('dataForm'), { 
+          fullName: u.full_name, 
+          username: u.username, 
+          email: u.email, 
+          phone: u.phone, 
+          roleId: u.role_id 
+        });
+        
+        // Set branches
+        selectedBranches = u.branch_ids || [];
+        const primaryBranch = u.branches?.find(b => b.is_primary);
+        primaryBranchId = primaryBranch?.id || selectedBranches[0] || null;
+        
+        renderBranchCheckboxes();
+        toggleBranchSection();
+        modal.show('formModal');
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function saveData() {
+      const formEl = document.getElementById('dataForm');
+      if (!form.validate(formEl)) { ui.error('Điền đầy đủ'); return; }
+      
+      const data = form.getData(formEl);
+      const id = document.getElementById('itemId').value;
+      
+      // Add branch data
+      const roleSelect = document.getElementById('roleSelect');
+      const selectedOption = roleSelect.options[roleSelect.selectedIndex];
+      const isSystemWide = selectedOption?.dataset.systemWide === '1';
+      
+      if (!isSystemWide) {
+        if (selectedBranches.length === 0) {
+          ui.error('Vui lòng chọn ít nhất 1 cơ sở');
+          return;
+        }
+        // Sắp xếp để primary branch đầu tiên
+        data.branch_ids = [primaryBranchId, ...selectedBranches.filter(id => id !== primaryBranchId)];
+      }
+      
+      if (id && !data.password) delete data.password;
+      
+      try {
+        if (id) await api.put(`/users/${id}`, data);
+        else await api.post('/users', data);
+        ui.success('Lưu thành công');
+        modal.hide('formModal');
+        loadData();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

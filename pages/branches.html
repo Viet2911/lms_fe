@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Cơ sở - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+          <h1 class="page-title"><i class="fas fa-building"></i> Quản lý Cơ sở</h1>
+        </div>
+        <div class="header-right">
+          <button class="btn btn-icon" onclick="theme.toggle()" title="Đổi theme">
+            <i class="fas fa-moon"></i>
+          </button>
+          <div class="user-menu">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">Admin</span>
+              <span class="user-role" id="userRole">ADMIN</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="content">
+        <!-- Stats -->
+        <div class="stats-grid" id="statsContainer">
+          <div class="stat-card">
+            <div class="stat-icon primary"><i class="fas fa-building"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statTotal">0</span>
+              <span class="stat-label">Tổng cơ sở</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon success"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statActive">0</span>
+              <span class="stat-label">Đang hoạt động</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon info"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statStudents">0</span>
+              <span class="stat-label">Tổng học sinh</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon warning"><i class="fas fa-chalkboard"></i></div>
+            <div class="stat-info">
+              <span class="stat-value" id="statClasses">0</span>
+              <span class="stat-label">Tổng lớp học</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Danh sách Cơ sở</h3>
+            <button class="btn btn-primary" onclick="openAddModal()">
+              <i class="fas fa-plus"></i> Thêm cơ sở
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Mã</th>
+                    <th>Tên cơ sở</th>
+                    <th>Địa chỉ</th>
+                    <th>Điện thoại</th>
+                    <th>Email</th>
+                    <th>Quản lý</th>
+                    <th>Lớp</th>
+                    <th>Học sinh</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody">
+                  <tr><td colspan="10" class="text-center">Đang tải...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-overlay" id="branchModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Thêm Cơ sở</h3>
+        <button class="modal-close" onclick="modal.hide('branchModal')">&times;</button>
+      </div>
+      <form id="branchForm" onsubmit="saveBranch(event)">
+        <div class="modal-body">
+          <input type="hidden" id="branchId" name="id">
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Mã cơ sở <span class="text-danger">*</span></label>
+              <input type="text" name="code" class="form-control" required placeholder="VD: CS1, HQ">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tên cơ sở <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control" required placeholder="VD: Trụ sở chính">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Địa chỉ</label>
+            <input type="text" name="address" class="form-control" placeholder="Địa chỉ đầy đủ">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Điện thoại</label>
+              <input type="tel" name="phone" class="form-control" placeholder="0901234567">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" placeholder="email@example.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Người quản lý</label>
+            <input type="text" name="manager_name" class="form-control" placeholder="Tên người quản lý">
+          </div>
+
+          <div class="form-group" id="statusGroup" style="display:none;">
+            <label class="form-label">Trạng thái</label>
+            <select name="is_active" class="form-control">
+              <option value="1">Hoạt động</option>
+              <option value="0">Ngừng hoạt động</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="modal.hide('branchModal')">Hủy</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Lưu
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let branches = [];
+
+    // Load branches on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+      
+      if (!auth.hasRole('ADMIN')) {
+        ui.error('Bạn không có quyền truy cập trang này');
+        setTimeout(() => window.location.href = '../index.html', 1500);
+        return;
+      }
+      loadBranches();
+      loadStats();
+    });
+
+    async function loadBranches() {
+      try {
+        const result = await api.get('/branches');
+        branches = result.data || [];
+        renderTable();
+      } catch (error) {
+        ui.error(error.message);
+      }
+    }
+
+    async function loadStats() {
+      try {
+        const result = await api.get('/branches/stats');
+        const stats = result.data || [];
+        
+        let totalStudents = 0, totalClasses = 0;
+        stats.forEach(s => {
+          totalStudents += parseInt(s.total_students) || 0;
+          totalClasses += parseInt(s.total_classes) || 0;
+        });
+
+        document.getElementById('statTotal').textContent = stats.length;
+        document.getElementById('statActive').textContent = stats.length;
+        document.getElementById('statStudents').textContent = totalStudents;
+        document.getElementById('statClasses').textContent = totalClasses;
+      } catch (error) {
+        console.error('Load stats error:', error);
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      
+      if (branches.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted">Chưa có cơ sở nào</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = branches.map(b => `
+        <tr>
+          <td><strong>${b.code}</strong></td>
+          <td>${b.name}</td>
+          <td>${b.address || '-'}</td>
+          <td>${b.phone || '-'}</td>
+          <td>${b.email || '-'}</td>
+          <td>${b.manager_name || '-'}</td>
+          <td><span class="badge badge-info">${b.total_classes || 0}</span></td>
+          <td><span class="badge badge-primary">${b.total_students || 0}</span></td>
+          <td>
+            <span class="status-badge ${b.is_active ? 'active' : 'inactive'}">
+              ${b.is_active ? 'Hoạt động' : 'Ngừng'}
+            </span>
+          </td>
+          <td>
+            <div class="action-btns">
+              <button class="btn btn-sm btn-secondary" onclick="editBranch(${b.id})" title="Sửa">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="deleteBranch(${b.id})" title="Xóa">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Thêm Cơ sở mới';
+      document.getElementById('branchId').value = '';
+      document.getElementById('branchForm').reset();
+      document.getElementById('statusGroup').style.display = 'none';
+      modal.show('branchModal');
+    }
+
+    async function editBranch(id) {
+      try {
+        const result = await api.get(`/branches/${id}`);
+        const branch = result.data;
+        
+        document.getElementById('modalTitle').textContent = 'Sửa Cơ sở';
+        document.getElementById('branchId').value = branch.id;
+        document.getElementById('statusGroup').style.display = 'block';
+        
+        form.setData(document.getElementById('branchForm'), branch);
+        modal.show('branchModal');
+      } catch (error) {
+        ui.error(error.message);
+      }
+    }
+
+    async function saveBranch(e) {
+      e.preventDefault();
+      
+      const formEl = document.getElementById('branchForm');
+      if (!form.validate(formEl)) return;
+      
+      const data = form.getData(formEl);
+      const id = data.id;
+      delete data.id;
+
+      try {
+        if (id) {
+          await api.put(`/branches/${id}`, data);
+          ui.success('Cập nhật cơ sở thành công');
+        } else {
+          await api.post('/branches', data);
+          ui.success('Thêm cơ sở thành công');
+        }
+        
+        modal.hide('branchModal');
+        loadBranches();
+        loadStats();
+      } catch (error) {
+        ui.error(error.message);
+      }
+    }
+
+    async function deleteBranch(id) {
+      const confirmed = await ui.confirm('Bạn có chắc muốn vô hiệu hóa cơ sở này?');
+      if (!confirmed) return;
+
+      try {
+        await api.delete(`/branches/${id}`);
+        ui.success('Đã vô hiệu hóa cơ sở');
+        loadBranches();
+        loadStats();
+      } catch (error) {
+        ui.error(error.message);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Học thử - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+          <div><h1 class="page-title">Học sinh thử</h1><p class="page-subtitle">Quản lý học sinh đang học thử</p></div>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
+          <div class="user-menu" onclick="auth.logout()"><div class="user-avatar" id="userAvatar">U</div><div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div></div>
+        </div>
+      </header>
+      <div class="page-content">
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="filters-bar">
+          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Tìm kiếm..." onkeyup="if(event.key==='Enter') loadData()"></div>
+          <select id="statusFilter" class="filter-select" onchange="loadData()"><option value="">Tất cả</option><option value="active">Đang học thử</option><option value="converted">Đã chuyển đổi</option><option value="cancelled">Đã hủy</option></select>
+          <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="table-container" id="dataTable"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">Sửa học sinh thử</h3><button class="modal-close" onclick="modal.hide('editModal')">&times;</button></div>
+      <div class="modal-body">
+        <form id="editForm">
+          <input type="hidden" id="editId">
+          <div class="form-group"><label class="form-label required">Họ tên</label><input type="text" name="fullName" class="form-control" required></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Năm sinh</label><input type="number" name="birthYear" class="form-control"></div>
+            <div class="form-group"><label class="form-label">Trạng thái</label>
+              <select name="status" class="form-control">
+                <option value="active">Đang học thử</option>
+                <option value="converted">Đã chuyển đổi</option>
+                <option value="cancelled">Đã hủy</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Tên PH</label><input type="text" name="parentName" class="form-control"></div>
+            <div class="form-group"><label class="form-label">SĐT PH</label><input type="tel" name="parentPhone" class="form-control"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Email PH</label><input type="email" name="parentEmail" class="form-control"></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Môn học</label><select name="subjectId" class="form-control" id="editSubjectSelect"><option value="">Chọn</option></select></div>
+            <div class="form-group"><label class="form-label">Cấp độ</label><select name="levelId" class="form-control" id="editLevelSelect"><option value="">Chọn</option></select></div>
+          </div>
+          <div class="form-group"><label class="form-label">Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="modal.hide('editModal')">Hủy</button><button class="btn btn-primary" onclick="saveEdit()"><i class="fas fa-save"></i> Lưu</button></div>
+    </div>
+  </div>
+
+  <!-- Convert Modal -->
+  <div class="modal-overlay" id="convertModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header"><h3 class="modal-title"><i class="fas fa-exchange-alt"></i> Chuyển thành học sinh chính thức</h3><button class="modal-close" onclick="modal.hide('convertModal')">&times;</button></div>
+      <div class="modal-body">
+        <div class="alert alert-info" style="margin-bottom:16px;">
+          <i class="fas fa-info-circle"></i> Vui lòng điền đầy đủ thông tin bắt buộc (<span class="text-danger">*</span>) để chuyển thành học sinh chính thức.
+        </div>
+        <form id="convertForm">
+          <input type="hidden" id="convertId">
+          
+          <!-- Branch info -->
+          <div class="form-group" id="convertBranchInfo"></div>
+          
+          <h4 style="margin-bottom:12px;color:var(--primary);">Thông tin học sinh</h4>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Họ tên</label><input type="text" name="fullName" class="form-control" required></div>
+            <div class="form-group"><label class="form-label required">Năm sinh</label><input type="number" name="birthYear" class="form-control" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Giới tính</label>
+              <select name="gender" class="form-control"><option value="">Chọn</option><option value="male">Nam</option><option value="female">Nữ</option></select>
+            </div>
+            <div class="form-group"><label class="form-label">Địa chỉ</label><input type="text" name="address" class="form-control"></div>
+          </div>
+          
+          <h4 style="margin:20px 0 12px;color:var(--primary);">Thông tin phụ huynh</h4>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Tên phụ huynh</label><input type="text" name="parentName" class="form-control" required></div>
+            <div class="form-group"><label class="form-label required">SĐT phụ huynh</label><input type="tel" name="parentPhone" class="form-control" required></div>
+          </div>
+          <div class="form-group"><label class="form-label">Email phụ huynh</label><input type="email" name="parentEmail" class="form-control"></div>
+          
+          <h4 style="margin:20px 0 12px;color:var(--primary);">Thông tin học tập</h4>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label required">Môn học</label><select name="subjectId" class="form-control" id="convertSubjectSelect" required><option value="">Chọn</option></select></div>
+            <div class="form-group"><label class="form-label required">Cấp độ</label><select name="levelId" class="form-control" id="convertLevelSelect" required><option value="">Chọn</option></select></div>
+          </div>
+          <div class="form-group"><label class="form-label">Lộ trình học</label><input type="text" name="learningPath" class="form-control" placeholder="VD: Robotics Beginner 6 tháng"></div>
+        </form>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="modal.hide('convertModal')">Hủy</button><button class="btn btn-primary" onclick="confirmConvert()"><i class="fas fa-check"></i> Xác nhận chuyển đổi</button></div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    async function init() {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+      await loadOptions();
+      await loadStats();
+      await loadData();
+    }
+
+    async function loadOptions() {
+      try {
+        const [subjects, levels] = await Promise.all([
+          api.get('/common/subjects'),
+          api.get('/common/levels')
+        ]);
+        const subjectOptions = '<option value="">Chọn</option>' + (subjects.data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        const levelOptions = '<option value="">Chọn</option>' + (levels.data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+        
+        document.getElementById('convertSubjectSelect').innerHTML = subjectOptions;
+        document.getElementById('convertLevelSelect').innerHTML = levelOptions;
+        document.getElementById('editSubjectSelect').innerHTML = subjectOptions;
+        document.getElementById('editLevelSelect').innerHTML = levelOptions;
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadStats() {
+      try {
+        const query = branch.buildQuery({});
+        const result = await api.get('/trial-students/stats' + query);
+        const s = result.data || {};
+        document.getElementById('statsGrid').innerHTML = `
+          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-user-clock"></i></div><div class="stat-content"><div class="stat-value">${s.total || 0}</div><div class="stat-label">Tổng</div></div></div>
+          <div class="stat-card"><div class="stat-icon info"><i class="fas fa-hourglass-half"></i></div><div class="stat-content"><div class="stat-value">${s.active || 0}</div><div class="stat-label">Đang học thử</div></div></div>
+          <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-exclamation-triangle"></i></div><div class="stat-content"><div class="stat-value">${s.nearing_limit || 0}</div><div class="stat-label">Sắp hết buổi</div></div></div>
+          <div class="stat-card"><div class="stat-icon success"><i class="fas fa-user-check"></i></div><div class="stat-content"><div class="stat-value">${s.converted || 0}</div><div class="stat-label">Đã chuyển đổi</div></div></div>
+        `;
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadData() {
+      const search = document.getElementById('searchInput').value;
+      const status = document.getElementById('statusFilter').value;
+      const container = document.getElementById('dataTable');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+      try {
+        const params = { };
+        if (search) params.search = search;
+        if (status) params.status = status;
+        const query = branch.buildQuery(params);
+        const result = await api.get('/trial-students' + query);
+        renderTable(result.data || []);
+      } catch (e) { container.innerHTML = '<p>Lỗi: ' + e.message + '</p>'; }
+    }
+
+    function renderTable(items) {
+      const showBranch = auth.user?.is_system_wide && !branch.getId();
+      
+      if (!items.length) { document.getElementById('dataTable').innerHTML = '<div class="empty-state"><p>Chưa có dữ liệu</p></div>'; return; }
+      
+      let html = `<table class="table"><thead><tr>
+        <th>Mã</th>
+        ${showBranch ? '<th>Cơ sở</th>' : ''}
+        <th>Họ tên</th>
+        <th>SĐT PH</th>
+        <th>Buổi đã học</th>
+        <th>Trạng thái</th>
+        <th>Thao tác</th>
+      </tr></thead><tbody>`;
+      
+      items.forEach(t => {
+        const statusClass = t.status === 'active' ? 'info' : t.status === 'converted' ? 'success' : 'secondary';
+        const statusText = t.status === 'active' ? 'Đang học thử' : t.status === 'converted' ? 'Đã chuyển đổi' : 'Đã hủy';
+        html += `<tr>
+          <td><code>${t.code || '-'}</code></td>
+          ${showBranch ? `<td><span class="branch-tag"><i class="fas fa-building"></i> ${t.branch_name || '-'}</span></td>` : ''}
+          <td><strong>${t.full_name}</strong><br><small class="text-muted">${t.subject_name || ''} ${t.level_name ? '- ' + t.level_name : ''}</small></td>
+          <td>${t.parent_phone || '-'}</td>
+          <td><strong>${t.sessions_attended || 0}</strong> / ${t.max_sessions || 3}</td>
+          <td><span class="badge badge-${statusClass}">${statusText}</span></td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="openEdit(${t.id})" title="Sửa"><i class="fas fa-edit"></i></button>
+            ${t.status === 'active' ? `
+              <button class="btn btn-sm btn-primary" onclick="openConvert(${t.id})" title="Chuyển đổi"><i class="fas fa-exchange-alt"></i></button>
+              <button class="btn btn-sm btn-danger" onclick="deleteTrial(${t.id})" title="Xóa"><i class="fas fa-trash"></i></button>
+            ` : ''}
+          </td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      document.getElementById('dataTable').innerHTML = html;
+    }
+
+    async function openEdit(id) {
+      try {
+        const result = await api.get(`/trial-students/${id}`);
+        const t = result.data;
+        document.getElementById('editId').value = id;
+        form.setData(document.getElementById('editForm'), {
+          fullName: t.full_name,
+          birthYear: t.birth_year,
+          parentName: t.parent_name,
+          parentPhone: t.parent_phone,
+          parentEmail: t.parent_email,
+          subjectId: t.subject_id,
+          levelId: t.level_id,
+          status: t.status,
+          note: t.note
+        });
+        modal.show('editModal');
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function saveEdit() {
+      const formEl = document.getElementById('editForm');
+      if (!form.validate(formEl)) { ui.error('Vui lòng điền đầy đủ'); return; }
+      const data = form.getData(formEl);
+      const id = document.getElementById('editId').value;
+      try {
+        await api.put(`/trial-students/${id}`, data);
+        ui.success('Lưu thành công');
+        modal.hide('editModal');
+        loadData();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function openConvert(id) {
+      try {
+        const result = await api.get(`/trial-students/${id}`);
+        const t = result.data;
+        document.getElementById('convertId').value = id;
+        
+        // Show branch info
+        document.getElementById('convertBranchInfo').innerHTML = `
+          <div class="branch-badge" style="margin-bottom:16px;">
+            <i class="fas fa-building"></i>
+            <span>Cơ sở: <strong>${t.branch_name || 'N/A'}</strong></span>
+          </div>
+        `;
+        
+        form.setData(document.getElementById('convertForm'), {
+          fullName: t.full_name,
+          birthYear: t.birth_year,
+          parentName: t.parent_name,
+          parentPhone: t.parent_phone,
+          parentEmail: t.parent_email,
+          subjectId: t.subject_id,
+          levelId: t.level_id
+        });
+        modal.show('convertModal');
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function confirmConvert() {
+      const formEl = document.getElementById('convertForm');
+      if (!form.validate(formEl)) { ui.error('Vui lòng điền đầy đủ thông tin bắt buộc'); return; }
+      const data = form.getData(formEl);
+      const id = document.getElementById('convertId').value;
+      try {
+        await api.post(`/trial-students/${id}/convert`, data);
+        ui.success('Chuyển đổi thành công!');
+        modal.hide('convertModal');
+        loadStats();
+        loadData();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function deleteTrial(id) {
+      if (!confirm('Xác nhận hủy học sinh thử này?')) return;
+      try {
+        await api.delete(`/trial-students/${id}`);
+        ui.success('Đã hủy');
+        loadStats();
+        loadData();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

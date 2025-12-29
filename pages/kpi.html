@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý KPI - ARMY Tech LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: white; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; transition: transform 0.2s, box-shadow 0.2s; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .stat-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .stat-card.primary .stat-icon { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #2563eb; }
+    .stat-card.success .stat-icon { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; }
+    .stat-card.warning .stat-icon { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706; }
+    .stat-card.info .stat-icon { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #7c3aed; }
+    .stat-value { font-size: 28px; font-weight: 700; color: #1f2937; display: block; }
+    .stat-label { font-size: 13px; color: #6b7280; margin-top: 2px; }
+    
+    .filter-bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .filter-bar .form-control { border-radius: 10px; border: 1px solid #e5e7eb; padding: 10px 14px; }
+    .filter-bar .form-control:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.1); }
+    
+    .card { border-radius: 16px; border: 1px solid #e5e7eb; overflow: hidden; }
+    .card-header { background: linear-gradient(135deg, #f8fafc, #f1f5f9); padding: 16px 20px; border-bottom: 1px solid #e5e7eb; }
+    .card-header h3 { font-size: 16px; font-weight: 600; color: #374151; margin: 0; display: flex; align-items: center; gap: 8px; }
+    
+    .table { width: 100%; border-collapse: collapse; }
+    .table th { background: #f9fafb; padding: 14px 16px; text-align: left; font-weight: 600; color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e7eb; }
+    .table td { padding: 16px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+    .table tr:hover { background: #f9fafb; }
+    .table tr:last-child td { border-bottom: none; }
+    
+    .badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; }
+    .badge-light { background: #f3f4f6; color: #4b5563; }
+    .badge-success { background: #dcfce7; color: #16a34a; }
+    .badge-warning { background: #fef3c7; color: #d97706; }
+    .badge-danger { background: #fee2e2; color: #dc2626; }
+    
+    .btn { border-radius: 10px; padding: 10px 18px; font-weight: 600; transition: all 0.2s; }
+    .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: white; }
+    .btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
+    .btn-sm { padding: 8px 12px; font-size: 13px; }
+    .btn-info { background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; color: white; }
+    
+    .text-success { color: #16a34a !important; }
+    .text-warning { color: #d97706 !important; }
+    .text-muted { color: #9ca3af !important; }
+    
+    @media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .stats-grid { grid-template-columns: 1fr; } .filter-bar { flex-direction: column; align-items: stretch; } }
+  </style>
+</head>
+<body>
+  <nav class="sidebar" id="sidebar"></nav>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1><i class="fas fa-bullseye"></i> Quản lý KPI</h1>
+      </div>
+      <div class="topbar-right filter-bar">
+        <input type="month" id="filterMonth" class="form-control" style="width:160px" onchange="loadData()">
+        <select id="filterBranch" class="form-control" style="width:180px" onchange="loadData()">
+          <option value="">🏢 Tất cả cơ sở</option>
+        </select>
+        <button class="btn btn-success" onclick="openBulkModal()">
+          <i class="fas fa-plus"></i> Set KPI hàng loạt
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="stats-grid">
+      <div class="stat-card primary">
+        <div class="stat-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="totalEc">0</span>
+          <span class="stat-label">Tổng EC</span>
+        </div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="hasKpi">0</span>
+          <span class="stat-label">Đã có KPI</span>
+        </div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="missingKpi">0</span>
+          <span class="stat-label">Chưa có KPI</span>
+        </div>
+      </div>
+      <div class="stat-card info">
+        <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+        <div class="stat-info">
+          <span class="stat-value" id="totalTarget">0đ</span>
+          <span class="stat-label">Tổng KPI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Table -->
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-list"></i> Danh sách KPI tháng <span id="monthDisplay"></span></h3>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="table" id="kpiTable">
+          <thead>
+            <tr>
+              <th>EC</th>
+              <th>Cơ sở</th>
+              <th class="text-right">KPI Doanh số</th>
+              <th class="text-center">KPI Checkin</th>
+              <th class="text-center">KPI Converted</th>
+              <th class="text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="kpiTableBody">
+            <tr><td colspan="6" class="text-center">Đang tải...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- EC chưa có KPI -->
+    <div class="card" id="missingKpiCard" style="display:none;margin-top:20px">
+      <div class="card-header" style="background:linear-gradient(135deg,#fef3c7,#fde68a)">
+        <h3><i class="fas fa-exclamation-triangle text-warning"></i> EC chưa có KPI</h3>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>EC</th>
+              <th>Cơ sở</th>
+              <th class="text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="missingKpiTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Set KPI -->
+  <div class="modal" id="kpiModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle"><i class="fas fa-bullseye"></i> Set KPI</div>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="kpiForm">
+          <input type="hidden" id="ecId">
+          <input type="hidden" id="branchId">
+          
+          <div class="form-group">
+            <label>EC</label>
+            <input type="text" id="ecName" class="form-control" readonly>
+          </div>
+          
+          <div class="form-group">
+            <label>Tháng</label>
+            <input type="month" id="kpiMonth" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label>KPI Doanh số (VNĐ) *</label>
+            <input type="number" id="targetRevenue" class="form-control" required min="0" step="100000">
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>KPI Checkin</label>
+              <input type="number" id="targetCheckin" class="form-control" min="0">
+            </div>
+            <div class="form-group">
+              <label>KPI Converted</label>
+              <input type="number" id="targetConversion" class="form-control" min="0">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+        <button class="btn btn-primary" onclick="saveKpi()">
+          <i class="fas fa-save"></i> Lưu KPI
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Bulk Set KPI -->
+  <div class="modal" id="bulkModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-list"></i> Set KPI hàng loạt</div>
+        <button class="modal-close" onclick="closeBulkModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row" style="margin-bottom:15px">
+          <div class="form-group">
+            <label>Tháng áp dụng</label>
+            <input type="month" id="bulkMonth" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>KPI mặc định</label>
+            <input type="number" id="defaultKpi" class="form-control" placeholder="VD: 50000000" step="1000000">
+          </div>
+          <div class="form-group" style="display:flex;align-items:flex-end;">
+            <button class="btn btn-info" onclick="applyDefaultKpi()">Áp dụng tất cả</button>
+          </div>
+        </div>
+        
+        <table class="table">
+          <thead>
+            <tr>
+              <th width="40"><input type="checkbox" id="checkAll" onchange="toggleCheckAll()"></th>
+              <th>EC</th>
+              <th>Cơ sở</th>
+              <th>KPI Doanh số</th>
+            </tr>
+          </thead>
+          <tbody id="bulkTable"></tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeBulkModal()">Hủy</button>
+        <button class="btn btn-primary" onclick="saveBulkKpi()">
+          <i class="fas fa-save"></i> Lưu tất cả
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script>
+    let allEcs = [];
+    
+    const now = new Date();
+    const currentMonth = now.toISOString().slice(0, 7);
+    document.getElementById('filterMonth').value = currentMonth;
+    document.getElementById('kpiMonth').value = currentMonth;
+    document.getElementById('bulkMonth').value = currentMonth;
+
+    async function init() {
+      await auth.requireAuth();
+      buildSidebar('sidebar');
+      await loadBranches();
+      await loadData();
+    }
+
+    async function loadBranches() {
+      try {
+        const res = await api.get('/branches');
+        const select = document.getElementById('filterBranch');
+        res.data.forEach(b => {
+          select.innerHTML += `<option value="${b.id}">${b.code} - ${b.name}</option>`;
+        });
+      } catch (e) {}
+    }
+
+    async function loadData() {
+      const month = document.getElementById('filterMonth').value;
+      const branchId = document.getElementById('filterBranch').value;
+      
+      document.getElementById('monthDisplay').textContent = month;
+      
+      try {
+        const params = new URLSearchParams({ month });
+        if (branchId) params.append('branch_id', branchId);
+        
+        const res = await api.get('/kpi/targets?' + params);
+        const { targets = [], missingEcs = [] } = res.data || {};
+        
+        document.getElementById('totalEc').textContent = targets.length + missingEcs.length;
+        document.getElementById('hasKpi').textContent = targets.length;
+        document.getElementById('missingKpi').textContent = missingEcs.length;
+        
+        const totalTarget = targets.reduce((sum, t) => sum + parseFloat(t.target_revenue || 0), 0);
+        document.getElementById('totalTarget').textContent = formatCurrency(totalTarget);
+        
+        const tbody = document.getElementById('kpiTableBody');
+        if (targets.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Chưa có KPI nào</td></tr>';
+        } else {
+          tbody.innerHTML = targets.map(t => `
+            <tr>
+              <td><strong>${t.ec_name}</strong></td>
+              <td><span class="badge badge-light">${t.branch_code || '-'}</span></td>
+              <td class="text-right"><strong class="text-success">${formatCurrency(t.target_revenue)}</strong></td>
+              <td class="text-center">${t.target_checkin || 0}</td>
+              <td class="text-center">${t.target_conversion || 0}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-info" onclick="editKpi(${t.ec_id}, '${t.ec_name}', ${t.branch_id || 0}, ${t.target_revenue || 0}, ${t.target_checkin || 0}, ${t.target_conversion || 0})">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </td>
+            </tr>
+          `).join('');
+        }
+        
+        const missingCard = document.getElementById('missingKpiCard');
+        const missingTbody = document.getElementById('missingKpiTable');
+        if (missingEcs.length > 0) {
+          missingCard.style.display = 'block';
+          missingTbody.innerHTML = missingEcs.map(e => `
+            <tr>
+              <td><strong>${e.full_name}</strong></td>
+              <td><span class="badge badge-light">${e.branch_name || '-'}</span></td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-success" onclick="editKpi(${e.id}, '${e.full_name}', ${e.branch_id || 0}, 0, 0, 0)">
+                  <i class="fas fa-plus"></i> Set KPI
+                </button>
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          missingCard.style.display = 'none';
+        }
+        
+        allEcs = [
+          ...targets.map(t => ({ id: t.ec_id, name: t.ec_name, branch_id: t.branch_id, branch_code: t.branch_code, kpi: t.target_revenue })),
+          ...missingEcs.map(e => ({ id: e.id, name: e.full_name, branch_id: e.branch_id, branch_code: '', kpi: 0 }))
+        ];
+        
+      } catch (e) {
+        console.error('Error loading KPI:', e);
+        ui.error('Lỗi tải dữ liệu KPI');
+      }
+    }
+
+    function editKpi(ecId, ecName, branchId, revenue, checkin, conversion) {
+      document.getElementById('ecId').value = ecId;
+      document.getElementById('branchId').value = branchId;
+      document.getElementById('ecName').value = ecName;
+      document.getElementById('kpiMonth').value = document.getElementById('filterMonth').value;
+      document.getElementById('targetRevenue').value = revenue;
+      document.getElementById('targetCheckin').value = checkin;
+      document.getElementById('targetConversion').value = conversion;
+      document.getElementById('modalTitle').innerHTML = '<i class="fas fa-bullseye"></i> Set KPI - ' + ecName;
+      document.getElementById('kpiModal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('kpiModal').classList.remove('show');
+    }
+
+    async function saveKpi() {
+      const data = {
+        ec_id: document.getElementById('ecId').value,
+        branch_id: document.getElementById('branchId').value || null,
+        month: document.getElementById('kpiMonth').value,
+        target_revenue: document.getElementById('targetRevenue').value,
+        target_checkin: document.getElementById('targetCheckin').value || 0,
+        target_conversion: document.getElementById('targetConversion').value || 0
+      };
+      
+      try {
+        await api.post('/kpi/target', data);
+        ui.success('Lưu KPI thành công');
+        closeModal();
+        loadData();
+      } catch (e) {
+        ui.error('Lỗi: ' + (e.message || 'Không thể lưu KPI'));
+      }
+    }
+
+    function openBulkModal() {
+      document.getElementById('bulkMonth').value = document.getElementById('filterMonth').value;
+      
+      const tbody = document.getElementById('bulkTable');
+      if (allEcs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Không có EC nào</td></tr>';
+      } else {
+        tbody.innerHTML = allEcs.map(e => `
+          <tr>
+            <td><input type="checkbox" class="ec-check" data-id="${e.id}" data-branch="${e.branch_id || ''}" checked></td>
+            <td>${e.name}</td>
+            <td><span class="badge badge-light">${e.branch_code || '-'}</span></td>
+            <td><input type="number" class="form-control kpi-input" data-id="${e.id}" value="${e.kpi || ''}" placeholder="KPI" step="1000000"></td>
+          </tr>
+        `).join('');
+      }
+      
+      document.getElementById('bulkModal').classList.add('show');
+    }
+
+    function closeBulkModal() {
+      document.getElementById('bulkModal').classList.remove('show');
+    }
+
+    function toggleCheckAll() {
+      const checked = document.getElementById('checkAll').checked;
+      document.querySelectorAll('.ec-check').forEach(cb => cb.checked = checked);
+    }
+
+    function applyDefaultKpi() {
+      const defaultVal = document.getElementById('defaultKpi').value;
+      if (!defaultVal) {
+        ui.warning('Nhập KPI mặc định');
+        return;
+      }
+      document.querySelectorAll('.kpi-input').forEach(input => {
+        if (!input.value) input.value = defaultVal;
+      });
+    }
+
+    async function saveBulkKpi() {
+      const month = document.getElementById('bulkMonth').value;
+      const targets = [];
+      
+      document.querySelectorAll('.ec-check:checked').forEach(cb => {
+        const ecId = cb.dataset.id;
+        const branchId = cb.dataset.branch;
+        const kpiInput = document.querySelector(`.kpi-input[data-id="${ecId}"]`);
+        const kpi = kpiInput?.value;
+        
+        if (kpi) {
+          targets.push({
+            ec_id: parseInt(ecId),
+            branch_id: branchId ? parseInt(branchId) : null,
+            month: month,
+            target_revenue: parseFloat(kpi)
+          });
+        }
+      });
+      
+      if (targets.length === 0) {
+        ui.warning('Chưa có KPI nào được nhập');
+        return;
+      }
+      
+      try {
+        await api.post('/kpi/targets/bulk', { targets });
+        ui.success(`Đã lưu ${targets.length} KPI`);
+        closeBulkModal();
+        loadData();
+      } catch (e) {
+        ui.error('Lỗi: ' + (e.message || 'Không thể lưu'));
+      }
+    }
+
+    function formatCurrency(val) {
+      if (!val) return '0đ';
+      return new Intl.NumberFormat('vi-VN').format(val) + 'đ';
+    }
+
+    document.getElementById('filterMonth').addEventListener('change', loadData);
+    document.getElementById('filterBranch').addEventListener('change', loadData);
+
+    init();
+  </script>
+</body>
+</html>
