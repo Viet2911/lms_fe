@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,70 +8,308 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-    .status-badge.new { background: #f3f4f6; color: #6b7280; }
-    .status-badge.scheduled { background: #dbeafe; color: #1d4ed8; }
-    .status-badge.attended { background: #fef3c7; color: #b45309; }
-    .status-badge.converted { background: #dcfce7; color: #15803d; }
-    .status-badge.cancelled { background: #fee2e2; color: #dc2626; }
-    .status-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
-    .status-tab { padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg-card); cursor: pointer; font-size: 13px; }
-    .status-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
-    .status-tab .count { background: rgba(0,0,0,0.1); padding: 2px 8px; border-radius: 10px; margin-left: 6px; }
-    .status-tab.active .count { background: rgba(255,255,255,0.3); }
-    .phone-link { color: var(--primary); text-decoration: none; cursor: pointer; }
-    .phone-link:hover { text-decoration: underline; }
-    .view-toggle { display: flex; gap: 4px; background: var(--bg-secondary); padding: 4px; border-radius: 8px; }
-    .view-toggle button { padding: 8px 12px; border: none; background: none; cursor: pointer; border-radius: 6px; }
-    .view-toggle button.active { background: var(--bg-card); color: var(--primary); }
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-    .lead-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; }
-    .lead-card:hover { box-shadow: var(--shadow-lg); }
-    .call-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 16px; }
-    .call-name { font-size: 20px; font-weight: 600; text-align: center; }
-    .call-phone { font-size: 16px; color: var(--text-secondary); text-align: center; margin-bottom: 20px; }
-    .call-status { text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 10px; }
-    .call-status.connecting { color: var(--warning); background: rgba(245, 158, 11, 0.1); }
-    .call-status.connected { color: var(--success); background: rgba(34, 197, 94, 0.1); }
-    .call-status.ended { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
-    .call-timer { font-size: 32px; font-weight: bold; text-align: center; margin: 15px 0; font-family: monospace; }
-    .call-actions { display: flex; justify-content: center; gap: 16px; margin: 20px 0; }
-    .call-btn { width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer; font-size: 20px; }
-    .call-btn.call { background: var(--success); color: white; }
-    .call-btn.hangup { background: var(--danger); color: white; }
-    .call-btn.mute { background: var(--bg-secondary); }
-    .call-history { max-height: 200px; overflow-y: auto; }
-    .call-history-item { padding: 10px; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 8px; font-size: 13px; }
-    .import-dropzone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; }
-    .import-dropzone:hover { border-color: var(--primary); }
-    .import-dropzone i { font-size: 48px; color: var(--text-muted); display: block; margin-bottom: 16px; }
-    .import-stats { display: flex; gap: 20px; justify-content: center; margin: 15px 0; }
-    .import-stat { text-align: center; padding: 10px 20px; background: var(--bg-secondary); border-radius: 8px; }
-    .import-stat .value { font-size: 24px; font-weight: bold; color: var(--primary); }
-    .import-stat .label { font-size: 12px; color: var(--text-muted); }
-    .btn-purple { background: #8b5cf6; color: white; border-color: #8b5cf6; }
-    .btn-purple:hover { background: #7c3aed; }
-    .lead-card { cursor: default; }
-    .input-group { display: flex; align-items: center; }
-    .input-group input { border-radius: 8px 0 0 8px; }
-    .input-group .input-suffix { 
-      background: var(--bg-secondary); 
-      border: 1px solid var(--border); 
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-badge.new {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .status-badge.scheduled {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .status-badge.attended {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .status-badge.converted {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .status-badge.cancelled {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .status-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .status-tab {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .status-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .status-tab .count {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 6px;
+    }
+
+    .status-tab.active .count {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .phone-link {
+      color: var(--primary);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .phone-link:hover {
+      text-decoration: underline;
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-secondary);
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .view-toggle button {
+      padding: 8px 12px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .view-toggle button.active {
+      background: var(--bg-card);
+      color: var(--primary);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .lead-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+    }
+
+    .lead-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .call-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 16px;
+    }
+
+    .call-name {
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .call-phone {
+      font-size: 16px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .call-status {
+      text-align: center;
+      padding: 8px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .call-status.connecting {
+      color: var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .call-status.connected {
+      color: var(--success);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .call-status.ended {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .call-timer {
+      font-size: 32px;
+      font-weight: bold;
+      text-align: center;
+      margin: 15px 0;
+      font-family: monospace;
+    }
+
+    .call-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .call-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .call-btn.call {
+      background: var(--success);
+      color: white;
+    }
+
+    .call-btn.hangup {
+      background: var(--danger);
+      color: white;
+    }
+
+    .call-btn.mute {
+      background: var(--bg-secondary);
+    }
+
+    .call-history {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .call-history-item {
+      padding: 10px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .import-dropzone {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .import-dropzone:hover {
+      border-color: var(--primary);
+    }
+
+    .import-dropzone i {
+      font-size: 48px;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .import-stats {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin: 15px 0;
+    }
+
+    .import-stat {
+      text-align: center;
+      padding: 10px 20px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+    }
+
+    .import-stat .value {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .import-stat .label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .btn-purple {
+      background: #8b5cf6;
+      color: white;
+      border-color: #8b5cf6;
+    }
+
+    .btn-purple:hover {
+      background: #7c3aed;
+    }
+
+    .lead-card {
+      cursor: default;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+    }
+
+    .input-group input {
+      border-radius: 8px 0 0 8px;
+    }
+
+    .input-group .input-suffix {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
       border-left: none;
-      padding: 10px 12px; 
+      padding: 10px 12px;
       border-radius: 0 8px 8px 0;
       color: var(--text-muted);
       font-weight: 500;
     }
-    input[type="number"] { text-align: right; }
+
+    input[type="number"] {
+      text-align: right;
+    }
   </style>
 </head>
+
 <body>
   <nav class="sidebar" id="sidebar"></nav>
   <main class="main-content">
     <div class="topbar">
       <div class="topbar-left">
-        <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+        <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')"><i
+            class="fas fa-bars"></i></button>
         <h1><i class="fas fa-users"></i> Khách hàng tiềm năng</h1>
       </div>
       <div class="topbar-right">
@@ -78,23 +317,47 @@
           <button class="active" onclick="setView('table')" id="viewTable"><i class="fas fa-list"></i></button>
           <button onclick="setView('card')" id="viewCard"><i class="fas fa-th-large"></i></button>
         </div>
-        <button class="btn btn-success" id="btnImport" onclick="openImportModal()" style="display:none"><i class="fas fa-file-excel"></i> Import</button>
+        <button class="btn btn-success" id="btnImport" onclick="openImportModal()" style="display:none"><i
+            class="fas fa-file-excel"></i> Import</button>
         <button class="btn btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Thêm</button>
       </div>
     </div>
 
     <div class="stats-grid">
-      <div class="stat-card primary"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-info"><span class="stat-value" id="statTotal">0</span><span class="stat-label">Tổng</span></div></div>
-      <div class="stat-card info"><div class="stat-icon"><i class="fas fa-calendar"></i></div><div class="stat-info"><span class="stat-value" id="statScheduled">0</span><span class="stat-label">Đã hẹn</span></div></div>
-      <div class="stat-card warning"><div class="stat-icon"><i class="fas fa-user-check"></i></div><div class="stat-info"><span class="stat-value" id="statAttended">0</span><span class="stat-label">Đã TN</span></div></div>
-      <div class="stat-card success"><div class="stat-icon"><i class="fas fa-check"></i></div><div class="stat-info"><span class="stat-value" id="statConverted">0</span><span class="stat-label">Chuyển đổi</span></div></div>
+      <div class="stat-card primary">
+        <div class="stat-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-info"><span class="stat-value" id="statTotal">0</span><span class="stat-label">Tổng</span>
+        </div>
+      </div>
+      <div class="stat-card info">
+        <div class="stat-icon"><i class="fas fa-calendar"></i></div>
+        <div class="stat-info"><span class="stat-value" id="statScheduled">0</span><span class="stat-label">Đã
+            hẹn</span></div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+        <div class="stat-info"><span class="stat-value" id="statAttended">0</span><span class="stat-label">Đã TN</span>
+        </div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-icon"><i class="fas fa-check"></i></div>
+        <div class="stat-info"><span class="stat-value" id="statConverted">0</span><span class="stat-label">Chuyển
+            đổi</span></div>
+      </div>
     </div>
 
     <div class="card">
       <div class="card-body" style="padding:16px">
         <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
-          <div class="search-box" style="flex:1;min-width:200px"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Tìm tên, SĐT..." onkeyup="if(event.key==='Enter')loadData()"></div>
-          <select id="sourceFilter" class="form-control" style="width:140px" onchange="loadData()"><option value="">Tất cả nguồn</option><option value="facebook">Facebook</option><option value="zalo">Zalo</option><option value="walk-in">Walk-in</option><option value="referral">Giới thiệu</option></select>
+          <div class="search-box" style="flex:1;min-width:200px"><i class="fas fa-search"></i><input type="text"
+              id="searchInput" placeholder="Tìm tên, SĐT..." onkeyup="if(event.key==='Enter')loadData()"></div>
+          <select id="sourceFilter" class="form-control" style="width:140px" onchange="loadData()">
+            <option value="">Tất cả nguồn</option>
+            <option value="facebook">Facebook</option>
+            <option value="zalo">Zalo</option>
+            <option value="walk-in">Walk-in</option>
+            <option value="referral">Giới thiệu</option>
+          </select>
           <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-sync"></i></button>
         </div>
         <div class="status-tabs" id="statusTabs"></div>
@@ -103,24 +366,65 @@
 
     <div class="card" id="tableView">
       <div class="card-body">
-        <table class="table"><thead><tr><th>Mã</th><th>Học sinh</th><th>Phụ huynh</th><th>SĐT</th><th>Nguồn</th><th>Trạng thái</th><th>Ngày tạo</th><th class="text-center">Thao tác</th></tr></thead>
-        <tbody id="leadsTableBody"><tr><td colspan="8" class="text-center">Đang tải...</td></tr></tbody></table>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Mã</th>
+              <th>Học sinh</th>
+              <th>Phụ huynh</th>
+              <th>SĐT</th>
+              <th>Nguồn</th>
+              <th>Trạng thái</th>
+              <th>Ngày tạo</th>
+              <th class="text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="leadsTableBody">
+            <tr>
+              <td colspan="8" class="text-center">Đang tải...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <div id="cardView" style="display:none"><div class="cards-grid" id="leadsGrid"></div></div>
+    <div id="cardView" style="display:none">
+      <div class="cards-grid" id="leadsGrid"></div>
+    </div>
   </main>
 
   <!-- Form Modal -->
   <div class="modal" id="formModal">
     <div class="modal-content modal-lg">
-      <div class="modal-header"><div class="modal-title" id="modalTitle"><i class="fas fa-user-plus"></i> Thêm Lead</div><button class="modal-close" onclick="closeFormModal()">&times;</button></div>
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle"><i class="fas fa-user-plus"></i> Thêm Lead</div><button
+          class="modal-close" onclick="closeFormModal()">&times;</button>
+      </div>
       <div class="modal-body">
         <form id="leadForm">
           <input type="hidden" id="leadId">
-          <div class="form-row"><div class="form-group"><label class="required">Tên học sinh</label><input type="text" name="studentName" class="form-control" required></div><div class="form-group"><label>Năm sinh</label><input type="number" name="birthYear" class="form-control" placeholder="2015"></div></div>
-          <div class="form-row"><div class="form-group"><label class="required">Tên phụ huynh</label><input type="text" name="customerName" class="form-control" required></div><div class="form-group"><label class="required">SĐT</label><input type="tel" name="customerPhone" class="form-control" required></div></div>
-          <div class="form-row"><div class="form-group"><label>Email</label><input type="email" name="customerEmail" class="form-control"></div><div class="form-group"><label>Nguồn</label><select name="source" class="form-control"><option value="facebook">Facebook</option><option value="zalo">Zalo</option><option value="walk-in">Walk-in</option><option value="referral">Giới thiệu</option></select></div></div>
+          <div class="form-row">
+            <div class="form-group"><label class="required">Tên học sinh</label><input type="text" name="studentName"
+                class="form-control" required></div>
+            <div class="form-group"><label>Năm sinh</label><input type="number" name="birthYear" class="form-control"
+                placeholder="2015"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="required">Tên phụ huynh</label><input type="text" name="customerName"
+                class="form-control" required></div>
+            <div class="form-group"><label class="required">SĐT</label><input type="tel" name="customerPhone"
+                class="form-control" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Email</label><input type="email" name="customerEmail" class="form-control">
+            </div>
+            <div class="form-group"><label>Nguồn</label><select name="source" class="form-control">
+                <option value="facebook">Facebook</option>
+                <option value="zalo">Zalo</option>
+                <option value="walk-in">Walk-in</option>
+                <option value="referral">Giới thiệu</option>
+              </select></div>
+          </div>
           <div class="form-row" id="assignEcRow" style="display:none">
             <div class="form-group">
               <label><i class="fas fa-user-tie"></i> Giao cho EC</label>
@@ -129,38 +433,77 @@
               </select>
             </div>
           </div>
-          <div class="form-group"><label>Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea></div>
+          <div class="form-group"><label>Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea>
+          </div>
         </form>
       </div>
-      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeFormModal()">Hủy</button><button class="btn btn-primary" onclick="saveLead()"><i class="fas fa-save"></i> Lưu</button></div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeFormModal()">Hủy</button><button
+          class="btn btn-primary" onclick="saveLead()"><i class="fas fa-save"></i> Lưu</button></div>
     </div>
   </div>
 
   <!-- Import Modal -->
   <div class="modal" id="importModal">
     <div class="modal-content modal-lg">
-      <div class="modal-header"><div class="modal-title"><i class="fas fa-file-excel"></i> Import Excel</div><button class="modal-close" onclick="closeImportModal()">&times;</button></div>
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-file-excel"></i> Import Excel</div><button class="modal-close"
+          onclick="closeImportModal()">&times;</button>
+      </div>
       <div class="modal-body">
         <div class="import-dropzone" id="dropzone" onclick="document.getElementById('excelFile').click()">
-          <i class="fas fa-cloud-upload-alt"></i><p><strong>Kéo thả file Excel vào đây</strong></p><p style="color:var(--text-muted)">hoặc click để chọn file</p>
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p><strong>Kéo thả file Excel vào đây</strong></p>
+          <p style="color:var(--text-muted)">hoặc click để chọn file</p>
           <input type="file" id="excelFile" accept=".xlsx,.xls" style="display:none" onchange="handleFileSelect(event)">
         </div>
         <div id="importPreview" style="display:none">
-          <div class="import-stats"><div class="import-stat"><div class="value" id="previewTotal">0</div><div class="label">Tổng</div></div><div class="import-stat"><div class="value" id="previewValid">0</div><div class="label">Hợp lệ</div></div><div class="import-stat"><div class="value" id="previewError">0</div><div class="label">Lỗi</div></div></div>
-          <div style="max-height:200px;overflow-y:auto"><table class="table"><thead><tr><th>#</th><th>Tên HS</th><th>Tên PH</th><th>SĐT</th><th>TT</th></tr></thead><tbody id="previewBody"></tbody></table></div>
+          <div class="import-stats">
+            <div class="import-stat">
+              <div class="value" id="previewTotal">0</div>
+              <div class="label">Tổng</div>
+            </div>
+            <div class="import-stat">
+              <div class="value" id="previewValid">0</div>
+              <div class="label">Hợp lệ</div>
+            </div>
+            <div class="import-stat">
+              <div class="value" id="previewError">0</div>
+              <div class="label">Lỗi</div>
+            </div>
+          </div>
+          <div style="max-height:200px;overflow-y:auto">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Tên HS</th>
+                  <th>Tên PH</th>
+                  <th>SĐT</th>
+                  <th>TT</th>
+                </tr>
+              </thead>
+              <tbody id="previewBody"></tbody>
+            </table>
+          </div>
         </div>
         <div style="margin-top:20px;padding:12px;background:var(--bg-secondary);border-radius:8px;font-size:13px">
-          <strong>Cột bắt buộc:</strong> Tên học sinh, Số điện thoại<br><button class="btn btn-sm btn-secondary" onclick="downloadTemplate()" style="margin-top:8px"><i class="fas fa-download"></i> Tải mẫu</button>
+          <strong>Cột bắt buộc:</strong> Tên học sinh, Số điện thoại<br><button class="btn btn-sm btn-secondary"
+            onclick="downloadTemplate()" style="margin-top:8px"><i class="fas fa-download"></i> Tải mẫu</button>
         </div>
       </div>
-      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeImportModal()">Hủy</button><button class="btn btn-success" id="importBtn" onclick="importLeads()" disabled><i class="fas fa-upload"></i> Import <span id="importCount">0</span></button></div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeImportModal()">Hủy</button><button
+          class="btn btn-success" id="importBtn" onclick="importLeads()" disabled><i class="fas fa-upload"></i> Import
+          <span id="importCount">0</span></button></div>
     </div>
   </div>
 
   <!-- Call Modal -->
   <div class="modal" id="callModal">
     <div class="modal-content">
-      <div class="modal-header"><div class="modal-title"><i class="fas fa-phone"></i> Cuộc gọi</div><button class="modal-close" onclick="closeCallModal()">&times;</button></div>
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-phone"></i> Cuộc gọi</div><button class="modal-close"
+          onclick="closeCallModal()">&times;</button>
+      </div>
       <div class="modal-body">
         <input type="hidden" id="callLeadId">
         <div class="call-avatar" id="callAvatar">N</div>
@@ -169,15 +512,29 @@
         <div class="call-status" id="callStatus">Sẵn sàng</div>
         <div class="call-timer" id="callTimer" style="display:none">00:00</div>
         <div class="call-actions">
-          <button class="call-btn mute" id="muteBtn" onclick="toggleMute()" style="display:none"><i class="fas fa-microphone"></i></button>
+          <button class="call-btn mute" id="muteBtn" onclick="toggleMute()" style="display:none"><i
+              class="fas fa-microphone"></i></button>
           <button class="call-btn call" id="startCallBtn" onclick="startCall()"><i class="fas fa-phone"></i></button>
-          <button class="call-btn hangup" id="hangupBtn" onclick="endCall()" style="display:none"><i class="fas fa-phone-slash"></i></button>
+          <button class="call-btn hangup" id="hangupBtn" onclick="endCall()" style="display:none"><i
+              class="fas fa-phone-slash"></i></button>
         </div>
         <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:20px">
-          <div class="form-group"><label>Ghi chú</label><textarea id="callNote" class="form-control" rows="2"></textarea></div>
-          <div class="form-group"><label>Kết quả</label><select id="callResult" class="form-control"><option value="">--Chọn--</option><option value="answered">Đã nghe</option><option value="no_answer">Không nghe</option><option value="busy">Máy bận</option><option value="interested">Quan tâm</option><option value="callback">Gọi lại</option></select></div>
+          <div class="form-group"><label>Ghi chú</label><textarea id="callNote" class="form-control"
+              rows="2"></textarea></div>
+          <div class="form-group"><label>Kết quả</label><select id="callResult" class="form-control">
+              <option value="">--Chọn--</option>
+              <option value="answered">Đã nghe</option>
+              <option value="no_answer">Không nghe</option>
+              <option value="busy">Máy bận</option>
+              <option value="interested">Quan tâm</option>
+              <option value="callback">Gọi lại</option>
+            </select></div>
           <button class="btn btn-primary btn-block" onclick="saveCallNote()"><i class="fas fa-save"></i> Lưu</button>
-          <div style="margin-top:15px"><label><i class="fas fa-history"></i> Lịch sử</label><div class="call-history" id="callHistory"><p class="text-muted text-center">Chưa có</p></div></div>
+          <div style="margin-top:15px"><label><i class="fas fa-history"></i> Lịch sử</label>
+            <div class="call-history" id="callHistory">
+              <p class="text-muted text-center">Chưa có</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -186,10 +543,14 @@
   <!-- Schedule Modal -->
   <div class="modal" id="scheduleModal">
     <div class="modal-content">
-      <div class="modal-header"><div class="modal-title"><i class="fas fa-calendar-plus"></i> Đặt lịch trải nghiệm</div><button class="modal-close" onclick="closeScheduleModal()">&times;</button></div>
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-calendar-plus"></i> Đặt lịch trải nghiệm</div><button
+          class="modal-close" onclick="closeScheduleModal()">&times;</button>
+      </div>
       <div class="modal-body">
         <input type="hidden" id="scheduleLeadId">
-        <div id="scheduleLeadInfo" style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px"></div>
+        <div id="scheduleLeadInfo"
+          style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px"></div>
         <div class="form-row">
           <div class="form-group">
             <label class="required">Ngày</label>
@@ -221,11 +582,15 @@
   <!-- Convert Modal -->
   <div class="modal" id="convertModal">
     <div class="modal-content modal-lg">
-      <div class="modal-header"><div class="modal-title"><i class="fas fa-user-graduate"></i> Chuyển đổi thành học sinh</div><button class="modal-close" onclick="closeConvertModal()">&times;</button></div>
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-user-graduate"></i> Chuyển đổi thành học sinh</div><button
+          class="modal-close" onclick="closeConvertModal()">&times;</button>
+      </div>
       <div class="modal-body">
         <input type="hidden" id="convertLeadId">
-        <div id="convertLeadInfo" style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px"></div>
-        
+        <div id="convertLeadInfo"
+          style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px"></div>
+
         <div class="form-group">
           <label>Chọn lớp</label>
           <select id="convertClass" class="form-control">
@@ -233,29 +598,32 @@
           </select>
           <small class="text-muted">Bỏ trống nếu muốn CM xếp lớp sau</small>
         </div>
-        
+
         <div class="form-row">
           <div class="form-group">
             <label class="required">Học phí gốc</label>
             <div class="input-group">
-              <input type="number" id="convertFeeOriginal" class="form-control" value="0" min="0" step="100000" onchange="calcFeeTotal()" oninput="calcFeeTotal()">
+              <input type="number" id="convertFeeOriginal" class="form-control" value="0" min="0" step="100000"
+                onchange="calcFeeTotal()" oninput="calcFeeTotal()">
               <span class="input-suffix">đ</span>
             </div>
           </div>
           <div class="form-group">
             <label>Giảm giá</label>
             <div class="input-group">
-              <input type="number" id="convertFeeDiscount" class="form-control" value="0" min="0" step="100000" onchange="calcFeeTotal()" oninput="calcFeeTotal()">
+              <input type="number" id="convertFeeDiscount" class="form-control" value="0" min="0" step="100000"
+                onchange="calcFeeTotal()" oninput="calcFeeTotal()">
               <span class="input-suffix">đ</span>
             </div>
           </div>
         </div>
-        
+
         <div class="form-row">
           <div class="form-group">
             <label>Tổng học phí</label>
             <div class="input-group">
-              <input type="text" id="convertFeeTotal" class="form-control" value="0đ" readonly style="background:var(--bg-secondary);font-weight:bold;color:#16a34a">
+              <input type="text" id="convertFeeTotal" class="form-control" value="0đ" readonly
+                style="background:var(--bg-secondary);font-weight:bold;color:#16a34a">
             </div>
           </div>
           <div class="form-group">
@@ -268,28 +636,31 @@
             </select>
           </div>
         </div>
-        
+
         <div class="form-row" id="paymentAmountRow" style="display:none">
           <div class="form-group">
             <label id="depositLabel">Tiền cọc</label>
             <div class="input-group">
-              <input type="number" id="convertDepositAmount" class="form-control" value="0" min="0" step="100000" onchange="updateRemaining()" oninput="updateRemaining()">
+              <input type="number" id="convertDepositAmount" class="form-control" value="0" min="0" step="100000"
+                onchange="updateRemaining()" oninput="updateRemaining()">
               <span class="input-suffix">đ</span>
             </div>
           </div>
           <div class="form-group">
             <label>Đã thanh toán</label>
             <div class="input-group">
-              <input type="number" id="convertPaidAmount" class="form-control" value="0" min="0" step="100000" onchange="updateRemaining()" oninput="updateRemaining()">
+              <input type="number" id="convertPaidAmount" class="form-control" value="0" min="0" step="100000"
+                onchange="updateRemaining()" oninput="updateRemaining()">
               <span class="input-suffix">đ</span>
             </div>
           </div>
         </div>
-        
-        <div class="form-group" id="remainingRow" style="display:none;background:#fef3c7;padding:10px;border-radius:8px">
+
+        <div class="form-group" id="remainingRow"
+          style="display:none;background:#fef3c7;padding:10px;border-radius:8px">
           <strong>Còn lại: <span id="convertRemaining" class="text-danger">0đ</span></strong>
         </div>
-        
+
         <div class="form-group">
           <label>Ghi chú</label>
           <textarea id="convertNote" class="form-control" rows="2"></textarea>
@@ -305,42 +676,53 @@
   <!-- Payment Update Modal -->
   <div class="modal" id="paymentModal">
     <div class="modal-content">
-      <div class="modal-header"><div class="modal-title"><i class="fas fa-dollar-sign"></i> Cập nhật thanh toán</div><button class="modal-close" onclick="closePaymentModal()">&times;</button></div>
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-dollar-sign"></i> Cập nhật thanh toán</div><button class="modal-close"
+          onclick="closePaymentModal()">&times;</button>
+      </div>
       <div class="modal-body">
         <input type="hidden" id="paymentLeadId">
-        <div id="paymentLeadInfo" style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px"></div>
-        
+        <div id="paymentLeadInfo"
+          style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px"></div>
+
         <div class="form-row">
           <div class="form-group">
             <label>Đã cọc</label>
-            <input type="text" id="paymentDeposit" class="form-control currency-display" readonly style="background:var(--bg-secondary)">
+            <input type="text" id="paymentDeposit" class="form-control currency-display" readonly
+              style="background:var(--bg-secondary)">
           </div>
           <div class="form-group">
             <label>Đã đóng trước</label>
-            <input type="text" id="paymentPrevPaid" class="form-control currency-display" readonly style="background:var(--bg-secondary)">
+            <input type="text" id="paymentPrevPaid" class="form-control currency-display" readonly
+              style="background:var(--bg-secondary)">
           </div>
         </div>
-        
+
         <div class="form-group" style="background:#dcfce7;padding:15px;border-radius:8px;margin:15px 0">
-          <label style="font-weight:bold;color:#15803d"><i class="fas fa-check-circle"></i> Đóng đủ số tiền còn lại</label>
-          <input type="text" id="paymentNewAmount" class="form-control currency-display" value="0" readonly style="font-size:18px;font-weight:bold;background:#fff;border:2px solid #15803d;color:#15803d">
+          <label style="font-weight:bold;color:#15803d"><i class="fas fa-check-circle"></i> Đóng đủ số tiền còn
+            lại</label>
+          <input type="text" id="paymentNewAmount" class="form-control currency-display" value="0" readonly
+            style="font-size:18px;font-weight:bold;background:#fff;border:2px solid #15803d;color:#15803d">
           <small class="text-muted">Chỉ được đóng đúng số tiền còn lại để hoàn tất</small>
         </div>
-        
+
         <div class="form-row">
           <div class="form-group">
             <label>Tổng sẽ đóng</label>
-            <input type="text" id="paymentTotalPaid" class="form-control currency-display" readonly style="background:var(--bg-secondary);font-weight:bold;color:#15803d">
+            <input type="text" id="paymentTotalPaid" class="form-control currency-display" readonly
+              style="background:var(--bg-secondary);font-weight:bold;color:#15803d">
           </div>
           <div class="form-group">
             <label>Còn lại sau khi đóng</label>
-            <input type="text" id="paymentRemaining" class="form-control currency-display" readonly style="background:#fef3c7;font-weight:bold;color:#dc2626">
+            <input type="text" id="paymentRemaining" class="form-control currency-display" readonly
+              style="background:#fef3c7;font-weight:bold;color:#dc2626">
           </div>
         </div>
-        
+
         <div class="form-group">
           <label>Ghi chú</label>
-          <textarea id="paymentNote" class="form-control" rows="2" placeholder="VD: Đóng đủ học phí tháng 12"></textarea>
+          <textarea id="paymentNote" class="form-control" rows="2"
+            placeholder="VD: Đóng đủ học phí tháng 12"></textarea>
         </div>
       </div>
       <div class="modal-footer">
@@ -350,33 +732,32 @@
     </div>
   </div>
 
-  <script src="https://sdk.twilio.com/js/client/v1.14/twilio.min.js"></script>
   <script src="../js/config.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/sidebar.js"></script>
   <script>
-    let leads=[], currentStatus='', currentView='table', importData=[], canDelete=false;
-    const statusCfg = {new:{label:'Mới'},scheduled:{label:'Đã hẹn'},attended:{label:'Đã TN'},converted:{label:'Chuyển đổi'},cancelled:{label:'Lỗi'}};
+    let leads = [], currentStatus = '', currentView = 'table', importData = [], canDelete = false;
+    const statusCfg = { new: { label: 'Mới' }, scheduled: { label: 'Đã hẹn' }, attended: { label: 'Đã TN' }, converted: { label: 'Chuyển đổi' }, cancelled: { label: 'Lỗi' } };
 
-    async function init() { 
-      if(!auth.checkAuth())return; 
-      buildSidebar('sidebar'); 
-      
+    async function init() {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+
       // Phân quyền
       const user = auth.user;
       const canImport = ['ADMIN', 'HOEC', 'OM'].includes(user?.role_name);
       const canAssign = ['ADMIN', 'HOEC', 'OM'].includes(user?.role_name);
       canDelete = ['ADMIN', 'HOEC', 'OM'].includes(user?.role_name);
-      if(canImport) document.getElementById('btnImport').style.display = 'inline-flex';
-      if(canAssign) {
+      if (canImport) document.getElementById('btnImport').style.display = 'inline-flex';
+      if (canAssign) {
         document.getElementById('assignEcRow').style.display = 'flex';
         await loadEcList();
       }
-      
+
       await loadSubjects();
       await loadClasses();
-      await loadStats(); 
-      await loadData(); 
+      await loadStats();
+      await loadData();
     }
 
     let ecList = [];
@@ -385,9 +766,9 @@
         const res = await api.get('/users?role=EC');
         ecList = res.data || [];
         var sel = document.getElementById('assignedEcId');
-        sel.innerHTML = '<option value="">-- Tự động (người tạo) --</option>' + 
-          ecList.map(function(ec){ return '<option value="'+ec.id+'">'+escapeHtml(ec.full_name)+'</option>'; }).join('');
-      } catch(e) { console.error(e); }
+        sel.innerHTML = '<option value="">-- Tự động (người tạo) --</option>' +
+          ecList.map(function (ec) { return '<option value="' + ec.id + '">' + escapeHtml(ec.full_name) + '</option>'; }).join('');
+      } catch (e) { console.error(e); }
     }
 
     let subjects = [];
@@ -395,7 +776,7 @@
       try {
         const res = await api.get('/common/subjects');
         subjects = res.data || [];
-      } catch(e) { console.error(e); }
+      } catch (e) { console.error(e); }
     }
 
     let classes = [];
@@ -403,19 +784,19 @@
       try {
         const res = await api.get('/classes');
         classes = (res.data || []).filter(c => c.status === 'active');
-      } catch(e) { console.error(e); }
+      } catch (e) { console.error(e); }
     }
 
     async function loadStats() {
       try {
         const res = await api.get('/leads/stats');
-        const s = res.data||{};
-        document.getElementById('statTotal').textContent = s.total||0;
-        document.getElementById('statScheduled').textContent = s.scheduled||0;
-        document.getElementById('statAttended').textContent = s.attended||0;
-        document.getElementById('statConverted').textContent = s.converted||0;
-        document.getElementById('statusTabs').innerHTML = '<div class="status-tab '+ (!currentStatus?'active':'') +'" onclick="filterStatus(\'\')">Tất cả<span class="count">'+(s.total||0)+'</span></div><div class="status-tab '+ (currentStatus==='new'?'active':'') +'" onclick="filterStatus(\'new\')">Mới<span class="count">'+(s.new||0)+'</span></div><div class="status-tab '+ (currentStatus==='scheduled'?'active':'') +'" onclick="filterStatus(\'scheduled\')">Đã hẹn<span class="count">'+(s.scheduled||0)+'</span></div><div class="status-tab '+ (currentStatus==='attended'?'active':'') +'" onclick="filterStatus(\'attended\')">Đã TN<span class="count">'+(s.attended||0)+'</span></div><div class="status-tab '+ (currentStatus==='converted'?'active':'') +'" onclick="filterStatus(\'converted\')">Chuyển đổi<span class="count">'+(s.converted||0)+'</span></div><div class="status-tab '+ (currentStatus==='cancelled'?'active':'') +'" onclick="filterStatus(\'cancelled\')" style="color:#ef4444">Lỗi<span class="count">'+(s.cancelled||0)+'</span></div>';
-      } catch(e) { console.error(e); }
+        const s = res.data || {};
+        document.getElementById('statTotal').textContent = s.total || 0;
+        document.getElementById('statScheduled').textContent = s.scheduled || 0;
+        document.getElementById('statAttended').textContent = s.attended || 0;
+        document.getElementById('statConverted').textContent = s.converted || 0;
+        document.getElementById('statusTabs').innerHTML = '<div class="status-tab ' + (!currentStatus ? 'active' : '') + '" onclick="filterStatus(\'\')">Tất cả<span class="count">' + (s.total || 0) + '</span></div><div class="status-tab ' + (currentStatus === 'new' ? 'active' : '') + '" onclick="filterStatus(\'new\')">Mới<span class="count">' + (s.new || 0) + '</span></div><div class="status-tab ' + (currentStatus === 'scheduled' ? 'active' : '') + '" onclick="filterStatus(\'scheduled\')">Đã hẹn<span class="count">' + (s.scheduled || 0) + '</span></div><div class="status-tab ' + (currentStatus === 'attended' ? 'active' : '') + '" onclick="filterStatus(\'attended\')">Đã TN<span class="count">' + (s.attended || 0) + '</span></div><div class="status-tab ' + (currentStatus === 'converted' ? 'active' : '') + '" onclick="filterStatus(\'converted\')">Chuyển đổi<span class="count">' + (s.converted || 0) + '</span></div><div class="status-tab ' + (currentStatus === 'cancelled' ? 'active' : '') + '" onclick="filterStatus(\'cancelled\')" style="color:#ef4444">Lỗi<span class="count">' + (s.cancelled || 0) + '</span></div>';
+      } catch (e) { console.error(e); }
     }
 
     async function loadData() {
@@ -423,42 +804,42 @@
       const source = document.getElementById('sourceFilter').value;
       try {
         const p = new URLSearchParams();
-        if(currentStatus) p.append('status', currentStatus);
-        if(search) p.append('search', search);
-        if(source) p.append('source', source);
-        const res = await api.get('/leads?'+p);
-        leads = res.data||[];
+        if (currentStatus) p.append('status', currentStatus);
+        if (search) p.append('search', search);
+        if (source) p.append('source', source);
+        const res = await api.get('/leads?' + p);
+        leads = res.data || [];
         renderTable(); renderCards();
-      } catch(e) { console.error(e); document.getElementById('leadsTableBody').innerHTML='<tr><td colspan="8" class="text-center text-danger">Lỗi</td></tr>'; }
+      } catch (e) { console.error(e); document.getElementById('leadsTableBody').innerHTML = '<tr><td colspan="8" class="text-center text-danger">Lỗi</td></tr>'; }
     }
 
-    function filterStatus(s) { currentStatus=s; loadStats(); loadData(); }
-    function setView(v) { currentView=v; document.querySelectorAll('.view-toggle button').forEach(b=>b.classList.remove('active')); document.getElementById('view'+v.charAt(0).toUpperCase()+v.slice(1)).classList.add('active'); document.getElementById('tableView').style.display=v==='table'?'block':'none'; document.getElementById('cardView').style.display=v==='card'?'block':'none'; }
+    function filterStatus(s) { currentStatus = s; loadStats(); loadData(); }
+    function setView(v) { currentView = v; document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active')); document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.add('active'); document.getElementById('tableView').style.display = v === 'table' ? 'block' : 'none'; document.getElementById('cardView').style.display = v === 'card' ? 'block' : 'none'; }
 
-    function escapeHtml(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+    function escapeHtml(str) { return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 
     function getActionButtons(l) {
       var btns = '';
-      switch(l.status) {
+      switch (l.status) {
         case 'new':
-          btns = '<button class="btn btn-sm btn-success" onclick="openScheduleModal('+l.id+')" title="Đặt lịch TN"><i class="fas fa-calendar-plus"></i></button> ';
-          btns += '<button class="btn btn-sm btn-secondary" onclick="markCancelled('+l.id+')" title="Đánh dấu lỗi"><i class="fas fa-ban"></i></button> ';
+          btns = '<button class="btn btn-sm btn-success" onclick="openScheduleModal(' + l.id + ')" title="Đặt lịch TN"><i class="fas fa-calendar-plus"></i></button> ';
+          btns += '<button class="btn btn-sm btn-secondary" onclick="markCancelled(' + l.id + ')" title="Đánh dấu lỗi"><i class="fas fa-ban"></i></button> ';
           break;
         case 'scheduled':
-          btns = '<button class="btn btn-sm btn-success" onclick="markAttended('+l.id+')" title="Đã đến"><i class="fas fa-check"></i></button> ';
-          btns += '<button class="btn btn-sm btn-warning" onclick="markNoShow('+l.id+')" title="Không đến"><i class="fas fa-times"></i></button> ';
-          btns += '<button class="btn btn-sm btn-secondary" onclick="markCancelled('+l.id+')" title="Đánh dấu lỗi"><i class="fas fa-ban"></i></button> ';
+          btns = '<button class="btn btn-sm btn-success" onclick="markAttended(' + l.id + ')" title="Đã đến"><i class="fas fa-check"></i></button> ';
+          btns += '<button class="btn btn-sm btn-warning" onclick="markNoShow(' + l.id + ')" title="Không đến"><i class="fas fa-times"></i></button> ';
+          btns += '<button class="btn btn-sm btn-secondary" onclick="markCancelled(' + l.id + ')" title="Đánh dấu lỗi"><i class="fas fa-ban"></i></button> ';
           break;
         case 'attended':
-          btns = '<button class="btn btn-sm btn-purple" onclick="openScheduleModal('+l.id+')" title="Đặt buổi tiếp"><i class="fas fa-calendar-plus"></i></button> ';
-          btns += '<button class="btn btn-sm btn-success" onclick="openConvertModal('+l.id+')" title="Chuyển đổi"><i class="fas fa-user-graduate"></i></button> ';
-          btns += '<button class="btn btn-sm btn-secondary" onclick="markCancelled('+l.id+')" title="Đánh dấu lỗi"><i class="fas fa-ban"></i></button> ';
+          btns = '<button class="btn btn-sm btn-purple" onclick="openScheduleModal(' + l.id + ')" title="Đặt buổi tiếp"><i class="fas fa-calendar-plus"></i></button> ';
+          btns += '<button class="btn btn-sm btn-success" onclick="openConvertModal(' + l.id + ')" title="Chuyển đổi"><i class="fas fa-user-graduate"></i></button> ';
+          btns += '<button class="btn btn-sm btn-secondary" onclick="markCancelled(' + l.id + ')" title="Đánh dấu lỗi"><i class="fas fa-ban"></i></button> ';
           break;
         case 'converted':
           // Chỉ hiện nút cập nhật thanh toán nếu còn nợ (actual_revenue < fee_total)
           var remaining = (parseFloat(l.fee_total) || 0) - (parseFloat(l.actual_revenue) || 0);
-          if(remaining > 0) {
-            btns = '<button class="btn btn-sm btn-warning" onclick="openPaymentModal('+l.id+')" title="Đóng nốt '+formatCurrency(remaining)+'"><i class="fas fa-dollar-sign"></i></button> ';
+          if (remaining > 0) {
+            btns = '<button class="btn btn-sm btn-warning" onclick="openPaymentModal(' + l.id + ')" title="Đóng nốt ' + formatCurrency(remaining) + '"><i class="fas fa-dollar-sign"></i></button> ';
           }
           btns += '<span class="text-success"><i class="fas fa-check-circle"></i></span> ';
           break;
@@ -466,91 +847,91 @@
           btns = '<span class="text-danger"><i class="fas fa-ban"></i> Lỗi</span> ';
           break;
       }
-      btns += '<button class="btn btn-sm btn-info" onclick="editLead('+l.id+')" title="Sửa"><i class="fas fa-edit"></i></button> ';
-      if(canDelete) btns += '<button class="btn btn-sm btn-danger" onclick="deleteLead('+l.id+')" title="Xóa"><i class="fas fa-trash"></i></button>';
+      btns += '<button class="btn btn-sm btn-info" onclick="editLead(' + l.id + ')" title="Sửa"><i class="fas fa-edit"></i></button> ';
+      if (canDelete) btns += '<button class="btn btn-sm btn-danger" onclick="deleteLead(' + l.id + ')" title="Xóa"><i class="fas fa-trash"></i></button>';
       return btns;
     }
 
     function renderTable() {
       const tb = document.getElementById('leadsTableBody');
-      if(!leads.length) { tb.innerHTML='<tr><td colspan="8" class="text-center text-muted">Chưa có lead</td></tr>'; return; }
-      tb.innerHTML = leads.map(l=>{
+      if (!leads.length) { tb.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có lead</td></tr>'; return; }
+      tb.innerHTML = leads.map(l => {
         var name = escapeHtml(l.customer_name);
         var phone = escapeHtml(l.customer_phone);
-        return '<tr><td><code>'+(l.code||'-')+'</code></td><td><strong>'+escapeHtml(l.student_name)+'</strong></td><td>'+name+'</td><td><a href="javascript:void(0)" class="phone-link" onclick="openCallModal('+l.id+',\''+name+'\',\''+phone+'\')"><i class="fas fa-phone"></i> '+phone+'</a></td><td>'+(l.source||'-')+'</td><td><span class="status-badge '+l.status+'">'+((statusCfg[l.status]||{}).label||l.status)+'</span></td><td>'+formatDate(l.created_at)+'</td><td class="text-center">'+getActionButtons(l)+'</td></tr>';
+        return '<tr><td><code>' + (l.code || '-') + '</code></td><td><strong>' + escapeHtml(l.student_name) + '</strong></td><td>' + name + '</td><td><a href="javascript:void(0)" class="phone-link" onclick="openCallModal(' + l.id + ',\'' + name + '\',\'' + phone + '\')"><i class="fas fa-phone"></i> ' + phone + '</a></td><td>' + (l.source || '-') + '</td><td><span class="status-badge ' + l.status + '">' + ((statusCfg[l.status] || {}).label || l.status) + '</span></td><td>' + formatDate(l.created_at) + '</td><td class="text-center">' + getActionButtons(l) + '</td></tr>';
       }).join('');
     }
 
     function renderCards() {
       const c = document.getElementById('leadsGrid');
-      if(!leads.length) { c.innerHTML='<p class="text-muted">Chưa có lead</p>'; return; }
-      c.innerHTML = leads.map(l=>{
+      if (!leads.length) { c.innerHTML = '<p class="text-muted">Chưa có lead</p>'; return; }
+      c.innerHTML = leads.map(l => {
         var name = escapeHtml(l.customer_name);
         var phone = escapeHtml(l.customer_phone);
-        return '<div class="lead-card"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><strong>'+escapeHtml(l.student_name)+'</strong><span class="status-badge '+l.status+'">'+((statusCfg[l.status]||{}).label||l.status)+'</span></div><div style="font-size:13px;color:var(--text-secondary)"><div><i class="fas fa-user"></i> '+name+'</div><div><i class="fas fa-phone"></i> <a href="javascript:void(0)" class="phone-link" onclick="event.stopPropagation();openCallModal('+l.id+',\''+name+'\',\''+phone+'\')">'+phone+'</a></div></div><div style="margin-top:10px;display:flex;gap:6px">'+getActionButtons(l)+'</div></div>';
+        return '<div class="lead-card"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><strong>' + escapeHtml(l.student_name) + '</strong><span class="status-badge ' + l.status + '">' + ((statusCfg[l.status] || {}).label || l.status) + '</span></div><div style="font-size:13px;color:var(--text-secondary)"><div><i class="fas fa-user"></i> ' + name + '</div><div><i class="fas fa-phone"></i> <a href="javascript:void(0)" class="phone-link" onclick="event.stopPropagation();openCallModal(' + l.id + ',\'' + name + '\',\'' + phone + '\')">' + phone + '</a></div></div><div style="margin-top:10px;display:flex;gap:6px">' + getActionButtons(l) + '</div></div>';
       }).join('');
     }
 
-    function openCreateModal() { document.getElementById('leadId').value=''; document.getElementById('leadForm').reset(); document.getElementById('modalTitle').innerHTML='<i class="fas fa-user-plus"></i> Thêm Lead'; document.getElementById('formModal').classList.add('show'); }
+    function openCreateModal() { document.getElementById('leadId').value = ''; document.getElementById('leadForm').reset(); document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Thêm Lead'; document.getElementById('formModal').classList.add('show'); }
     function closeFormModal() { document.getElementById('formModal').classList.remove('show'); }
 
     async function editLead(id) {
       try {
-        const res = await api.get('/leads/'+id);
+        const res = await api.get('/leads/' + id);
         const l = res.data;
         document.getElementById('leadId').value = l.id;
         document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa Lead';
         const f = document.getElementById('leadForm');
-        f.studentName.value = l.student_name||'';
-        f.birthYear.value = l.birth_year||'';
-        f.customerName.value = l.customer_name||'';
-        f.customerPhone.value = l.customer_phone||'';
-        f.customerEmail.value = l.customer_email||'';
-        f.source.value = l.source||'facebook';
-        f.note.value = l.note||'';
+        f.studentName.value = l.student_name || '';
+        f.birthYear.value = l.birth_year || '';
+        f.customerName.value = l.customer_name || '';
+        f.customerPhone.value = l.customer_phone || '';
+        f.customerEmail.value = l.customer_email || '';
+        f.source.value = l.source || 'facebook';
+        f.note.value = l.note || '';
         document.getElementById('formModal').classList.add('show');
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
 
     async function saveLead() {
       const f = document.getElementById('leadForm');
       const id = document.getElementById('leadId').value;
       const assignedEc = document.getElementById('assignedEcId')?.value;
-      const data = { 
-        studentName: f.studentName.value, 
-        studentBirthYear: f.birthYear.value || null, 
-        customerName: f.customerName.value, 
-        customerPhone: f.customerPhone.value, 
-        customerEmail: f.customerEmail.value || null, 
-        source: f.source.value, 
+      const data = {
+        studentName: f.studentName.value,
+        studentBirthYear: f.birthYear.value || null,
+        customerName: f.customerName.value,
+        customerPhone: f.customerPhone.value,
+        customerEmail: f.customerEmail.value || null,
+        source: f.source.value,
         note: f.note.value || null
       };
       // Nếu manager giao cho EC khác
-      if(assignedEc) data.saleId = parseInt(assignedEc);
-      
+      if (assignedEc) data.saleId = parseInt(assignedEc);
+
       try {
-        if(id) { await api.put('/leads/'+id, data); ui.success('Cập nhật thành công'); }
+        if (id) { await api.put('/leads/' + id, data); ui.success('Cập nhật thành công'); }
         else { await api.post('/leads', data); ui.success('Thêm thành công'); }
         closeFormModal(); loadStats(); loadData();
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
 
-    async function deleteLead(id) { if(!confirm('Xóa lead này?'))return; try { await api.delete('/leads/'+id); ui.success('Đã xóa'); loadStats(); loadData(); } catch(e) { ui.error(e.message); } }
+    async function deleteLead(id) { if (!confirm('Xóa lead này?')) return; try { await api.delete('/leads/' + id); ui.success('Đã xóa'); loadStats(); loadData(); } catch (e) { ui.error(e.message); } }
 
     // ========== SCHEDULE FUNCTIONS ==========
     var currentScheduleLead = null;
-    
+
     async function openScheduleModal(id) {
       try {
-        const res = await api.get('/leads/'+id);
+        const res = await api.get('/leads/' + id);
         currentScheduleLead = res.data;
         document.getElementById('scheduleLeadId').value = id;
-        document.getElementById('scheduleLeadInfo').innerHTML = '<strong>'+escapeHtml(currentScheduleLead.student_name)+'</strong><br><small>'+escapeHtml(currentScheduleLead.customer_name)+' - '+currentScheduleLead.customer_phone+'</small>';
-        
+        document.getElementById('scheduleLeadInfo').innerHTML = '<strong>' + escapeHtml(currentScheduleLead.student_name) + '</strong><br><small>' + escapeHtml(currentScheduleLead.customer_name) + ' - ' + currentScheduleLead.customer_phone + '</small>';
+
         // Populate subjects
         var subjectSelect = document.getElementById('scheduleSubject');
-        subjectSelect.innerHTML = '<option value="">-- Chọn bộ môn --</option>' + subjects.map(function(s){ return '<option value="'+s.id+'">'+escapeHtml(s.name)+'</option>'; }).join('');
-        
+        subjectSelect.innerHTML = '<option value="">-- Chọn bộ môn --</option>' + subjects.map(function (s) { return '<option value="' + s.id + '">' + escapeHtml(s.name) + '</option>'; }).join('');
+
         // Set default date to tomorrow
         var tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -558,24 +939,24 @@
         document.getElementById('scheduleTime').value = '09:00';
         document.getElementById('scheduleSubject').value = currentScheduleLead.subject_id || '';
         document.getElementById('scheduleNote').value = '';
-        
+
         document.getElementById('scheduleModal').classList.add('show');
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
-    
+
     function closeScheduleModal() { document.getElementById('scheduleModal').classList.remove('show'); }
-    
+
     async function saveSchedule() {
       var id = document.getElementById('scheduleLeadId').value;
       var date = document.getElementById('scheduleDate').value;
       var time = document.getElementById('scheduleTime').value;
       var subject = document.getElementById('scheduleSubject').value;
       var note = document.getElementById('scheduleNote').value;
-      
-      if(!date || !time) { ui.warning('Vui lòng chọn ngày và giờ'); return; }
-      
+
+      if (!date || !time) { ui.warning('Vui lòng chọn ngày và giờ'); return; }
+
       try {
-        await api.post('/leads/'+id+'/schedule', {
+        await api.post('/leads/' + id + '/schedule', {
           scheduledDate: date,
           scheduledTime: time,
           subjectId: subject || null,
@@ -584,42 +965,41 @@
         ui.success('Đã đặt lịch trải nghiệm');
         closeScheduleModal();
         loadStats(); loadData();
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
-    
+
     // ========== MARK ATTENDED / NO-SHOW ==========
     async function markAttended(id) {
-      if(!confirm('Xác nhận học sinh đã đến?')) return;
+      if (!confirm('Xác nhận học sinh đã đến?')) return;
       try {
-        await api.post('/leads/'+id+'/attended');
+        await api.post('/leads/' + id + '/attended');
         ui.success('Đã cập nhật');
         loadStats(); loadData();
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
-    
+
     async function markNoShow(id) {
-      if(!confirm('Xác nhận học sinh không đến?')) return;
+      if (!confirm('Xác nhận học sinh không đến?')) return;
       try {
-        await api.post('/leads/'+id+'/no-show');
+        await api.post('/leads/' + id + '/no-show');
         ui.success('Đã cập nhật');
         loadStats(); loadData();
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
-    
+
     async function markCancelled(id) {
       var reason = prompt('Lý do đánh dấu lỗi (SĐT sai, không liên lạc được, spam...):');
-      if(reason === null) return;
+      if (reason === null) return;
       try {
-        await api.put('/leads/'+id, { status: 'cancelled', note: reason || 'Đánh dấu lỗi' });
+        await api.put('/leads/' + id, { status: 'cancelled', note: reason || 'Đánh dấu lỗi' });
         ui.success('Đã đánh dấu lỗi');
         loadStats(); loadData();
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
-    
+
     // ========== CONVERT FUNCTIONS ==========
     var currentConvertLead = null;
-    
-    function calcFeeTotal() {
+
     function calcFeeTotal() {
       var orig = parseFloat(document.getElementById('convertFeeOriginal').value) || 0;
       var disc = parseFloat(document.getElementById('convertFeeDiscount').value) || 0;
@@ -628,13 +1008,13 @@
       document.getElementById('convertFeeTotal').dataset.rawValue = total;
       updateRemaining();
     }
-    
+
     function updatePaymentFields() {
       var status = document.getElementById('convertPaymentStatus').value;
       var row = document.getElementById('paymentAmountRow');
       var remainingRow = document.getElementById('remainingRow');
       var depositLabel = document.getElementById('depositLabel');
-      
+
       if (status === 'pending') {
         row.style.display = 'none';
         remainingRow.style.display = 'none';
@@ -643,7 +1023,7 @@
         remainingRow.style.display = 'block';
         depositLabel.textContent = status === 'deposit' ? 'Tiền cọc' : 'Đã đóng trước';
       }
-      
+
       if (status === 'paid') {
         var total = parseFloat(document.getElementById('convertFeeTotal').dataset.rawValue) || 0;
         document.getElementById('convertPaidAmount').value = total;
@@ -651,7 +1031,7 @@
       }
       updateRemaining();
     }
-    
+
     function updateRemaining() {
       var total = parseFloat(document.getElementById('convertFeeTotal').dataset.rawValue) || 0;
       var deposit = parseFloat(document.getElementById('convertDepositAmount').value) || 0;
@@ -659,18 +1039,18 @@
       var remaining = total - deposit - paid;
       document.getElementById('convertRemaining').textContent = formatCurrency(Math.max(0, remaining));
     }
-    
+
     async function openConvertModal(id) {
       try {
-        const res = await api.get('/leads/'+id);
+        const res = await api.get('/leads/' + id);
         currentConvertLead = res.data;
         document.getElementById('convertLeadId').value = id;
-        document.getElementById('convertLeadInfo').innerHTML = '<strong>'+escapeHtml(currentConvertLead.student_name)+'</strong><br><small>'+escapeHtml(currentConvertLead.customer_name)+' - '+currentConvertLead.customer_phone+'</small><br><small>Bộ môn: '+(currentConvertLead.subject_name || '-')+'</small>';
-        
+        document.getElementById('convertLeadInfo').innerHTML = '<strong>' + escapeHtml(currentConvertLead.student_name) + '</strong><br><small>' + escapeHtml(currentConvertLead.customer_name) + ' - ' + currentConvertLead.customer_phone + '</small><br><small>Bộ môn: ' + (currentConvertLead.subject_name || '-') + '</small>';
+
         // Populate classes
         var classSelect = document.getElementById('convertClass');
-        classSelect.innerHTML = '<option value="">-- Chờ CM xếp lớp --</option>' + classes.map(function(c){ return '<option value="'+c.id+'">'+escapeHtml(c.name)+'</option>'; }).join('');
-        
+        classSelect.innerHTML = '<option value="">-- Chờ CM xếp lớp --</option>' + classes.map(function (c) { return '<option value="' + c.id + '">' + escapeHtml(c.name) + '</option>'; }).join('');
+
         // Reset all fields
         document.getElementById('convertFeeOriginal').value = 0;
         document.getElementById('convertFeeDiscount').value = 0;
@@ -682,13 +1062,13 @@
         document.getElementById('convertNote').value = '';
         document.getElementById('paymentAmountRow').style.display = 'none';
         document.getElementById('remainingRow').style.display = 'none';
-        
+
         document.getElementById('convertModal').classList.add('show');
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
-    
+
     function closeConvertModal() { document.getElementById('convertModal').classList.remove('show'); }
-    
+
     async function convertLead() {
       var id = document.getElementById('convertLeadId').value;
       var classId = document.getElementById('convertClass').value || null;
@@ -699,20 +1079,20 @@
       var paidAmount = parseFloat(document.getElementById('convertPaidAmount').value) || 0;
       var paymentStatus = document.getElementById('convertPaymentStatus').value;
       var note = document.getElementById('convertNote').value;
-      
+
       // Validation
-      if(feeTotal <= 0) {
+      if (feeTotal <= 0) {
         ui.warning('Vui lòng nhập học phí');
         return;
       }
-      
+
       // actual_revenue = tiền đã thu (cọc + đã đóng)
       var actualRevenue = depositAmount + paidAmount;
-      
+
       console.log('Converting with:', { feeOriginal, feeDiscount, feeTotal, depositAmount, paidAmount, paymentStatus });
-      
+
       try {
-        await api.post('/leads/'+id+'/convert', {
+        await api.post('/leads/' + id + '/convert', {
           classId: classId,
           feeOriginal: feeOriginal,
           feeDiscount: feeDiscount,
@@ -725,49 +1105,49 @@
         ui.success(classId ? 'Chuyển đổi và xếp lớp thành công!' : 'Chuyển đổi thành công! CM sẽ xếp lớp sau.');
         closeConvertModal();
         loadStats(); loadData();
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
-    
+
     // ========== CURRENCY FORMATTING ==========
-    function formatCurrency(v) { 
-      return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ'; 
+    function formatCurrency(v) {
+      return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ';
     }
-    
+
     function parseCurrency(str) {
       // Remove all non-digits
       return parseInt(String(str).replace(/[^\d]/g, '')) || 0;
     }
-    
+
     function formatCurrencyInput(input) {
       var cursorPos = input.selectionStart;
       var oldLen = input.value.length;
       var rawValue = parseCurrency(input.value);
-      
-      if(rawValue > 0) {
+
+      if (rawValue > 0) {
         input.value = new Intl.NumberFormat('vi-VN').format(rawValue) + 'đ';
       } else {
         input.value = '0đ';
       }
-      
+
       // Store raw value for calculations
       input.dataset.rawValue = rawValue;
-      
+
       // Adjust cursor position
       var newLen = input.value.length;
       var newPos = Math.max(0, cursorPos + (newLen - oldLen));
-      if(newPos >= input.value.length - 1) newPos = input.value.length - 1; // Before 'đ'
-      try { input.setSelectionRange(newPos, newPos); } catch(e) {}
+      if (newPos >= input.value.length - 1) newPos = input.value.length - 1; // Before 'đ'
+      try { input.setSelectionRange(newPos, newPos); } catch (e) { }
     }
-    
+
     function getCurrencyValue(inputId) {
       var input = document.getElementById(inputId);
       return parseFloat(input.dataset.rawValue) || parseCurrency(input.value);
     }
-    
+
     // Auto select all on focus for currency inputs
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('.currency-input').forEach(function(input) {
-        input.addEventListener('focus', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.currency-input').forEach(function (input) {
+        input.addEventListener('focus', function () {
           this.select();
         });
       });
@@ -775,220 +1155,251 @@
 
     // ========== PAYMENT UPDATE FUNCTIONS ==========
     var currentPaymentLead = null;
-    
+
     async function openPaymentModal(id) {
       try {
-        const res = await api.get('/leads/'+id);
+        const res = await api.get('/leads/' + id);
         currentPaymentLead = res.data;
-        
+
         var feeTotal = parseFloat(currentPaymentLead.fee_total) || 0;
         var actualRev = parseFloat(currentPaymentLead.actual_revenue) || 0;
         var remaining = Math.max(0, feeTotal - actualRev);
-        
+
         // Kiểm tra nếu đã đóng đủ
-        if(remaining <= 0) {
+        if (remaining <= 0) {
           ui.info('Học sinh đã đóng đủ học phí!');
           return;
         }
-        
+
         document.getElementById('paymentLeadId').value = id;
-        
+
         var deposit = parseFloat(currentPaymentLead.deposit_amount) || 0;
         var prevPaid = actualRev - deposit; // Số đã đóng (không tính cọc)
-        
-        document.getElementById('paymentLeadInfo').innerHTML = 
-          '<strong>'+escapeHtml(currentPaymentLead.student_name)+'</strong><br>' +
-          '<small>'+escapeHtml(currentPaymentLead.customer_name)+' - '+currentPaymentLead.customer_phone+'</small><br>' +
-          '<small>Học phí: <strong>'+formatCurrency(feeTotal)+'</strong> | Đã đóng: <strong class="text-success">'+formatCurrency(actualRev)+'</strong> | Còn: <strong class="text-danger">'+formatCurrency(remaining)+'</strong></small>';
-        
+
+        document.getElementById('paymentLeadInfo').innerHTML =
+          '<strong>' + escapeHtml(currentPaymentLead.student_name) + '</strong><br>' +
+          '<small>' + escapeHtml(currentPaymentLead.customer_name) + ' - ' + currentPaymentLead.customer_phone + '</small><br>' +
+          '<small>Học phí: <strong>' + formatCurrency(feeTotal) + '</strong> | Đã đóng: <strong class="text-success">' + formatCurrency(actualRev) + '</strong> | Còn: <strong class="text-danger">' + formatCurrency(remaining) + '</strong></small>';
+
         document.getElementById('paymentDeposit').value = formatCurrency(deposit);
         document.getElementById('paymentPrevPaid').value = formatCurrency(Math.max(0, prevPaid));
         document.getElementById('paymentNewAmount').value = formatCurrency(remaining);
         document.getElementById('paymentTotalPaid').value = formatCurrency(actualRev + remaining);
         document.getElementById('paymentRemaining').value = formatCurrency(0);
         document.getElementById('paymentNote').value = '';
-        
+
         // Store raw values for saving
         document.getElementById('paymentNewAmount').dataset.rawValue = remaining;
-        
+
         document.getElementById('paymentModal').classList.add('show');
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
-    
+
     function closePaymentModal() { document.getElementById('paymentModal').classList.remove('show'); }
-    
+
     async function savePayment() {
       var id = document.getElementById('paymentLeadId').value;
       var newAmount = parseFloat(document.getElementById('paymentNewAmount').dataset.rawValue) || 0;
       var note = document.getElementById('paymentNote').value;
-      
+
       var feeTotal = parseFloat(currentPaymentLead.fee_total) || 0;
       var actualRev = parseFloat(currentPaymentLead.actual_revenue) || 0;
       var remaining = Math.max(0, feeTotal - actualRev);
-      
-      if(newAmount <= 0) { 
-        ui.warning('Không còn số tiền cần đóng!'); 
-        return; 
+
+      if (newAmount <= 0) {
+        ui.warning('Không còn số tiền cần đóng!');
+        return;
       }
-      
+
       var newActualRevenue = actualRev + newAmount;
-      
+
       try {
-        await api.put('/leads/'+id, {
+        await api.put('/leads/' + id, {
           actual_revenue: newActualRevenue,
-          note: (currentPaymentLead.note || '') + '\n['+new Date().toLocaleDateString('vi-VN')+'] Đóng đủ '+formatCurrency(newAmount) + (note ? ': '+note : '')
+          note: (currentPaymentLead.note || '') + '\n[' + new Date().toLocaleDateString('vi-VN') + '] Đóng đủ ' + formatCurrency(newAmount) + (note ? ': ' + note : '')
         });
-        ui.success('Đã đóng đủ học phí: '+formatCurrency(newAmount)+'. Doanh số KPI đã được cập nhật!');
+        ui.success('Đã đóng đủ học phí: ' + formatCurrency(newAmount) + '. Doanh số KPI đã được cập nhật!');
         closePaymentModal();
         loadStats(); loadData();
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
 
-    function openImportModal() { document.getElementById('importModal').classList.add('show'); document.getElementById('importPreview').style.display='none'; document.getElementById('excelFile').value=''; importData=[]; }
+    function openImportModal() { document.getElementById('importModal').classList.add('show'); document.getElementById('importPreview').style.display = 'none'; document.getElementById('excelFile').value = ''; importData = []; }
     function closeImportModal() { document.getElementById('importModal').classList.remove('show'); }
-    function handleFileSelect(e) { const f=e.target.files[0]; if(f)processExcelFile(f); }
+    function handleFileSelect(e) { const f = e.target.files[0]; if (f) processExcelFile(f); }
 
     async function processExcelFile(file) {
-      if(!file.name.match(/\.(xlsx|xls)$/i)) { ui.error('Chọn file Excel'); return; }
+      if (!file.name.match(/\.(xlsx|xls)$/i)) { ui.error('Chọn file Excel'); return; }
       try {
-        if(typeof XLSX==='undefined') await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+        if (typeof XLSX === 'undefined') await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
         const data = await file.arrayBuffer();
-        const wb = XLSX.read(data, {type:'array'});
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1});
-        if(rows.length<2) { ui.error('File rỗng'); return; }
-        const h = rows[0].map(function(x){return String(x||'').toLowerCase();});
-        var colSn = h.findIndex(function(x){return x.indexOf('học sinh')>=0||x.indexOf('hoc sinh')>=0;});
-        var colCn = h.findIndex(function(x){return x.indexOf('phụ huynh')>=0||x.indexOf('phu huynh')>=0;});
-        var colPh = h.findIndex(function(x){return x.indexOf('điện thoại')>=0||x.indexOf('phone')>=0||x.indexOf('sđt')>=0;});
-        if(colSn===-1||colPh===-1) { ui.error('Thiếu cột: Tên học sinh, SĐT'); return; }
-        importData=[]; var valid=0, err=0;
-        var tb = document.getElementById('previewBody'); tb.innerHTML='';
-        for(var i=1;i<rows.length;i++) {
-          var r=rows[i]; if(!r||!r.length)continue;
-          var sn=String(r[colSn]||'').trim(), cn=String(r[colCn]||sn).trim(), ph=String(r[colPh]||'').replace(/[^0-9]/g,'');
-          var ok=true, e='';
-          if(!sn) { ok=false; e='Thiếu tên'; } else if(ph.length<9) { ok=false; e='SĐT lỗi'; }
-          if(ok) { valid++; importData.push({studentName:sn,customerName:cn,customerPhone:ph,source:'other'}); } else err++;
-          tb.innerHTML+='<tr class="'+(ok?'':'text-danger')+'"><td>'+i+'</td><td>'+(sn||'-')+'</td><td>'+(cn||'-')+'</td><td>'+(ph||'-')+'</td><td>'+(ok?'<span class="badge badge-success">OK</span>':'<span class="badge badge-danger">'+e+'</span>')+'</td></tr>';
+        const wb = XLSX.read(data, { type: 'array' });
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
+        if (rows.length < 2) { ui.error('File rỗng'); return; }
+        const h = rows[0].map(function (x) { return String(x || '').toLowerCase(); });
+        var colSn = h.findIndex(function (x) { return x.indexOf('học sinh') >= 0 || x.indexOf('hoc sinh') >= 0; });
+        var colCn = h.findIndex(function (x) { return x.indexOf('phụ huynh') >= 0 || x.indexOf('phu huynh') >= 0; });
+        var colPh = h.findIndex(function (x) { return x.indexOf('điện thoại') >= 0 || x.indexOf('phone') >= 0 || x.indexOf('sđt') >= 0; });
+        if (colSn === -1 || colPh === -1) { ui.error('Thiếu cột: Tên học sinh, SĐT'); return; }
+        importData = []; var valid = 0, err = 0;
+        var tb = document.getElementById('previewBody'); tb.innerHTML = '';
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i]; if (!r || !r.length) continue;
+          var sn = String(r[colSn] || '').trim(), cn = String(r[colCn] || sn).trim(), ph = String(r[colPh] || '').replace(/[^0-9]/g, '');
+          var ok = true, e = '';
+          if (!sn) { ok = false; e = 'Thiếu tên'; } else if (ph.length < 9) { ok = false; e = 'SĐT lỗi'; }
+          if (ok) { valid++; importData.push({ studentName: sn, customerName: cn, customerPhone: ph, source: 'other' }); } else err++;
+          tb.innerHTML += '<tr class="' + (ok ? '' : 'text-danger') + '"><td>' + i + '</td><td>' + (sn || '-') + '</td><td>' + (cn || '-') + '</td><td>' + (ph || '-') + '</td><td>' + (ok ? '<span class="badge badge-success">OK</span>' : '<span class="badge badge-danger">' + e + '</span>') + '</td></tr>';
         }
-        document.getElementById('previewTotal').textContent=rows.length-1;
-        document.getElementById('previewValid').textContent=valid;
-        document.getElementById('previewError').textContent=err;
-        document.getElementById('importCount').textContent=valid;
-        document.getElementById('importBtn').disabled=valid===0;
-        document.getElementById('importPreview').style.display='block';
-      } catch(e) { ui.error('Lỗi: '+e.message); }
+        document.getElementById('previewTotal').textContent = rows.length - 1;
+        document.getElementById('previewValid').textContent = valid;
+        document.getElementById('previewError').textContent = err;
+        document.getElementById('importCount').textContent = valid;
+        document.getElementById('importBtn').disabled = valid === 0;
+        document.getElementById('importPreview').style.display = 'block';
+      } catch (e) { ui.error('Lỗi: ' + e.message); }
     }
 
-    function loadScript(src) { return new Promise(function(res,rej){ var s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
+    function loadScript(src) { return new Promise(function (res, rej) { var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
 
     async function importLeads() {
-      if(!importData.length)return;
-      document.getElementById('importBtn').disabled=true;
-      document.getElementById('importBtn').innerHTML='<i class="fas fa-spinner fa-spin"></i>';
-      var ok=0;
-      for(var i=0;i<importData.length;i++) { try { await api.post('/leads',importData[i]); ok++; } catch(e){} }
-      ui.success('Import '+ok+' leads');
+      if (!importData.length) return;
+      document.getElementById('importBtn').disabled = true;
+      document.getElementById('importBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      var ok = 0;
+      for (var i = 0; i < importData.length; i++) { try { await api.post('/leads', importData[i]); ok++; } catch (e) { } }
+      ui.success('Import ' + ok + ' leads');
       closeImportModal(); loadStats(); loadData();
     }
 
     function downloadTemplate() {
-      if(typeof XLSX==='undefined') loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js').then(dl); else dl();
-      function dl() { var ws=XLSX.utils.aoa_to_sheet([['Tên học sinh','Tên phụ huynh','Số điện thoại','Nguồn'],['Nguyễn A','Nguyễn B','0901234567','facebook']]); var wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Leads'); XLSX.writeFile(wb,'leads_template.xlsx'); }
+      if (typeof XLSX === 'undefined') loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js').then(dl); else dl();
+      function dl() { var ws = XLSX.utils.aoa_to_sheet([['Tên học sinh', 'Tên phụ huynh', 'Số điện thoại', 'Nguồn'], ['Nguyễn A', 'Nguyễn B', '0901234567', 'facebook']]); var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Leads'); XLSX.writeFile(wb, 'leads_template.xlsx'); }
     }
 
-    var twilioDevice=null, currentCall=null, callTimer=null, callSeconds=0, isMuted=false;
+    var currentCallSid = null, callTimer = null, callSeconds = 0, callConfigured = false;
 
-    function openCallModal(id,name,phone) {
-      document.getElementById('callLeadId').value=id;
-      document.getElementById('callName').textContent=name;
-      document.getElementById('callPhone').textContent=phone;
-      document.getElementById('callAvatar').textContent=name.charAt(0).toUpperCase();
-      document.getElementById('callStatus').textContent='Sẵn sàng';
-      document.getElementById('callStatus').className='call-status';
-      document.getElementById('callTimer').style.display='none';
-      document.getElementById('startCallBtn').style.display='inline-flex';
-      document.getElementById('hangupBtn').style.display='none';
-      document.getElementById('muteBtn').style.display='none';
-      document.getElementById('callNote').value='';
-      document.getElementById('callResult').value='';
+    function openCallModal(id, name, phone) {
+      document.getElementById('callLeadId').value = id;
+      document.getElementById('callName').textContent = name;
+      document.getElementById('callPhone').textContent = phone;
+      document.getElementById('callAvatar').textContent = name.charAt(0).toUpperCase();
+      document.getElementById('callStatus').textContent = 'Sẵn sàng';
+      document.getElementById('callStatus').className = 'call-status';
+      document.getElementById('callTimer').style.display = 'none';
+      document.getElementById('startCallBtn').style.display = 'inline-flex';
+      document.getElementById('hangupBtn').style.display = 'none';
+      document.getElementById('muteBtn').style.display = 'none';
+      document.getElementById('callNote').value = '';
+      document.getElementById('callResult').value = '';
       loadCallHistory(id);
       document.getElementById('callModal').classList.add('show');
-      initTwilio();
+      checkCallConfig();
     }
 
-    function closeCallModal() { if(currentCall)endCall(); document.getElementById('callModal').classList.remove('show'); }
+    function closeCallModal() { document.getElementById('callModal').classList.remove('show'); stopTimer(); }
 
-    async function initTwilio() {
+    async function checkCallConfig() {
       try {
-        var res = await api.get('/call/token');
-        if(!res.data||!res.data.token) return;
-        twilioDevice = new Twilio.Device(res.data.token);
-        twilioDevice.on('ready', function(){console.log('Twilio ready');});
-        twilioDevice.on('disconnect', onCallEnded);
-      } catch(e) { console.log('Twilio:', e.message); }
+        var res = await api.get('/call/config');
+        callConfigured = res.data?.configured || false;
+        console.log('Call configured:', callConfigured);
+      } catch (e) {
+        console.log('Call config error:', e.message);
+        callConfigured = false;
+      }
     }
 
     async function startCall() {
       var phone = document.getElementById('callPhone').textContent;
-      if(twilioDevice && twilioDevice.status()==='ready') {
+
+      document.getElementById('callStatus').textContent = 'Đang gọi...';
+      document.getElementById('callStatus').className = 'call-status connecting';
+      document.getElementById('startCallBtn').style.display = 'none';
+      document.getElementById('hangupBtn').style.display = 'inline-flex';
+      document.getElementById('callTimer').style.display = 'block';
+      startTimer();
+
+      if (callConfigured) {
+        // Gọi qua SignalWire
         try {
-          document.getElementById('callStatus').textContent='Đang gọi...';
-          document.getElementById('callStatus').className='call-status connecting';
-          document.getElementById('startCallBtn').style.display='none';
-          document.getElementById('hangupBtn').style.display='inline-flex';
-          document.getElementById('muteBtn').style.display='inline-flex';
-          currentCall = await twilioDevice.connect({To:'+84'+phone.replace(/^0/,'')});
-          currentCall.on('accept', function(){ document.getElementById('callStatus').textContent='Đang nói chuyện'; document.getElementById('callStatus').className='call-status connected'; startTimer(); });
-          currentCall.on('disconnect', onCallEnded);
-        } catch(e) { ui.error(e.message); resetCallUI(); }
+          var res = await api.post('/call/make', { to: phone });
+          if (res.success) {
+            currentCallSid = res.data.callSid;
+            document.getElementById('callStatus').textContent = 'Đang kết nối...';
+            // Poll call status
+            pollCallStatus();
+          } else {
+            throw new Error(res.message || 'Lỗi gọi điện');
+          }
+        } catch (e) {
+          console.log('SignalWire call error:', e.message);
+          // Fallback to tel: link
+          ui.warning('Không thể gọi qua hệ thống, đang mở điện thoại...');
+          window.open('tel:' + phone, '_self');
+        }
       } else {
-        window.open('tel:'+phone,'_self');
-        document.getElementById('callStatus').textContent='Gọi qua ĐT...';
-        document.getElementById('callStatus').className='call-status connecting';
-        document.getElementById('startCallBtn').style.display='none';
-        document.getElementById('hangupBtn').style.display='inline-flex';
-        document.getElementById('callTimer').style.display='block';
-        startTimer();
+        // Fallback: Gọi qua điện thoại
+        window.open('tel:' + phone, '_self');
+        document.getElementById('callStatus').textContent = 'Gọi qua ĐT...';
       }
     }
 
-    function endCall() { if(currentCall&&currentCall.disconnect)currentCall.disconnect(); onCallEnded(); }
-    function onCallEnded() { stopTimer(); document.getElementById('callStatus').textContent='Kết thúc ('+fmtTime(callSeconds)+')'; document.getElementById('callStatus').className='call-status ended'; resetCallUI(); currentCall=null; }
-    function resetCallUI() { document.getElementById('startCallBtn').style.display='inline-flex'; document.getElementById('hangupBtn').style.display='none'; document.getElementById('muteBtn').style.display='none'; }
-    function toggleMute() { if(!currentCall)return; isMuted=!isMuted; currentCall.mute(isMuted); document.getElementById('muteBtn').innerHTML=isMuted?'<i class="fas fa-microphone-slash"></i>':'<i class="fas fa-microphone"></i>'; }
-    function startTimer() { callSeconds=0; document.getElementById('callTimer').style.display='block'; document.getElementById('callTimer').textContent='00:00'; callTimer=setInterval(function(){ callSeconds++; document.getElementById('callTimer').textContent=fmtTime(callSeconds); },1000); }
-    function stopTimer() { if(callTimer){clearInterval(callTimer);callTimer=null;} }
-    function fmtTime(s) { return Math.floor(s/60).toString().padStart(2,'0')+':'+(s%60).toString().padStart(2,'0'); }
+    async function pollCallStatus() {
+      if (!currentCallSid) return;
+      try {
+        var res = await api.get('/call/status/' + currentCallSid);
+        var status = res.data?.status;
+        if (status === 'in-progress' || status === 'ringing') {
+          document.getElementById('callStatus').textContent = status === 'ringing' ? 'Đang đổ chuông...' : 'Đang nói chuyện';
+          document.getElementById('callStatus').className = 'call-status connected';
+          setTimeout(pollCallStatus, 2000);
+        } else if (status === 'completed' || status === 'busy' || status === 'no-answer' || status === 'failed') {
+          onCallEnded();
+        } else {
+          setTimeout(pollCallStatus, 2000);
+        }
+      } catch (e) {
+        console.log('Poll status error:', e.message);
+      }
+    }
+
+    function endCall() { onCallEnded(); currentCallSid = null; }
+    function onCallEnded() { stopTimer(); document.getElementById('callStatus').textContent = 'Kết thúc (' + fmtTime(callSeconds) + ')'; document.getElementById('callStatus').className = 'call-status ended'; resetCallUI(); currentCallSid = null; }
+    function resetCallUI() { document.getElementById('startCallBtn').style.display = 'inline-flex'; document.getElementById('hangupBtn').style.display = 'none'; document.getElementById('muteBtn').style.display = 'none'; }
+    function startTimer() { callSeconds = 0; document.getElementById('callTimer').style.display = 'block'; document.getElementById('callTimer').textContent = '00:00'; callTimer = setInterval(function () { callSeconds++; document.getElementById('callTimer').textContent = fmtTime(callSeconds); }, 1000); }
+    function stopTimer() { if (callTimer) { clearInterval(callTimer); callTimer = null; } }
+    function fmtTime(s) { return Math.floor(s / 60).toString().padStart(2, '0') + ':' + (s % 60).toString().padStart(2, '0'); }
 
     async function saveCallNote() {
-      var id=document.getElementById('callLeadId').value, note=document.getElementById('callNote').value, result=document.getElementById('callResult').value;
-      if(!note&&!result) { ui.warning('Nhập ghi chú hoặc kết quả'); return; }
+      var id = document.getElementById('callLeadId').value, note = document.getElementById('callNote').value, result = document.getElementById('callResult').value;
+      if (!note && !result) { ui.warning('Nhập ghi chú hoặc kết quả'); return; }
       try {
-        await api.post('/leads/'+id+'/call-log', {duration:callSeconds, result:result, note:note, called_at:new Date().toISOString()});
+        await api.post('/leads/' + id + '/call-log', { duration: callSeconds, result: result, note: note, called_at: new Date().toISOString() });
         ui.success('Đã lưu');
-        document.getElementById('callNote').value='';
-        document.getElementById('callResult').value='';
-        callSeconds=0;
+        document.getElementById('callNote').value = '';
+        document.getElementById('callResult').value = '';
+        callSeconds = 0;
         loadCallHistory(id);
-      } catch(e) { ui.error(e.message); }
+      } catch (e) { ui.error(e.message); }
     }
 
     async function loadCallHistory(id) {
-      var c=document.getElementById('callHistory');
+      var c = document.getElementById('callHistory');
       try {
-        var res = await api.get('/leads/'+id+'/call-logs');
-        var logs = res.data||[];
-        if(!logs.length) { c.innerHTML='<p class="text-muted text-center">Chưa có</p>'; return; }
-        var lbl = {answered:'Đã nghe',no_answer:'Không nghe',busy:'Máy bận',interested:'Quan tâm',callback:'Gọi lại'};
-        c.innerHTML = logs.map(function(l){return '<div class="call-history-item"><div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--text-muted)">'+fmtDT(l.called_at)+'</span><span style="color:var(--primary)">'+fmtTime(l.duration||0)+'</span></div>'+(l.result?'<span class="badge badge-info">'+(lbl[l.result]||l.result)+'</span>':'')+(l.note?'<div style="font-size:12px;margin-top:4px">'+l.note+'</div>':'')+'</div>';}).join('');
-      } catch(e) { c.innerHTML='<p class="text-muted">Lỗi</p>'; }
+        var res = await api.get('/leads/' + id + '/call-logs');
+        var logs = res.data || [];
+        if (!logs.length) { c.innerHTML = '<p class="text-muted text-center">Chưa có</p>'; return; }
+        var lbl = { answered: 'Đã nghe', no_answer: 'Không nghe', busy: 'Máy bận', interested: 'Quan tâm', callback: 'Gọi lại' };
+        c.innerHTML = logs.map(function (l) { return '<div class="call-history-item"><div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--text-muted)">' + fmtDT(l.called_at) + '</span><span style="color:var(--primary)">' + fmtTime(l.duration || 0) + '</span></div>' + (l.result ? '<span class="badge badge-info">' + (lbl[l.result] || l.result) + '</span>' : '') + (l.note ? '<div style="font-size:12px;margin-top:4px">' + l.note + '</div>' : '') + '</div>'; }).join('');
+      } catch (e) { c.innerHTML = '<p class="text-muted">Lỗi</p>'; }
     }
 
-    function formatDate(d) { return d?new Date(d).toLocaleDateString('vi-VN'):'-'; }
-    function fmtDT(d) { if(!d)return'-'; var x=new Date(d); return x.toLocaleDateString('vi-VN')+' '+x.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}); }
+    function formatDate(d) { return d ? new Date(d).toLocaleDateString('vi-VN') : '-'; }
+    function fmtDT(d) { if (!d) return '-'; var x = new Date(d); return x.toLocaleDateString('vi-VN') + ' ' + x.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }); }
 
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
+
 </html>
