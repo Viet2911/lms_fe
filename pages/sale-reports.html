@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,78 +8,342 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: white; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; transition: transform 0.2s, box-shadow 0.2s; }
-    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .stat-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-    .stat-card.primary .stat-icon { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #2563eb; }
-    .stat-card.success .stat-icon { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #16a34a; }
-    .stat-card.warning .stat-icon { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #d97706; }
-    .stat-card.info .stat-icon { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #7c3aed; }
-    .stat-value { font-size: 26px; font-weight: 700; color: #1f2937; display: block; }
-    .stat-label { font-size: 13px; color: #6b7280; margin-top: 2px; }
-    
-    .filter-bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    .filter-bar .form-control { border-radius: 10px; border: 1px solid #e5e7eb; padding: 10px 14px; }
-    .filter-bar .form-control:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.1); }
-    
-    .card { border-radius: 16px; border: 1px solid #e5e7eb; overflow: hidden; background: white; }
-    .tabs-nav { display: flex; gap: 0; border-bottom: 1px solid #e5e7eb; background: #f9fafb; padding: 0 16px; }
-    .tab-btn { padding: 16px 24px; border: none; background: transparent; font-weight: 600; color: #6b7280; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
-    .tab-btn:hover { color: #22c55e; background: rgba(34,197,94,0.05); }
-    .tab-btn.active { color: #22c55e; border-bottom-color: #22c55e; background: white; }
-    .tab-pane { display: none; }
-    .tab-pane.active { display: block; }
-    
-    .ranking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 20px; }
-    .ranking-section { background: #f9fafb; border-radius: 12px; padding: 16px; }
-    .ranking-title { font-size: 14px; font-weight: 700; color: #374151; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-    .ranking-title i { font-size: 16px; }
-    .ranking-title.gold { color: #d97706; }
-    .ranking-title.purple { color: #7c3aed; }
-    
-    .table { width: 100%; border-collapse: collapse; }
-    .table th { background: #f9fafb; padding: 14px 16px; text-align: left; font-weight: 600; color: #6b7280; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e5e7eb; }
-    .table td { padding: 14px 16px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
-    .table tr:hover { background: #f9fafb; }
-    .table tr:last-child td { border-bottom: none; }
-    
-    .rank-badge { width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
-    .rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
-    .rank-2 { background: linear-gradient(135deg, #9ca3af, #6b7280); color: white; }
-    .rank-3 { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
-    .rank-other { background: #f3f4f6; color: #6b7280; }
-    
-    .badge { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; }
-    .badge-light { background: #f3f4f6; color: #4b5563; }
-    .badge-success { background: #dcfce7; color: #16a34a; }
-    .badge-warning { background: #fef3c7; color: #d97706; }
-    .badge-danger { background: #fee2e2; color: #dc2626; }
-    
-    .kpi-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-    .kpi-high { background: #dcfce7; color: #16a34a; }
-    .kpi-mid { background: #fef3c7; color: #d97706; }
-    .kpi-low { background: #fee2e2; color: #dc2626; }
-    
-    .btn { border-radius: 10px; padding: 10px 18px; font-weight: 600; transition: all 0.2s; }
-    .btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); border: none; color: white; }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
-    
-    .text-success { color: #16a34a !important; }
-    .text-warning { color: #d97706 !important; }
-    .text-info { color: #7c3aed !important; }
-    
-    @media (max-width: 1024px) { 
-      .stats-grid { grid-template-columns: repeat(2, 1fr); } 
-      .ranking-grid { grid-template-columns: 1fr; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
     }
-    @media (max-width: 640px) { 
-      .stats-grid { grid-template-columns: 1fr; } 
-      .filter-bar { flex-direction: column; align-items: stretch; } 
-      .tabs-nav { overflow-x: auto; }
+
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      border: 1px solid #e5e7eb;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .stat-card.primary .stat-icon {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      color: #2563eb;
+    }
+
+    .stat-card.success .stat-icon {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      color: #16a34a;
+    }
+
+    .stat-card.warning .stat-icon {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #d97706;
+    }
+
+    .stat-card.info .stat-icon {
+      background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+      color: #7c3aed;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: #1f2937;
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-bar .form-control {
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      padding: 10px 14px;
+    }
+
+    .filter-bar .form-control:focus {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+    }
+
+    .card {
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+      background: white;
+    }
+
+    .tabs-nav {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 0 16px;
+    }
+
+    .tab-btn {
+      padding: 16px 24px;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: #22c55e;
+      background: rgba(34, 197, 94, 0.05);
+    }
+
+    .tab-btn.active {
+      color: #22c55e;
+      border-bottom-color: #22c55e;
+      background: white;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    .ranking-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      padding: 20px;
+    }
+
+    .ranking-section {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .ranking-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ranking-title i {
+      font-size: 16px;
+    }
+
+    .ranking-title.gold {
+      color: #d97706;
+    }
+
+    .ranking-title.purple {
+      color: #7c3aed;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th {
+      background: #f9fafb;
+      padding: 14px 16px;
+      text-align: left;
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f3f4f6;
+      vertical-align: middle;
+    }
+
+    .table tr:hover {
+      background: #f9fafb;
+    }
+
+    .table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .rank-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .rank-1 {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: white;
+    }
+
+    .rank-2 {
+      background: linear-gradient(135deg, #9ca3af, #6b7280);
+      color: white;
+    }
+
+    .rank-3 {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+    }
+
+    .rank-other {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .badge {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-light {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+
+    .badge-success {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .badge-danger {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .kpi-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .kpi-high {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .kpi-mid {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .kpi-low {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .btn {
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      border: none;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .text-success {
+      color: #16a34a !important;
+    }
+
+    .text-warning {
+      color: #d97706 !important;
+    }
+
+    .text-info {
+      color: #7c3aed !important;
+    }
+
+    @media (max-width: 1024px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .ranking-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .tabs-nav {
+        overflow-x: auto;
+      }
     }
   </style>
 </head>
+
 <body>
   <nav class="sidebar" id="sidebar"></nav>
 
@@ -110,11 +375,13 @@
           <span class="stat-label">Checkin</span>
         </div>
       </div>
-      <div class="stat-card success">
+      <div class="stat-card success" onclick="showFullPaidList()" style="cursor:pointer"
+        title="Click để xem danh sách đã đóng đủ">
         <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
         <div class="stat-info">
           <span class="stat-value" id="totalRevenue">0đ</span>
-          <span class="stat-label">Doanh số</span>
+          <span class="stat-label">Doanh số <i class="fas fa-external-link-alt"
+              style="font-size:10px;margin-left:4px"></i></span>
         </div>
       </div>
       <div class="stat-card warning">
@@ -124,11 +391,88 @@
           <span class="stat-label">Cọc</span>
         </div>
       </div>
-      <div class="stat-card info">
+      <div class="stat-card info" onclick="showExpectedList()" style="cursor:pointer" title="Click để xem danh sách">
         <div class="stat-icon"><i class="fas fa-clock"></i></div>
         <div class="stat-info">
           <span class="stat-value" id="totalExpected">0đ</span>
-          <span class="stat-label">Dự thu</span>
+          <span class="stat-label">Dự thu <i class="fas fa-external-link-alt"
+              style="font-size:10px;margin-left:4px"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expected Revenue Modal -->
+    <div class="modal" id="expectedModal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title"><i class="fas fa-clock text-info"></i> Danh sách Dự thu (Chưa đóng đủ)</div>
+          <button class="modal-close" onclick="closeExpectedModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Học sinh</th>
+                  <th>Phụ huynh</th>
+                  <th>EC</th>
+                  <th>Cơ sở</th>
+                  <th class="text-right">Tổng HP</th>
+                  <th class="text-right">Đã cọc</th>
+                  <th class="text-right">Đã đóng</th>
+                  <th class="text-right">Còn lại</th>
+                </tr>
+              </thead>
+              <tbody id="expectedTableBody">
+                <tr>
+                  <td colspan="8" class="text-center">Đang tải...</td>
+                </tr>
+              </tbody>
+              <tfoot id="expectedTableFoot" style="font-weight:bold;background:#f9fafb">
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeExpectedModal()">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Paid Modal -->
+    <div class="modal" id="fullPaidModal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title"><i class="fas fa-check-circle text-success"></i> Danh sách Đã đóng đủ (Full)</div>
+          <button class="modal-close" onclick="closeFullPaidModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Học sinh</th>
+                  <th>Phụ huynh</th>
+                  <th>EC</th>
+                  <th>Cơ sở</th>
+                  <th class="text-right">Tổng HP</th>
+                  <th class="text-right">Đã cọc</th>
+                  <th class="text-right">Đã đóng</th>
+                  <th class="text-center">Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody id="fullPaidTableBody">
+                <tr>
+                  <td colspan="8" class="text-center">Đang tải...</td>
+                </tr>
+              </tbody>
+              <tfoot id="fullPaidTableFoot" style="font-weight:bold;background:#f9fafb">
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeFullPaidModal()">Đóng</button>
         </div>
       </div>
     </div>
@@ -164,7 +508,9 @@
                 </tr>
               </thead>
               <tbody id="rankingRevenueTable">
-                <tr><td colspan="5" class="text-center text-muted">Đang tải...</td></tr>
+                <tr>
+                  <td colspan="5" class="text-center text-muted">Đang tải...</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -183,7 +529,9 @@
                 </tr>
               </thead>
               <tbody id="rankingKpiTable">
-                <tr><td colspan="5" class="text-center text-muted">Đang tải...</td></tr>
+                <tr>
+                  <td colspan="5" class="text-center text-muted">Đang tải...</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -208,7 +556,9 @@
               </tr>
             </thead>
             <tbody id="detailTable">
-              <tr><td colspan="8" class="text-center">Đang tải...</td></tr>
+              <tr>
+                <td colspan="8" class="text-center">Đang tải...</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -230,7 +580,9 @@
               </tr>
             </thead>
             <tbody id="branchTable">
-              <tr><td colspan="6" class="text-center">Đang tải...</td></tr>
+              <tr>
+                <td colspan="6" class="text-center">Đang tải...</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -268,13 +620,13 @@
         res.data.forEach(b => {
           select.innerHTML += `<option value="${b.id}">${b.code} - ${b.name}</option>`;
         });
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function loadData() {
       const month = document.getElementById('filterMonth').value;
       const branchId = document.getElementById('filterBranch').value;
-      
+
       await Promise.all([
         loadSummary(month, branchId),
         loadRankingRevenue(month, branchId),
@@ -287,10 +639,10 @@
       try {
         const params = new URLSearchParams({ month });
         if (branchId) params.append('branch_id', branchId);
-        
+
         const res = await api.get('/sale-reports/summary?' + params);
         const d = res.data || {};
-        
+
         document.getElementById('totalCheckin').textContent = d.total_checkin || 0;
         document.getElementById('totalRevenue').textContent = formatCurrency(d.total_revenue || 0);
         document.getElementById('totalDeposit').textContent = formatCurrency(d.total_deposit || 0);
@@ -304,15 +656,15 @@
       try {
         const params = new URLSearchParams({ month, limit: 10 });
         if (branchId) params.append('branch_id', branchId);
-        
+
         const res = await api.get('/sale-reports/ranking/revenue?' + params);
         const tbody = document.getElementById('rankingRevenueTable');
-        
+
         if (!res.data || res.data.length === 0) {
           tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
           return;
         }
-        
+
         tbody.innerHTML = res.data.map((r, i) => `
           <tr>
             <td class="text-center">
@@ -340,15 +692,15 @@
       try {
         const params = new URLSearchParams({ month, limit: 10 });
         if (branchId) params.append('branch_id', branchId);
-        
+
         const res = await api.get('/sale-reports/ranking/kpi?' + params);
         const tbody = document.getElementById('rankingKpiTable');
-        
+
         if (!res.data || res.data.length === 0) {
           tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
           return;
         }
-        
+
         tbody.innerHTML = res.data.map((r, i) => `
           <tr>
             <td class="text-center">
@@ -370,24 +722,23 @@
         console.error('Error loading ranking kpi:', e);
         document.getElementById('rankingKpiTable').innerHTML = '<tr><td colspan="5" class="text-center text-muted">Lỗi tải dữ liệu</td></tr>';
       }
-      }
     }
 
     async function loadDetail(month, branchId) {
       try {
         const params = new URLSearchParams({ month });
         if (branchId) params.append('branch_id', branchId);
-        
+
         const res = await api.get('/sale-reports?' + params);
         const tbody = document.getElementById('detailTable');
         const reports = res.data?.reports || res.data || [];
-        
+
         if (reports.length === 0) {
           tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
           document.getElementById('branchTable').innerHTML = '<tr><td colspan="6" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
           return;
         }
-        
+
         tbody.innerHTML = reports.map(r => `
           <tr>
             <td><strong>${r.ec_name}</strong></td>
@@ -443,7 +794,148 @@
     document.getElementById('filterMonth').addEventListener('change', loadData);
     document.getElementById('filterBranch').addEventListener('change', loadData);
 
+    // Expected Revenue Modal Functions
+    async function showExpectedList() {
+      document.getElementById('expectedModal').classList.add('show');
+      const month = document.getElementById('filterMonth').value;
+      const branchId = document.getElementById('filterBranch').value;
+
+      try {
+        const params = new URLSearchParams({ month });
+        if (branchId) params.append('branch_id', branchId);
+
+        const res = await api.get('/sale-reports/expected-revenue?' + params);
+        const list = res.data || [];
+        const tbody = document.getElementById('expectedTableBody');
+        const tfoot = document.getElementById('expectedTableFoot');
+
+        if (list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Không có dữ liệu - Tất cả đã đóng đủ! 🎉</td></tr>';
+          tfoot.innerHTML = '';
+          return;
+        }
+
+        // Calculate totals
+        let totalFee = 0, totalDeposit = 0, totalPaid = 0, totalRemaining = 0;
+
+        tbody.innerHTML = list.map(l => {
+          const feeTotal = parseFloat(l.fee_total) || 0;
+          const deposit = parseFloat(l.deposit_amount) || 0;
+          const actualRev = parseFloat(l.actual_revenue) || 0;
+          const remaining = parseFloat(l.expected_revenue) || 0;
+          const paid = actualRev - deposit;
+
+          totalFee += feeTotal;
+          totalDeposit += deposit;
+          totalPaid += paid;
+          totalRemaining += remaining;
+
+          return `
+            <tr>
+              <td><strong>${escapeHtml(l.student_name)}</strong></td>
+              <td>${escapeHtml(l.customer_name)}<br><small class="text-muted">${l.customer_phone}</small></td>
+              <td>${escapeHtml(l.ec_name || '-')}</td>
+              <td><span class="badge badge-light">${l.branch_code || '-'}</span></td>
+              <td class="text-right">${formatCurrency(feeTotal)}</td>
+              <td class="text-right text-warning">${formatCurrency(deposit)}</td>
+              <td class="text-right text-success">${formatCurrency(paid)}</td>
+              <td class="text-right text-danger"><strong>${formatCurrency(remaining)}</strong></td>
+            </tr>
+          `;
+        }).join('');
+
+        tfoot.innerHTML = `
+          <tr>
+            <td colspan="4" class="text-right">TỔNG CỘNG (${list.length} học sinh)</td>
+            <td class="text-right">${formatCurrency(totalFee)}</td>
+            <td class="text-right text-warning">${formatCurrency(totalDeposit)}</td>
+            <td class="text-right text-success">${formatCurrency(totalPaid)}</td>
+            <td class="text-right text-danger"><strong>${formatCurrency(totalRemaining)}</strong></td>
+          </tr>
+        `;
+      } catch (e) {
+        console.error('Error loading expected revenue:', e);
+        document.getElementById('expectedTableBody').innerHTML = '<tr><td colspan="8" class="text-center text-danger">Lỗi tải dữ liệu</td></tr>';
+      }
+    }
+
+    function closeExpectedModal() {
+      document.getElementById('expectedModal').classList.remove('show');
+    }
+
+    // Full Paid List Modal Functions
+    async function showFullPaidList() {
+      document.getElementById('fullPaidModal').classList.add('show');
+      const month = document.getElementById('filterMonth').value;
+      const branchId = document.getElementById('filterBranch').value;
+
+      try {
+        const params = new URLSearchParams({ month });
+        if (branchId) params.append('branch_id', branchId);
+
+        const res = await api.get('/sale-reports/full-paid?' + params);
+        const list = res.data || [];
+        const tbody = document.getElementById('fullPaidTableBody');
+        const tfoot = document.getElementById('fullPaidTableFoot');
+
+        if (list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có học sinh nào đóng đủ</td></tr>';
+          tfoot.innerHTML = '';
+          return;
+        }
+
+        // Calculate totals
+        let totalFee = 0, totalDeposit = 0, totalPaid = 0;
+
+        tbody.innerHTML = list.map(l => {
+          const feeTotal = parseFloat(l.fee_total) || 0;
+          const deposit = parseFloat(l.deposit_amount) || 0;
+          const actualRev = parseFloat(l.actual_revenue) || 0;
+          const paid = actualRev - deposit;
+
+          totalFee += feeTotal;
+          totalDeposit += deposit;
+          totalPaid += paid;
+
+          return `
+            <tr>
+              <td><strong>${escapeHtml(l.student_name)}</strong></td>
+              <td>${escapeHtml(l.customer_name)}<br><small class="text-muted">${l.customer_phone}</small></td>
+              <td>${escapeHtml(l.ec_name || '-')}</td>
+              <td><span class="badge badge-light">${l.branch_code || '-'}</span></td>
+              <td class="text-right">${formatCurrency(feeTotal)}</td>
+              <td class="text-right text-warning">${formatCurrency(deposit)}</td>
+              <td class="text-right text-success">${formatCurrency(paid)}</td>
+              <td class="text-center"><span class="badge badge-success"><i class="fas fa-check"></i> Đã đủ</span></td>
+            </tr>
+          `;
+        }).join('');
+
+        tfoot.innerHTML = `
+          <tr>
+            <td colspan="4" class="text-right">TỔNG CỘNG (${list.length} học sinh)</td>
+            <td class="text-right">${formatCurrency(totalFee)}</td>
+            <td class="text-right text-warning">${formatCurrency(totalDeposit)}</td>
+            <td class="text-right text-success"><strong>${formatCurrency(totalPaid)}</strong></td>
+            <td></td>
+          </tr>
+        `;
+      } catch (e) {
+        console.error('Error loading full paid list:', e);
+        document.getElementById('fullPaidTableBody').innerHTML = '<tr><td colspan="8" class="text-center text-danger">Lỗi tải dữ liệu</td></tr>';
+      }
+    }
+
+    function closeFullPaidModal() {
+      document.getElementById('fullPaidModal').classList.remove('show');
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
     init();
   </script>
 </body>
+
 </html>

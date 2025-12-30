@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
   <div class="app-container">
     <aside class="sidebar" id="sidebar"></aside>
@@ -14,28 +16,38 @@
     <main class="main-content">
       <header class="header">
         <div class="header-left">
-          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
-          <div><h1 class="page-title">Lịch trải nghiệm</h1><p class="page-subtitle">Quản lý lịch hẹn trải nghiệm</p></div>
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i
+              class="fas fa-bars"></i></button>
+          <div>
+            <h1 class="page-title">Lịch trải nghiệm</h1>
+            <p class="page-subtitle">Quản lý lịch hẹn trải nghiệm</p>
+          </div>
         </div>
         <div class="header-right">
-          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i
+              class="fas fa-sun"></i></button>
           <button class="btn btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Thêm lịch</button>
           <div class="user-menu" onclick="auth.logout()">
             <div class="user-avatar" id="userAvatar">U</div>
-            <div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div>
+            <div class="user-info">
+              <div class="user-name" id="userName">User</div>
+              <div class="user-role" id="userRole">Role</div>
+            </div>
           </div>
         </div>
       </header>
 
       <div class="page-content">
         <div class="stats-grid" id="statsGrid"></div>
-        
+
         <div class="calendar-container">
           <div class="calendar-header">
             <div class="calendar-nav">
-              <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+              <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)"><i
+                  class="fas fa-chevron-left"></i></button>
               <span class="calendar-title" id="calendarTitle">Tháng 12, 2024</span>
-              <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+              <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)"><i
+                  class="fas fa-chevron-right"></i></button>
             </div>
             <button class="btn btn-secondary btn-sm" onclick="goToday()">Hôm nay</button>
           </div>
@@ -55,7 +67,7 @@
       <div class="modal-body">
         <form id="expForm">
           <input type="hidden" id="expId">
-          
+
           <!-- Branch Selection - Always visible, will be populated -->
           <div class="form-group" id="branchFormGroup">
             <label class="form-label required"><i class="fas fa-building"></i> Cơ sở</label>
@@ -63,25 +75,39 @@
               <option value="">Đang tải...</option>
             </select>
           </div>
-          
+
           <div class="form-row">
-            <div class="form-group"><label class="form-label required">Tên khách hàng</label><input type="text" name="customerName" class="form-control" required></div>
-            <div class="form-group"><label class="form-label required">SĐT</label><input type="tel" name="customerPhone" class="form-control" required></div>
+            <div class="form-group"><label class="form-label required">Tên khách hàng</label><input type="text"
+                name="customerName" class="form-control" required></div>
+            <div class="form-group"><label class="form-label required">SĐT</label><input type="tel" name="customerPhone"
+                class="form-control" required></div>
           </div>
-          <div class="form-group"><label class="form-label">Email</label><input type="email" name="customerEmail" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" name="customerEmail"
+              class="form-control"></div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label required">Tên học sinh</label><input type="text" name="studentName" class="form-control" required></div>
-            <div class="form-group"><label class="form-label">Năm sinh</label><input type="number" name="studentBirthYear" class="form-control" min="2005" max="2020"></div>
+            <div class="form-group"><label class="form-label required">Tên học sinh</label><input type="text"
+                name="studentName" class="form-control" required></div>
+            <div class="form-group"><label class="form-label">Năm sinh</label><input type="number"
+                name="studentBirthYear" class="form-control" min="2005" max="2020"></div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label">Môn học</label><select name="subjectId" class="form-control" id="subjectSelect"><option value="">Chọn môn</option></select></div>
-            <div class="form-group"><label class="form-label">Cấp độ</label><select name="levelId" class="form-control" id="levelSelect"><option value="">Chọn</option></select></div>
+            <div class="form-group"><label class="form-label">Môn học</label><select name="subjectId"
+                class="form-control" id="subjectSelect">
+                <option value="">Chọn môn</option>
+              </select></div>
+            <div class="form-group"><label class="form-label">Cấp độ</label><select name="levelId" class="form-control"
+                id="levelSelect">
+                <option value="">Chọn</option>
+              </select></div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label required">Ngày</label><input type="date" name="scheduledDate" class="form-control" required></div>
-            <div class="form-group"><label class="form-label required">Giờ</label><input type="time" name="scheduledTime" class="form-control" required></div>
+            <div class="form-group"><label class="form-label required">Ngày</label><input type="date"
+                name="scheduledDate" class="form-control" required></div>
+            <div class="form-group"><label class="form-label required">Giờ</label><input type="time"
+                name="scheduledTime" class="form-control" required></div>
           </div>
-          <div class="form-group"><label class="form-label">Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea></div>
+          <div class="form-group"><label class="form-label">Ghi chú</label><textarea name="note" class="form-control"
+              rows="2"></textarea></div>
         </form>
       </div>
       <div class="modal-footer">
@@ -100,6 +126,248 @@
       </div>
       <div class="modal-body" id="viewContent"></div>
       <div class="modal-footer" id="viewFooter"></div>
+    </div>
+  </div>
+
+  <!-- Convert Modal -->
+  <div class="modal-overlay" id="convertModal">
+    <div class="modal-content" style="max-width:900px">
+      <div class="modal-header" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white">
+        <h3 class="modal-title"><i class="fas fa-user-graduate"></i> Chuyển đổi thành học sinh</h3>
+        <button class="modal-close" onclick="modal.hide('convertModal')" style="color:white">&times;</button>
+      </div>
+      <div class="modal-body" style="max-height:80vh;overflow-y:auto">
+        <input type="hidden" id="convertExpId">
+
+        <!-- PHẦN 1: THÔNG TIN HỌC SINH -->
+        <div
+          style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:12px;margin-bottom:20px">
+          <h4 style="margin:0 0 12px 0;color:#1e40af"><i class="fas fa-child"></i> Thông tin Học sinh</h4>
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label class="required">Họ tên học sinh</label>
+              <input type="text" id="cvStudentName" class="form-control" placeholder="Nguyễn Văn A">
+            </div>
+            <div class="form-group">
+              <label>Năm sinh</label>
+              <input type="number" id="cvStudentBirthYear" class="form-control" placeholder="2015" min="2000"
+                max="2025">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label>Địa chỉ</label>
+              <input type="text" id="cvStudentAddress" class="form-control" placeholder="Số nhà, đường, quận/huyện">
+            </div>
+            <div class="form-group">
+              <label>Trường học hiện tại</label>
+              <input type="text" id="cvStudentSchool" class="form-control" placeholder="THCS ABC">
+            </div>
+          </div>
+        </div>
+
+        <!-- PHẦN 2: THÔNG TIN PHỤ HUYNH -->
+        <div
+          style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:20px">
+          <h4 style="margin:0 0 12px 0;color:#92400e"><i class="fas fa-users"></i> Thông tin Phụ huynh</h4>
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label class="required">Họ tên phụ huynh</label>
+              <input type="text" id="cvParentName" class="form-control" placeholder="Nguyễn Văn B">
+            </div>
+            <div class="form-group">
+              <label class="required">Số điện thoại</label>
+              <input type="tel" id="cvParentPhone" class="form-control" placeholder="0901234567">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nghề nghiệp</label>
+            <input type="text" id="cvParentJob" class="form-control" placeholder="Kỹ sư, Giáo viên, Kinh doanh...">
+          </div>
+        </div>
+
+        <!-- PHẦN 3: THÔNG TIN KHÓA HỌC -->
+        <div
+          style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:20px">
+          <h4 style="margin:0 0 12px 0;color:#166534"><i class="fas fa-book"></i> Thông tin Khóa học</h4>
+
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label class="required">Gói học phí (Khóa học)</label>
+              <select id="cvTuitionPackage" class="form-control" onchange="onPackageChange()">
+                <option value="">-- Chọn gói học phí --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Học phí gốc</label>
+              <input type="text" id="cvFeeOriginal" class="form-control" value="0đ" readonly
+                style="background:#f3f4f6;font-weight:bold">
+            </div>
+          </div>
+
+          <!-- Chương trình giảm giá -->
+          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <label style="color:#16a34a;font-weight:600"><i class="fas fa-percent"></i> Chương trình giảm giá</label>
+            <div class="form-row" style="margin-top:8px">
+              <div class="form-group" style="flex:2;margin-bottom:0">
+                <select id="cvPromoProgram" class="form-control" onchange="applyPromoProgram()">
+                  <option value="">-- Không áp dụng --</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <input type="text" id="cvPromoDiscount" class="form-control" value="0đ" readonly
+                  style="background:#dcfce7;color:#16a34a;font-weight:bold;text-align:right">
+              </div>
+            </div>
+          </div>
+
+          <!-- Học bổng -->
+          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng tặng
+                kèm</label>
+              <span id="cvDefaultScholarshipBadge"
+                style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">
+                Mặc định: <strong id="cvDefaultScholarshipMonths">0</strong> tháng
+              </span>
+            </div>
+            <div class="form-row" style="align-items:center">
+              <div class="form-group" style="margin-bottom:0;flex:1">
+                <input type="number" id="cvScholarshipMonths" class="form-control" value="0" min="0" max="12"
+                  onchange="onScholarshipChange()" style="font-size:18px;font-weight:bold;text-align:center">
+              </div>
+              <span style="padding:0 12px;color:#6b7280">tháng</span>
+            </div>
+            <div id="cvScholarshipWarning"
+              style="margin-top:8px;padding:8px;background:#fef3c7;border-radius:6px;color:#92400e;font-size:12px;display:none">
+              <i class="fas fa-exclamation-triangle"></i> Vượt mức mặc định, cần GDV duyệt
+            </div>
+          </div>
+
+          <!-- Tổng kết -->
+          <div style="background:#1f2937;color:white;padding:16px;border-radius:8px;margin-top:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+              <span>Khóa học chính:</span>
+              <span id="cvMainCourseMonths">0 tháng</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+              <span>Học bổng tặng:</span>
+              <span id="cvBonusMonths" style="color:#4ade80">+0 tháng</span>
+            </div>
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #374151">
+              <span style="font-size:16px"><strong>HỌC PHÍ THỰC ĐÓNG:</strong></span>
+              <span id="cvFeeTotal" style="font-size:24px;font-weight:bold;color:#fbbf24" data-raw-value="0">0đ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PHẦN 4: THANH TOÁN -->
+        <div
+          style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);padding:16px;border-radius:12px;margin-bottom:20px">
+          <h4 style="margin:0 0 12px 0;color:#9d174d"><i class="fas fa-credit-card"></i> Thanh toán</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Trạng thái</label>
+              <select id="cvPaymentStatus" class="form-control" onchange="updatePaymentFields()">
+                <option value="pending">Chưa đóng</option>
+                <option value="deposit">Đặt cọc</option>
+                <option value="partial">Đóng 1 phần</option>
+                <option value="paid">Đã đóng đủ</option>
+              </select>
+            </div>
+            <div class="form-group" id="depositGroup" style="display:none">
+              <label>Tiền cọc</label>
+              <input type="text" id="cvDepositAmount" class="form-control" value="0đ"
+                oninput="formatCurrencyField(this);updateRemaining()">
+            </div>
+            <div class="form-group" id="paidGroup" style="display:none">
+              <label>Đã thanh toán</label>
+              <input type="text" id="cvPaidAmount" class="form-control" value="0đ"
+                oninput="formatCurrencyField(this);updateRemaining()">
+            </div>
+          </div>
+          <div id="remainingRow" style="display:none;background:white;padding:12px;border-radius:8px;margin-top:8px">
+            <div style="display:flex;justify-content:space-between">
+              <span>Còn phải đóng:</span>
+              <span id="cvRemaining" style="font-size:18px;font-weight:bold;color:#dc2626">0đ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ghi chú -->
+        <div class="form-group">
+          <label>Ghi chú</label>
+          <textarea id="cvNote" class="form-control" rows="2" placeholder="Ghi chú thêm..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="modal.hide('convertModal')">Hủy</button>
+        <button class="btn btn-success" onclick="convertExp()"><i class="fas fa-check"></i> Chuyển đổi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conversion Success Modal with QR -->
+  <div class="modal-overlay" id="convertSuccessModal">
+    <div class="modal-content" style="max-width:500px">
+      <div class="modal-header" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white">
+        <h3 class="modal-title"><i class="fas fa-check-circle"></i> Chuyển đổi thành công!</h3>
+        <button class="modal-close" onclick="modal.hide('convertSuccessModal')" style="color:white">&times;</button>
+      </div>
+      <div class="modal-body" style="text-align:center;padding:24px">
+        <input type="hidden" id="newStudentId">
+        <input type="hidden" id="successRemainingRaw" value="0">
+
+        <div style="margin-bottom:20px">
+          <i class="fas fa-user-graduate" style="font-size:48px;color:#22c55e;margin-bottom:12px"></i>
+          <h3 style="margin:0;color:#166534" id="successStudentName">Học sinh mới</h3>
+          <p style="color:#6b7280;margin:4px 0" id="successStudentCode">Mã: ---</p>
+        </div>
+
+        <!-- QR Section -->
+        <div id="successQRSection" style="display:none">
+          <div style="background:#f9fafb;padding:16px;border-radius:12px;margin-bottom:16px">
+            <h4 style="margin:0 0 12px;color:#1f2937"><i class="fas fa-qrcode"></i> QR Thanh toán</h4>
+            <img id="successQRImage" src="" alt="QR Code" style="max-width:200px;border-radius:8px">
+          </div>
+
+          <div style="margin-bottom:16px">
+            <div style="background:#dcfce7;padding:12px;border-radius:8px;margin-bottom:8px">
+              <div style="color:#166534;font-size:13px">Đã đóng</div>
+              <div style="color:#15803d;font-size:20px;font-weight:700" id="successPaidAmount">0đ</div>
+            </div>
+            <div style="background:#fee2e2;padding:12px;border-radius:8px">
+              <div style="color:#991b1b;font-size:13px">Còn phải đóng</div>
+              <div style="color:#dc2626;font-size:20px;font-weight:700" id="successRemainingAmount">0đ</div>
+            </div>
+          </div>
+
+          <div style="background:#f3f4f6;padding:12px;border-radius:8px;margin-bottom:16px">
+            <div style="font-size:12px;color:#6b7280">Nội dung chuyển khoản:</div>
+            <div style="font-weight:600;color:#1f2937" id="successPaymentDesc">---</div>
+          </div>
+
+          <!-- Confirm Payment Button -->
+          <button class="btn btn-success" onclick="confirmPaymentReceived()"
+            style="width:100%;padding:12px;font-size:16px">
+            <i class="fas fa-check-double"></i> Xác nhận đã nhận thanh toán
+          </button>
+          <p style="color:#6b7280;font-size:12px;margin-top:8px">Bấm nút này sau khi đã nhận được tiền chuyển khoản</p>
+        </div>
+
+        <!-- Full paid message -->
+        <div id="successFullPaidSection" style="display:none;padding:20px">
+          <i class="fas fa-check-double" style="font-size:48px;color:#22c55e;margin-bottom:12px"></i>
+          <p style="color:#166534;font-weight:600">Đã thanh toán đầy đủ!</p>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:center;gap:12px">
+        <button class="btn btn-primary" onclick="downloadEnrollmentFormFromSuccess()">
+          <i class="fas fa-file-word"></i> Xuất đơn nhập học
+        </button>
+        <button class="btn btn-secondary" onclick="closeConvertSuccessModal()">Đóng</button>
+      </div>
     </div>
   </div>
 
@@ -124,7 +392,7 @@
     function setupBranchSelect() {
       const branchGroup = document.getElementById('branchFormGroup');
       const branchSelect = document.getElementById('branchFormSelect');
-      
+
       // Luôn load branches từ API cho mọi user
       loadBranchOptions();
     }
@@ -132,19 +400,19 @@
     async function loadBranchOptions() {
       const branchGroup = document.getElementById('branchFormGroup');
       const branchSelect = document.getElementById('branchFormSelect');
-      
+
       try {
         const result = await api.get('/branches');
         const allBranches = result.data || [];
-        
+
         if (allBranches.length === 0) {
           branchSelect.innerHTML = '<option value="">Chưa có cơ sở</option>';
           return;
         }
-        
+
         const userBranches = auth.user?.branches || [];
         const isAdmin = auth.user?.is_system_wide;
-        
+
         // User có branches riêng và không phải admin
         if (userBranches.length > 0 && !isAdmin) {
           if (userBranches.length === 1) {
@@ -158,7 +426,7 @@
             branchGroup.style.display = 'block';
             branchSelect.disabled = false;
             const primaryId = auth.user?.primaryBranch?.id || userBranches[0]?.id;
-            branchSelect.innerHTML = userBranches.map(b => 
+            branchSelect.innerHTML = userBranches.map(b =>
               `<option value="${b.id}" ${b.id == primaryId ? 'selected' : ''}>${b.name}</option>`
             ).join('');
           }
@@ -167,11 +435,11 @@
           branchGroup.style.display = 'block';
           branchSelect.disabled = false;
           const currentBranchId = branch.getId() || allBranches[0]?.id;
-          branchSelect.innerHTML = allBranches.map(b => 
+          branchSelect.innerHTML = allBranches.map(b =>
             `<option value="${b.id}" ${b.id == currentBranchId ? 'selected' : ''}>${b.name}</option>`
           ).join('');
         }
-      } catch (e) { 
+      } catch (e) {
         console.error('Load branches error:', e);
       }
     }
@@ -186,7 +454,7 @@
         const result = await api.get('/common/subjects');
         document.getElementById('subjectSelect').innerHTML = '<option value="">Chọn môn</option>' +
           (result.data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function loadLevels() {
@@ -194,7 +462,7 @@
         const result = await api.get('/common/levels');
         document.getElementById('levelSelect').innerHTML = '<option value="">Chọn</option>' +
           (result.data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join('');
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function loadStats() {
@@ -213,7 +481,7 @@
 
     async function loadCalendar() {
       document.getElementById('calendarTitle').textContent = `Tháng ${currentMonth}, ${currentYear}`;
-      
+
       try {
         const query = branch.buildQuery({ year: currentYear, month: currentMonth });
         const result = await api.get('/experience/month' + query);
@@ -251,12 +519,12 @@
         const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         const isToday = today.getFullYear() === currentYear && today.getMonth() + 1 === currentMonth && today.getDate() === d;
         const dayExps = experiences.filter(e => getDateString(e.scheduled_date) === dateStr);
-        
+
         let eventsHtml = dayExps.slice(0, 3).map(e => {
           const branchLabel = showBranch && e.branch_code ? `<small>[${e.branch_code}]</small> ` : '';
-          return `<div class="calendar-event status-${e.status}" onclick="viewExp(${e.id})">${branchLabel}${e.scheduled_time?.substring(0,5)} - ${e.student_name}</div>`;
+          return `<div class="calendar-event status-${e.status}" onclick="viewExp(${e.id})">${branchLabel}${e.scheduled_time?.substring(0, 5)} - ${e.student_name}</div>`;
         }).join('');
-        
+
         if (dayExps.length > 3) eventsHtml += `<div class="calendar-more">+${dayExps.length - 3} lịch khác</div>`;
 
         html += `<div class="calendar-day ${isToday ? 'today' : ''}" onclick="openCreateModal('${dateStr}')"><div class="day-number">${d}</div><div class="calendar-events">${eventsHtml}</div></div>`;
@@ -288,10 +556,10 @@
       document.getElementById('modalTitle').textContent = 'Thêm lịch trải nghiệm';
       document.getElementById('expId').value = '';
       form.reset(document.getElementById('expForm'));
-      
+
       const branchSelect = document.getElementById('branchFormSelect');
       if (branchSelect && branch.getId()) branchSelect.value = branch.getId();
-      
+
       if (date) document.querySelector('[name="scheduledDate"]').value = date;
       modal.show('formModal');
     }
@@ -311,10 +579,10 @@
       console.log('data.branchId from form:', data.branchId);
       console.log('auth.user.branches:', auth.user?.branches);
       console.log('branch.getId():', branch.getId());
-      
+
       // Lấy branchId từ select (display:none vẫn gửi được nếu không disabled)
       data.branchId = branchSelect?.value || data.branchId || branch.getId() || auth.user?.branches?.[0]?.id;
-      
+
       console.log('Final branchId:', data.branchId);
       console.log('===================');
 
@@ -338,7 +606,7 @@
       try {
         const result = await api.get(`/experience/${id}`);
         const e = result.data;
-        
+
         const statusMap = { pending: { text: 'Chờ trải nghiệm', class: 'warning' }, completed: { text: 'Đã hoàn thành', class: 'success' }, converted: { text: 'Đã chuyển đổi', class: 'info' }, cancelled: { text: 'Đã hủy', class: 'secondary' }, no_show: { text: 'Không đến', class: 'danger' } };
         const status = statusMap[e.status] || { text: e.status, class: 'secondary' };
 
@@ -361,20 +629,20 @@
         `;
 
         let footerHtml = '';
-        
+
         if (e.status === 'pending') {
           footerHtml = `
             <button class="btn btn-danger" onclick="deleteExp(${e.id})"><i class="fas fa-trash"></i></button>
             <button class="btn btn-secondary" onclick="editExp(${e.id})"><i class="fas fa-edit"></i></button>
             <button class="btn btn-warning" onclick="noShowExp(${e.id})"><i class="fas fa-user-slash"></i> K.đến</button>
             <button class="btn btn-success" onclick="completeExp(${e.id})"><i class="fas fa-check"></i> Xong</button>
-            <button class="btn btn-primary" onclick="convertToTrial(${e.id})"><i class="fas fa-user-plus"></i> Học thử</button>
+            <button class="btn btn-primary" onclick="openConvertModal(${e.id})"><i class="fas fa-user-graduate"></i> Chuyển đổi</button>
           `;
-        } else if (e.status === 'completed' && !e.trialStudent) {
+        } else if (e.status === 'completed') {
           footerHtml = `
             <button class="btn btn-secondary" onclick="modal.hide('viewModal')">Đóng</button>
             <button class="btn btn-danger" onclick="deleteExp(${e.id})"><i class="fas fa-trash"></i> Xóa</button>
-            <button class="btn btn-primary" onclick="convertToTrial(${e.id})"><i class="fas fa-user-plus"></i> Tạo học thử</button>
+            <button class="btn btn-primary" onclick="openConvertModal(${e.id})"><i class="fas fa-user-graduate"></i> Chuyển đổi</button>
           `;
         } else {
           footerHtml = `
@@ -382,7 +650,7 @@
             <button class="btn btn-danger" onclick="deleteExp(${e.id})"><i class="fas fa-trash"></i> Xóa</button>
           `;
         }
-        
+
         document.getElementById('viewFooter').innerHTML = footerHtml;
         modal.show('viewModal');
       } catch (e) { ui.error(e.message); }
@@ -415,12 +683,316 @@
       try { await api.delete(`/experience/${id}`); ui.success('Đã xóa'); modal.hide('viewModal'); loadStats(); loadCalendar(); } catch (e) { ui.error(e.message); }
     }
 
-    async function convertToTrial(id) {
-      if (!confirm('Tạo học sinh thử?')) return;
-      try { await api.post('/trial-students', { experienceId: id }); ui.success('Đã tạo'); modal.hide('viewModal'); loadStats(); loadCalendar(); } catch (e) { ui.error(e.message); }
+    // ========== CONVERT FUNCTIONS ==========
+    let tuitionPackages = [];
+    let promoPrograms = [];
+    let defaultScholarshipMonths = 0;
+    let currentExpData = null;
+
+    async function openConvertModal(id) {
+      modal.hide('viewModal');
+      document.getElementById('convertExpId').value = id;
+
+      try {
+        // Load experience data
+        const expRes = await api.get(`/experience/${id}`);
+        currentExpData = expRes.data;
+
+        // Prefill student info
+        document.getElementById('cvStudentName').value = currentExpData.student_name || '';
+        document.getElementById('cvStudentBirthYear').value = currentExpData.student_birth_year || '';
+        document.getElementById('cvParentName').value = currentExpData.customer_name || '';
+        document.getElementById('cvParentPhone').value = currentExpData.customer_phone || '';
+
+        // Load tuition packages and promo programs
+        const [packagesRes, promosRes] = await Promise.all([
+          api.get('/tuition-packages?status=active'),
+          api.get('/promotions/convert-data')
+        ]);
+
+        tuitionPackages = packagesRes.data || [];
+        promoPrograms = promosRes.data?.programs || [];
+
+        // Populate package dropdown
+        document.getElementById('cvTuitionPackage').innerHTML = '<option value="">-- Chọn gói học phí --</option>' +
+          tuitionPackages.map(p => `<option value="${p.id}" data-price="${p.price}" data-months="${p.months}" data-scholarship="${p.default_scholarship_months || 0}">${p.name} - ${formatCurrency(p.price)}</option>`).join('');
+
+        // Populate promo dropdown
+        document.getElementById('cvPromoProgram').innerHTML = '<option value="">-- Không áp dụng --</option>' +
+          promoPrograms.map(p => `<option value="${p.id}" data-type="${p.discount_type}" data-value="${p.discount_value}">${p.name}</option>`).join('');
+
+        // Reset fields
+        document.getElementById('cvStudentAddress').value = '';
+        document.getElementById('cvStudentSchool').value = '';
+        document.getElementById('cvParentJob').value = '';
+        document.getElementById('cvFeeOriginal').value = '0đ';
+        document.getElementById('cvPromoDiscount').value = '0đ';
+        document.getElementById('cvScholarshipMonths').value = '0';
+        document.getElementById('cvFeeTotal').textContent = '0đ';
+        document.getElementById('cvFeeTotal').dataset.rawValue = '0';
+        document.getElementById('cvMainCourseMonths').textContent = '0 tháng';
+        document.getElementById('cvBonusMonths').textContent = '+0 tháng';
+        document.getElementById('cvPaymentStatus').value = 'pending';
+        document.getElementById('cvDepositAmount').value = '0đ';
+        document.getElementById('cvPaidAmount').value = '0đ';
+        document.getElementById('cvNote').value = '';
+        updatePaymentFields();
+
+        modal.show('convertModal');
+      } catch (e) {
+        ui.error(e.message);
+      }
+    }
+
+    function onPackageChange() {
+      const select = document.getElementById('cvTuitionPackage');
+      const opt = select.options[select.selectedIndex];
+      const price = parseInt(opt?.dataset?.price) || 0;
+      const months = parseInt(opt?.dataset?.months) || 0;
+      defaultScholarshipMonths = parseInt(opt?.dataset?.scholarship) || 0;
+
+      document.getElementById('cvFeeOriginal').value = formatCurrency(price);
+      document.getElementById('cvMainCourseMonths').textContent = months + ' tháng';
+      document.getElementById('cvScholarshipMonths').value = defaultScholarshipMonths;
+
+      if (defaultScholarshipMonths > 0) {
+        document.getElementById('cvDefaultScholarshipBadge').style.display = 'inline';
+        document.getElementById('cvDefaultScholarshipMonths').textContent = defaultScholarshipMonths;
+      } else {
+        document.getElementById('cvDefaultScholarshipBadge').style.display = 'none';
+      }
+
+      onScholarshipChange();
+      calculateTotal();
+    }
+
+    function applyPromoProgram() {
+      calculateTotal();
+    }
+
+    function onScholarshipChange() {
+      const months = parseInt(document.getElementById('cvScholarshipMonths').value) || 0;
+      document.getElementById('cvBonusMonths').textContent = '+' + months + ' tháng';
+
+      if (months > defaultScholarshipMonths) {
+        document.getElementById('cvScholarshipWarning').style.display = 'block';
+      } else {
+        document.getElementById('cvScholarshipWarning').style.display = 'none';
+      }
+
+      calculateTotal();
+    }
+
+    function calculateTotal() {
+      const feeOriginal = parseCurrency(document.getElementById('cvFeeOriginal').value);
+
+      // Get promo discount
+      const promoSelect = document.getElementById('cvPromoProgram');
+      const promoOpt = promoSelect.options[promoSelect.selectedIndex];
+      const discountType = promoOpt?.dataset?.type || '';
+      const discountValue = parseInt(promoOpt?.dataset?.value) || 0;
+
+      let promoDiscount = 0;
+      if (discountType === 'percent') {
+        promoDiscount = Math.round(feeOriginal * discountValue / 100);
+      } else if (discountType === 'fixed') {
+        promoDiscount = discountValue;
+      }
+
+      document.getElementById('cvPromoDiscount').value = promoDiscount > 0 ? '-' + formatCurrency(promoDiscount) : '0đ';
+
+      const feeTotal = Math.max(0, feeOriginal - promoDiscount);
+      document.getElementById('cvFeeTotal').textContent = formatCurrency(feeTotal);
+      document.getElementById('cvFeeTotal').dataset.rawValue = feeTotal;
+
+      updateRemaining();
+    }
+
+    function updatePaymentFields() {
+      const status = document.getElementById('cvPaymentStatus').value;
+      document.getElementById('depositGroup').style.display = status === 'deposit' ? 'block' : 'none';
+      document.getElementById('paidGroup').style.display = (status === 'partial' || status === 'paid') ? 'block' : 'none';
+      document.getElementById('remainingRow').style.display = (status !== 'pending' && status !== 'paid') ? 'block' : 'none';
+
+      if (status === 'paid') {
+        const feeTotal = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
+        document.getElementById('cvPaidAmount').value = formatCurrency(feeTotal);
+      }
+
+      updateRemaining();
+    }
+
+    function updateRemaining() {
+      const feeTotal = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
+      const deposit = parseCurrency(document.getElementById('cvDepositAmount').value);
+      const paid = parseCurrency(document.getElementById('cvPaidAmount').value);
+      const remaining = Math.max(0, feeTotal - deposit - paid);
+      document.getElementById('cvRemaining').textContent = formatCurrency(remaining);
+    }
+
+    async function convertExp() {
+      const id = document.getElementById('convertExpId').value;
+
+      const studentName = document.getElementById('cvStudentName').value.trim();
+      const studentBirthYear = document.getElementById('cvStudentBirthYear').value;
+      const studentAddress = document.getElementById('cvStudentAddress').value;
+      const studentSchool = document.getElementById('cvStudentSchool').value;
+      const parentName = document.getElementById('cvParentName').value.trim();
+      const parentPhone = document.getElementById('cvParentPhone').value.trim();
+      const parentJob = document.getElementById('cvParentJob').value;
+
+      const packageId = document.getElementById('cvTuitionPackage').value;
+      const feeOriginal = parseCurrency(document.getElementById('cvFeeOriginal').value);
+      const promoDiscount = parseCurrency(document.getElementById('cvPromoDiscount').value.replace('-', ''));
+      const feeTotal = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
+      const scholarshipMonths = parseInt(document.getElementById('cvScholarshipMonths').value) || 0;
+      const needsApproval = scholarshipMonths > defaultScholarshipMonths;
+
+      const depositAmount = parseCurrency(document.getElementById('cvDepositAmount').value);
+      const paidAmount = parseCurrency(document.getElementById('cvPaidAmount').value);
+      const paymentStatus = document.getElementById('cvPaymentStatus').value;
+      const note = document.getElementById('cvNote').value;
+
+      // Validation
+      if (!studentName) { ui.warning('Vui lòng nhập họ tên học sinh'); return; }
+      if (!parentName || !parentPhone) { ui.warning('Vui lòng nhập thông tin phụ huynh'); return; }
+      if (!packageId) { ui.warning('Vui lòng chọn gói học phí'); return; }
+
+      if (needsApproval) {
+        if (!confirm('Học bổng vượt mức mặc định. Yêu cầu này cần GDV duyệt. Tiếp tục?')) return;
+      }
+
+      const actualRevenue = depositAmount + paidAmount;
+
+      try {
+        const result = await api.post(`/experience/${id}/convert`, {
+          studentName, birthYear: studentBirthYear, address: studentAddress, school: studentSchool,
+          customerName: parentName, customerPhone: parentPhone, parentJob,
+          packageId, feeOriginal, feeDiscount: promoDiscount, feeTotal,
+          scholarshipMonths, defaultScholarshipMonths, scholarshipNeedsApproval: needsApproval,
+          depositAmount, paidAmount, actualRevenue, paymentStatus,
+          note
+        });
+
+        modal.hide('convertModal');
+
+        // Show success modal with QR
+        const student = result.data || {};
+        const studentId = student.id || student.studentId;
+        const studentCode = student.student_code || student.studentCode || '';
+        // Chưa ghi doanh thu, remaining = toàn bộ học phí
+        const remaining = feeTotal;
+
+        document.getElementById('newStudentId').value = studentId;
+        document.getElementById('successStudentName').textContent = studentName;
+        document.getElementById('successStudentCode').textContent = 'Mã: ' + studentCode;
+        document.getElementById('successPaidAmount').textContent = '0đ';
+        document.getElementById('successRemainingAmount').textContent = formatCurrency(remaining);
+        document.getElementById('successRemainingRaw').value = remaining;
+        document.getElementById('successPaymentDesc').textContent = studentCode + ' ' + studentName.substring(0, 15);
+
+        if (remaining > 0) {
+          document.getElementById('successQRSection').style.display = 'block';
+          document.getElementById('successFullPaidSection').style.display = 'none';
+          const desc = encodeURIComponent(studentCode + ' ' + studentName.substring(0, 15));
+          const qrUrl = 'https://img.vietqr.io/image/970422-0866766189-compact2.png?amount=' + remaining + '&addInfo=' + desc;
+          document.getElementById('successQRImage').src = qrUrl;
+        } else {
+          document.getElementById('successQRSection').style.display = 'none';
+          document.getElementById('successFullPaidSection').style.display = 'block';
+        }
+
+        modal.show('convertSuccessModal');
+
+        ui.success(needsApproval ? 'Chuyển đổi thành công! Học bổng đang chờ duyệt.' : 'Chuyển đổi thành công!');
+        loadStats();
+        loadCalendar();
+      } catch (e) {
+        ui.error(e.message);
+      }
+    }
+
+    function closeConvertSuccessModal() {
+      modal.hide('convertSuccessModal');
+    }
+
+    async function confirmPaymentReceived() {
+      const studentId = document.getElementById('newStudentId').value;
+      const remaining = parseFloat(document.getElementById('successRemainingRaw').value) || 0;
+
+      if (!studentId) { ui.warning('Không tìm thấy thông tin học sinh'); return; }
+      if (remaining <= 0) { ui.info('Không còn số tiền cần thanh toán'); return; }
+
+      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(remaining) + ' từ phụ huynh?')) return;
+
+      try {
+        await api.post('/students/' + studentId + '/confirm-payment', {
+          amount: remaining,
+          paymentMethod: 'bank_transfer',
+          note: 'Thanh toán qua QR sau chuyển đổi'
+        });
+
+        ui.success('Đã ghi nhận thanh toán ' + formatCurrency(remaining));
+
+        // Update UI
+        const currentPaid = parseCurrency(document.getElementById('successPaidAmount').textContent);
+        document.getElementById('successPaidAmount').textContent = formatCurrency(currentPaid + remaining);
+        document.getElementById('successRemainingAmount').textContent = '0đ';
+        document.getElementById('successRemainingRaw').value = '0';
+
+        // Hide QR, show full paid
+        document.getElementById('successQRSection').style.display = 'none';
+        document.getElementById('successFullPaidSection').style.display = 'block';
+
+        loadCalendar();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    function downloadEnrollmentFormFromSuccess() {
+      const studentId = document.getElementById('newStudentId').value;
+      if (!studentId) { ui.warning('Không tìm thấy thông tin học sinh'); return; }
+      downloadEnrollmentForm(studentId);
+    }
+
+    function downloadEnrollmentForm(studentId) {
+      const token = localStorage.getItem('token');
+      const url = window.LMS_CONFIG.API_BASE + '/enrollment/' + studentId + '/form';
+
+      ui.info('Đang tạo đơn nhập học...');
+
+      fetch(url, { method: 'GET', headers: { 'Authorization': 'Bearer ' + token } })
+        .then(response => {
+          if (!response.ok) throw new Error('Lỗi tải file');
+          return response.blob();
+        })
+        .then(blob => {
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'Don_nhap_hoc_' + studentId + '.docx';
+          link.click();
+          URL.revokeObjectURL(link.href);
+          ui.success('Đã tải đơn nhập học');
+        })
+        .catch(e => ui.error(e.message));
+    }
+
+    // ========== CURRENCY HELPERS ==========
+    function formatCurrency(v) {
+      return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ';
+    }
+
+    function parseCurrency(str) {
+      return parseInt(String(str).replace(/[^\d]/g, '')) || 0;
+    }
+
+    function formatCurrencyField(input) {
+      const rawValue = parseCurrency(input.value);
+      input.value = rawValue > 0 ? formatCurrency(rawValue) : '0đ';
+      input.dataset.rawValue = rawValue;
     }
 
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
+
 </html>

@@ -579,91 +579,193 @@
     </div>
   </div>
 
-  <!-- Convert Modal -->
+  <!-- Convert Modal - Full Version -->
   <div class="modal" id="convertModal">
-    <div class="modal-content modal-lg">
+    <div class="modal-content" style="max-width:900px">
       <div class="modal-header">
-        <div class="modal-title"><i class="fas fa-user-graduate"></i> Chuyển đổi thành học sinh</div><button
-          class="modal-close" onclick="closeConvertModal()">&times;</button>
+        <div class="modal-title"><i class="fas fa-user-graduate"></i> Chuyển đổi thành học sinh</div>
+        <button class="modal-close" onclick="closeConvertModal()">&times;</button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="max-height:80vh;overflow-y:auto">
         <input type="hidden" id="convertLeadId">
-        <div id="convertLeadInfo"
-          style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px"></div>
 
-        <div class="form-group">
-          <label>Chọn lớp</label>
-          <select id="convertClass" class="form-control">
-            <option value="">-- Chờ CM xếp lớp --</option>
-          </select>
-          <small class="text-muted">Bỏ trống nếu muốn CM xếp lớp sau</small>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="required">Học phí gốc</label>
-            <div class="input-group">
-              <input type="number" id="convertFeeOriginal" class="form-control" value="0" min="0" step="100000"
-                onchange="calcFeeTotal()" oninput="calcFeeTotal()">
-              <span class="input-suffix">đ</span>
+        <!-- PHẦN 1: THÔNG TIN HỌC SINH -->
+        <div
+          style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:12px;margin-bottom:20px">
+          <h4 style="margin:0 0 12px 0;color:#1e40af"><i class="fas fa-child"></i> Thông tin Học sinh</h4>
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label class="required">Họ tên học sinh</label>
+              <input type="text" id="cvStudentName" class="form-control" placeholder="Nguyễn Văn A">
+            </div>
+            <div class="form-group">
+              <label>Năm sinh</label>
+              <input type="number" id="cvStudentBirthYear" class="form-control" placeholder="2015" min="2000"
+                max="2025">
             </div>
           </div>
-          <div class="form-group">
-            <label>Giảm giá</label>
-            <div class="input-group">
-              <input type="number" id="convertFeeDiscount" class="form-control" value="0" min="0" step="100000"
-                onchange="calcFeeTotal()" oninput="calcFeeTotal()">
-              <span class="input-suffix">đ</span>
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label>Địa chỉ</label>
+              <input type="text" id="cvStudentAddress" class="form-control" placeholder="Số nhà, đường, quận/huyện">
             </div>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Tổng học phí</label>
-            <div class="input-group">
-              <input type="text" id="convertFeeTotal" class="form-control" value="0đ" readonly
-                style="background:var(--bg-secondary);font-weight:bold;color:#16a34a">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Trạng thái</label>
-            <select id="convertPaymentStatus" class="form-control" onchange="updatePaymentFields()">
-              <option value="pending">Chưa đóng</option>
-              <option value="deposit">Đặt cọc</option>
-              <option value="partial">Đóng 1 phần</option>
-              <option value="paid">Đã đóng đủ</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-row" id="paymentAmountRow" style="display:none">
-          <div class="form-group">
-            <label id="depositLabel">Tiền cọc</label>
-            <div class="input-group">
-              <input type="number" id="convertDepositAmount" class="form-control" value="0" min="0" step="100000"
-                onchange="updateRemaining()" oninput="updateRemaining()">
-              <span class="input-suffix">đ</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Đã thanh toán</label>
-            <div class="input-group">
-              <input type="number" id="convertPaidAmount" class="form-control" value="0" min="0" step="100000"
-                onchange="updateRemaining()" oninput="updateRemaining()">
-              <span class="input-suffix">đ</span>
+            <div class="form-group">
+              <label>Trường học hiện tại</label>
+              <input type="text" id="cvStudentSchool" class="form-control" placeholder="THCS ABC">
             </div>
           </div>
         </div>
 
-        <div class="form-group" id="remainingRow"
-          style="display:none;background:#fef3c7;padding:10px;border-radius:8px">
-          <strong>Còn lại: <span id="convertRemaining" class="text-danger">0đ</span></strong>
+        <!-- PHẦN 2: THÔNG TIN PHỤ HUYNH -->
+        <div
+          style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:20px">
+          <h4 style="margin:0 0 12px 0;color:#92400e"><i class="fas fa-users"></i> Thông tin Phụ huynh</h4>
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label class="required">Họ tên phụ huynh</label>
+              <input type="text" id="cvParentName" class="form-control" placeholder="Nguyễn Văn B">
+            </div>
+            <div class="form-group">
+              <label class="required">Số điện thoại</label>
+              <input type="tel" id="cvParentPhone" class="form-control" placeholder="0901234567">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nghề nghiệp</label>
+            <input type="text" id="cvParentJob" class="form-control" placeholder="Kỹ sư, Giáo viên, Kinh doanh...">
+          </div>
         </div>
 
+        <!-- PHẦN 3: THÔNG TIN KHÓA HỌC -->
+        <div
+          style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:20px">
+          <h4 style="margin:0 0 12px 0;color:#166534"><i class="fas fa-book"></i> Thông tin Khóa học</h4>
+
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label class="required">Gói học phí (Khóa học)</label>
+              <select id="cvTuitionPackage" class="form-control" onchange="onPackageChange()">
+                <option value="">-- Chọn gói học phí --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Học phí gốc</label>
+              <input type="text" id="cvFeeOriginal" class="form-control" value="0đ" readonly
+                style="background:#f3f4f6;font-weight:bold">
+            </div>
+          </div>
+
+          <!-- Chương trình giảm giá -->
+          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <label style="color:#16a34a;font-weight:600"><i class="fas fa-percent"></i> Chương trình giảm giá</label>
+            <div class="form-row" style="margin-top:8px">
+              <div class="form-group" style="flex:2;margin-bottom:0">
+                <select id="cvPromoProgram" class="form-control" onchange="applyPromoProgram()">
+                  <option value="">-- Không áp dụng --</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <input type="text" id="cvPromoDiscount" class="form-control" value="0đ" readonly
+                  style="background:#dcfce7;color:#16a34a;font-weight:bold;text-align:right">
+              </div>
+            </div>
+            <div id="promoDiscountInfo" style="margin-top:8px;font-size:12px;color:#16a34a;display:none"></div>
+          </div>
+
+          <!-- Học bổng tặng kèm -->
+          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng tặng
+                kèm</label>
+              <span id="cvDefaultScholarshipBadge"
+                style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">
+                Mặc định: <strong id="cvDefaultScholarshipMonths">0</strong> tháng
+              </span>
+            </div>
+            <div class="form-row" style="align-items:center">
+              <div class="form-group" style="margin-bottom:0;flex:1">
+                <input type="number" id="cvScholarshipMonths" class="form-control" value="0" min="0" max="12"
+                  onchange="onScholarshipChange()" style="font-size:18px;font-weight:bold;text-align:center">
+              </div>
+              <span style="padding:0 12px;color:#6b7280">tháng</span>
+              <div class="form-group" style="margin-bottom:0;flex:2">
+                <small id="cvScholarshipStatus" style="color:#16a34a;display:none">
+                  <i class="fas fa-check-circle"></i> Trong mức mặc định
+                </small>
+              </div>
+            </div>
+            <div id="cvScholarshipWarning"
+              style="margin-top:8px;padding:8px;background:#fef3c7;border-radius:6px;color:#92400e;font-size:12px;display:none">
+              <i class="fas fa-exclamation-triangle"></i> Vượt mức mặc định, cần GDV duyệt
+            </div>
+          </div>
+
+          <!-- Quà tặng -->
+          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <label style="color:#db2777;font-weight:600"><i class="fas fa-gift"></i> Quà tặng kèm</label>
+            <div id="giftItemsContainer" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px"></div>
+          </div>
+
+          <!-- Tổng kết -->
+          <div style="background:#1f2937;color:white;padding:16px;border-radius:8px;margin-top:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+              <span>Khóa học chính:</span>
+              <span id="cvMainCourseMonths">0 tháng</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+              <span>Học bổng tặng:</span>
+              <span id="cvBonusMonths" style="color:#4ade80">+0 tháng</span>
+            </div>
+            <div
+              style="display:flex;justify-content:space-between;margin-bottom:12px;padding-top:8px;border-top:1px solid #374151">
+              <span><strong>Tổng thời gian học:</strong></span>
+              <span id="cvTotalMonths" style="font-size:18px;font-weight:bold;color:#4ade80">0 tháng</span>
+            </div>
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #374151">
+              <span style="font-size:16px"><strong>HỌC PHÍ THỰC ĐÓNG:</strong></span>
+              <span id="cvFeeTotal" style="font-size:24px;font-weight:bold;color:#fbbf24">0đ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PHẦN 4: THANH TOÁN -->
+        <div
+          style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);padding:16px;border-radius:12px;margin-bottom:20px">
+          <h4 style="margin:0 0 12px 0;color:#9d174d"><i class="fas fa-credit-card"></i> Thanh toán</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Trạng thái</label>
+              <select id="cvPaymentStatus" class="form-control" onchange="updatePaymentFields()">
+                <option value="pending">Chưa đóng</option>
+                <option value="deposit">Đặt cọc</option>
+                <option value="partial">Đóng 1 phần</option>
+                <option value="paid">Đã đóng đủ</option>
+              </select>
+            </div>
+            <div class="form-group" id="depositGroup" style="display:none">
+              <label>Tiền cọc</label>
+              <input type="text" id="cvDepositAmount" class="form-control currency-input" value="0đ"
+                oninput="formatCurrencyField(this);updateRemaining()">
+            </div>
+            <div class="form-group" id="paidGroup" style="display:none">
+              <label>Đã thanh toán</label>
+              <input type="text" id="cvPaidAmount" class="form-control currency-input" value="0đ"
+                oninput="formatCurrencyField(this);updateRemaining()">
+            </div>
+          </div>
+          <div id="remainingRow" style="display:none;background:white;padding:12px;border-radius:8px;margin-top:8px">
+            <div style="display:flex;justify-content:space-between">
+              <span>Còn phải đóng:</span>
+              <span id="cvRemaining" style="font-size:18px;font-weight:bold;color:#dc2626">0đ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ghi chú -->
         <div class="form-group">
           <label>Ghi chú</label>
-          <textarea id="convertNote" class="form-control" rows="2"></textarea>
+          <textarea id="cvNote" class="form-control" rows="2" placeholder="Ghi chú thêm..."></textarea>
         </div>
       </div>
       <div class="modal-footer">
@@ -673,61 +775,127 @@
     </div>
   </div>
 
+  <!-- Conversion Success Modal with QR -->
+  <div class="modal" id="convertSuccessModal">
+    <div class="modal-content" style="max-width:500px">
+      <div class="modal-header" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white">
+        <div class="modal-title"><i class="fas fa-check-circle"></i> Chuyển đổi thành công!</div>
+        <button class="modal-close" onclick="closeConvertSuccessModal()" style="color:white">&times;</button>
+      </div>
+      <div class="modal-body" style="text-align:center;padding:24px">
+        <input type="hidden" id="newStudentId">
+        <input type="hidden" id="successRemainingRaw" value="0">
+
+        <div style="margin-bottom:20px">
+          <i class="fas fa-user-graduate" style="font-size:48px;color:#22c55e;margin-bottom:12px"></i>
+          <h3 style="margin:0;color:#166534" id="successStudentName">Học sinh mới</h3>
+          <p style="color:#6b7280;margin:4px 0" id="successStudentCode">Mã: ---</p>
+        </div>
+
+        <!-- QR Section -->
+        <div id="successQRSection" style="display:none">
+          <div style="background:#f9fafb;padding:16px;border-radius:12px;margin-bottom:16px">
+            <h4 style="margin:0 0 12px;color:#1f2937"><i class="fas fa-qrcode"></i> QR Thanh toán</h4>
+            <img id="successQRImage" src="" alt="QR Code" style="max-width:200px;border-radius:8px">
+          </div>
+
+          <div id="successPaymentInfo" style="margin-bottom:16px">
+            <div style="background:#dcfce7;padding:12px;border-radius:8px;margin-bottom:8px">
+              <div style="color:#166534;font-size:13px">Đã đóng</div>
+              <div style="color:#15803d;font-size:20px;font-weight:700" id="successPaidAmount">0đ</div>
+            </div>
+            <div style="background:#fee2e2;padding:12px;border-radius:8px" id="successRemainingBox">
+              <div style="color:#991b1b;font-size:13px">Còn phải đóng</div>
+              <div style="color:#dc2626;font-size:20px;font-weight:700" id="successRemainingAmount">0đ</div>
+            </div>
+          </div>
+
+          <div style="background:#f3f4f6;padding:12px;border-radius:8px;margin-bottom:16px">
+            <div style="font-size:12px;color:#6b7280">Nội dung chuyển khoản:</div>
+            <div style="font-weight:600;color:#1f2937" id="successPaymentDesc">---</div>
+          </div>
+
+          <!-- Confirm Payment Button -->
+          <button class="btn btn-success" onclick="confirmPaymentReceived()"
+            style="width:100%;padding:12px;font-size:16px">
+            <i class="fas fa-check-double"></i> Xác nhận đã nhận thanh toán
+          </button>
+          <p style="color:#6b7280;font-size:12px;margin-top:8px">Bấm nút này sau khi đã nhận được tiền chuyển khoản</p>
+        </div>
+
+        <!-- Full paid message -->
+        <div id="successFullPaidSection" style="display:none;padding:20px">
+          <i class="fas fa-check-double" style="font-size:48px;color:#22c55e;margin-bottom:12px"></i>
+          <p style="color:#166534;font-weight:600">Đã thanh toán đầy đủ!</p>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:center;gap:12px">
+        <button class="btn btn-primary" onclick="downloadEnrollmentFormFromSuccess()">
+          <i class="fas fa-file-word"></i> Xuất đơn nhập học
+        </button>
+        <button class="btn btn-secondary" onclick="closeConvertSuccessModal()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Payment Update Modal -->
   <div class="modal" id="paymentModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title"><i class="fas fa-dollar-sign"></i> Cập nhật thanh toán</div><button class="modal-close"
-          onclick="closePaymentModal()">&times;</button>
+    <div class="modal-content" style="max-width:500px">
+      <div class="modal-header" style="background:linear-gradient(135deg,#3b82f6,#2563eb);color:white">
+        <div class="modal-title"><i class="fas fa-qrcode"></i> Thanh toán học phí</div>
+        <button class="modal-close" onclick="closePaymentModal()" style="color:white">&times;</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="paymentLeadId">
+        <input type="hidden" id="paymentStudentId">
+        <input type="hidden" id="paymentRemainingRaw" value="0">
+
+        <!-- Lead Info -->
         <div id="paymentLeadInfo"
-          style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px"></div>
+          style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px;text-align:center">
+          <div style="font-weight:600;font-size:16px" id="paymentStudentName">---</div>
+          <div style="color:#6b7280;font-size:13px" id="paymentStudentCode">Mã: ---</div>
+        </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label>Đã cọc</label>
-            <input type="text" id="paymentDeposit" class="form-control currency-display" readonly
-              style="background:var(--bg-secondary)">
-          </div>
-          <div class="form-group">
-            <label>Đã đóng trước</label>
-            <input type="text" id="paymentPrevPaid" class="form-control currency-display" readonly
-              style="background:var(--bg-secondary)">
+        <!-- QR Section -->
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="background:#f9fafb;padding:16px;border-radius:12px">
+            <img id="paymentQRImage" src="" alt="QR Code" style="max-width:220px;border-radius:8px">
           </div>
         </div>
 
-        <div class="form-group" style="background:#dcfce7;padding:15px;border-radius:8px;margin:15px 0">
-          <label style="font-weight:bold;color:#15803d"><i class="fas fa-check-circle"></i> Đóng đủ số tiền còn
-            lại</label>
-          <input type="text" id="paymentNewAmount" class="form-control currency-display" value="0" readonly
-            style="font-size:18px;font-weight:bold;background:#fff;border:2px solid #15803d;color:#15803d">
-          <small class="text-muted">Chỉ được đóng đúng số tiền còn lại để hoàn tất</small>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Tổng sẽ đóng</label>
-            <input type="text" id="paymentTotalPaid" class="form-control currency-display" readonly
-              style="background:var(--bg-secondary);font-weight:bold;color:#15803d">
+        <!-- Payment Info -->
+        <div class="form-row" style="margin-bottom:12px">
+          <div class="form-group" style="flex:1">
+            <div style="background:#dcfce7;padding:12px;border-radius:8px;text-align:center">
+              <div style="color:#166534;font-size:12px">Học phí</div>
+              <div style="color:#15803d;font-size:18px;font-weight:700" id="paymentFeeTotal">0đ</div>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Còn lại sau khi đóng</label>
-            <input type="text" id="paymentRemaining" class="form-control currency-display" readonly
-              style="background:#fef3c7;font-weight:bold;color:#dc2626">
+          <div class="form-group" style="flex:1">
+            <div style="background:#fee2e2;padding:12px;border-radius:8px;text-align:center">
+              <div style="color:#991b1b;font-size:12px">Cần thanh toán</div>
+              <div style="color:#dc2626;font-size:18px;font-weight:700" id="paymentRemaining">0đ</div>
+            </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Ghi chú</label>
-          <textarea id="paymentNote" class="form-control" rows="2"
-            placeholder="VD: Đóng đủ học phí tháng 12"></textarea>
+        <!-- Transfer Info -->
+        <div style="background:#f3f4f6;padding:12px;border-radius:8px;text-align:center;margin-bottom:16px">
+          <div style="font-size:12px;color:#6b7280">Nội dung chuyển khoản:</div>
+          <div style="font-weight:600;color:#1f2937" id="paymentTransferDesc">---</div>
         </div>
+
+        <!-- Confirm Button -->
+        <button class="btn btn-success" onclick="confirmLeadPayment()" style="width:100%;padding:12px;font-size:16px"
+          id="btnConfirmLeadPayment">
+          <i class="fas fa-check-double"></i> Xác nhận đã nhận thanh toán
+        </button>
+        <p style="color:#6b7280;font-size:12px;margin-top:8px;text-align:center">Bấm nút này sau khi đã nhận được tiền
+          chuyển khoản</p>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closePaymentModal()">Hủy</button>
-        <button class="btn btn-success" onclick="savePayment()"><i class="fas fa-save"></i> Lưu thanh toán</button>
+        <button class="btn btn-secondary" onclick="closePaymentModal()">Đóng</button>
       </div>
     </div>
   </div>
@@ -999,111 +1167,479 @@
 
     // ========== CONVERT FUNCTIONS ==========
     var currentConvertLead = null;
+    var promoData = { programs: [], items: [] };
+    var packagesData = [];
+    var selectedPackage = null;
+    var defaultScholarshipMonths = 0;
 
     function calcFeeTotal() {
-      var orig = parseFloat(document.getElementById('convertFeeOriginal').value) || 0;
-      var disc = parseFloat(document.getElementById('convertFeeDiscount').value) || 0;
-      var total = Math.max(0, orig - disc);
-      document.getElementById('convertFeeTotal').value = formatCurrency(total);
-      document.getElementById('convertFeeTotal').dataset.rawValue = total;
+      var orig = parseCurrency(document.getElementById('cvFeeOriginal').value);
+      var promoDisc = parseCurrency(document.getElementById('cvPromoDiscount').value);
+      var total = Math.max(0, orig - promoDisc);
+      document.getElementById('cvFeeTotal').textContent = formatCurrency(total);
+      document.getElementById('cvFeeTotal').dataset.rawValue = total;
       updateRemaining();
     }
 
     function updatePaymentFields() {
-      var status = document.getElementById('convertPaymentStatus').value;
-      var row = document.getElementById('paymentAmountRow');
+      var status = document.getElementById('cvPaymentStatus').value;
+      var depositGroup = document.getElementById('depositGroup');
+      var paidGroup = document.getElementById('paidGroup');
       var remainingRow = document.getElementById('remainingRow');
-      var depositLabel = document.getElementById('depositLabel');
 
       if (status === 'pending') {
-        row.style.display = 'none';
+        depositGroup.style.display = 'none';
+        paidGroup.style.display = 'none';
         remainingRow.style.display = 'none';
-      } else {
-        row.style.display = 'flex';
+      } else if (status === 'deposit') {
+        depositGroup.style.display = 'block';
+        paidGroup.style.display = 'none';
         remainingRow.style.display = 'block';
-        depositLabel.textContent = status === 'deposit' ? 'Tiền cọc' : 'Đã đóng trước';
+      } else {
+        depositGroup.style.display = 'block';
+        paidGroup.style.display = 'block';
+        remainingRow.style.display = 'block';
       }
 
       if (status === 'paid') {
-        var total = parseFloat(document.getElementById('convertFeeTotal').dataset.rawValue) || 0;
-        document.getElementById('convertPaidAmount').value = total;
-        document.getElementById('convertDepositAmount').value = 0;
+        var total = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
+        document.getElementById('cvPaidAmount').value = formatCurrency(total);
+        document.getElementById('cvPaidAmount').dataset.rawValue = total;
+        document.getElementById('cvDepositAmount').value = '0đ';
+        document.getElementById('cvDepositAmount').dataset.rawValue = 0;
       }
       updateRemaining();
     }
 
     function updateRemaining() {
-      var total = parseFloat(document.getElementById('convertFeeTotal').dataset.rawValue) || 0;
-      var deposit = parseFloat(document.getElementById('convertDepositAmount').value) || 0;
-      var paid = parseFloat(document.getElementById('convertPaidAmount').value) || 0;
+      var total = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
+      var deposit = parseCurrency(document.getElementById('cvDepositAmount').value);
+      var paid = parseCurrency(document.getElementById('cvPaidAmount').value);
       var remaining = total - deposit - paid;
-      document.getElementById('convertRemaining').textContent = formatCurrency(Math.max(0, remaining));
+      document.getElementById('cvRemaining').textContent = formatCurrency(Math.max(0, remaining));
+    }
+
+    function onPackageChange() {
+      var select = document.getElementById('cvTuitionPackage');
+      var packageId = select.value;
+      selectedPackage = packagesData.find(function (p) { return p.id == packageId; });
+
+      if (selectedPackage) {
+        document.getElementById('cvFeeOriginal').value = formatCurrency(selectedPackage.price);
+        document.getElementById('cvFeeOriginal').dataset.rawValue = selectedPackage.price;
+        document.getElementById('cvMainCourseMonths').textContent = selectedPackage.months + ' tháng';
+        document.getElementById('cvMainCourseMonths').dataset.months = selectedPackage.months;
+
+        // Set default scholarship based on package
+        defaultScholarshipMonths = selectedPackage.default_scholarship_months || 0;
+        document.getElementById('cvDefaultScholarshipMonths').textContent = defaultScholarshipMonths;
+        document.getElementById('cvDefaultScholarshipBadge').style.display = 'inline-block';
+        document.getElementById('cvScholarshipMonths').value = defaultScholarshipMonths;
+        onScholarshipChange();
+      } else {
+        document.getElementById('cvFeeOriginal').value = '0đ';
+        document.getElementById('cvFeeOriginal').dataset.rawValue = 0;
+        document.getElementById('cvMainCourseMonths').textContent = '0 tháng';
+        document.getElementById('cvMainCourseMonths').dataset.months = 0;
+        defaultScholarshipMonths = 0;
+        document.getElementById('cvDefaultScholarshipBadge').style.display = 'none';
+        document.getElementById('cvScholarshipMonths').value = 0;
+        onScholarshipChange();
+      }
+
+      applyPromoProgram();
+      updateTotalMonths();
+    }
+
+    function onScholarshipChange() {
+      var scholarshipMonths = parseInt(document.getElementById('cvScholarshipMonths').value) || 0;
+      var statusEl = document.getElementById('cvScholarshipStatus');
+      var warningEl = document.getElementById('cvScholarshipWarning');
+
+      if (scholarshipMonths <= defaultScholarshipMonths) {
+        // Within default - no approval needed
+        statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Trong mức mặc định - Không cần duyệt';
+        statusEl.style.color = '#16a34a';
+        statusEl.style.display = 'block';
+        warningEl.style.display = 'none';
+      } else {
+        // Exceeds default - needs approval
+        statusEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Vượt ' + (scholarshipMonths - defaultScholarshipMonths) + ' tháng';
+        statusEl.style.color = '#d97706';
+        statusEl.style.display = 'block';
+        warningEl.style.display = 'block';
+      }
+
+      updateTotalMonths();
+    }
+
+    function updateTotalMonths() {
+      var mainMonths = parseInt(document.getElementById('cvMainCourseMonths').dataset.months) || 0;
+      var bonusMonths = parseInt(document.getElementById('cvScholarshipMonths').value) || 0;
+      var total = mainMonths + bonusMonths;
+
+      document.getElementById('cvBonusMonths').textContent = '+' + bonusMonths + ' tháng';
+      document.getElementById('cvTotalMonths').textContent = total + ' tháng';
+    }
+
+    function applyPromoProgram() {
+      var select = document.getElementById('cvPromoProgram');
+      var programId = select.value;
+      var infoDiv = document.getElementById('promoDiscountInfo');
+
+      if (!programId) {
+        document.getElementById('cvPromoDiscount').value = '0đ';
+        document.getElementById('cvPromoDiscount').dataset.rawValue = 0;
+        infoDiv.style.display = 'none';
+        calcFeeTotal();
+        return;
+      }
+
+      var program = promoData.programs.find(function (p) { return p.id == programId; });
+      if (!program) return;
+
+      var orig = parseCurrency(document.getElementById('cvFeeOriginal').value);
+      var discount = 0;
+
+      if (program.discount_type === 'percent') {
+        discount = Math.round(orig * program.discount_value / 100);
+        if (program.max_discount && discount > program.max_discount) {
+          discount = program.max_discount;
+        }
+        infoDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + escapeHtml(program.name) + ' (-' + program.discount_value + '%)';
+      } else {
+        discount = program.discount_value;
+        infoDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + escapeHtml(program.name) + ' (-' + formatCurrency(discount) + ')';
+      }
+
+      document.getElementById('cvPromoDiscount').value = formatCurrency(discount);
+      document.getElementById('cvPromoDiscount').dataset.rawValue = discount;
+      infoDiv.style.display = 'block';
+      calcFeeTotal();
     }
 
     async function openConvertModal(id) {
       try {
+        // Load lead data
         const res = await api.get('/leads/' + id);
         currentConvertLead = res.data;
         document.getElementById('convertLeadId').value = id;
-        document.getElementById('convertLeadInfo').innerHTML = '<strong>' + escapeHtml(currentConvertLead.student_name) + '</strong><br><small>' + escapeHtml(currentConvertLead.customer_name) + ' - ' + currentConvertLead.customer_phone + '</small><br><small>Bộ môn: ' + (currentConvertLead.subject_name || '-') + '</small>';
 
-        // Populate classes
-        var classSelect = document.getElementById('convertClass');
-        classSelect.innerHTML = '<option value="">-- Chờ CM xếp lớp --</option>' + classes.map(function (c) { return '<option value="' + c.id + '">' + escapeHtml(c.name) + '</option>'; }).join('');
+        // Fill student info from lead
+        document.getElementById('cvStudentName').value = currentConvertLead.student_name || '';
+        document.getElementById('cvStudentBirthYear').value = currentConvertLead.birth_year || '';
+        document.getElementById('cvStudentAddress').value = currentConvertLead.address || '';
+        document.getElementById('cvStudentSchool').value = currentConvertLead.school || '';
 
-        // Reset all fields
-        document.getElementById('convertFeeOriginal').value = 0;
-        document.getElementById('convertFeeDiscount').value = 0;
-        document.getElementById('convertFeeTotal').value = '0đ';
-        document.getElementById('convertFeeTotal').dataset.rawValue = 0;
-        document.getElementById('convertDepositAmount').value = 0;
-        document.getElementById('convertPaidAmount').value = 0;
-        document.getElementById('convertPaymentStatus').value = 'pending';
-        document.getElementById('convertNote').value = '';
-        document.getElementById('paymentAmountRow').style.display = 'none';
+        // Fill parent info
+        document.getElementById('cvParentName').value = currentConvertLead.customer_name || '';
+        document.getElementById('cvParentPhone').value = currentConvertLead.customer_phone || '';
+        document.getElementById('cvParentJob').value = currentConvertLead.parent_job || '';
+
+        // Reset payment fields
+        document.getElementById('cvPaymentStatus').value = 'pending';
+        document.getElementById('cvDepositAmount').value = '0đ';
+        document.getElementById('cvDepositAmount').dataset.rawValue = 0;
+        document.getElementById('cvPaidAmount').value = '0đ';
+        document.getElementById('cvPaidAmount').dataset.rawValue = 0;
+        document.getElementById('depositGroup').style.display = 'none';
+        document.getElementById('paidGroup').style.display = 'none';
         document.getElementById('remainingRow').style.display = 'none';
+        document.getElementById('cvNote').value = '';
+
+        // Reset totals
+        document.getElementById('cvFeeOriginal').value = '0đ';
+        document.getElementById('cvFeeOriginal').dataset.rawValue = 0;
+        document.getElementById('cvPromoDiscount').value = '0đ';
+        document.getElementById('cvPromoDiscount').dataset.rawValue = 0;
+        document.getElementById('cvFeeTotal').textContent = '0đ';
+        document.getElementById('cvFeeTotal').dataset.rawValue = 0;
+        document.getElementById('cvMainCourseMonths').textContent = '0 tháng';
+        document.getElementById('cvMainCourseMonths').dataset.months = 0;
+        document.getElementById('cvBonusMonths').textContent = '+0 tháng';
+        document.getElementById('cvScholarshipMonths').value = 0;
+        document.getElementById('cvTotalMonths').textContent = '0 tháng';
+        document.getElementById('promoDiscountInfo').style.display = 'none';
+        document.getElementById('cvDefaultScholarshipBadge').style.display = 'none';
+        document.getElementById('cvScholarshipStatus').style.display = 'none';
+        document.getElementById('cvScholarshipWarning').style.display = 'none';
+        defaultScholarshipMonths = 0;
+
+        // Load promo and packages data
+        await loadConvertData();
 
         document.getElementById('convertModal').classList.add('show');
       } catch (e) { ui.error(e.message); }
     }
 
+    async function loadConvertData() {
+      try {
+        // Load promotions
+        var promoRes = await api.get('/promotions/convert-data');
+        promoData = promoRes.data || { programs: [], items: [] };
+
+        // Load packages (using existing /packages endpoint)
+        var pkgRes = await api.get('/packages');
+        packagesData = pkgRes.data || [];
+
+        // Populate packages dropdown
+        var pkgSelect = document.getElementById('cvTuitionPackage');
+        pkgSelect.innerHTML = '<option value="">-- Chọn gói học phí --</option>' +
+          packagesData.map(function (p) {
+            var defaultHB = p.default_scholarship_months || 0;
+            var hbText = defaultHB > 0 ? ' + HB ' + defaultHB + 'T' : '';
+            return '<option value="' + p.id + '">' + escapeHtml(p.name) + ' (' + p.months + ' tháng - ' + formatCurrency(p.price) + hbText + ')</option>';
+          }).join('');
+
+        // Populate programs dropdown
+        var programSelect = document.getElementById('cvPromoProgram');
+        programSelect.innerHTML = '<option value="">-- Không áp dụng --</option>' +
+          promoData.programs.map(function (p) {
+            return '<option value="' + p.id + '">' + escapeHtml(p.name) +
+              ' (' + (p.discount_type === 'percent' ? p.discount_value + '%' : formatCurrency(p.discount_value)) + ')' +
+              '</option>';
+          }).join('');
+
+        // Populate gift items as checkboxes
+        var giftContainer = document.getElementById('giftItemsContainer');
+        var categoryIcons = { gift: '🎁', book: '📚', material: '🔧' };
+        if (promoData.items && promoData.items.length) {
+          giftContainer.innerHTML = promoData.items.map(function (i) {
+            return '<label style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff;border-radius:20px;cursor:pointer;border:1px solid #e5e7eb">' +
+              '<input type="checkbox" class="gift-checkbox" data-id="' + i.id + '" data-name="' + escapeHtml(i.name) + '">' +
+              '<span>' + (categoryIcons[i.category] || '🎁') + ' ' + escapeHtml(i.name) + '</span>' +
+              '<small style="color:#6b7280">(' + i.stock_quantity + ')</small>' +
+              '</label>';
+          }).join('');
+        } else {
+          giftContainer.innerHTML = '<span style="color:#6b7280;font-size:13px">Chưa có quà tặng</span>';
+        }
+      } catch (e) {
+        console.error('Load convert data error:', e);
+      }
+    }
+
     function closeConvertModal() { document.getElementById('convertModal').classList.remove('show'); }
 
-    async function convertLead() {
-      var id = document.getElementById('convertLeadId').value;
-      var classId = document.getElementById('convertClass').value || null;
-      var feeOriginal = parseFloat(document.getElementById('convertFeeOriginal').value) || 0;
-      var feeDiscount = parseFloat(document.getElementById('convertFeeDiscount').value) || 0;
-      var feeTotal = parseFloat(document.getElementById('convertFeeTotal').dataset.rawValue) || 0;
-      var depositAmount = parseFloat(document.getElementById('convertDepositAmount').value) || 0;
-      var paidAmount = parseFloat(document.getElementById('convertPaidAmount').value) || 0;
-      var paymentStatus = document.getElementById('convertPaymentStatus').value;
-      var note = document.getElementById('convertNote').value;
+    function closeConvertSuccessModal() {
+      document.getElementById('convertSuccessModal').classList.remove('show');
+    }
 
-      // Validation
-      if (feeTotal <= 0) {
-        ui.warning('Vui lòng nhập học phí');
+    async function confirmPaymentReceived() {
+      var studentId = document.getElementById('newStudentId').value;
+      var remaining = parseFloat(document.getElementById('successRemainingRaw').value) || 0;
+
+      if (!studentId) {
+        ui.warning('Không tìm thấy thông tin học sinh');
         return;
       }
 
-      // actual_revenue = tiền đã thu (cọc + đã đóng)
-      var actualRevenue = depositAmount + paidAmount;
+      if (remaining <= 0) {
+        ui.info('Không còn số tiền cần thanh toán');
+        return;
+      }
 
-      console.log('Converting with:', { feeOriginal, feeDiscount, feeTotal, depositAmount, paidAmount, paymentStatus });
+      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(remaining) + ' từ phụ huynh?')) {
+        return;
+      }
 
       try {
-        await api.post('/leads/' + id + '/convert', {
-          classId: classId,
+        await api.post('/students/' + studentId + '/confirm-payment', {
+          amount: remaining,
+          paymentMethod: 'bank_transfer',
+          note: 'Thanh toán qua QR sau chuyển đổi'
+        });
+
+        ui.success('Đã ghi nhận thanh toán ' + formatCurrency(remaining));
+
+        // Update UI
+        var currentPaid = parseCurrency(document.getElementById('successPaidAmount').textContent);
+        document.getElementById('successPaidAmount').textContent = formatCurrency(currentPaid + remaining);
+        document.getElementById('successRemainingAmount').textContent = '0đ';
+        document.getElementById('successRemainingRaw').value = '0';
+
+        // Hide QR, show full paid
+        document.getElementById('successQRSection').style.display = 'none';
+        document.getElementById('successFullPaidSection').style.display = 'block';
+
+        loadStats(); loadData();
+      } catch (e) {
+        ui.error(e.message);
+      }
+    }
+
+    function downloadEnrollmentFormFromSuccess() {
+      var studentId = document.getElementById('newStudentId').value;
+      if (!studentId) {
+        ui.warning('Không tìm thấy thông tin học sinh');
+        return;
+      }
+      downloadEnrollmentForm(studentId);
+    }
+
+    function downloadEnrollmentForm(studentId) {
+      var token = localStorage.getItem('token');
+      var url = window.LMS_CONFIG.API_BASE + '/enrollment/' + studentId + '/form';
+
+      // Show loading
+      ui.info('Đang tạo đơn nhập học...');
+
+      fetch(url, {
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+        .then(function (response) {
+          if (!response.ok) throw new Error('Lỗi tải file');
+          return response.blob();
+        })
+        .then(function (blob) {
+          var link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'Don_nhap_hoc_' + studentId + '.docx';
+          link.click();
+          URL.revokeObjectURL(link.href);
+          ui.success('Đã tải đơn nhập học');
+        })
+        .catch(function (e) {
+          ui.error(e.message);
+        });
+    }
+
+    async function convertLead() {
+      var id = document.getElementById('convertLeadId').value;
+
+      // Student info
+      var studentName = document.getElementById('cvStudentName').value.trim();
+      var studentBirthYear = document.getElementById('cvStudentBirthYear').value;
+      var studentAddress = document.getElementById('cvStudentAddress').value;
+      var studentSchool = document.getElementById('cvStudentSchool').value;
+
+      // Parent info
+      var parentName = document.getElementById('cvParentName').value.trim();
+      var parentPhone = document.getElementById('cvParentPhone').value.trim();
+      var parentJob = document.getElementById('cvParentJob').value;
+
+      // Course info
+      var packageId = document.getElementById('cvTuitionPackage').value || null;
+      var feeOriginal = parseCurrency(document.getElementById('cvFeeOriginal').value);
+      var promoDiscount = parseCurrency(document.getElementById('cvPromoDiscount').value);
+      var feeTotal = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
+      var programId = document.getElementById('cvPromoProgram').value || null;
+
+      // Scholarship info
+      var scholarshipMonths = parseInt(document.getElementById('cvScholarshipMonths').value) || 0;
+      var needsApproval = scholarshipMonths > defaultScholarshipMonths;
+
+      // Payment info
+      var depositAmount = parseCurrency(document.getElementById('cvDepositAmount').value);
+      var paidAmount = parseCurrency(document.getElementById('cvPaidAmount').value);
+      var paymentStatus = document.getElementById('cvPaymentStatus').value;
+      var note = document.getElementById('cvNote').value;
+
+      // Get selected gifts
+      var selectedGifts = [];
+      document.querySelectorAll('.gift-checkbox:checked').forEach(function (cb) {
+        selectedGifts.push({ item_id: cb.dataset.id, name: cb.dataset.name });
+      });
+
+      // Validation
+      if (!studentName) {
+        ui.warning('Vui lòng nhập họ tên học sinh');
+        return;
+      }
+      if (!parentName || !parentPhone) {
+        ui.warning('Vui lòng nhập thông tin phụ huynh');
+        return;
+      }
+      if (!packageId) {
+        ui.warning('Vui lòng chọn gói học phí');
+        return;
+      }
+
+      // Warn if scholarship exceeds default
+      if (needsApproval) {
+        var extraMonths = scholarshipMonths - defaultScholarshipMonths;
+        if (!confirm('Học bổng vượt mức mặc định ' + extraMonths + ' tháng. Yêu cầu này cần GDV duyệt. Tiếp tục?')) {
+          return;
+        }
+      }
+
+      // actual_revenue = tiền đã thu
+      var actualRevenue = depositAmount + paidAmount;
+
+      console.log('Converting with:', { studentName, packageId, feeOriginal, promoDiscount, feeTotal, scholarshipMonths, needsApproval });
+
+      try {
+        var result = await api.post('/leads/' + id + '/convert', {
+          // Student
+          studentName: studentName,
+          birthYear: studentBirthYear,
+          address: studentAddress,
+          school: studentSchool,
+          // Parent
+          customerName: parentName,
+          customerPhone: parentPhone,
+          parentJob: parentJob,
+          // Course
+          packageId: packageId,
           feeOriginal: feeOriginal,
-          feeDiscount: feeDiscount,
+          feeDiscount: promoDiscount,
           feeTotal: feeTotal,
+          // Scholarship
+          scholarshipMonths: scholarshipMonths,
+          defaultScholarshipMonths: defaultScholarshipMonths,
+          scholarshipNeedsApproval: needsApproval,
+          // Payment
           depositAmount: depositAmount,
           paidAmount: paidAmount,
+          actualRevenue: actualRevenue,
           paymentStatus: paymentStatus,
+          // Promo
+          programId: programId,
+          gifts: selectedGifts,
+          // Note
           note: note
         });
-        ui.success(classId ? 'Chuyển đổi và xếp lớp thành công!' : 'Chuyển đổi thành công! CM sẽ xếp lớp sau.');
+
         closeConvertModal();
+
+        // Show success modal with QR
+        var student = result.data || result.student || {};
+        var studentId = student.id || student.studentId;
+        var studentCode = student.student_code || student.studentCode || '';
+        // Chưa ghi doanh thu, remaining = toàn bộ học phí
+        var remaining = feeTotal;
+
+        document.getElementById('newStudentId').value = studentId;
+        document.getElementById('successStudentName').textContent = studentName;
+        document.getElementById('successStudentCode').textContent = 'Mã: ' + studentCode;
+        document.getElementById('successPaidAmount').textContent = '0đ'; // Chưa thanh toán
+        document.getElementById('successRemainingAmount').textContent = formatCurrency(remaining);
+        document.getElementById('successRemainingRaw').value = remaining;
+        document.getElementById('successPaymentDesc').textContent = studentCode + ' ' + studentName.substring(0, 15);
+
+        if (remaining > 0) {
+          // Show QR for remaining payment
+          document.getElementById('successQRSection').style.display = 'block';
+          document.getElementById('successFullPaidSection').style.display = 'none';
+
+          // Generate VietQR URL
+          var desc = encodeURIComponent(studentCode + ' ' + studentName.substring(0, 15));
+          var qrUrl = 'https://img.vietqr.io/image/970422-0866766189-compact2.png?amount=' + remaining + '&addInfo=' + desc;
+          document.getElementById('successQRImage').src = qrUrl;
+        } else {
+          // Full paid
+          document.getElementById('successQRSection').style.display = 'none';
+          document.getElementById('successFullPaidSection').style.display = 'block';
+        }
+
+        document.getElementById('convertSuccessModal').classList.add('show');
+
+        var msg = 'Chuyển đổi thành công!';
+        if (needsApproval) {
+          msg += ' Học bổng vượt mức đang chờ GDV duyệt.';
+        }
+        ui.success(msg);
         loadStats(); loadData();
       } catch (e) { ui.error(e.message); }
     }
@@ -1118,7 +1654,7 @@
       return parseInt(String(str).replace(/[^\d]/g, '')) || 0;
     }
 
-    function formatCurrencyInput(input) {
+    function formatCurrencyField(input) {
       var cursorPos = input.selectionStart;
       var oldLen = input.value.length;
       var rawValue = parseCurrency(input.value);
@@ -1172,24 +1708,34 @@
         }
 
         document.getElementById('paymentLeadId').value = id;
+        document.getElementById('paymentStudentId').value = currentPaymentLead.student_id || '';
+        document.getElementById('paymentRemainingRaw').value = remaining;
 
-        var deposit = parseFloat(currentPaymentLead.deposit_amount) || 0;
-        var prevPaid = actualRev - deposit; // Số đã đóng (không tính cọc)
+        // Student info
+        var studentName = currentPaymentLead.student_name || '';
+        var studentCode = currentPaymentLead.code || '';
+        document.getElementById('paymentStudentName').textContent = studentName;
+        document.getElementById('paymentStudentCode').textContent = 'Mã: ' + studentCode;
 
-        document.getElementById('paymentLeadInfo').innerHTML =
-          '<strong>' + escapeHtml(currentPaymentLead.student_name) + '</strong><br>' +
-          '<small>' + escapeHtml(currentPaymentLead.customer_name) + ' - ' + currentPaymentLead.customer_phone + '</small><br>' +
-          '<small>Học phí: <strong>' + formatCurrency(feeTotal) + '</strong> | Đã đóng: <strong class="text-success">' + formatCurrency(actualRev) + '</strong> | Còn: <strong class="text-danger">' + formatCurrency(remaining) + '</strong></small>';
+        // Payment info
+        document.getElementById('paymentFeeTotal').textContent = formatCurrency(feeTotal);
+        document.getElementById('paymentRemaining').textContent = formatCurrency(remaining);
 
-        document.getElementById('paymentDeposit').value = formatCurrency(deposit);
-        document.getElementById('paymentPrevPaid').value = formatCurrency(Math.max(0, prevPaid));
-        document.getElementById('paymentNewAmount').value = formatCurrency(remaining);
-        document.getElementById('paymentTotalPaid').value = formatCurrency(actualRev + remaining);
-        document.getElementById('paymentRemaining').value = formatCurrency(0);
-        document.getElementById('paymentNote').value = '';
+        // Transfer description
+        var transferDesc = studentCode + ' ' + studentName.substring(0, 15);
+        document.getElementById('paymentTransferDesc').textContent = transferDesc;
 
-        // Store raw values for saving
-        document.getElementById('paymentNewAmount').dataset.rawValue = remaining;
+        // Generate QR
+        var desc = encodeURIComponent(transferDesc);
+        var qrUrl = 'https://img.vietqr.io/image/970422-0866766189-compact2.png?amount=' + remaining + '&addInfo=' + desc;
+        document.getElementById('paymentQRImage').src = qrUrl;
+
+        // Show/hide confirm button based on student_id
+        if (currentPaymentLead.student_id) {
+          document.getElementById('btnConfirmLeadPayment').style.display = 'block';
+        } else {
+          document.getElementById('btnConfirmLeadPayment').style.display = 'none';
+        }
 
         document.getElementById('paymentModal').classList.add('show');
       } catch (e) { ui.error(e.message); }
@@ -1197,31 +1743,38 @@
 
     function closePaymentModal() { document.getElementById('paymentModal').classList.remove('show'); }
 
-    async function savePayment() {
-      var id = document.getElementById('paymentLeadId').value;
-      var newAmount = parseFloat(document.getElementById('paymentNewAmount').dataset.rawValue) || 0;
-      var note = document.getElementById('paymentNote').value;
+    async function confirmLeadPayment() {
+      var studentId = document.getElementById('paymentStudentId').value;
+      var remaining = parseFloat(document.getElementById('paymentRemainingRaw').value) || 0;
 
-      var feeTotal = parseFloat(currentPaymentLead.fee_total) || 0;
-      var actualRev = parseFloat(currentPaymentLead.actual_revenue) || 0;
-      var remaining = Math.max(0, feeTotal - actualRev);
-
-      if (newAmount <= 0) {
-        ui.warning('Không còn số tiền cần đóng!');
+      if (!studentId) {
+        ui.warning('Học sinh chưa được chuyển đổi. Vui lòng chuyển đổi trước.');
         return;
       }
 
-      var newActualRevenue = actualRev + newAmount;
+      if (remaining <= 0) {
+        ui.info('Không còn số tiền cần thanh toán');
+        return;
+      }
+
+      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(remaining) + ' từ phụ huynh?')) {
+        return;
+      }
 
       try {
-        await api.put('/leads/' + id, {
-          actual_revenue: newActualRevenue,
-          note: (currentPaymentLead.note || '') + '\n[' + new Date().toLocaleDateString('vi-VN') + '] Đóng đủ ' + formatCurrency(newAmount) + (note ? ': ' + note : '')
+        await api.post('/students/' + studentId + '/confirm-payment', {
+          amount: remaining,
+          paymentMethod: 'bank_transfer',
+          note: 'Thanh toán qua QR'
         });
-        ui.success('Đã đóng đủ học phí: ' + formatCurrency(newAmount) + '. Doanh số KPI đã được cập nhật!');
+
+        ui.success('Đã ghi nhận thanh toán ' + formatCurrency(remaining));
         closePaymentModal();
-        loadStats(); loadData();
-      } catch (e) { ui.error(e.message); }
+        loadStats();
+        loadData();
+      } catch (e) {
+        ui.error(e.message);
+      }
     }
 
     function openImportModal() { document.getElementById('importModal').classList.add('show'); document.getElementById('importPreview').style.display = 'none'; document.getElementById('excelFile').value = ''; importData = []; }

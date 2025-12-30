@@ -55,6 +55,7 @@ function buildSidebar(containerId, activePage = '') {
       <div class="nav-section-title">Kinh doanh</div>
       <a href="${prefix}sale-reports.html" class="nav-item ${isActive('sale-reports')}"><i class="fas fa-chart-line"></i><span>Báo cáo Sale</span></a>
       <a href="${prefix}kpi.html" class="nav-item ${isActive('kpi')}"><i class="fas fa-bullseye"></i><span>KPI</span></a>
+      <a href="${prefix}promotions.html" class="nav-item ${isActive('promotions')}"><i class="fas fa-gift"></i><span>Khuyến mại</span></a>
       
       <div class="nav-section-title">Tài liệu</div>
       <a href="${prefix}files.html" class="nav-item ${isActive('files')}"><i class="fas fa-folder"></i><span>Thư viện File</span></a>
@@ -66,7 +67,7 @@ function buildSidebar(containerId, activePage = '') {
       <a href="${prefix}users.html" class="nav-item ${isActive('users')}"><i class="fas fa-users-cog"></i><span>Người dùng</span></a>
     `;
   }
-  
+
   // ========================
   // CHU - Chủ doanh nghiệp
   // ========================
@@ -81,7 +82,7 @@ function buildSidebar(containerId, activePage = '') {
       <a href="${prefix}fee-warning.html" class="nav-item ${isActive('fee-warning')}"><i class="fas fa-exclamation-triangle"></i><span>Cảnh báo học phí</span></a>
     `;
   }
-  
+
   // ========================
   // OM - Operation Manager
   // ========================
@@ -96,7 +97,7 @@ function buildSidebar(containerId, activePage = '') {
       <a href="${prefix}fee-warning.html" class="nav-item ${isActive('fee-warning')}"><i class="fas fa-exclamation-triangle"></i><span>Sắp hết phí</span></a>
     `;
   }
-  
+
   // ========================
   // HOEC - Head of EC
   // ========================
@@ -111,7 +112,7 @@ function buildSidebar(containerId, activePage = '') {
       <a href="${prefix}leads.html" class="nav-item ${isActive('leads')}"><i class="fas fa-user-plus"></i><span>Leads</span></a>
     `;
   }
-  
+
   // ========================
   // CM - Class Manager
   // ========================
@@ -131,7 +132,7 @@ function buildSidebar(containerId, activePage = '') {
       <a href="${prefix}assignments.html" class="nav-item ${isActive('assignments')}"><i class="fas fa-tasks"></i><span>Bài tập</span></a>
     `;
   }
-  
+
   // ========================
   // TEACHER - Giáo viên
   // ========================
@@ -144,7 +145,7 @@ function buildSidebar(containerId, activePage = '') {
       <a href="${prefix}assignments.html" class="nav-item ${isActive('assignments')}"><i class="fas fa-tasks"></i><span>Bài tập</span></a>
     `;
   }
-  
+
   // ========================
   // EC (SALE) - Education Consultant
   // ========================

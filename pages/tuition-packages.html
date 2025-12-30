@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gói học phí - ARMY Tech LMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .package-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .package-card:hover {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .package-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .package-header.robot {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .package-header.english {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .package-header.combo {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .package-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .package-code {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .package-body {
+            padding: 20px;
+        }
+
+        .package-price {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+
+        .package-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .package-info-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .package-info-row i {
+            width: 20px;
+            color: #22c55e;
+        }
+
+        .package-actions {
+            padding: 16px 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 8px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .stat-box .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .stat-box .label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .package-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="sidebar" id="sidebar"></nav>
+
+    <main class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1><i class="fas fa-tags"></i> Gói học phí</h1>
+            </div>
+            <div class="topbar-right">
+                <button class="btn btn-primary" onclick="openModal()"><i class="fas fa-plus"></i> Thêm gói</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="value" id="statTotal">0</div>
+                <div class="label">Tổng số gói</div>
+            </div>
+            <div class="stat-box">
+                <div class="value" id="statAvgPrice">0đ</div>
+                <div class="label">Giá trung bình</div>
+            </div>
+            <div class="stat-box">
+                <div class="value" id="statMaxPrice">0đ</div>
+                <div class="label">Gói cao nhất</div>
+            </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="card" style="margin-bottom:20px">
+            <div class="card-body" style="padding:12px 16px">
+                <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+                    <label style="font-weight:600">Lọc theo môn:</label>
+                    <select id="filterSubject" class="form-control" style="width:auto" onchange="loadPackages()">
+                        <option value="">Tất cả môn học</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Package Grid -->
+        <div class="package-grid" id="packageGrid">
+            <div class="text-center text-muted">Đang tải...</div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal" id="packageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle"><i class="fas fa-tags"></i> Thêm gói học phí</div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="packageForm">
+                    <input type="hidden" id="packageId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Mã gói</label>
+                            <input type="text" id="pkgCode" class="form-control" placeholder="VD: RBT-12M" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Môn học</label>
+                            <select id="pkgSubject" class="form-control">
+                                <option value="">-- Combo/Chung --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Tên gói</label>
+                        <input type="text" id="pkgName" class="form-control" placeholder="VD: Robot 1 năm" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Thời gian (tháng)</label>
+                            <input type="number" id="pkgDuration" class="form-control" value="12" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Buổi/tuần</label>
+                            <input type="number" id="pkgSessions" class="form-control" value="2" min="1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Giá (đ)</label>
+                        <input type="text" id="pkgPrice" class="form-control" placeholder="28.800.000"
+                            oninput="formatPrice(this)">
+                    </div>
+                    <div class="form-group">
+                        <label>Mô tả</label>
+                        <textarea id="pkgDescription" class="form-control" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+                <button class="btn btn-primary" onclick="savePackage()"><i class="fas fa-save"></i> Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script>
+        let packages = [];
+        let subjects = [];
+
+        async function init() {
+            if (!auth.checkAuth()) return;
+            buildSidebar('sidebar');
+            await loadSubjects();
+            await loadPackages();
+        }
+
+        async function loadSubjects() {
+            try {
+                const res = await api.get('/subjects');
+                subjects = res.data || [];
+
+                // Populate filter
+                const filterSelect = document.getElementById('filterSubject');
+                filterSelect.innerHTML = '<option value="">Tất cả môn học</option>' +
+                    subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+                // Populate form select
+                const formSelect = document.getElementById('pkgSubject');
+                formSelect.innerHTML = '<option value="">-- Combo/Chung --</option>' +
+                    subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadPackages() {
+            try {
+                const subjectId = document.getElementById('filterSubject').value;
+                const params = subjectId ? '?subject_id=' + subjectId : '';
+                const res = await api.get('/tuition-packages' + params);
+                packages = res.data || [];
+                renderPackages();
+                updateStats();
+            } catch (e) {
+                console.error(e);
+                document.getElementById('packageGrid').innerHTML = '<div class="text-center text-danger">Lỗi tải dữ liệu</div>';
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('statTotal').textContent = packages.length;
+
+            if (packages.length > 0) {
+                const prices = packages.map(p => parseFloat(p.price) || 0);
+                const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+                const max = Math.max(...prices);
+
+                document.getElementById('statAvgPrice').textContent = formatCurrency(avg);
+                document.getElementById('statMaxPrice').textContent = formatCurrency(max);
+            } else {
+                document.getElementById('statAvgPrice').textContent = '0đ';
+                document.getElementById('statMaxPrice').textContent = '0đ';
+            }
+        }
+
+        function renderPackages() {
+            const container = document.getElementById('packageGrid');
+
+            if (!packages.length) {
+                container.innerHTML = '<div class="text-center text-muted" style="grid-column:1/-1;padding:40px">Chưa có gói học phí nào</div>';
+                return;
+            }
+
+            container.innerHTML = packages.map(p => {
+                // Determine header class based on subject
+                let headerClass = '';
+                const subjectName = (p.subject_name || '').toLowerCase();
+                if (subjectName.includes('robot')) headerClass = 'robot';
+                else if (subjectName.includes('anh') || subjectName.includes('english')) headerClass = 'english';
+                else if (!p.subject_id) headerClass = 'combo';
+
+                return `
+          <div class="package-card">
+            <div class="package-header ${headerClass}">
+              <div class="package-name">${escapeHtml(p.name)}</div>
+              <div class="package-code">${p.code} ${p.subject_name ? '• ' + p.subject_name : '• Combo'}</div>
+            </div>
+            <div class="package-body">
+              <div class="package-price">${formatCurrency(p.price)}</div>
+              <div class="package-info">
+                <div class="package-info-row">
+                  <i class="fas fa-calendar-alt"></i>
+                  <span>${p.duration_months} tháng</span>
+                </div>
+                <div class="package-info-row">
+                  <i class="fas fa-clock"></i>
+                  <span>${p.sessions_per_week} buổi/tuần</span>
+                </div>
+                ${p.description ? `
+                <div class="package-info-row">
+                  <i class="fas fa-info-circle"></i>
+                  <span>${escapeHtml(p.description)}</span>
+                </div>
+                ` : ''}
+              </div>
+            </div>
+            <div class="package-actions">
+              <button class="btn btn-secondary btn-sm" onclick="editPackage(${p.id})">
+                <i class="fas fa-edit"></i> Sửa
+              </button>
+              <button class="btn btn-danger btn-sm" onclick="deletePackage(${p.id})">
+                <i class="fas fa-trash"></i> Xóa
+              </button>
+            </div>
+          </div>
+        `;
+            }).join('');
+        }
+
+        function openModal(pkg = null) {
+            document.getElementById('packageForm').reset();
+            document.getElementById('packageId').value = '';
+
+            if (pkg) {
+                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa gói học phí';
+                document.getElementById('packageId').value = pkg.id;
+                document.getElementById('pkgCode').value = pkg.code;
+                document.getElementById('pkgName').value = pkg.name;
+                document.getElementById('pkgSubject').value = pkg.subject_id || '';
+                document.getElementById('pkgDuration').value = pkg.duration_months;
+                document.getElementById('pkgSessions').value = pkg.sessions_per_week;
+                document.getElementById('pkgPrice').value = formatCurrency(pkg.price).replace('đ', '');
+                document.getElementById('pkgDescription').value = pkg.description || '';
+            } else {
+                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus"></i> Thêm gói học phí';
+            }
+
+            document.getElementById('packageModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('packageModal').classList.remove('show');
+        }
+
+        async function editPackage(id) {
+            const pkg = packages.find(p => p.id === id);
+            if (pkg) openModal(pkg);
+        }
+
+        async function savePackage() {
+            const id = document.getElementById('packageId').value;
+            const data = {
+                code: document.getElementById('pkgCode').value,
+                name: document.getElementById('pkgName').value,
+                subject_id: document.getElementById('pkgSubject').value || null,
+                duration_months: parseInt(document.getElementById('pkgDuration').value) || 12,
+                sessions_per_week: parseInt(document.getElementById('pkgSessions').value) || 2,
+                price: parseCurrency(document.getElementById('pkgPrice').value),
+                description: document.getElementById('pkgDescription').value,
+                is_active: true
+            };
+
+            if (!data.code || !data.name || !data.price) {
+                ui.warning('Vui lòng nhập đầy đủ thông tin');
+                return;
+            }
+
+            try {
+                if (id) {
+                    await api.put('/tuition-packages/' + id, data);
+                    ui.success('Cập nhật thành công');
+                } else {
+                    await api.post('/tuition-packages', data);
+                    ui.success('Tạo gói học phí thành công');
+                }
+                closeModal();
+                loadPackages();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        async function deletePackage(id) {
+            if (!confirm('Xác nhận xóa gói học phí này?')) return;
+            try {
+                await api.delete('/tuition-packages/' + id);
+                ui.success('Đã xóa');
+                loadPackages();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        // Helpers
+        function formatCurrency(val) {
+            if (!val) return '0đ';
+            return new Intl.NumberFormat('vi-VN').format(val) + 'đ';
+        }
+
+        function parseCurrency(str) {
+            return parseInt(String(str).replace(/[^\d]/g, '')) || 0;
+        }
+
+        function formatPrice(input) {
+            const val = parseCurrency(input.value);
+            if (val > 0) {
+                input.value = new Intl.NumberFormat('vi-VN').format(val);
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

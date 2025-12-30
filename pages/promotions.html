@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Khuyến mại - ARMY Tech LMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .tabs-nav {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 14px 24px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: #22c55e;
+        }
+
+        .tab-btn.active {
+            color: #22c55e;
+            border-bottom-color: #22c55e;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .stat-box .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .stat-box .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .stat-box .label {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .stat-box.primary .icon {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .stat-box.success .icon {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .stat-box.warning .icon {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .stat-box.danger .icon {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .item-card .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .item-card .item-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .item-card .item-code {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .item-card .item-stock {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .item-card .item-stock.low {
+            color: #dc2626;
+        }
+
+        .item-card .item-stock.ok {
+            color: #16a34a;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-gift {
+            background: #fce7f3;
+            color: #db2777;
+        }
+
+        .badge-book {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .badge-material {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .badge-inactive {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .promo-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 12px;
+        }
+
+        .promo-card .promo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .promo-card .promo-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .promo-card .promo-discount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #16a34a;
+        }
+
+        .promo-card .promo-dates {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        .approval-card {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .approval-card .student-info {
+            font-weight: 600;
+        }
+
+        .approval-card .discount-info {
+            color: #d97706;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 8px 0;
+        }
+
+        @media (max-width: 768px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .item-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="sidebar" id="sidebar"></nav>
+
+    <main class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1><i class="fas fa-gift"></i> Quản lý Khuyến mại</h1>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-box primary">
+                <div class="icon"><i class="fas fa-tags"></i></div>
+                <div class="value" id="statPrograms">0</div>
+                <div class="label">Chương trình KM</div>
+            </div>
+            <div class="stat-box success">
+                <div class="icon"><i class="fas fa-box"></i></div>
+                <div class="value" id="statItems">0</div>
+                <div class="label">Vật phẩm KM</div>
+            </div>
+            <div class="stat-box warning">
+                <div class="icon"><i class="fas fa-graduation-cap"></i></div>
+                <div class="value" id="statScholarships">0</div>
+                <div class="label">Học bổng KM</div>
+            </div>
+            <div class="stat-box danger">
+                <div class="icon"><i class="fas fa-clock"></i></div>
+                <div class="value" id="statPending">0</div>
+                <div class="label">Chờ duyệt</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="programs"><i class="fas fa-tags"></i> Chương trình KM</button>
+            <button class="tab-btn" data-tab="items"><i class="fas fa-box"></i> Kho vật phẩm</button>
+            <button class="tab-btn" data-tab="scholarships"><i class="fas fa-graduation-cap"></i> Học bổng</button>
+            <button class="tab-btn" data-tab="pending"><i class="fas fa-clock"></i> Chờ duyệt</button>
+        </div>
+
+        <!-- Tab: Chương trình KM -->
+        <div class="tab-pane active" id="tab-programs">
+            <div class="card">
+                <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+                    <h3><i class="fas fa-tags"></i> Chương trình Khuyến mại</h3>
+                    <button class="btn btn-primary" onclick="openProgramModal()"><i class="fas fa-plus"></i> Thêm
+                        CTKM</button>
+                </div>
+                <div class="card-body" id="programsList">
+                    <p class="text-muted text-center">Đang tải...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Kho vật phẩm -->
+        <div class="tab-pane" id="tab-items">
+            <div class="card">
+                <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+                    <h3><i class="fas fa-box"></i> Kho vật phẩm Khuyến mại</h3>
+                    <div>
+                        <button class="btn btn-secondary" onclick="openStockModal()"><i class="fas fa-exchange-alt"></i>
+                            Nhập/Xuất kho</button>
+                        <button class="btn btn-primary" onclick="openItemModal()"><i class="fas fa-plus"></i> Thêm vật
+                            phẩm</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="item-grid" id="itemsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Học bổng -->
+        <div class="tab-pane" id="tab-scholarships">
+            <div class="card">
+                <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+                    <h3><i class="fas fa-graduation-cap"></i> Học bổng Khuyến mại</h3>
+                    <button class="btn btn-primary" onclick="openScholarshipModal()"><i class="fas fa-plus"></i> Thêm
+                        học bổng</button>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên học bổng</th>
+                                <th>Số tháng</th>
+                                <th>Mô tả</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scholarshipsList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Chờ duyệt -->
+        <div class="tab-pane" id="tab-pending">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-clock"></i> Yêu cầu giảm giá chờ duyệt</h3>
+                </div>
+                <div class="card-body" id="pendingList">
+                    <p class="text-muted text-center">Không có yêu cầu nào</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Program Modal -->
+    <div class="modal" id="programModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="programModalTitle"><i class="fas fa-tags"></i> Thêm CTKM</div>
+                <button class="modal-close" onclick="closeProgramModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="programForm">
+                    <input type="hidden" id="programId">
+                    <div class="form-group">
+                        <label class="required">Mã CTKM</label>
+                        <input type="text" id="programCode" class="form-control" placeholder="VD: KM-TET-2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Tên chương trình</label>
+                        <input type="text" id="programName" class="form-control" placeholder="VD: Khuyến mại Tết 2025"
+                            required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Loại giảm</label>
+                            <select id="programDiscountType" class="form-control">
+                                <option value="percent">Phần trăm (%)</option>
+                                <option value="amount">Số tiền (đ)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Giá trị</label>
+                            <input type="number" id="programDiscountValue" class="form-control" placeholder="10"
+                                min="0">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Từ ngày</label>
+                            <input type="date" id="programStartDate" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Đến ngày</label>
+                            <input type="date" id="programEndDate" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Mô tả</label>
+                        <textarea id="programDescription" class="form-control" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeProgramModal()">Hủy</button>
+                <button class="btn btn-primary" onclick="saveProgram()"><i class="fas fa-save"></i> Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Item Modal -->
+    <div class="modal" id="itemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-box"></i> Thêm vật phẩm</div>
+                <button class="modal-close" onclick="closeItemModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="itemForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Mã vật phẩm</label>
+                            <input type="text" id="itemCode" class="form-control" placeholder="VD: GIFT-AO" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Loại</label>
+                            <select id="itemCategory" class="form-control">
+                                <option value="gift">🎁 Quà tặng</option>
+                                <option value="book">📚 Sách</option>
+                                <option value="material">🔧 Giáo cụ</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Tên vật phẩm</label>
+                        <input type="text" id="itemName" class="form-control" placeholder="VD: Áo thun ARMY Tech"
+                            required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Đơn vị</label>
+                            <input type="text" id="itemUnit" class="form-control" value="cái">
+                        </div>
+                        <div class="form-group">
+                            <label>SL ban đầu</label>
+                            <input type="number" id="itemStock" class="form-control" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Cảnh báo khi</label>
+                            <input type="number" id="itemMinStock" class="form-control" value="5" min="0">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeItemModal()">Hủy</button>
+                <button class="btn btn-primary" onclick="saveItem()"><i class="fas fa-save"></i> Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Modal -->
+    <div class="modal" id="stockModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-exchange-alt"></i> Nhập/Xuất kho</div>
+                <button class="modal-close" onclick="closeStockModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="stockForm">
+                    <div class="form-group">
+                        <label class="required">Vật phẩm</label>
+                        <select id="stockItemId" class="form-control" required></select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Loại</label>
+                            <select id="stockType" class="form-control">
+                                <option value="in">📥 Nhập kho</option>
+                                <option value="out">📤 Xuất kho</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Số lượng</label>
+                            <input type="number" id="stockQuantity" class="form-control" min="1" value="1" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea id="stockNote" class="form-control" rows="2"
+                            placeholder="VD: Nhập hàng mới"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeStockModal()">Hủy</button>
+                <button class="btn btn-success" onclick="saveStock()"><i class="fas fa-check"></i> Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scholarship Modal -->
+    <div class="modal" id="scholarshipModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-graduation-cap"></i> Thêm học bổng</div>
+                <button class="modal-close" onclick="closeScholarshipModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="scholarshipForm">
+                    <div class="form-group">
+                        <label class="required">Mã học bổng</label>
+                        <input type="text" id="scholarshipCode" class="form-control" placeholder="VD: HB-ENG-1M"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Tên học bổng</label>
+                        <input type="text" id="scholarshipName" class="form-control"
+                            placeholder="VD: 1 tháng Tiếng Anh miễn phí" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Số tháng</label>
+                        <input type="number" id="scholarshipMonths" class="form-control" value="1" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Mô tả</label>
+                        <textarea id="scholarshipDescription" class="form-control" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeScholarshipModal()">Hủy</button>
+                <button class="btn btn-primary" onclick="saveScholarship()"><i class="fas fa-save"></i> Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script>
+        let programs = [], items = [], scholarships = [], pending = [];
+
+        async function init() {
+            if (!auth.checkAuth()) return;
+            buildSidebar('sidebar');
+            setupTabs();
+            await loadAll();
+        }
+
+        function setupTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+                });
+            });
+        }
+
+        async function loadAll() {
+            await Promise.all([loadPrograms(), loadItems(), loadScholarships(), loadPending()]);
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('statPrograms').textContent = programs.length;
+            document.getElementById('statItems').textContent = items.length;
+            document.getElementById('statScholarships').textContent = scholarships.length;
+            document.getElementById('statPending').textContent = pending.length;
+        }
+
+        // ==================== PROGRAMS ====================
+        async function loadPrograms() {
+            try {
+                const res = await api.get('/promotions/programs/all');
+                programs = res.data || [];
+                renderPrograms();
+            } catch (e) { console.error(e); }
+        }
+
+        function renderPrograms() {
+            const container = document.getElementById('programsList');
+            if (!programs.length) {
+                container.innerHTML = '<p class="text-muted text-center">Chưa có chương trình KM</p>';
+                return;
+            }
+            container.innerHTML = programs.map(p => `
+        <div class="promo-card">
+          <div class="promo-header">
+            <div>
+              <div class="promo-name">${escapeHtml(p.name)}</div>
+              <code style="font-size:12px;color:#6b7280">${p.code}</code>
+            </div>
+            <div class="promo-discount">
+              ${p.discount_type === 'percent' ? p.discount_value + '%' : formatCurrency(p.discount_value)}
+            </div>
+          </div>
+          <div class="promo-dates">
+            ${p.start_date ? '📅 ' + formatDate(p.start_date) + ' - ' + formatDate(p.end_date) : '⏰ Không giới hạn'}
+            <span class="badge ${p.is_active ? 'badge-active' : 'badge-inactive'}" style="margin-left:10px">
+              ${p.is_active ? 'Đang hoạt động' : 'Tạm dừng'}
+            </span>
+          </div>
+        </div>
+      `).join('');
+        }
+
+        function openProgramModal() { document.getElementById('programForm').reset(); document.getElementById('programId').value = ''; document.getElementById('programModal').classList.add('show'); }
+        function closeProgramModal() { document.getElementById('programModal').classList.remove('show'); }
+
+        async function saveProgram() {
+            const data = {
+                code: document.getElementById('programCode').value,
+                name: document.getElementById('programName').value,
+                discount_type: document.getElementById('programDiscountType').value,
+                discount_value: document.getElementById('programDiscountValue').value || 0,
+                start_date: document.getElementById('programStartDate').value || null,
+                end_date: document.getElementById('programEndDate').value || null,
+                description: document.getElementById('programDescription').value
+            };
+            try {
+                await api.post('/promotions/programs', data);
+                ui.success('Tạo CTKM thành công');
+                closeProgramModal();
+                loadPrograms();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        // ==================== ITEMS ====================
+        async function loadItems() {
+            try {
+                const res = await api.get('/promotions/items');
+                items = res.data || [];
+                renderItems();
+            } catch (e) { console.error(e); }
+        }
+
+        function renderItems() {
+            const container = document.getElementById('itemsList');
+            if (!items.length) {
+                container.innerHTML = '<p class="text-muted text-center">Chưa có vật phẩm</p>';
+                return;
+            }
+            const categoryLabels = { gift: '🎁 Quà', book: '📚 Sách', material: '🔧 Giáo cụ' };
+            container.innerHTML = items.map(i => `
+        <div class="item-card">
+          <div class="item-header">
+            <div>
+              <div class="item-name">${escapeHtml(i.name)}</div>
+              <div class="item-code">${i.code}</div>
+            </div>
+            <span class="badge badge-${i.category}">${categoryLabels[i.category] || i.category}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <span class="item-stock ${i.stock_quantity <= i.min_stock ? 'low' : 'ok'}">${i.stock_quantity}</span>
+              <span style="color:#6b7280;font-size:13px">${i.unit}</span>
+            </div>
+            ${i.stock_quantity <= i.min_stock ? '<span class="badge badge-pending">⚠️ Sắp hết</span>' : ''}
+          </div>
+        </div>
+      `).join('');
+        }
+
+        function openItemModal() { document.getElementById('itemForm').reset(); document.getElementById('itemModal').classList.add('show'); }
+        function closeItemModal() { document.getElementById('itemModal').classList.remove('show'); }
+
+        async function saveItem() {
+            const data = {
+                code: document.getElementById('itemCode').value,
+                name: document.getElementById('itemName').value,
+                category: document.getElementById('itemCategory').value,
+                unit: document.getElementById('itemUnit').value,
+                stock_quantity: document.getElementById('itemStock').value || 0,
+                min_stock: document.getElementById('itemMinStock').value || 5
+            };
+            try {
+                await api.post('/promotions/items', data);
+                ui.success('Tạo vật phẩm thành công');
+                closeItemModal();
+                loadItems();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        function openStockModal() {
+            document.getElementById('stockForm').reset();
+            const select = document.getElementById('stockItemId');
+            select.innerHTML = items.map(i => `<option value="${i.id}">${i.name} (Tồn: ${i.stock_quantity})</option>`).join('');
+            document.getElementById('stockModal').classList.add('show');
+        }
+        function closeStockModal() { document.getElementById('stockModal').classList.remove('show'); }
+
+        async function saveStock() {
+            const data = {
+                item_id: document.getElementById('stockItemId').value,
+                type: document.getElementById('stockType').value,
+                quantity: document.getElementById('stockQuantity').value,
+                note: document.getElementById('stockNote').value
+            };
+            try {
+                await api.post('/promotions/stock', data);
+                ui.success(data.type === 'in' ? 'Nhập kho thành công' : 'Xuất kho thành công');
+                closeStockModal();
+                loadItems();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        // ==================== SCHOLARSHIPS ====================
+        async function loadScholarships() {
+            try {
+                const res = await api.get('/promotions/scholarships');
+                scholarships = res.data || [];
+                renderScholarships();
+            } catch (e) { console.error(e); }
+        }
+
+        function renderScholarships() {
+            const tbody = document.getElementById('scholarshipsList');
+            if (!scholarships.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Chưa có học bổng</td></tr>';
+                return;
+            }
+            tbody.innerHTML = scholarships.map(s => `
+        <tr>
+          <td><code>${s.code}</code></td>
+          <td><strong>${escapeHtml(s.name)}</strong></td>
+          <td>${s.months} tháng</td>
+          <td>${escapeHtml(s.description || '-')}</td>
+          <td><span class="badge badge-active">Hoạt động</span></td>
+        </tr>
+      `).join('');
+        }
+
+        function openScholarshipModal() { document.getElementById('scholarshipForm').reset(); document.getElementById('scholarshipModal').classList.add('show'); }
+        function closeScholarshipModal() { document.getElementById('scholarshipModal').classList.remove('show'); }
+
+        async function saveScholarship() {
+            const data = {
+                code: document.getElementById('scholarshipCode').value,
+                name: document.getElementById('scholarshipName').value,
+                months: document.getElementById('scholarshipMonths').value,
+                description: document.getElementById('scholarshipDescription').value
+            };
+            try {
+                await api.post('/promotions/scholarships', data);
+                ui.success('Tạo học bổng thành công');
+                closeScholarshipModal();
+                loadScholarships();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        // ==================== PENDING APPROVALS ====================
+        async function loadPending() {
+            try {
+                const res = await api.get('/promotions/pending');
+                pending = res.data || [];
+                renderPending();
+            } catch (e) { console.error(e); }
+        }
+
+        function renderPending() {
+            const container = document.getElementById('pendingList');
+            if (!pending.length) {
+                container.innerHTML = '<p class="text-muted text-center">Không có yêu cầu nào chờ duyệt 🎉</p>';
+                return;
+            }
+            container.innerHTML = pending.map(p => `
+        <div class="approval-card">
+          <div class="student-info">
+            ${escapeHtml(p.student_name)} - ${escapeHtml(p.customer_name)}
+            <span style="color:#6b7280;font-weight:normal"> (${p.customer_phone})</span>
+          </div>
+          <div style="font-size:13px;color:#6b7280">
+            EC: ${escapeHtml(p.ec_name || '-')} | Cơ sở: ${escapeHtml(p.branch_name || '-')}
+          </div>
+          <div class="discount-info">
+            Xin giảm thêm: ${formatCurrency(p.extra_discount)}
+          </div>
+          <div style="font-size:13px;margin-bottom:12px">
+            Lý do: ${escapeHtml(p.extra_discount_reason || 'Không có')}
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-success btn-sm" onclick="approveDiscount(${p.lead_id}, true)">
+              <i class="fas fa-check"></i> Duyệt
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="approveDiscount(${p.lead_id}, false)">
+              <i class="fas fa-times"></i> Từ chối
+            </button>
+          </div>
+        </div>
+      `).join('');
+        }
+
+        async function approveDiscount(leadId, approved) {
+            if (!confirm(approved ? 'Duyệt giảm giá này?' : 'Từ chối giảm giá này?')) return;
+            try {
+                await api.post('/promotions/lead/' + leadId + '/approve', { approved });
+                ui.success(approved ? 'Đã duyệt giảm giá' : 'Đã từ chối');
+                loadPending();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        // ==================== HELPERS ====================
+        function formatCurrency(val) {
+            if (!val) return '0đ';
+            return new Intl.NumberFormat('vi-VN').format(val) + 'đ';
+        }
+        function formatDate(d) { return d ? new Date(d).toLocaleDateString('vi-VN') : '-'; }
+        function escapeHtml(str) { return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        init();
+    </script>
+</body>
+
+</html>
