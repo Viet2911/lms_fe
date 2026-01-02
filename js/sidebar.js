@@ -62,6 +62,7 @@ function buildSidebar(containerId, activePage = '') {
       <a href="${prefix}assignments.html" class="nav-item ${isActive('assignments')}"><i class="fas fa-tasks"></i><span>Bài tập</span></a>
       
       <div class="nav-section-title">Hệ thống</div>
+      <a href="${prefix}admin-settings.html" class="nav-item ${isActive('admin-settings')}"><i class="fas fa-cog"></i><span>Cài đặt</span></a>
       <a href="${prefix}packages.html" class="nav-item ${isActive('packages')}"><i class="fas fa-box"></i><span>Gói học phí</span></a>
       <a href="${prefix}branches.html" class="nav-item ${isActive('branches')}"><i class="fas fa-building"></i><span>Cơ sở</span></a>
       <a href="${prefix}users.html" class="nav-item ${isActive('users')}"><i class="fas fa-users-cog"></i><span>Người dùng</span></a>

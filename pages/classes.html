@@ -655,6 +655,7 @@
               class="badge" id="studentCount">0</span></button>
           <button class="tab-btn" onclick="switchTab('attendance')"><i class="fas fa-clipboard-check"></i> Điểm
             danh</button>
+          <button class="tab-btn" onclick="switchTab('feedback')"><i class="fas fa-comment-alt"></i> Nhận xét</button>
           <button class="tab-btn" onclick="switchTab('assignments')"><i class="fas fa-book-open"></i> BTVN <span
               class="badge" id="assignmentCount">0</span></button>
         </div>
@@ -663,6 +664,7 @@
           <div id="tab-info" class="tab-content active"></div>
           <div id="tab-students" class="tab-content"></div>
           <div id="tab-attendance" class="tab-content"></div>
+          <div id="tab-feedback" class="tab-content"></div>
           <div id="tab-assignments" class="tab-content"></div>
         </div>
       </div>
@@ -939,6 +941,7 @@
         renderInfoTab();
         renderStudentsTab();
         renderAttendanceTab();
+        renderFeedbackTab();
         renderAssignmentsTab();
 
         switchTab('info');
@@ -1170,7 +1173,6 @@
       }
     }
 
-
     async function selectSession(sessionId) {
       selectedSessionId = sessionId;
 
@@ -1297,6 +1299,166 @@
 
         // Reload class data
         viewClass(currentClass.id);
+      } catch (e) { ui.error(e.message); }
+    }
+
+    // ============================================
+    // TAB: NHẬN XÉT SAU BUỔI HỌC
+    // ============================================
+    let feedbackSessionId = null;
+    let feedbackData = {};
+
+    function renderFeedbackTab() {
+      if (!currentSessions.length) {
+        document.getElementById('tab-feedback').innerHTML = '<p class="text-muted text-center">Chưa có buổi học nào</p>';
+        return;
+      }
+
+      // Show sessions list
+      document.getElementById('tab-feedback').innerHTML = `
+        <div style="margin-bottom:16px">
+          <h4 style="margin:0 0 12px"><i class="fas fa-comment-alt"></i> Nhận xét sau buổi học</h4>
+          <p style="color:#6b7280;font-size:13px;margin:0">Chọn buổi học để xem/thêm nhận xét cho học sinh</p>
+        </div>
+        
+        <div class="sessions-scroll" style="margin-bottom:20px">
+          ${currentSessions.map(s => `
+            <div class="session-box ${s.attendance_submitted ? 'completed' : 'future'}" 
+                 id="feedback-session-${s.id}" onclick="selectFeedbackSession(${s.id})">
+              <div class="session-num">${s.session_number}</div>
+              <div class="session-date">${formatDate(s.session_date)}</div>
+            </div>
+          `).join('')}
+        </div>
+        
+        <div id="feedbackContent">
+          <p class="text-muted text-center">👆 Chọn buổi học để xem nhận xét</p>
+        </div>
+      `;
+    }
+
+    async function selectFeedbackSession(sessionId) {
+      feedbackSessionId = sessionId;
+
+      // Update visual
+      document.querySelectorAll('#tab-feedback .session-box').forEach(box => box.classList.remove('active'));
+      document.getElementById(`feedback-session-${sessionId}`).classList.add('active');
+
+      // Load existing feedbacks
+      try {
+        const res = await api.get(`/sessions/${sessionId}/feedbacks`);
+        const existingFeedbacks = res.data || [];
+
+        feedbackData = {};
+        currentStudents.forEach(s => {
+          const existing = existingFeedbacks.find(f => f.student_id === s.id);
+          feedbackData[s.id] = {
+            rating: existing?.rating || 0,
+            feedback: existing?.feedback || '',
+            homework_assigned: existing?.homework_assigned || false,
+            parent_notified: existing?.parent_notified || false
+          };
+        });
+
+        renderFeedbackForm();
+      } catch (e) {
+        console.error(e);
+        currentStudents.forEach(s => {
+          feedbackData[s.id] = { rating: 0, feedback: '', homework_assigned: false, parent_notified: false };
+        });
+        renderFeedbackForm();
+      }
+    }
+
+    function renderFeedbackForm() {
+      const session = currentSessions.find(s => s.id === feedbackSessionId);
+      if (!session) return;
+
+      document.getElementById('feedbackContent').innerHTML = `
+        <div style="background:#f9fafb;padding:16px;border-radius:12px;margin-bottom:16px">
+          <h4 style="margin:0">Buổi ${session.session_number} - ${formatDate(session.session_date)}</h4>
+        </div>
+        
+        ${currentStudents.length ? `
+          <div class="feedback-list">
+            ${currentStudents.map(s => {
+        const fb = feedbackData[s.id] || {};
+        return `
+              <div class="feedback-item" style="background:white;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <div class="student-avatar" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;display:flex;align-items:center;justify-content:center;font-weight:600">${s.full_name.charAt(0)}</div>
+                    <div>
+                      <div style="font-weight:600">${escapeHtml(s.full_name)}</div>
+                      <div style="font-size:12px;color:#6b7280">${s.student_code || ''}</div>
+                    </div>
+                  </div>
+                  <div class="rating-stars" style="display:flex;gap:4px">
+                    ${[1, 2, 3, 4, 5].map(star => `
+                      <i class="fas fa-star" style="cursor:pointer;font-size:20px;color:${fb.rating >= star ? '#f59e0b' : '#d1d5db'}" 
+                         onclick="setFeedbackRating(${s.id}, ${star})"></i>
+                    `).join('')}
+                  </div>
+                </div>
+                <textarea class="form-control" placeholder="Nhận xét về học sinh..." rows="2" style="margin-bottom:12px"
+                          onchange="setFeedbackText(${s.id}, this.value)">${fb.feedback || ''}</textarea>
+                <div style="display:flex;gap:16px;font-size:13px">
+                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                    <input type="checkbox" ${fb.homework_assigned ? 'checked' : ''} onchange="setFeedbackCheckbox(${s.id}, 'homework_assigned', this.checked)">
+                    <i class="fas fa-book"></i> Đã giao BTVN
+                  </label>
+                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                    <input type="checkbox" ${fb.parent_notified ? 'checked' : ''} onchange="setFeedbackCheckbox(${s.id}, 'parent_notified', this.checked)">
+                    <i class="fas fa-bell"></i> Đã thông báo PH
+                  </label>
+                </div>
+              </div>
+            `;
+      }).join('')}
+          </div>
+          
+          <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:12px">
+            <button class="btn btn-secondary" onclick="renderFeedbackTab()">Hủy</button>
+            <button class="btn btn-primary" onclick="saveFeedbacks()"><i class="fas fa-save"></i> Lưu nhận xét</button>
+          </div>
+        ` : '<p class="text-muted">Không có học sinh</p>'}
+      `;
+    }
+
+    function setFeedbackRating(studentId, rating) {
+      feedbackData[studentId].rating = rating;
+      // Update stars visual
+      const item = document.querySelector(`[onclick="setFeedbackRating(${studentId}, 1)"]`).closest('.feedback-item');
+      item.querySelectorAll('.fa-star').forEach((star, idx) => {
+        star.style.color = idx < rating ? '#f59e0b' : '#d1d5db';
+      });
+    }
+
+    function setFeedbackText(studentId, text) {
+      feedbackData[studentId].feedback = text;
+    }
+
+    function setFeedbackCheckbox(studentId, field, checked) {
+      feedbackData[studentId][field] = checked;
+    }
+
+    async function saveFeedbacks() {
+      if (!feedbackSessionId) { ui.warning('Chưa chọn buổi học'); return; }
+
+      try {
+        // Save each student feedback
+        for (const studentId of Object.keys(feedbackData)) {
+          const fb = feedbackData[studentId];
+          await api.post(`/sessions/${feedbackSessionId}/feedbacks`, {
+            student_id: parseInt(studentId),
+            rating: fb.rating,
+            feedback: fb.feedback,
+            homework_assigned: fb.homework_assigned,
+            parent_notified: fb.parent_notified
+          });
+        }
+
+        ui.success('Đã lưu nhận xét thành công');
       } catch (e) { ui.error(e.message); }
     }
 

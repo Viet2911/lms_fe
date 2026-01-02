@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài đặt hệ thống - LMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .settings-nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .settings-nav button {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .settings-nav button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .settings-section {
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .badge-inactive {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-header h3 {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')"><i
+                        class="fas fa-bars"></i></button>
+                <h1><i class="fas fa-cog"></i> Cài đặt hệ thống</h1>
+            </div>
+        </div>
+
+        <div class="settings-nav">
+            <button class="active" onclick="showSection('subjects', this)"><i class="fas fa-book"></i> Môn học</button>
+            <button onclick="showSection('levels', this)"><i class="fas fa-layer-group"></i> Cấp độ</button>
+            <button onclick="showSection('packages', this)"><i class="fas fa-box"></i> Gói học phí</button>
+            <button onclick="showSection('branches', this)"><i class="fas fa-building"></i> Chi nhánh</button>
+            <button onclick="showSection('users', this)"><i class="fas fa-users"></i> Người dùng</button>
+            <button onclick="showSection('promotions', this)"><i class="fas fa-gift"></i> Khuyến mãi</button>
+            <button onclick="showSection('gifts', this)"><i class="fas fa-gifts"></i> Quà tặng</button>
+            <button onclick="showSection('payment', this)"><i class="fas fa-qrcode"></i> Thanh toán QR</button>
+        </div>
+
+        <!-- SUBJECTS -->
+        <div id="section-subjects" class="settings-section active">
+            <div class="card">
+                <div class="card-body">
+                    <div class="section-header">
+                        <h3><i class="fas fa-book"></i> Quản lý Môn học</h3>
+                        <button class="btn btn-primary" onclick="openSubjectModal()"><i class="fas fa-plus"></i>
+                            Thêm</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên môn học</th>
+                                <th>Mô tả</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subjectsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- LEVELS -->
+        <div id="section-levels" class="settings-section">
+            <div class="card">
+                <div class="card-body">
+                    <div class="section-header">
+                        <h3><i class="fas fa-layer-group"></i> Quản lý Cấp độ</h3>
+                        <div style="display:flex;gap:12px">
+                            <select id="levelSubjectFilter" class="form-control" style="width:180px"
+                                onchange="loadLevels()">
+                                <option value="">Tất cả môn</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="openLevelModal()"><i class="fas fa-plus"></i>
+                                Thêm</button>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên cấp độ</th>
+                                <th>Môn học</th>
+                                <th>Thứ tự</th>
+                                <th>Số buổi</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="levelsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PACKAGES -->
+        <div id="section-packages" class="settings-section">
+            <div class="card">
+                <div class="card-body">
+                    <div class="section-header">
+                        <h3><i class="fas fa-box"></i> Quản lý Gói học phí</h3>
+                        <button class="btn btn-primary" onclick="openPackageModal()"><i class="fas fa-plus"></i>
+                            Thêm</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên gói</th>
+                                <th>Tháng</th>
+                                <th>Buổi/tuần</th>
+                                <th>Tổng buổi</th>
+                                <th>Giá</th>
+                                <th>HB mặc định</th>
+                                <th>TT</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="packagesTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- BRANCHES -->
+        <div id="section-branches" class="settings-section">
+            <div class="card">
+                <div class="card-body">
+                    <div class="section-header">
+                        <h3><i class="fas fa-building"></i> Quản lý Chi nhánh</h3>
+                        <button class="btn btn-primary" onclick="openBranchModal()"><i class="fas fa-plus"></i>
+                            Thêm</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên chi nhánh</th>
+                                <th>Địa chỉ</th>
+                                <th>SĐT</th>
+                                <th>TT</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="branchesTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- USERS -->
+        <div id="section-users" class="settings-section">
+            <div class="card">
+                <div class="card-body">
+                    <div class="section-header">
+                        <h3><i class="fas fa-users"></i> Quản lý Người dùng</h3>
+                        <button class="btn btn-primary" onclick="openUserModal()"><i class="fas fa-plus"></i>
+                            Thêm</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>SĐT</th>
+                                <th>Vai trò</th>
+                                <th>TT</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROMOTIONS -->
+        <div id="section-promotions" class="settings-section">
+            <div class="card">
+                <div class="card-body">
+                    <div class="section-header">
+                        <h3><i class="fas fa-gift"></i> Chương trình Khuyến mãi</h3>
+                        <button class="btn btn-primary" onclick="openPromoModal()"><i class="fas fa-plus"></i>
+                            Thêm</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên CT</th>
+                                <th>Loại</th>
+                                <th>Giá trị</th>
+                                <th>Thời gian</th>
+                                <th>TT</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="promotionsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- GIFTS -->
+        <div id="section-gifts" class="settings-section">
+            <div class="card">
+                <div class="card-body">
+                    <div class="section-header">
+                        <h3><i class="fas fa-gifts"></i> Quản lý Quà tặng</h3>
+                        <button class="btn btn-primary" onclick="openGiftModal()"><i class="fas fa-plus"></i>
+                            Thêm</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên quà</th>
+                                <th>Danh mục</th>
+                                <th>Tồn kho</th>
+                                <th>Đã phát</th>
+                                <th>TT</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="giftsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAYMENT CONFIG -->
+        <div id="section-payment" class="settings-section">
+            <div class="card">
+                <div class="card-body">
+                    <div class="section-header">
+                        <h3><i class="fas fa-qrcode"></i> Cấu hình Thanh toán QR</h3>
+                    </div>
+
+                    <div style="max-width:600px">
+                        <div
+                            style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:20px;border-radius:12px;margin-bottom:20px">
+                            <h4 style="margin:0 0 16px;color:#1e40af"><i class="fas fa-university"></i> Thông tin Ngân
+                                hàng</h4>
+                            <div class="form-group">
+                                <label class="required">Ngân hàng</label>
+                                <select id="paymentBankCode" class="form-control">
+                                    <option value="970422">MB Bank (970422)</option>
+                                    <option value="970415">VietinBank (970415)</option>
+                                    <option value="970436">Vietcombank (970436)</option>
+                                    <option value="970418">BIDV (970418)</option>
+                                    <option value="970407">Techcombank (970407)</option>
+                                    <option value="970416">ACB (970416)</option>
+                                    <option value="970432">VPBank (970432)</option>
+                                    <option value="970423">TPBank (970423)</option>
+                                    <option value="970405">Agribank (970405)</option>
+                                    <option value="970448">OCB (970448)</option>
+                                    <option value="970403">Sacombank (970403)</option>
+                                    <option value="970437">HDBank (970437)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Số tài khoản</label>
+                                <input type="text" id="paymentAccountNo" class="form-control" placeholder="0866766189">
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Tên chủ tài khoản</label>
+                                <input type="text" id="paymentAccountName" class="form-control"
+                                    placeholder="NGUYEN VAN A">
+                            </div>
+                        </div>
+
+                        <div
+                            style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:20px;border-radius:12px;margin-bottom:20px">
+                            <h4 style="margin:0 0 16px;color:#166534"><i class="fas fa-cog"></i> Cấu hình VietQR</h4>
+                            <div class="form-group">
+                                <label>Template QR</label>
+                                <select id="paymentQRTemplate" class="form-control">
+                                    <option value="compact2">Compact 2 (Có logo)</option>
+                                    <option value="compact">Compact (Không logo)</option>
+                                    <option value="qr_only">QR Only</option>
+                                    <option value="print">Print</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Prefix nội dung CK</label>
+                                <input type="text" id="paymentDescPrefix" class="form-control"
+                                    placeholder="Để trống = Mã học sinh + Tên">
+                                <small style="color:#6b7280">Mặc định: [Mã HS] [Tên HS]</small>
+                            </div>
+                        </div>
+
+                        <div style="background:#f3f4f6;padding:20px;border-radius:12px;margin-bottom:20px">
+                            <h4 style="margin:0 0 16px;color:#374151"><i class="fas fa-eye"></i> Xem trước QR</h4>
+                            <div style="text-align:center">
+                                <img id="previewQR" src="" alt="QR Preview"
+                                    style="max-width:250px;border-radius:8px;border:1px solid #e5e7eb">
+                                <p id="previewInfo" style="margin-top:12px;color:#6b7280;font-size:13px"></p>
+                            </div>
+                            <button class="btn btn-secondary btn-block" onclick="previewQR()" style="margin-top:12px"><i
+                                    class="fas fa-refresh"></i> Xem trước</button>
+                        </div>
+
+                        <button class="btn btn-primary btn-block" onclick="savePaymentConfig()"
+                            style="padding:14px;font-size:16px">
+                            <i class="fas fa-save"></i> Lưu cấu hình thanh toán
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Subject Modal -->
+    <div class="modal" id="subjectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="subjectModalTitle"><i class="fas fa-book"></i> Thêm môn học</div><button
+                    class="modal-close" onclick="closeModal('subjectModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="subjectId">
+                <div class="form-group"><label class="required">Mã môn học</label><input type="text" id="subjectCode"
+                        class="form-control" placeholder="STEM"></div>
+                <div class="form-group"><label class="required">Tên môn học</label><input type="text" id="subjectName"
+                        class="form-control"></div>
+                <div class="form-group"><label>Mô tả</label><textarea id="subjectDesc" class="form-control"
+                        rows="2"></textarea></div>
+                <div class="form-group"><label>Trạng thái</label><select id="subjectActive" class="form-control">
+                        <option value="1">Hoạt động</option>
+                        <option value="0">Ẩn</option>
+                    </select></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary"
+                    onclick="closeModal('subjectModal')">Hủy</button><button class="btn btn-primary"
+                    onclick="saveSubject()"><i class="fas fa-save"></i> Lưu</button></div>
+        </div>
+    </div>
+
+    <!-- Level Modal -->
+    <div class="modal" id="levelModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="levelModalTitle"><i class="fas fa-layer-group"></i> Thêm cấp độ</div>
+                <button class="modal-close" onclick="closeModal('levelModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="levelId">
+                <div class="form-group"><label>Môn học</label><select id="levelSubject" class="form-control">
+                        <option value="">-- Không chọn --</option>
+                    </select></div>
+                <div class="form-group"><label>Mã</label><input type="text" id="levelCode" class="form-control"
+                        placeholder="L1"></div>
+                <div class="form-group"><label class="required">Tên cấp độ</label><input type="text" id="levelName"
+                        class="form-control"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Thứ tự</label><input type="number" id="levelOrder"
+                            class="form-control" value="0"></div>
+                    <div class="form-group"><label>Số buổi</label><input type="number" id="levelSessions"
+                            class="form-control" value="15"></div>
+                </div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary"
+                    onclick="closeModal('levelModal')">Hủy</button><button class="btn btn-primary"
+                    onclick="saveLevel()"><i class="fas fa-save"></i> Lưu</button></div>
+        </div>
+    </div>
+
+    <!-- Package Modal -->
+    <div class="modal" id="packageModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <div class="modal-title" id="packageModalTitle"><i class="fas fa-box"></i> Thêm gói học phí</div><button
+                    class="modal-close" onclick="closeModal('packageModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="packageId">
+                <div class="form-row">
+                    <div class="form-group"><label class="required">Mã</label><input type="text" id="packageCode"
+                            class="form-control" placeholder="3M-2B"></div>
+                    <div class="form-group" style="flex:2"><label class="required">Tên gói</label><input type="text"
+                            id="packageName" class="form-control"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Số tháng</label><input type="number" id="packageMonths"
+                            class="form-control" value="3"></div>
+                    <div class="form-group"><label>Buổi/tuần</label><input type="number" id="packagePerWeek"
+                            class="form-control" value="2"></div>
+                    <div class="form-group"><label>Tổng buổi</label><input type="number" id="packageSessions"
+                            class="form-control" value="24"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label class="required">Giá (VNĐ)</label><input type="text"
+                            id="packagePrice" class="form-control" oninput="formatCurrencyField(this)"></div>
+                    <div class="form-group"><label>HB mặc định (tháng)</label><input type="number"
+                            id="packageScholarship" class="form-control" value="0"></div>
+                </div>
+                <div class="form-group"><label>Trạng thái</label><select id="packageActive" class="form-control">
+                        <option value="1">Hoạt động</option>
+                        <option value="0">Ẩn</option>
+                    </select></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary"
+                    onclick="closeModal('packageModal')">Hủy</button><button class="btn btn-primary"
+                    onclick="savePackage()"><i class="fas fa-save"></i> Lưu</button></div>
+        </div>
+    </div>
+
+    <!-- Branch Modal -->
+    <div class="modal" id="branchModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="branchModalTitle"><i class="fas fa-building"></i> Thêm chi nhánh</div>
+                <button class="modal-close" onclick="closeModal('branchModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="branchId">
+                <div class="form-row">
+                    <div class="form-group"><label class="required">Mã</label><input type="text" id="branchCode"
+                            class="form-control" placeholder="TH-LLQ"></div>
+                    <div class="form-group" style="flex:2"><label class="required">Tên</label><input type="text"
+                            id="branchName" class="form-control"></div>
+                </div>
+                <div class="form-group"><label>Địa chỉ</label><input type="text" id="branchAddress"
+                        class="form-control"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>SĐT</label><input type="tel" id="branchPhone" class="form-control">
+                    </div>
+                    <div class="form-group"><label>Email</label><input type="email" id="branchEmail"
+                            class="form-control"></div>
+                </div>
+                <div class="form-group"><label>Trạng thái</label><select id="branchActive" class="form-control">
+                        <option value="1">Hoạt động</option>
+                        <option value="0">Ẩn</option>
+                    </select></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary"
+                    onclick="closeModal('branchModal')">Hủy</button><button class="btn btn-primary"
+                    onclick="saveBranch()"><i class="fas fa-save"></i> Lưu</button></div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <div class="modal-title" id="userModalTitle"><i class="fas fa-user"></i> Thêm người dùng</div><button
+                    class="modal-close" onclick="closeModal('userModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="userId">
+                <div class="form-row">
+                    <div class="form-group"><label class="required">Username</label><input type="text" id="userUsername"
+                            class="form-control"></div>
+                    <div class="form-group"><label id="pwdLabel" class="required">Mật khẩu</label><input type="password"
+                            id="userPassword" class="form-control"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:2"><label class="required">Họ tên</label><input type="text"
+                            id="userFullname" class="form-control"></div>
+                    <div class="form-group"><label class="required">Vai trò</label><select id="userRole"
+                            class="form-control"></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Email</label><input type="email" id="userEmail" class="form-control">
+                    </div>
+                    <div class="form-group"><label>SĐT</label><input type="tel" id="userPhone" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group"><label>Chi nhánh</label>
+                    <div id="userBranchesBox" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
+                </div>
+                <div class="form-group"><label>Trạng thái</label><select id="userActive" class="form-control">
+                        <option value="1">Hoạt động</option>
+                        <option value="0">Khóa</option>
+                    </select></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary"
+                    onclick="closeModal('userModal')">Hủy</button><button class="btn btn-primary"
+                    onclick="saveUser()"><i class="fas fa-save"></i> Lưu</button></div>
+        </div>
+    </div>
+
+    <!-- Promo Modal -->
+    <div class="modal" id="promoModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <div class="modal-title" id="promoModalTitle"><i class="fas fa-gift"></i> Thêm CT Khuyến mãi</div>
+                <button class="modal-close" onclick="closeModal('promoModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="promoId">
+                <div class="form-row">
+                    <div class="form-group"><label class="required">Mã</label><input type="text" id="promoCode"
+                            class="form-control" placeholder="TET2025"></div>
+                    <div class="form-group" style="flex:2"><label class="required">Tên CT</label><input type="text"
+                            id="promoName" class="form-control"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Loại giảm</label><select id="promoType" class="form-control">
+                            <option value="percent">Phần trăm</option>
+                            <option value="amount">Số tiền</option>
+                        </select></div>
+                    <div class="form-group"><label>Giá trị</label><input type="number" id="promoValue"
+                            class="form-control" value="10"></div>
+                    <div class="form-group"><label>Giảm tối đa</label><input type="text" id="promoMax"
+                            class="form-control" oninput="formatCurrencyField(this)"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Từ ngày</label><input type="date" id="promoStart"
+                            class="form-control"></div>
+                    <div class="form-group"><label>Đến ngày</label><input type="date" id="promoEnd"
+                            class="form-control"></div>
+                </div>
+                <div class="form-group"><label>Trạng thái</label><select id="promoActive" class="form-control">
+                        <option value="1">Hoạt động</option>
+                        <option value="0">Ẩn</option>
+                    </select></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary"
+                    onclick="closeModal('promoModal')">Hủy</button><button class="btn btn-primary"
+                    onclick="savePromo()"><i class="fas fa-save"></i> Lưu</button></div>
+        </div>
+    </div>
+
+    <!-- Gift Modal -->
+    <div class="modal" id="giftModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="giftModalTitle"><i class="fas fa-gifts"></i> Thêm quà tặng</div><button
+                    class="modal-close" onclick="closeModal('giftModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="giftId">
+                <div class="form-row">
+                    <div class="form-group"><label>Mã</label><input type="text" id="giftCode" class="form-control">
+                    </div>
+                    <div class="form-group" style="flex:2"><label class="required">Tên quà</label><input type="text"
+                            id="giftName" class="form-control"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Danh mục</label><select id="giftCategory" class="form-control">
+                            <option value="gift">Quà tặng</option>
+                            <option value="book">Sách</option>
+                            <option value="material">Vật liệu</option>
+                        </select></div>
+                    <div class="form-group"><label>Số lượng tồn</label><input type="number" id="giftStock"
+                            class="form-control" value="0"></div>
+                </div>
+                <div class="form-group"><label>Trạng thái</label><select id="giftActive" class="form-control">
+                        <option value="1">Hoạt động</option>
+                        <option value="0">Ẩn</option>
+                    </select></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary"
+                    onclick="closeModal('giftModal')">Hủy</button><button class="btn btn-primary"
+                    onclick="saveGift()"><i class="fas fa-save"></i> Lưu</button></div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script>
+        let subjects = [], levels = [], packages = [], branches = [], users = [], roles = [], promotions = [], gifts = [], allBranches = [];
+
+        async function init() {
+            if (!auth.checkAuth()) return;
+            if (!['ADMIN', 'GDV'].includes(auth.user?.role_name?.toUpperCase())) { window.location.href = 'dashboard.html'; return; }
+            buildSidebar('sidebar');
+            await loadRoles(); await loadAllBranches(); loadSubjects();
+        }
+
+        function showSection(section, btn) {
+            document.querySelectorAll('.settings-nav button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('section-' + section).classList.add('active');
+            if (section === 'subjects') loadSubjects();
+            else if (section === 'levels') loadLevels();
+            else if (section === 'packages') loadPackages();
+            else if (section === 'branches') loadBranches();
+            else if (section === 'users') loadUsers();
+            else if (section === 'promotions') loadPromotions();
+            else if (section === 'gifts') loadGifts();
+            else if (section === 'payment') loadPaymentConfig();
+        }
+
+        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+        function fmt(v) { return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ'; }
+        function parse(s) { return parseInt(String(s).replace(/[^\d]/g, '')) || 0; }
+        function formatCurrencyField(i) { const v = parse(i.value); i.value = v > 0 ? new Intl.NumberFormat('vi-VN').format(v) : ''; }
+        function fmtDate(d) { return d ? new Date(d).toLocaleDateString('vi-VN') : '-'; }
+
+        // ===== SUBJECTS =====
+        async function loadSubjects() {
+            try {
+                const res = await api.get('/common/subjects');
+                subjects = res.data || [];
+                document.getElementById('subjectsTable').innerHTML = subjects.length ? subjects.map(s => '<tr><td><code>' + esc(s.code) + '</code></td><td><strong>' + esc(s.name) + '</strong></td><td>' + (s.description || '-') + '</td><td><span class="' + (s.is_active ? 'badge-active' : 'badge-inactive') + '">' + (s.is_active ? 'Hoạt động' : 'Ẩn') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editSubject(' + s.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="deleteSubject(' + s.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="5" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
+                document.getElementById('levelSubjectFilter').innerHTML = '<option value="">Tất cả môn</option>' + subjects.map(s => '<option value="' + s.id + '">' + esc(s.name) + '</option>').join('');
+                document.getElementById('levelSubject').innerHTML = '<option value="">-- Không chọn --</option>' + subjects.map(s => '<option value="' + s.id + '">' + esc(s.name) + '</option>').join('');
+            } catch (e) { ui.error(e.message); }
+        }
+
+        function openSubjectModal() {
+            document.getElementById('subjectId').value = '';
+            document.getElementById('subjectCode').value = '';
+            document.getElementById('subjectName').value = '';
+            document.getElementById('subjectDesc').value = '';
+            document.getElementById('subjectActive').value = '1';
+            document.getElementById('subjectModalTitle').innerHTML = '<i class="fas fa-book"></i> Thêm môn học';
+            document.getElementById('subjectModal').classList.add('show');
+        }
+
+        function editSubject(id) {
+            const s = subjects.find(x => x.id === id); if (!s) return;
+            document.getElementById('subjectId').value = s.id;
+            document.getElementById('subjectCode').value = s.code || '';
+            document.getElementById('subjectName').value = s.name || '';
+            document.getElementById('subjectDesc').value = s.description || '';
+            document.getElementById('subjectActive').value = s.is_active ? '1' : '0';
+            document.getElementById('subjectModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa môn học';
+            document.getElementById('subjectModal').classList.add('show');
+        }
+
+        async function saveSubject() {
+            const id = document.getElementById('subjectId').value;
+            const data = { code: document.getElementById('subjectCode').value.trim(), name: document.getElementById('subjectName').value.trim(), description: document.getElementById('subjectDesc').value.trim(), is_active: parseInt(document.getElementById('subjectActive').value) };
+            if (!data.code || !data.name) { ui.warning('Nhập mã và tên'); return; }
+            try {
+                if (id) await api.put('/common/subjects/' + id, data); else await api.post('/common/subjects', data);
+                ui.success('Đã lưu'); closeModal('subjectModal'); loadSubjects();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        async function deleteSubject(id) { if (!confirm('Xóa môn học này?')) return; try { await api.delete('/common/subjects/' + id); ui.success('Đã xóa'); loadSubjects(); } catch (e) { ui.error(e.message); } }
+
+        // ===== LEVELS =====
+        async function loadLevels() {
+            try {
+                const subjectId = document.getElementById('levelSubjectFilter').value;
+                const res = await api.get('/common/levels' + (subjectId ? '?subjectId=' + subjectId : ''));
+                levels = res.data || [];
+                document.getElementById('levelsTable').innerHTML = levels.length ? levels.map(l => '<tr><td><code>' + esc(l.code || '-') + '</code></td><td><strong>' + esc(l.name) + '</strong></td><td>' + (l.subject_name || '-') + '</td><td>' + (l.order_index || 0) + '</td><td>' + (l.sessions_required || 15) + '</td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editLevel(' + l.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="deleteLevel(' + l.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="6" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
+            } catch (e) { ui.error(e.message); }
+        }
+
+        function openLevelModal() {
+            document.getElementById('levelId').value = '';
+            document.getElementById('levelSubject').value = '';
+            document.getElementById('levelCode').value = '';
+            document.getElementById('levelName').value = '';
+            document.getElementById('levelOrder').value = '0';
+            document.getElementById('levelSessions').value = '15';
+            document.getElementById('levelModalTitle').innerHTML = '<i class="fas fa-layer-group"></i> Thêm cấp độ';
+            document.getElementById('levelModal').classList.add('show');
+        }
+
+        function editLevel(id) {
+            const l = levels.find(x => x.id === id); if (!l) return;
+            document.getElementById('levelId').value = l.id;
+            document.getElementById('levelSubject').value = l.subject_id || '';
+            document.getElementById('levelCode').value = l.code || '';
+            document.getElementById('levelName').value = l.name || '';
+            document.getElementById('levelOrder').value = l.order_index || 0;
+            document.getElementById('levelSessions').value = l.sessions_required || 15;
+            document.getElementById('levelModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa cấp độ';
+            document.getElementById('levelModal').classList.add('show');
+        }
+
+        async function saveLevel() {
+            const id = document.getElementById('levelId').value;
+            const data = { subjectId: document.getElementById('levelSubject').value || null, code: document.getElementById('levelCode').value.trim(), name: document.getElementById('levelName').value.trim(), orderIndex: parseInt(document.getElementById('levelOrder').value) || 0, sessionsRequired: parseInt(document.getElementById('levelSessions').value) || 15 };
+            if (!data.name) { ui.warning('Nhập tên cấp độ'); return; }
+            try {
+                if (id) await api.put('/common/levels/' + id, data); else await api.post('/common/levels', data);
+                ui.success('Đã lưu'); closeModal('levelModal'); loadLevels();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        async function deleteLevel(id) { if (!confirm('Xóa cấp độ này?')) return; try { await api.delete('/common/levels/' + id); ui.success('Đã xóa'); loadLevels(); } catch (e) { ui.error(e.message); } }
+
+        // ===== PACKAGES =====
+        async function loadPackages() {
+            try {
+                const res = await api.get('/packages');
+                packages = res.data || [];
+                document.getElementById('packagesTable').innerHTML = packages.length ? packages.map(p => '<tr><td><code>' + esc(p.code) + '</code></td><td><strong>' + esc(p.name) + '</strong></td><td>' + p.months + '</td><td>' + p.sessions_per_week + '</td><td>' + p.sessions_count + '</td><td style="text-align:right">' + fmt(p.price || p.base_price) + '</td><td>' + (p.default_scholarship_months || 0) + ' tháng</td><td><span class="' + (p.is_active ? 'badge-active' : 'badge-inactive') + '">' + (p.is_active ? 'HĐ' : 'Ẩn') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editPackage(' + p.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="deletePackage(' + p.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="9" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
+            } catch (e) { ui.error(e.message); }
+        }
+
+        function openPackageModal() {
+            document.getElementById('packageId').value = '';
+            document.getElementById('packageCode').value = '';
+            document.getElementById('packageName').value = '';
+            document.getElementById('packageMonths').value = '3';
+            document.getElementById('packagePerWeek').value = '2';
+            document.getElementById('packageSessions').value = '24';
+            document.getElementById('packagePrice').value = '';
+            document.getElementById('packageScholarship').value = '0';
+            document.getElementById('packageActive').value = '1';
+            document.getElementById('packageModalTitle').innerHTML = '<i class="fas fa-box"></i> Thêm gói học phí';
+            document.getElementById('packageModal').classList.add('show');
+        }
+
+        function editPackage(id) {
+            const p = packages.find(x => x.id === id); if (!p) return;
+            document.getElementById('packageId').value = p.id;
+            document.getElementById('packageCode').value = p.code || '';
+            document.getElementById('packageName').value = p.name || '';
+            document.getElementById('packageMonths').value = p.months || 3;
+            document.getElementById('packagePerWeek').value = p.sessions_per_week || 2;
+            document.getElementById('packageSessions').value = p.sessions_count || 24;
+            document.getElementById('packagePrice').value = (p.price || p.base_price) ? new Intl.NumberFormat('vi-VN').format(p.price || p.base_price) : '';
+            document.getElementById('packageScholarship').value = p.default_scholarship_months || 0;
+            document.getElementById('packageActive').value = p.is_active ? '1' : '0';
+            document.getElementById('packageModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa gói học phí';
+            document.getElementById('packageModal').classList.add('show');
+        }
+
+        async function savePackage() {
+            const id = document.getElementById('packageId').value;
+            const data = { code: document.getElementById('packageCode').value.trim(), name: document.getElementById('packageName').value.trim(), months: parseInt(document.getElementById('packageMonths').value) || 3, sessions_per_week: parseInt(document.getElementById('packagePerWeek').value) || 2, sessions_count: parseInt(document.getElementById('packageSessions').value) || 24, base_price: parse(document.getElementById('packagePrice').value), default_scholarship_months: parseInt(document.getElementById('packageScholarship').value) || 0, is_active: parseInt(document.getElementById('packageActive').value) };
+            if (!data.code || !data.name) { ui.warning('Nhập mã và tên gói'); return; }
+            try {
+                if (id) await api.put('/packages/' + id, data); else await api.post('/packages', data);
+                ui.success('Đã lưu'); closeModal('packageModal'); loadPackages();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        async function deletePackage(id) { if (!confirm('Xóa gói này?')) return; try { await api.delete('/packages/' + id); ui.success('Đã xóa'); loadPackages(); } catch (e) { ui.error(e.message); } }
+
+        // ===== BRANCHES =====
+        async function loadAllBranches() { try { const res = await api.get('/branches'); allBranches = res.data || []; } catch (e) { } }
+        async function loadBranches() {
+            try {
+                const res = await api.get('/branches');
+                branches = res.data || [];
+                document.getElementById('branchesTable').innerHTML = branches.length ? branches.map(b => '<tr><td><code>' + esc(b.code) + '</code></td><td><strong>' + esc(b.name) + '</strong></td><td>' + (b.address || '-') + '</td><td>' + (b.phone || '-') + '</td><td><span class="' + (b.is_active ? 'badge-active' : 'badge-inactive') + '">' + (b.is_active ? 'HĐ' : 'Ẩn') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editBranch(' + b.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="deleteBranch(' + b.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="6" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
+            } catch (e) { ui.error(e.message); }
+        }
+
+        function openBranchModal() {
+            document.getElementById('branchId').value = '';
+            document.getElementById('branchCode').value = '';
+            document.getElementById('branchName').value = '';
+            document.getElementById('branchAddress').value = '';
+            document.getElementById('branchPhone').value = '';
+            document.getElementById('branchEmail').value = '';
+            document.getElementById('branchActive').value = '1';
+            document.getElementById('branchModalTitle').innerHTML = '<i class="fas fa-building"></i> Thêm chi nhánh';
+            document.getElementById('branchModal').classList.add('show');
+        }
+
+        function editBranch(id) {
+            const b = branches.find(x => x.id === id); if (!b) return;
+            document.getElementById('branchId').value = b.id;
+            document.getElementById('branchCode').value = b.code || '';
+            document.getElementById('branchName').value = b.name || '';
+            document.getElementById('branchAddress').value = b.address || '';
+            document.getElementById('branchPhone').value = b.phone || '';
+            document.getElementById('branchEmail').value = b.email || '';
+            document.getElementById('branchActive').value = b.is_active ? '1' : '0';
+            document.getElementById('branchModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa chi nhánh';
+            document.getElementById('branchModal').classList.add('show');
+        }
+
+        async function saveBranch() {
+            const id = document.getElementById('branchId').value;
+            const data = { code: document.getElementById('branchCode').value.trim(), name: document.getElementById('branchName').value.trim(), address: document.getElementById('branchAddress').value.trim(), phone: document.getElementById('branchPhone').value.trim(), email: document.getElementById('branchEmail').value.trim(), is_active: parseInt(document.getElementById('branchActive').value) };
+            if (!data.code || !data.name) { ui.warning('Nhập mã và tên'); return; }
+            try {
+                if (id) await api.put('/branches/' + id, data); else await api.post('/branches', data);
+                ui.success('Đã lưu'); closeModal('branchModal'); loadBranches(); loadAllBranches();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        async function deleteBranch(id) { if (!confirm('Xóa chi nhánh này?')) return; try { await api.delete('/branches/' + id); ui.success('Đã xóa'); loadBranches(); } catch (e) { ui.error(e.message); } }
+
+        // ===== USERS =====
+        async function loadRoles() { try { const res = await api.get('/users/roles'); roles = res.data || []; } catch (e) { } }
+        async function loadUsers() {
+            try {
+                const res = await api.get('/users');
+                users = res.data || [];
+                document.getElementById('usersTable').innerHTML = users.length ? users.map(u => '<tr><td><code>' + esc(u.username) + '</code></td><td><strong>' + esc(u.full_name) + '</strong></td><td>' + (u.email || '-') + '</td><td>' + (u.phone || '-') + '</td><td>' + (u.role_name || '-') + '</td><td><span class="' + (u.is_active ? 'badge-active' : 'badge-inactive') + '">' + (u.is_active ? 'HĐ' : 'Khóa') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editUser(' + u.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-warning" onclick="resetPwd(' + u.id + ')"><i class="fas fa-key"></i></button><button class="btn btn-sm btn-danger" onclick="deleteUser(' + u.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="7" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
+            } catch (e) { ui.error(e.message); }
+        }
+
+        function openUserModal() {
+            document.getElementById('userId').value = '';
+            document.getElementById('userUsername').value = '';
+            document.getElementById('userPassword').value = '';
+            document.getElementById('userFullname').value = '';
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userPhone').value = '';
+            document.getElementById('userActive').value = '1';
+            document.getElementById('pwdLabel').classList.add('required');
+            document.getElementById('userRole').innerHTML = roles.map(r => '<option value="' + r.id + '">' + (r.display_name || r.name) + '</option>').join('');
+            document.getElementById('userBranchesBox').innerHTML = allBranches.map(b => '<label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg-secondary);border-radius:8px;cursor:pointer"><input type="checkbox" class="branch-cb" value="' + b.id + '"> ' + esc(b.name) + '</label>').join('');
+            document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-user"></i> Thêm người dùng';
+            document.getElementById('userModal').classList.add('show');
+        }
+
+        async function editUser(id) {
+            try {
+                const res = await api.get('/users/' + id);
+                const u = res.data;
+                document.getElementById('userId').value = u.id;
+                document.getElementById('userUsername').value = u.username || '';
+                document.getElementById('userPassword').value = '';
+                document.getElementById('userFullname').value = u.full_name || '';
+                document.getElementById('userEmail').value = u.email || '';
+                document.getElementById('userPhone').value = u.phone || '';
+                document.getElementById('userActive').value = u.is_active ? '1' : '0';
+                document.getElementById('pwdLabel').classList.remove('required');
+                document.getElementById('userRole').innerHTML = roles.map(r => '<option value="' + r.id + '" ' + (r.id === u.role_id ? 'selected' : '') + '>' + (r.display_name || r.name) + '</option>').join('');
+                const ubs = u.branches || [];
+                document.getElementById('userBranchesBox').innerHTML = allBranches.map(b => '<label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg-secondary);border-radius:8px;cursor:pointer"><input type="checkbox" class="branch-cb" value="' + b.id + '" ' + (ubs.some(x => x.id === b.id || x.branch_id === b.id) ? 'checked' : '') + '>' + esc(b.name) + '</label>').join('');
+                document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa người dùng';
+                document.getElementById('userModal').classList.add('show');
+            } catch (e) { ui.error(e.message); }
+        }
+
+        async function saveUser() {
+            const id = document.getElementById('userId').value;
+            const branchIds = Array.from(document.querySelectorAll('.branch-cb:checked')).map(c => parseInt(c.value));
+            const data = { username: document.getElementById('userUsername').value.trim(), full_name: document.getElementById('userFullname').value.trim(), email: document.getElementById('userEmail').value.trim(), phone: document.getElementById('userPhone').value.trim(), role_id: parseInt(document.getElementById('userRole').value), is_active: parseInt(document.getElementById('userActive').value), branch_ids: branchIds };
+            const pwd = document.getElementById('userPassword').value;
+            if (pwd) data.password = pwd;
+            if (!data.username || !data.full_name) { ui.warning('Nhập username và họ tên'); return; }
+            if (!id && !pwd) { ui.warning('Nhập mật khẩu'); return; }
+            try {
+                if (id) await api.put('/users/' + id, data); else await api.post('/users', data);
+                ui.success('Đã lưu'); closeModal('userModal'); loadUsers();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        async function resetPwd(id) { const p = prompt('Mật khẩu mới:'); if (!p) return; try { await api.put('/users/' + id + '/reset-password', { password: p }); ui.success('Đã đổi mật khẩu'); } catch (e) { ui.error(e.message); } }
+        async function deleteUser(id) { if (!confirm('Xóa người dùng này?')) return; try { await api.delete('/users/' + id); ui.success('Đã xóa'); loadUsers(); } catch (e) { ui.error(e.message); } }
+
+        // ===== PROMOTIONS =====
+        async function loadPromotions() {
+            try {
+                const res = await api.get('/promotions/programs/all');
+                promotions = res.data || [];
+                document.getElementById('promotionsTable').innerHTML = promotions.length ? promotions.map(p => '<tr><td><code>' + esc(p.code) + '</code></td><td><strong>' + esc(p.name) + '</strong></td><td>' + (p.discount_type === 'percent' ? '%' : 'Tiền') + '</td><td>' + (p.discount_type === 'percent' ? p.discount_value + '%' : fmt(p.discount_value)) + '</td><td>' + fmtDate(p.start_date) + ' - ' + fmtDate(p.end_date) + '</td><td><span class="' + (p.is_active ? 'badge-active' : 'badge-inactive') + '">' + (p.is_active ? 'HĐ' : 'Ẩn') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editPromo(' + p.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="deletePromo(' + p.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="7" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
+            } catch (e) { ui.error(e.message); }
+        }
+
+        function openPromoModal() {
+            document.getElementById('promoId').value = '';
+            document.getElementById('promoCode').value = '';
+            document.getElementById('promoName').value = '';
+            document.getElementById('promoType').value = 'percent';
+            document.getElementById('promoValue').value = '10';
+            document.getElementById('promoMax').value = '';
+            document.getElementById('promoStart').value = '';
+            document.getElementById('promoEnd').value = '';
+            document.getElementById('promoActive').value = '1';
+            document.getElementById('promoModalTitle').innerHTML = '<i class="fas fa-gift"></i> Thêm CT Khuyến mãi';
+            document.getElementById('promoModal').classList.add('show');
+        }
+
+        function editPromo(id) {
+            const p = promotions.find(x => x.id === id); if (!p) return;
+            document.getElementById('promoId').value = p.id;
+            document.getElementById('promoCode').value = p.code || '';
+            document.getElementById('promoName').value = p.name || '';
+            document.getElementById('promoType').value = p.discount_type || 'percent';
+            document.getElementById('promoValue').value = p.discount_value || 10;
+            document.getElementById('promoMax').value = p.max_discount ? new Intl.NumberFormat('vi-VN').format(p.max_discount) : '';
+            document.getElementById('promoStart').value = p.start_date ? p.start_date.split('T')[0] : '';
+            document.getElementById('promoEnd').value = p.end_date ? p.end_date.split('T')[0] : '';
+            document.getElementById('promoActive').value = p.is_active ? '1' : '0';
+            document.getElementById('promoModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa CT Khuyến mãi';
+            document.getElementById('promoModal').classList.add('show');
+        }
+
+        async function savePromo() {
+            const id = document.getElementById('promoId').value;
+            const data = { code: document.getElementById('promoCode').value.trim(), name: document.getElementById('promoName').value.trim(), discount_type: document.getElementById('promoType').value, discount_value: parseFloat(document.getElementById('promoValue').value) || 0, max_discount: parse(document.getElementById('promoMax').value) || null, start_date: document.getElementById('promoStart').value || null, end_date: document.getElementById('promoEnd').value || null, is_active: parseInt(document.getElementById('promoActive').value) };
+            if (!data.code || !data.name) { ui.warning('Nhập mã và tên'); return; }
+            try {
+                if (id) await api.put('/promotions/programs/' + id, data); else await api.post('/promotions/programs', data);
+                ui.success('Đã lưu'); closeModal('promoModal'); loadPromotions();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        async function deletePromo(id) { if (!confirm('Xóa chương trình này?')) return; try { await api.delete('/promotions/programs/' + id); ui.success('Đã xóa'); loadPromotions(); } catch (e) { ui.error(e.message); } }
+
+        // ===== GIFTS =====
+        async function loadGifts() {
+            try {
+                const res = await api.get('/promotions/items');
+                gifts = res.data || [];
+                const cat = { gift: 'Quà', book: 'Sách', material: 'VL' };
+                document.getElementById('giftsTable').innerHTML = gifts.length ? gifts.map(g => '<tr><td><code>' + esc(g.code || '-') + '</code></td><td><strong>' + esc(g.name) + '</strong></td><td>' + (cat[g.category] || g.category) + '</td><td>' + (g.stock_quantity || 0) + '</td><td>' + (g.given_quantity || 0) + '</td><td><span class="' + (g.is_active ? 'badge-active' : 'badge-inactive') + '">' + (g.is_active ? 'HĐ' : 'Ẩn') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editGift(' + g.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-success" onclick="addStock(' + g.id + ')"><i class="fas fa-plus"></i></button><button class="btn btn-sm btn-danger" onclick="deleteGift(' + g.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="7" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
+            } catch (e) { ui.error(e.message); }
+        }
+
+        function openGiftModal() {
+            document.getElementById('giftId').value = '';
+            document.getElementById('giftCode').value = '';
+            document.getElementById('giftName').value = '';
+            document.getElementById('giftCategory').value = 'gift';
+            document.getElementById('giftStock').value = '0';
+            document.getElementById('giftActive').value = '1';
+            document.getElementById('giftModalTitle').innerHTML = '<i class="fas fa-gifts"></i> Thêm quà tặng';
+            document.getElementById('giftModal').classList.add('show');
+        }
+
+        function editGift(id) {
+            const g = gifts.find(x => x.id === id); if (!g) return;
+            document.getElementById('giftId').value = g.id;
+            document.getElementById('giftCode').value = g.code || '';
+            document.getElementById('giftName').value = g.name || '';
+            document.getElementById('giftCategory').value = g.category || 'gift';
+            document.getElementById('giftStock').value = g.stock_quantity || 0;
+            document.getElementById('giftActive').value = g.is_active ? '1' : '0';
+            document.getElementById('giftModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa quà tặng';
+            document.getElementById('giftModal').classList.add('show');
+        }
+
+        async function saveGift() {
+            const id = document.getElementById('giftId').value;
+            const data = { code: document.getElementById('giftCode').value.trim(), name: document.getElementById('giftName').value.trim(), category: document.getElementById('giftCategory').value, stock_quantity: parseInt(document.getElementById('giftStock').value) || 0, is_active: parseInt(document.getElementById('giftActive').value) };
+            if (!data.name) { ui.warning('Nhập tên quà'); return; }
+            try {
+                if (id) await api.put('/promotions/items/' + id, data); else await api.post('/promotions/items', data);
+                ui.success('Đã lưu'); closeModal('giftModal'); loadGifts();
+            } catch (e) { ui.error(e.message); }
+        }
+
+        async function addStock(id) {
+            const qty = prompt('Số lượng thêm:');
+            if (!qty || isNaN(parseInt(qty))) return;
+            try { await api.post('/promotions/items/' + id + '/stock', { quantity: parseInt(qty), note: 'Nhập kho' }); ui.success('Đã thêm ' + qty); loadGifts(); } catch (e) { ui.error(e.message); }
+        }
+
+        async function deleteGift(id) { if (!confirm('Xóa quà tặng này?')) return; try { await api.delete('/promotions/items/' + id); ui.success('Đã xóa'); loadGifts(); } catch (e) { ui.error(e.message); } }
+
+        // ===== PAYMENT CONFIG =====
+        async function loadPaymentConfig() {
+            try {
+                const res = await api.get('/settings/payment');
+                const cfg = res.data || {};
+                document.getElementById('paymentBankCode').value = cfg.bank_code || '970422';
+                document.getElementById('paymentAccountNo').value = cfg.account_no || '';
+                document.getElementById('paymentAccountName').value = cfg.account_name || '';
+                document.getElementById('paymentQRTemplate').value = cfg.qr_template || 'compact2';
+                document.getElementById('paymentDescPrefix').value = cfg.desc_prefix || '';
+                previewQR();
+            } catch (e) { console.log('No payment config yet'); }
+        }
+
+        function previewQR() {
+            const bankCode = document.getElementById('paymentBankCode').value;
+            const accountNo = document.getElementById('paymentAccountNo').value || '0866766189';
+            const template = document.getElementById('paymentQRTemplate').value;
+            const accountName = document.getElementById('paymentAccountName').value || 'ARMY TECHNOLOGY';
+
+            const bankNames = {
+                '970422': 'MB Bank', '970415': 'VietinBank', '970436': 'Vietcombank',
+                '970418': 'BIDV', '970407': 'Techcombank', '970416': 'ACB',
+                '970432': 'VPBank', '970423': 'TPBank', '970405': 'Agribank',
+                '970448': 'OCB', '970403': 'Sacombank', '970437': 'HDBank'
+            };
+
+            const qrUrl = 'https://img.vietqr.io/image/' + bankCode + '-' + accountNo + '-' + template + '.png?amount=1000000&addInfo=TEST%20QR';
+            document.getElementById('previewQR').src = qrUrl;
+            document.getElementById('previewInfo').innerHTML = '<strong>' + (bankNames[bankCode] || bankCode) + '</strong><br>' + accountNo + '<br>' + accountName;
+        }
+
+        async function savePaymentConfig() {
+            const data = {
+                bank_code: document.getElementById('paymentBankCode').value,
+                account_no: document.getElementById('paymentAccountNo').value.trim(),
+                account_name: document.getElementById('paymentAccountName').value.trim(),
+                qr_template: document.getElementById('paymentQRTemplate').value,
+                desc_prefix: document.getElementById('paymentDescPrefix').value.trim()
+            };
+
+            if (!data.account_no || !data.account_name) {
+                ui.warning('Vui lòng nhập số tài khoản và tên chủ TK');
+                return;
+            }
+
+            try {
+                await api.post('/settings/payment', data);
+                ui.success('Đã lưu cấu hình thanh toán');
+
+                // Update localStorage for frontend use
+                localStorage.setItem('paymentConfig', JSON.stringify(data));
+            } catch (e) { ui.error(e.message); }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>

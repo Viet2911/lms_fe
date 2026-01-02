@@ -822,12 +822,15 @@
           const feeTotal = parseFloat(l.fee_total) || 0;
           const deposit = parseFloat(l.deposit_amount) || 0;
           const actualRev = parseFloat(l.actual_revenue) || 0;
-          const remaining = parseFloat(l.expected_revenue) || 0;
-          const paid = actualRev - deposit;
+          // Còn lại = Tổng HP - Thực đã thu (actual_revenue)
+          // actual_revenue bao gồm cả tiền cọc + tiền đã đóng
+          const remaining = Math.max(0, feeTotal - actualRev);
+          // Đã đóng (không tính cọc) = actual_revenue - deposit
+          const paidWithoutDeposit = Math.max(0, actualRev - deposit);
 
           totalFee += feeTotal;
           totalDeposit += deposit;
-          totalPaid += paid;
+          totalPaid += paidWithoutDeposit;
           totalRemaining += remaining;
 
           return `
@@ -838,7 +841,7 @@
               <td><span class="badge badge-light">${l.branch_code || '-'}</span></td>
               <td class="text-right">${formatCurrency(feeTotal)}</td>
               <td class="text-right text-warning">${formatCurrency(deposit)}</td>
-              <td class="text-right text-success">${formatCurrency(paid)}</td>
+              <td class="text-right text-success">${formatCurrency(paidWithoutDeposit)}</td>
               <td class="text-right text-danger"><strong>${formatCurrency(remaining)}</strong></td>
             </tr>
           `;

@@ -30,6 +30,11 @@
       color: #b45309;
     }
 
+    .status-badge.waiting {
+      background: #e0e7ff;
+      color: #4f46e5;
+    }
+
     .status-badge.converted {
       background: #dcfce7;
       color: #15803d;
@@ -103,6 +108,15 @@
       color: var(--primary);
     }
 
+    .btn-purple {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+    }
+
+    .btn-purple:hover {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    }
+
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -114,7 +128,6 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 16px;
-      cursor: pointer;
     }
 
     .lead-card:hover {
@@ -220,83 +233,6 @@
       font-size: 13px;
     }
 
-    .import-dropzone {
-      border: 2px dashed var(--border);
-      border-radius: 12px;
-      padding: 40px;
-      text-align: center;
-      cursor: pointer;
-    }
-
-    .import-dropzone:hover {
-      border-color: var(--primary);
-    }
-
-    .import-dropzone i {
-      font-size: 48px;
-      color: var(--text-muted);
-      display: block;
-      margin-bottom: 16px;
-    }
-
-    .import-stats {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      margin: 15px 0;
-    }
-
-    .import-stat {
-      text-align: center;
-      padding: 10px 20px;
-      background: var(--bg-secondary);
-      border-radius: 8px;
-    }
-
-    .import-stat .value {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--primary);
-    }
-
-    .import-stat .label {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .btn-purple {
-      background: #8b5cf6;
-      color: white;
-      border-color: #8b5cf6;
-    }
-
-    .btn-purple:hover {
-      background: #7c3aed;
-    }
-
-    .lead-card {
-      cursor: default;
-    }
-
-    .input-group {
-      display: flex;
-      align-items: center;
-    }
-
-    .input-group input {
-      border-radius: 8px 0 0 8px;
-    }
-
-    .input-group .input-suffix {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-left: none;
-      padding: 10px 12px;
-      border-radius: 0 8px 8px 0;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
     input[type="number"] {
       text-align: right;
     }
@@ -317,8 +253,6 @@
           <button class="active" onclick="setView('table')" id="viewTable"><i class="fas fa-list"></i></button>
           <button onclick="setView('card')" id="viewCard"><i class="fas fa-th-large"></i></button>
         </div>
-        <button class="btn btn-success" id="btnImport" onclick="openImportModal()" style="display:none"><i
-            class="fas fa-file-excel"></i> Import</button>
         <button class="btn btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Thêm</button>
       </div>
     </div>
@@ -397,8 +331,8 @@
   <div class="modal" id="formModal">
     <div class="modal-content modal-lg">
       <div class="modal-header">
-        <div class="modal-title" id="modalTitle"><i class="fas fa-user-plus"></i> Thêm Lead</div><button
-          class="modal-close" onclick="closeFormModal()">&times;</button>
+        <div class="modal-title" id="modalTitle"><i class="fas fa-user-plus"></i> Thêm Lead</div>
+        <button class="modal-close" onclick="closeFormModal()">&times;</button>
       </div>
       <div class="modal-body">
         <form id="leadForm">
@@ -425,117 +359,13 @@
                 <option value="referral">Giới thiệu</option>
               </select></div>
           </div>
-          <div class="form-row" id="assignEcRow" style="display:none">
-            <div class="form-group">
-              <label><i class="fas fa-user-tie"></i> Giao cho EC</label>
-              <select name="assignedEcId" id="assignedEcId" class="form-control">
-                <option value="">-- Tự động (người tạo) --</option>
-              </select>
-            </div>
-          </div>
           <div class="form-group"><label>Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea>
           </div>
         </form>
       </div>
-      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeFormModal()">Hủy</button><button
-          class="btn btn-primary" onclick="saveLead()"><i class="fas fa-save"></i> Lưu</button></div>
-    </div>
-  </div>
-
-  <!-- Import Modal -->
-  <div class="modal" id="importModal">
-    <div class="modal-content modal-lg">
-      <div class="modal-header">
-        <div class="modal-title"><i class="fas fa-file-excel"></i> Import Excel</div><button class="modal-close"
-          onclick="closeImportModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="import-dropzone" id="dropzone" onclick="document.getElementById('excelFile').click()">
-          <i class="fas fa-cloud-upload-alt"></i>
-          <p><strong>Kéo thả file Excel vào đây</strong></p>
-          <p style="color:var(--text-muted)">hoặc click để chọn file</p>
-          <input type="file" id="excelFile" accept=".xlsx,.xls" style="display:none" onchange="handleFileSelect(event)">
-        </div>
-        <div id="importPreview" style="display:none">
-          <div class="import-stats">
-            <div class="import-stat">
-              <div class="value" id="previewTotal">0</div>
-              <div class="label">Tổng</div>
-            </div>
-            <div class="import-stat">
-              <div class="value" id="previewValid">0</div>
-              <div class="label">Hợp lệ</div>
-            </div>
-            <div class="import-stat">
-              <div class="value" id="previewError">0</div>
-              <div class="label">Lỗi</div>
-            </div>
-          </div>
-          <div style="max-height:200px;overflow-y:auto">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Tên HS</th>
-                  <th>Tên PH</th>
-                  <th>SĐT</th>
-                  <th>TT</th>
-                </tr>
-              </thead>
-              <tbody id="previewBody"></tbody>
-            </table>
-          </div>
-        </div>
-        <div style="margin-top:20px;padding:12px;background:var(--bg-secondary);border-radius:8px;font-size:13px">
-          <strong>Cột bắt buộc:</strong> Tên học sinh, Số điện thoại<br><button class="btn btn-sm btn-secondary"
-            onclick="downloadTemplate()" style="margin-top:8px"><i class="fas fa-download"></i> Tải mẫu</button>
-        </div>
-      </div>
-      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeImportModal()">Hủy</button><button
-          class="btn btn-success" id="importBtn" onclick="importLeads()" disabled><i class="fas fa-upload"></i> Import
-          <span id="importCount">0</span></button></div>
-    </div>
-  </div>
-
-  <!-- Call Modal -->
-  <div class="modal" id="callModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title"><i class="fas fa-phone"></i> Cuộc gọi</div><button class="modal-close"
-          onclick="closeCallModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="callLeadId">
-        <div class="call-avatar" id="callAvatar">N</div>
-        <div class="call-name" id="callName">Tên</div>
-        <div class="call-phone" id="callPhone">0901234567</div>
-        <div class="call-status" id="callStatus">Sẵn sàng</div>
-        <div class="call-timer" id="callTimer" style="display:none">00:00</div>
-        <div class="call-actions">
-          <button class="call-btn mute" id="muteBtn" onclick="toggleMute()" style="display:none"><i
-              class="fas fa-microphone"></i></button>
-          <button class="call-btn call" id="startCallBtn" onclick="startCall()"><i class="fas fa-phone"></i></button>
-          <button class="call-btn hangup" id="hangupBtn" onclick="endCall()" style="display:none"><i
-              class="fas fa-phone-slash"></i></button>
-        </div>
-        <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:20px">
-          <div class="form-group"><label>Ghi chú</label><textarea id="callNote" class="form-control"
-              rows="2"></textarea></div>
-          <div class="form-group"><label>Kết quả</label><select id="callResult" class="form-control">
-              <option value="">--Chọn--</option>
-              <option value="answered">Đã nghe</option>
-              <option value="no_answer">Không nghe</option>
-              <option value="busy">Máy bận</option>
-              <option value="interested">Quan tâm</option>
-              <option value="callback">Gọi lại</option>
-            </select></div>
-          <button class="btn btn-primary btn-block" onclick="saveCallNote()"><i class="fas fa-save"></i> Lưu</button>
-          <div style="margin-top:15px"><label><i class="fas fa-history"></i> Lịch sử</label>
-            <div class="call-history" id="callHistory">
-              <p class="text-muted text-center">Chưa có</p>
-            </div>
-          </div>
-        </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeFormModal()">Hủy</button>
+        <button class="btn btn-primary" onclick="saveLead()"><i class="fas fa-save"></i> Lưu</button>
       </div>
     </div>
   </div>
@@ -544,33 +374,24 @@
   <div class="modal" id="scheduleModal">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title"><i class="fas fa-calendar-plus"></i> Đặt lịch trải nghiệm</div><button
-          class="modal-close" onclick="closeScheduleModal()">&times;</button>
+        <div class="modal-title"><i class="fas fa-calendar-plus"></i> Đặt lịch trải nghiệm</div>
+        <button class="modal-close" onclick="closeScheduleModal()">&times;</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="scheduleLeadId">
         <div id="scheduleLeadInfo"
           style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px"></div>
         <div class="form-row">
-          <div class="form-group">
-            <label class="required">Ngày</label>
-            <input type="date" id="scheduleDate" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label class="required">Giờ</label>
-            <input type="time" id="scheduleTime" class="form-control" required>
-          </div>
+          <div class="form-group"><label class="required">Ngày</label><input type="date" id="scheduleDate"
+              class="form-control" required></div>
+          <div class="form-group"><label class="required">Giờ</label><input type="time" id="scheduleTime"
+              class="form-control" required></div>
         </div>
-        <div class="form-group">
-          <label>Bộ môn</label>
-          <select id="scheduleSubject" class="form-control">
+        <div class="form-group"><label>Bộ môn</label><select id="scheduleSubject" class="form-control">
             <option value="">-- Chọn bộ môn --</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Ghi chú</label>
-          <textarea id="scheduleNote" class="form-control" rows="2"></textarea>
-        </div>
+          </select></div>
+        <div class="form-group"><label>Ghi chú</label><textarea id="scheduleNote" class="form-control"
+            rows="2"></textarea></div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeScheduleModal()">Hủy</button>
@@ -579,7 +400,7 @@
     </div>
   </div>
 
-  <!-- Convert Modal - Full Version -->
+  <!-- Convert Modal -->
   <div class="modal" id="convertModal">
     <div class="modal-content" style="max-width:900px">
       <div class="modal-header">
@@ -589,63 +410,47 @@
       <div class="modal-body" style="max-height:80vh;overflow-y:auto">
         <input type="hidden" id="convertLeadId">
 
-        <!-- PHẦN 1: THÔNG TIN HỌC SINH -->
+        <!-- Thông tin học sinh -->
         <div
           style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:12px;margin-bottom:20px">
           <h4 style="margin:0 0 12px 0;color:#1e40af"><i class="fas fa-child"></i> Thông tin Học sinh</h4>
           <div class="form-row">
-            <div class="form-group" style="flex:2">
-              <label class="required">Họ tên học sinh</label>
-              <input type="text" id="cvStudentName" class="form-control" placeholder="Nguyễn Văn A">
-            </div>
-            <div class="form-group">
-              <label>Năm sinh</label>
-              <input type="number" id="cvStudentBirthYear" class="form-control" placeholder="2015" min="2000"
-                max="2025">
-            </div>
+            <div class="form-group" style="flex:2"><label class="required">Họ tên học sinh</label><input type="text"
+                id="cvStudentName" class="form-control"></div>
+            <div class="form-group"><label>Năm sinh</label><input type="number" id="cvStudentBirthYear"
+                class="form-control" placeholder="2015"></div>
           </div>
           <div class="form-row">
-            <div class="form-group" style="flex:2">
-              <label>Địa chỉ</label>
-              <input type="text" id="cvStudentAddress" class="form-control" placeholder="Số nhà, đường, quận/huyện">
-            </div>
-            <div class="form-group">
-              <label>Trường học hiện tại</label>
-              <input type="text" id="cvStudentSchool" class="form-control" placeholder="THCS ABC">
-            </div>
+            <div class="form-group" style="flex:2"><label>Địa chỉ</label><input type="text" id="cvStudentAddress"
+                class="form-control"></div>
+            <div class="form-group"><label>Trường học</label><input type="text" id="cvStudentSchool"
+                class="form-control"></div>
           </div>
         </div>
 
-        <!-- PHẦN 2: THÔNG TIN PHỤ HUYNH -->
+        <!-- Thông tin phụ huynh -->
         <div
           style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:20px">
           <h4 style="margin:0 0 12px 0;color:#92400e"><i class="fas fa-users"></i> Thông tin Phụ huynh</h4>
           <div class="form-row">
-            <div class="form-group" style="flex:2">
-              <label class="required">Họ tên phụ huynh</label>
-              <input type="text" id="cvParentName" class="form-control" placeholder="Nguyễn Văn B">
-            </div>
-            <div class="form-group">
-              <label class="required">Số điện thoại</label>
-              <input type="tel" id="cvParentPhone" class="form-control" placeholder="0901234567">
-            </div>
+            <div class="form-group" style="flex:2"><label class="required">Họ tên PH</label><input type="text"
+                id="cvParentName" class="form-control"></div>
+            <div class="form-group"><label class="required">SĐT</label><input type="tel" id="cvParentPhone"
+                class="form-control"></div>
           </div>
-          <div class="form-group">
-            <label>Nghề nghiệp</label>
-            <input type="text" id="cvParentJob" class="form-control" placeholder="Kỹ sư, Giáo viên, Kinh doanh...">
+          <div class="form-group"><label>Nghề nghiệp</label><input type="text" id="cvParentJob" class="form-control">
           </div>
         </div>
 
-        <!-- PHẦN 3: THÔNG TIN KHÓA HỌC -->
+        <!-- Khóa học -->
         <div
           style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:20px">
           <h4 style="margin:0 0 12px 0;color:#166534"><i class="fas fa-book"></i> Thông tin Khóa học</h4>
-
           <div class="form-row">
             <div class="form-group" style="flex:2">
-              <label class="required">Gói học phí (Khóa học)</label>
+              <label class="required">Gói học phí</label>
               <select id="cvTuitionPackage" class="form-control" onchange="onPackageChange()">
-                <option value="">-- Chọn gói học phí --</option>
+                <option value="">-- Chọn gói --</option>
               </select>
             </div>
             <div class="form-group">
@@ -655,9 +460,9 @@
             </div>
           </div>
 
-          <!-- Chương trình giảm giá -->
+          <!-- Giảm giá -->
           <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
-            <label style="color:#16a34a;font-weight:600"><i class="fas fa-percent"></i> Chương trình giảm giá</label>
+            <label style="color:#16a34a;font-weight:600"><i class="fas fa-percent"></i> Giảm giá</label>
             <div class="form-row" style="margin-top:8px">
               <div class="form-group" style="flex:2;margin-bottom:0">
                 <select id="cvPromoProgram" class="form-control" onchange="applyPromoProgram()">
@@ -669,18 +474,16 @@
                   style="background:#dcfce7;color:#16a34a;font-weight:bold;text-align:right">
               </div>
             </div>
-            <div id="promoDiscountInfo" style="margin-top:8px;font-size:12px;color:#16a34a;display:none"></div>
           </div>
 
-          <!-- Học bổng tặng kèm -->
+          <!-- Học bổng -->
           <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
               <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng tặng
                 kèm</label>
               <span id="cvDefaultScholarshipBadge"
-                style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">
-                Mặc định: <strong id="cvDefaultScholarshipMonths">0</strong> tháng
-              </span>
+                style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">Mặc
+                định: <strong id="cvDefaultScholarshipMonths">0</strong> tháng</span>
             </div>
             <div class="form-row" style="align-items:center">
               <div class="form-group" style="margin-bottom:0;flex:1">
@@ -688,38 +491,22 @@
                   onchange="onScholarshipChange()" style="font-size:18px;font-weight:bold;text-align:center">
               </div>
               <span style="padding:0 12px;color:#6b7280">tháng</span>
-              <div class="form-group" style="margin-bottom:0;flex:2">
-                <small id="cvScholarshipStatus" style="color:#16a34a;display:none">
-                  <i class="fas fa-check-circle"></i> Trong mức mặc định
-                </small>
-              </div>
-            </div>
-            <div id="cvScholarshipWarning"
-              style="margin-top:8px;padding:8px;background:#fef3c7;border-radius:6px;color:#92400e;font-size:12px;display:none">
-              <i class="fas fa-exclamation-triangle"></i> Vượt mức mặc định, cần GDV duyệt
             </div>
           </div>
 
           <!-- Quà tặng -->
           <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
-            <label style="color:#db2777;font-weight:600"><i class="fas fa-gift"></i> Quà tặng kèm</label>
+            <label style="color:#db2777;font-weight:600"><i class="fas fa-gift"></i> Quà tặng</label>
             <div id="giftItemsContainer" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px"></div>
           </div>
 
           <!-- Tổng kết -->
           <div style="background:#1f2937;color:white;padding:16px;border-radius:8px;margin-top:12px">
             <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-              <span>Khóa học chính:</span>
-              <span id="cvMainCourseMonths">0 tháng</span>
+              <span>Khóa học chính:</span><span id="cvMainCourseMonths">0 tháng</span>
             </div>
             <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-              <span>Học bổng tặng:</span>
-              <span id="cvBonusMonths" style="color:#4ade80">+0 tháng</span>
-            </div>
-            <div
-              style="display:flex;justify-content:space-between;margin-bottom:12px;padding-top:8px;border-top:1px solid #374151">
-              <span><strong>Tổng thời gian học:</strong></span>
-              <span id="cvTotalMonths" style="font-size:18px;font-weight:bold;color:#4ade80">0 tháng</span>
+              <span>Học bổng tặng:</span><span id="cvBonusMonths" style="color:#4ade80">+0 tháng</span>
             </div>
             <div
               style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #374151">
@@ -729,7 +516,7 @@
           </div>
         </div>
 
-        <!-- PHẦN 4: THANH TOÁN -->
+        <!-- Thanh toán -->
         <div
           style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);padding:16px;border-radius:12px;margin-bottom:20px">
           <h4 style="margin:0 0 12px 0;color:#9d174d"><i class="fas fa-credit-card"></i> Thanh toán</h4>
@@ -745,12 +532,12 @@
             </div>
             <div class="form-group" id="depositGroup" style="display:none">
               <label>Tiền cọc</label>
-              <input type="text" id="cvDepositAmount" class="form-control currency-input" value="0đ"
+              <input type="text" id="cvDepositAmount" class="form-control" value="0đ"
                 oninput="formatCurrencyField(this);updateRemaining()">
             </div>
             <div class="form-group" id="paidGroup" style="display:none">
               <label>Đã thanh toán</label>
-              <input type="text" id="cvPaidAmount" class="form-control currency-input" value="0đ"
+              <input type="text" id="cvPaidAmount" class="form-control" value="0đ"
                 oninput="formatCurrencyField(this);updateRemaining()">
             </div>
           </div>
@@ -762,10 +549,7 @@
           </div>
         </div>
 
-        <!-- Ghi chú -->
-        <div class="form-group">
-          <label>Ghi chú</label>
-          <textarea id="cvNote" class="form-control" rows="2" placeholder="Ghi chú thêm..."></textarea>
+        <div class="form-group"><label>Ghi chú</label><textarea id="cvNote" class="form-control" rows="2"></textarea>
         </div>
       </div>
       <div class="modal-footer">
@@ -775,7 +559,7 @@
     </div>
   </div>
 
-  <!-- Conversion Success Modal with QR -->
+  <!-- Success Modal -->
   <div class="modal" id="convertSuccessModal">
     <div class="modal-content" style="max-width:500px">
       <div class="modal-header" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white">
@@ -792,20 +576,19 @@
           <p style="color:#6b7280;margin:4px 0" id="successStudentCode">Mã: ---</p>
         </div>
 
-        <!-- QR Section -->
         <div id="successQRSection" style="display:none">
           <div style="background:#f9fafb;padding:16px;border-radius:12px;margin-bottom:16px">
             <h4 style="margin:0 0 12px;color:#1f2937"><i class="fas fa-qrcode"></i> QR Thanh toán</h4>
             <img id="successQRImage" src="" alt="QR Code" style="max-width:200px;border-radius:8px">
           </div>
 
-          <div id="successPaymentInfo" style="margin-bottom:16px">
+          <div style="margin-bottom:16px">
             <div style="background:#dcfce7;padding:12px;border-radius:8px;margin-bottom:8px">
               <div style="color:#166534;font-size:13px">Đã đóng</div>
               <div style="color:#15803d;font-size:20px;font-weight:700" id="successPaidAmount">0đ</div>
             </div>
-            <div style="background:#fee2e2;padding:12px;border-radius:8px" id="successRemainingBox">
-              <div style="color:#991b1b;font-size:13px">Còn phải đóng</div>
+            <div style="background:#fee2e2;padding:12px;border-radius:8px">
+              <div style="color:#991b1b;font-size:13px" id="successRemainingLabel">PH cần chuyển khoản</div>
               <div style="color:#dc2626;font-size:20px;font-weight:700" id="successRemainingAmount">0đ</div>
             </div>
           </div>
@@ -815,30 +598,26 @@
             <div style="font-weight:600;color:#1f2937" id="successPaymentDesc">---</div>
           </div>
 
-          <!-- Confirm Payment Button -->
           <button class="btn btn-success" onclick="confirmPaymentReceived()"
             style="width:100%;padding:12px;font-size:16px">
             <i class="fas fa-check-double"></i> Xác nhận đã nhận thanh toán
           </button>
-          <p style="color:#6b7280;font-size:12px;margin-top:8px">Bấm nút này sau khi đã nhận được tiền chuyển khoản</p>
         </div>
 
-        <!-- Full paid message -->
         <div id="successFullPaidSection" style="display:none;padding:20px">
           <i class="fas fa-check-double" style="font-size:48px;color:#22c55e;margin-bottom:12px"></i>
           <p style="color:#166534;font-weight:600">Đã thanh toán đầy đủ!</p>
         </div>
       </div>
       <div class="modal-footer" style="justify-content:center;gap:12px">
-        <button class="btn btn-primary" onclick="downloadEnrollmentFormFromSuccess()">
-          <i class="fas fa-file-word"></i> Xuất đơn nhập học
-        </button>
+        <button class="btn btn-primary" onclick="downloadEnrollmentForm()"><i class="fas fa-file-word"></i> Xuất đơn
+          nhập học</button>
         <button class="btn btn-secondary" onclick="closeConvertSuccessModal()">Đóng</button>
       </div>
     </div>
   </div>
 
-  <!-- Payment Update Modal -->
+  <!-- Payment Modal -->
   <div class="modal" id="paymentModal">
     <div class="modal-content" style="max-width:500px">
       <div class="modal-header" style="background:linear-gradient(135deg,#3b82f6,#2563eb);color:white">
@@ -850,21 +629,17 @@
         <input type="hidden" id="paymentStudentId">
         <input type="hidden" id="paymentRemainingRaw" value="0">
 
-        <!-- Lead Info -->
-        <div id="paymentLeadInfo"
-          style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px;text-align:center">
+        <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px;text-align:center">
           <div style="font-weight:600;font-size:16px" id="paymentStudentName">---</div>
           <div style="color:#6b7280;font-size:13px" id="paymentStudentCode">Mã: ---</div>
         </div>
 
-        <!-- QR Section -->
         <div style="text-align:center;margin-bottom:16px">
           <div style="background:#f9fafb;padding:16px;border-radius:12px">
             <img id="paymentQRImage" src="" alt="QR Code" style="max-width:220px;border-radius:8px">
           </div>
         </div>
 
-        <!-- Payment Info -->
         <div class="form-row" style="margin-bottom:12px">
           <div class="form-group" style="flex:1">
             <div style="background:#dcfce7;padding:12px;border-radius:8px;text-align:center">
@@ -880,22 +655,59 @@
           </div>
         </div>
 
-        <!-- Transfer Info -->
         <div style="background:#f3f4f6;padding:12px;border-radius:8px;text-align:center;margin-bottom:16px">
           <div style="font-size:12px;color:#6b7280">Nội dung chuyển khoản:</div>
           <div style="font-weight:600;color:#1f2937" id="paymentTransferDesc">---</div>
         </div>
 
-        <!-- Confirm Button -->
         <button class="btn btn-success" onclick="confirmLeadPayment()" style="width:100%;padding:12px;font-size:16px"
           id="btnConfirmLeadPayment">
           <i class="fas fa-check-double"></i> Xác nhận đã nhận thanh toán
         </button>
-        <p style="color:#6b7280;font-size:12px;margin-top:8px;text-align:center">Bấm nút này sau khi đã nhận được tiền
-          chuyển khoản</p>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closePaymentModal()">Đóng</button>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closePaymentModal()">Đóng</button></div>
+    </div>
+  </div>
+
+  <!-- Call Modal -->
+  <div class="modal" id="callModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-phone"></i> Cuộc gọi</div>
+        <button class="modal-close" onclick="closeCallModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="callLeadId">
+        <div class="call-avatar" id="callAvatar">N</div>
+        <div class="call-name" id="callName">Tên</div>
+        <div class="call-phone" id="callPhone">0901234567</div>
+        <div class="call-status" id="callStatus">Sẵn sàng</div>
+        <div class="call-timer" id="callTimer" style="display:none">00:00</div>
+        <div class="call-actions">
+          <button class="call-btn call" id="startCallBtn" onclick="startCall()"><i class="fas fa-phone"></i></button>
+          <button class="call-btn hangup" id="hangupBtn" onclick="endCall()" style="display:none"><i
+              class="fas fa-phone-slash"></i></button>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:20px">
+          <div class="form-group"><label>Ghi chú</label><textarea id="callNote" class="form-control"
+              rows="2"></textarea></div>
+          <div class="form-group"><label>Kết quả</label>
+            <select id="callResult" class="form-control">
+              <option value="">--Chọn--</option>
+              <option value="answered">Đã nghe</option>
+              <option value="no_answer">Không nghe</option>
+              <option value="busy">Máy bận</option>
+              <option value="interested">Quan tâm</option>
+              <option value="callback">Gọi lại</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="saveCallNote()"><i class="fas fa-save"></i> Lưu</button>
+          <div style="margin-top:15px"><label><i class="fas fa-history"></i> Lịch sử</label>
+            <div class="call-history" id="callHistory">
+              <p class="text-muted text-center">Chưa có</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -904,56 +716,43 @@
   <script src="../js/app.js"></script>
   <script src="../js/sidebar.js"></script>
   <script>
-    let leads = [], currentStatus = '', currentView = 'table', importData = [], canDelete = false;
-    const statusCfg = { new: { label: 'Mới' }, scheduled: { label: 'Đã hẹn' }, attended: { label: 'Đã TN' }, converted: { label: 'Chuyển đổi' }, cancelled: { label: 'Lỗi' } };
+    let leads = [], currentStatus = '', currentView = 'table', canDelete = false;
+    const statusCfg = { new: { label: 'Mới' }, scheduled: { label: 'Đã hẹn' }, attended: { label: 'Đã TN' }, waiting: { label: 'Chờ xử lý' }, converted: { label: 'Chuyển đổi' }, cancelled: { label: 'Lỗi' } };
+
+    // Payment config - sẽ được load từ API
+    let paymentCfg = { bank_code: '970422', account_no: '0866766189', qr_template: 'compact2' };
+
+    function getQRUrl(amount, description) {
+      const desc = encodeURIComponent(description || 'Thanh toan');
+      return 'https://img.vietqr.io/image/' + paymentCfg.bank_code + '-' + paymentCfg.account_no + '-' + paymentCfg.qr_template + '.png?amount=' + amount + '&addInfo=' + desc;
+    }
+
+    async function loadPaymentConfig() {
+      try {
+        const res = await api.get('/settings/payment');
+        if (res.data && res.data.account_no) {
+          paymentCfg = {
+            bank_code: res.data.bank_code || '970422',
+            account_no: res.data.account_no,
+            qr_template: res.data.qr_template || 'compact2'
+          };
+        }
+      } catch (e) { console.log('Using default payment config'); }
+    }
 
     async function init() {
       if (!auth.checkAuth()) return;
       buildSidebar('sidebar');
-
-      // Phân quyền
       const user = auth.user;
-      const canImport = ['ADMIN', 'HOEC', 'OM'].includes(user?.role_name);
-      const canAssign = ['ADMIN', 'HOEC', 'OM'].includes(user?.role_name);
-      canDelete = ['ADMIN', 'HOEC', 'OM'].includes(user?.role_name);
-      if (canImport) document.getElementById('btnImport').style.display = 'inline-flex';
-      if (canAssign) {
-        document.getElementById('assignEcRow').style.display = 'flex';
-        await loadEcList();
-      }
-
+      canDelete = ['ADMIN', 'HOEC', 'OM'].includes(user?.role_name?.toUpperCase());
+      await loadPaymentConfig();
       await loadSubjects();
-      await loadClasses();
       await loadStats();
       await loadData();
     }
 
-    let ecList = [];
-    async function loadEcList() {
-      try {
-        const res = await api.get('/users?role=EC');
-        ecList = res.data || [];
-        var sel = document.getElementById('assignedEcId');
-        sel.innerHTML = '<option value="">-- Tự động (người tạo) --</option>' +
-          ecList.map(function (ec) { return '<option value="' + ec.id + '">' + escapeHtml(ec.full_name) + '</option>'; }).join('');
-      } catch (e) { console.error(e); }
-    }
-
     let subjects = [];
-    async function loadSubjects() {
-      try {
-        const res = await api.get('/common/subjects');
-        subjects = res.data || [];
-      } catch (e) { console.error(e); }
-    }
-
-    let classes = [];
-    async function loadClasses() {
-      try {
-        const res = await api.get('/classes');
-        classes = (res.data || []).filter(c => c.status === 'active');
-      } catch (e) { console.error(e); }
-    }
+    async function loadSubjects() { try { const res = await api.get('/common/subjects'); subjects = res.data || []; } catch (e) { console.error(e); } }
 
     async function loadStats() {
       try {
@@ -961,9 +760,15 @@
         const s = res.data || {};
         document.getElementById('statTotal').textContent = s.total || 0;
         document.getElementById('statScheduled').textContent = s.scheduled || 0;
-        document.getElementById('statAttended').textContent = s.attended || 0;
+        document.getElementById('statAttended').textContent = (s.attended || 0) + (s.waiting || 0);
         document.getElementById('statConverted').textContent = s.converted || 0;
-        document.getElementById('statusTabs').innerHTML = '<div class="status-tab ' + (!currentStatus ? 'active' : '') + '" onclick="filterStatus(\'\')">Tất cả<span class="count">' + (s.total || 0) + '</span></div><div class="status-tab ' + (currentStatus === 'new' ? 'active' : '') + '" onclick="filterStatus(\'new\')">Mới<span class="count">' + (s.new || 0) + '</span></div><div class="status-tab ' + (currentStatus === 'scheduled' ? 'active' : '') + '" onclick="filterStatus(\'scheduled\')">Đã hẹn<span class="count">' + (s.scheduled || 0) + '</span></div><div class="status-tab ' + (currentStatus === 'attended' ? 'active' : '') + '" onclick="filterStatus(\'attended\')">Đã TN<span class="count">' + (s.attended || 0) + '</span></div><div class="status-tab ' + (currentStatus === 'converted' ? 'active' : '') + '" onclick="filterStatus(\'converted\')">Chuyển đổi<span class="count">' + (s.converted || 0) + '</span></div><div class="status-tab ' + (currentStatus === 'cancelled' ? 'active' : '') + '" onclick="filterStatus(\'cancelled\')" style="color:#ef4444">Lỗi<span class="count">' + (s.cancelled || 0) + '</span></div>';
+        document.getElementById('statusTabs').innerHTML =
+          '<div class="status-tab ' + (!currentStatus ? 'active' : '') + '" onclick="filterStatus(\'\')">Tất cả<span class="count">' + (s.total || 0) + '</span></div>' +
+          '<div class="status-tab ' + (currentStatus === 'new' ? 'active' : '') + '" onclick="filterStatus(\'new\')">Mới<span class="count">' + (s.new || 0) + '</span></div>' +
+          '<div class="status-tab ' + (currentStatus === 'scheduled' ? 'active' : '') + '" onclick="filterStatus(\'scheduled\')">Đã hẹn<span class="count">' + (s.scheduled || 0) + '</span></div>' +
+          '<div class="status-tab ' + (currentStatus === 'waiting' ? 'active' : '') + '" onclick="filterStatus(\'waiting\')">Chờ xử lý<span class="count">' + (s.waiting || 0) + '</span></div>' +
+          '<div class="status-tab ' + (currentStatus === 'converted' ? 'active' : '') + '" onclick="filterStatus(\'converted\')">Chuyển đổi<span class="count">' + (s.converted || 0) + '</span></div>' +
+          '<div class="status-tab ' + (currentStatus === 'cancelled' ? 'active' : '') + '" onclick="filterStatus(\'cancelled\')">Lỗi<span class="count">' + (s.cancelled || 0) + '</span></div>';
       } catch (e) { console.error(e); }
     }
 
@@ -983,11 +788,12 @@
 
     function filterStatus(s) { currentStatus = s; loadStats(); loadData(); }
     function setView(v) { currentView = v; document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active')); document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.add('active'); document.getElementById('tableView').style.display = v === 'table' ? 'block' : 'none'; document.getElementById('cardView').style.display = v === 'card' ? 'block' : 'none'; }
-
-    function escapeHtml(str) { return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+    function escapeHtml(str) { return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
     function getActionButtons(l) {
-      var btns = '';
+      let btns = '';
+      const sessionsAttended = parseInt(l.trial_sessions_attended) || 0;
+      const sessionsMax = parseInt(l.trial_sessions_max) || 3;
       switch (l.status) {
         case 'new':
           btns = '<button class="btn btn-sm btn-success" onclick="openScheduleModal(' + l.id + ')" title="Đặt lịch TN"><i class="fas fa-calendar-plus"></i></button> ';
@@ -996,20 +802,26 @@
         case 'scheduled':
           btns = '<button class="btn btn-sm btn-success" onclick="markAttended(' + l.id + ')" title="Đã đến"><i class="fas fa-check"></i></button> ';
           btns += '<button class="btn btn-sm btn-warning" onclick="markNoShow(' + l.id + ')" title="Không đến"><i class="fas fa-times"></i></button> ';
-          btns += '<button class="btn btn-sm btn-secondary" onclick="markCancelled(' + l.id + ')" title="Đánh dấu lỗi"><i class="fas fa-ban"></i></button> ';
           break;
         case 'attended':
-          btns = '<button class="btn btn-sm btn-purple" onclick="openScheduleModal(' + l.id + ')" title="Đặt buổi tiếp"><i class="fas fa-calendar-plus"></i></button> ';
+        case 'waiting':
+          btns = '<span class="badge" style="background:#8b5cf6;color:#fff;margin-right:6px">B' + sessionsAttended + '/' + sessionsMax + '</span> ';
+          if (sessionsAttended < sessionsMax) btns += '<button class="btn btn-sm btn-purple" onclick="openScheduleModal(' + l.id + ')" title="Đặt buổi tiếp"><i class="fas fa-calendar-plus"></i></button> ';
           btns += '<button class="btn btn-sm btn-success" onclick="openConvertModal(' + l.id + ')" title="Chuyển đổi"><i class="fas fa-user-graduate"></i></button> ';
-          btns += '<button class="btn btn-sm btn-secondary" onclick="markCancelled(' + l.id + ')" title="Đánh dấu lỗi"><i class="fas fa-ban"></i></button> ';
           break;
         case 'converted':
-          // Chỉ hiện nút cập nhật thanh toán nếu còn nợ (actual_revenue < fee_total)
-          var remaining = (parseFloat(l.fee_total) || 0) - (parseFloat(l.actual_revenue) || 0);
-          if (remaining > 0) {
-            btns = '<button class="btn btn-sm btn-warning" onclick="openPaymentModal(' + l.id + ')" title="Đóng nốt ' + formatCurrency(remaining) + '"><i class="fas fa-dollar-sign"></i></button> ';
+          const feeTotal = parseFloat(l.fee_total) || 0;
+          const actualRevenue = parseFloat(l.actual_revenue) || 0;
+          const remaining = feeTotal - actualRevenue;
+          if (remaining <= 0) {
+            btns = '<span class="badge" style="background:#22c55e;color:#fff"><i class="fas fa-check-double"></i> Đã TT đủ</span> ';
+          } else if (actualRevenue > 0) {
+            btns = '<span class="badge" style="background:#f59e0b;color:#fff"><i class="fas fa-clock"></i> Còn nợ</span> ';
+            btns += '<button class="btn btn-sm btn-warning" onclick="openPaymentModal(' + l.id + ')" title="Thu nợ"><i class="fas fa-dollar-sign"></i></button> ';
+          } else {
+            btns = '<span class="badge" style="background:#ef4444;color:#fff"><i class="fas fa-exclamation"></i> Chưa TT</span> ';
+            btns += '<button class="btn btn-sm btn-danger" onclick="openPaymentModal(' + l.id + ')" title="Thu tiền"><i class="fas fa-dollar-sign"></i></button> ';
           }
-          btns += '<span class="text-success"><i class="fas fa-check-circle"></i></span> ';
           break;
         case 'cancelled':
           btns = '<span class="text-danger"><i class="fas fa-ban"></i> Lỗi</span> ';
@@ -1023,26 +835,18 @@
     function renderTable() {
       const tb = document.getElementById('leadsTableBody');
       if (!leads.length) { tb.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có lead</td></tr>'; return; }
-      tb.innerHTML = leads.map(l => {
-        var name = escapeHtml(l.customer_name);
-        var phone = escapeHtml(l.customer_phone);
-        return '<tr><td><code>' + (l.code || '-') + '</code></td><td><strong>' + escapeHtml(l.student_name) + '</strong></td><td>' + name + '</td><td><a href="javascript:void(0)" class="phone-link" onclick="openCallModal(' + l.id + ',\'' + name + '\',\'' + phone + '\')"><i class="fas fa-phone"></i> ' + phone + '</a></td><td>' + (l.source || '-') + '</td><td><span class="status-badge ' + l.status + '">' + ((statusCfg[l.status] || {}).label || l.status) + '</span></td><td>' + formatDate(l.created_at) + '</td><td class="text-center">' + getActionButtons(l) + '</td></tr>';
-      }).join('');
+      tb.innerHTML = leads.map(l => '<tr><td><code>' + (l.code || '-') + '</code></td><td><strong>' + escapeHtml(l.student_name) + '</strong></td><td>' + escapeHtml(l.customer_name) + '</td><td><a href="javascript:void(0)" class="phone-link" onclick="openCallModal(' + l.id + ',\'' + escapeHtml(l.customer_name) + '\',\'' + l.customer_phone + '\')"><i class="fas fa-phone"></i> ' + l.customer_phone + '</a></td><td>' + (l.source || '-') + '</td><td><span class="status-badge ' + l.status + '">' + (statusCfg[l.status]?.label || l.status) + '</span></td><td>' + formatDate(l.created_at) + '</td><td class="text-center">' + getActionButtons(l) + '</td></tr>').join('');
     }
 
     function renderCards() {
       const c = document.getElementById('leadsGrid');
       if (!leads.length) { c.innerHTML = '<p class="text-muted">Chưa có lead</p>'; return; }
-      c.innerHTML = leads.map(l => {
-        var name = escapeHtml(l.customer_name);
-        var phone = escapeHtml(l.customer_phone);
-        return '<div class="lead-card"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><strong>' + escapeHtml(l.student_name) + '</strong><span class="status-badge ' + l.status + '">' + ((statusCfg[l.status] || {}).label || l.status) + '</span></div><div style="font-size:13px;color:var(--text-secondary)"><div><i class="fas fa-user"></i> ' + name + '</div><div><i class="fas fa-phone"></i> <a href="javascript:void(0)" class="phone-link" onclick="event.stopPropagation();openCallModal(' + l.id + ',\'' + name + '\',\'' + phone + '\')">' + phone + '</a></div></div><div style="margin-top:10px;display:flex;gap:6px">' + getActionButtons(l) + '</div></div>';
-      }).join('');
+      c.innerHTML = leads.map(l => '<div class="lead-card"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><strong>' + escapeHtml(l.student_name) + '</strong><span class="status-badge ' + l.status + '">' + (statusCfg[l.status]?.label || l.status) + '</span></div><div style="font-size:13px;color:var(--text-secondary)"><div><i class="fas fa-user"></i> ' + escapeHtml(l.customer_name) + '</div><div><i class="fas fa-phone"></i> ' + l.customer_phone + '</div></div><div style="margin-top:10px;display:flex;gap:6px">' + getActionButtons(l) + '</div></div>').join('');
     }
 
+    // Form Modal
     function openCreateModal() { document.getElementById('leadId').value = ''; document.getElementById('leadForm').reset(); document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Thêm Lead'; document.getElementById('formModal').classList.add('show'); }
     function closeFormModal() { document.getElementById('formModal').classList.remove('show'); }
-
     async function editLead(id) {
       try {
         const res = await api.get('/leads/' + id);
@@ -1060,149 +864,80 @@
         document.getElementById('formModal').classList.add('show');
       } catch (e) { ui.error(e.message); }
     }
-
     async function saveLead() {
       const f = document.getElementById('leadForm');
       const id = document.getElementById('leadId').value;
-      const assignedEc = document.getElementById('assignedEcId')?.value;
-      const data = {
-        studentName: f.studentName.value,
-        studentBirthYear: f.birthYear.value || null,
-        customerName: f.customerName.value,
-        customerPhone: f.customerPhone.value,
-        customerEmail: f.customerEmail.value || null,
-        source: f.source.value,
-        note: f.note.value || null
-      };
-      // Nếu manager giao cho EC khác
-      if (assignedEc) data.saleId = parseInt(assignedEc);
-
+      const data = { studentName: f.studentName.value, studentBirthYear: f.birthYear.value || null, customerName: f.customerName.value, customerPhone: f.customerPhone.value, customerEmail: f.customerEmail.value || null, source: f.source.value, note: f.note.value || null };
       try {
         if (id) { await api.put('/leads/' + id, data); ui.success('Cập nhật thành công'); }
         else { await api.post('/leads', data); ui.success('Thêm thành công'); }
         closeFormModal(); loadStats(); loadData();
       } catch (e) { ui.error(e.message); }
     }
-
     async function deleteLead(id) { if (!confirm('Xóa lead này?')) return; try { await api.delete('/leads/' + id); ui.success('Đã xóa'); loadStats(); loadData(); } catch (e) { ui.error(e.message); } }
 
-    // ========== SCHEDULE FUNCTIONS ==========
-    var currentScheduleLead = null;
-
+    // Schedule Modal
+    let currentScheduleLead = null;
     async function openScheduleModal(id) {
       try {
         const res = await api.get('/leads/' + id);
         currentScheduleLead = res.data;
         document.getElementById('scheduleLeadId').value = id;
         document.getElementById('scheduleLeadInfo').innerHTML = '<strong>' + escapeHtml(currentScheduleLead.student_name) + '</strong><br><small>' + escapeHtml(currentScheduleLead.customer_name) + ' - ' + currentScheduleLead.customer_phone + '</small>';
-
-        // Populate subjects
-        var subjectSelect = document.getElementById('scheduleSubject');
-        subjectSelect.innerHTML = '<option value="">-- Chọn bộ môn --</option>' + subjects.map(function (s) { return '<option value="' + s.id + '">' + escapeHtml(s.name) + '</option>'; }).join('');
-
-        // Set default date to tomorrow
-        var tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('scheduleSubject').innerHTML = '<option value="">-- Chọn bộ môn --</option>' + subjects.map(s => '<option value="' + s.id + '">' + escapeHtml(s.name) + '</option>').join('');
+        const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
         document.getElementById('scheduleDate').value = tomorrow.toISOString().split('T')[0];
         document.getElementById('scheduleTime').value = '09:00';
         document.getElementById('scheduleSubject').value = currentScheduleLead.subject_id || '';
         document.getElementById('scheduleNote').value = '';
-
         document.getElementById('scheduleModal').classList.add('show');
       } catch (e) { ui.error(e.message); }
     }
-
     function closeScheduleModal() { document.getElementById('scheduleModal').classList.remove('show'); }
-
     async function saveSchedule() {
-      var id = document.getElementById('scheduleLeadId').value;
-      var date = document.getElementById('scheduleDate').value;
-      var time = document.getElementById('scheduleTime').value;
-      var subject = document.getElementById('scheduleSubject').value;
-      var note = document.getElementById('scheduleNote').value;
-
+      const id = document.getElementById('scheduleLeadId').value;
+      const date = document.getElementById('scheduleDate').value;
+      const time = document.getElementById('scheduleTime').value;
       if (!date || !time) { ui.warning('Vui lòng chọn ngày và giờ'); return; }
-
       try {
-        await api.post('/leads/' + id + '/schedule', {
-          scheduledDate: date,
-          scheduledTime: time,
-          subjectId: subject || null,
-          note: note || null
-        });
+        await api.post('/leads/' + id + '/schedule', { scheduledDate: date, scheduledTime: time, subjectId: document.getElementById('scheduleSubject').value || null, note: document.getElementById('scheduleNote').value || null });
         ui.success('Đã đặt lịch trải nghiệm');
-        closeScheduleModal();
-        loadStats(); loadData();
+        closeScheduleModal(); loadStats(); loadData();
       } catch (e) { ui.error(e.message); }
     }
 
-    // ========== MARK ATTENDED / NO-SHOW ==========
-    async function markAttended(id) {
-      if (!confirm('Xác nhận học sinh đã đến?')) return;
-      try {
-        await api.post('/leads/' + id + '/attended');
-        ui.success('Đã cập nhật');
-        loadStats(); loadData();
-      } catch (e) { ui.error(e.message); }
-    }
+    // Mark status
+    async function markAttended(id) { if (!confirm('Xác nhận học sinh đã đến?')) return; try { await api.post('/leads/' + id + '/attended'); ui.success('Đã cập nhật'); loadStats(); loadData(); } catch (e) { ui.error(e.message); } }
+    async function markNoShow(id) { if (!confirm('Xác nhận học sinh không đến?')) return; try { await api.post('/leads/' + id + '/no-show'); ui.success('Đã cập nhật'); loadStats(); loadData(); } catch (e) { ui.error(e.message); } }
+    async function markCancelled(id) { const reason = prompt('Lý do:'); if (reason === null) return; try { await api.put('/leads/' + id, { status: 'cancelled', note: reason || 'Lỗi' }); ui.success('Đã cập nhật'); loadStats(); loadData(); } catch (e) { ui.error(e.message); } }
 
-    async function markNoShow(id) {
-      if (!confirm('Xác nhận học sinh không đến?')) return;
-      try {
-        await api.post('/leads/' + id + '/no-show');
-        ui.success('Đã cập nhật');
-        loadStats(); loadData();
-      } catch (e) { ui.error(e.message); }
-    }
+    // Convert Modal
+    let currentConvertLead = null, promoData = { programs: [], items: [] }, packagesData = [], selectedPackage = null, defaultScholarshipMonths = 0;
 
-    async function markCancelled(id) {
-      var reason = prompt('Lý do đánh dấu lỗi (SĐT sai, không liên lạc được, spam...):');
-      if (reason === null) return;
-      try {
-        await api.put('/leads/' + id, { status: 'cancelled', note: reason || 'Đánh dấu lỗi' });
-        ui.success('Đã đánh dấu lỗi');
-        loadStats(); loadData();
-      } catch (e) { ui.error(e.message); }
+    function formatCurrency(v) { return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ'; }
+    function parseCurrency(str) { return parseInt(String(str).replace(/[^\d]/g, '')) || 0; }
+    function formatCurrencyField(input) {
+      const rawValue = parseCurrency(input.value);
+      input.value = rawValue > 0 ? formatCurrency(rawValue) : '0đ';
+      input.dataset.rawValue = rawValue;
     }
-
-    // ========== CONVERT FUNCTIONS ==========
-    var currentConvertLead = null;
-    var promoData = { programs: [], items: [] };
-    var packagesData = [];
-    var selectedPackage = null;
-    var defaultScholarshipMonths = 0;
 
     function calcFeeTotal() {
-      var orig = parseCurrency(document.getElementById('cvFeeOriginal').value);
-      var promoDisc = parseCurrency(document.getElementById('cvPromoDiscount').value);
-      var total = Math.max(0, orig - promoDisc);
+      const orig = parseCurrency(document.getElementById('cvFeeOriginal').value);
+      const promoDisc = parseCurrency(document.getElementById('cvPromoDiscount').value);
+      const total = Math.max(0, orig - promoDisc);
       document.getElementById('cvFeeTotal').textContent = formatCurrency(total);
       document.getElementById('cvFeeTotal').dataset.rawValue = total;
       updateRemaining();
     }
 
     function updatePaymentFields() {
-      var status = document.getElementById('cvPaymentStatus').value;
-      var depositGroup = document.getElementById('depositGroup');
-      var paidGroup = document.getElementById('paidGroup');
-      var remainingRow = document.getElementById('remainingRow');
-
-      if (status === 'pending') {
-        depositGroup.style.display = 'none';
-        paidGroup.style.display = 'none';
-        remainingRow.style.display = 'none';
-      } else if (status === 'deposit') {
-        depositGroup.style.display = 'block';
-        paidGroup.style.display = 'none';
-        remainingRow.style.display = 'block';
-      } else {
-        depositGroup.style.display = 'block';
-        paidGroup.style.display = 'block';
-        remainingRow.style.display = 'block';
-      }
-
+      const status = document.getElementById('cvPaymentStatus').value;
+      document.getElementById('depositGroup').style.display = status === 'pending' ? 'none' : 'block';
+      document.getElementById('paidGroup').style.display = (status === 'partial' || status === 'paid') ? 'block' : 'none';
+      document.getElementById('remainingRow').style.display = status === 'pending' ? 'none' : 'block';
       if (status === 'paid') {
-        var total = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
+        const total = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
         document.getElementById('cvPaidAmount').value = formatCurrency(total);
         document.getElementById('cvPaidAmount').dataset.rawValue = total;
         document.getElementById('cvDepositAmount').value = '0đ';
@@ -1212,30 +947,24 @@
     }
 
     function updateRemaining() {
-      var total = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
-      var deposit = parseCurrency(document.getElementById('cvDepositAmount').value);
-      var paid = parseCurrency(document.getElementById('cvPaidAmount').value);
-      var remaining = total - deposit - paid;
-      document.getElementById('cvRemaining').textContent = formatCurrency(Math.max(0, remaining));
+      const total = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
+      const deposit = parseCurrency(document.getElementById('cvDepositAmount').value);
+      const paid = parseCurrency(document.getElementById('cvPaidAmount').value);
+      document.getElementById('cvRemaining').textContent = formatCurrency(Math.max(0, total - deposit - paid));
     }
 
     function onPackageChange() {
-      var select = document.getElementById('cvTuitionPackage');
-      var packageId = select.value;
-      selectedPackage = packagesData.find(function (p) { return p.id == packageId; });
-
+      const packageId = document.getElementById('cvTuitionPackage').value;
+      selectedPackage = packagesData.find(p => p.id == packageId);
       if (selectedPackage) {
         document.getElementById('cvFeeOriginal').value = formatCurrency(selectedPackage.price);
         document.getElementById('cvFeeOriginal').dataset.rawValue = selectedPackage.price;
         document.getElementById('cvMainCourseMonths').textContent = selectedPackage.months + ' tháng';
         document.getElementById('cvMainCourseMonths').dataset.months = selectedPackage.months;
-
-        // Set default scholarship based on package
         defaultScholarshipMonths = selectedPackage.default_scholarship_months || 0;
         document.getElementById('cvDefaultScholarshipMonths').textContent = defaultScholarshipMonths;
         document.getElementById('cvDefaultScholarshipBadge').style.display = 'inline-block';
         document.getElementById('cvScholarshipMonths').value = defaultScholarshipMonths;
-        onScholarshipChange();
       } else {
         document.getElementById('cvFeeOriginal').value = '0đ';
         document.getElementById('cvFeeOriginal').dataset.rawValue = 0;
@@ -1244,499 +973,235 @@
         defaultScholarshipMonths = 0;
         document.getElementById('cvDefaultScholarshipBadge').style.display = 'none';
         document.getElementById('cvScholarshipMonths').value = 0;
-        onScholarshipChange();
       }
-
       applyPromoProgram();
-      updateTotalMonths();
+      onScholarshipChange();
     }
 
     function onScholarshipChange() {
-      var scholarshipMonths = parseInt(document.getElementById('cvScholarshipMonths').value) || 0;
-      var statusEl = document.getElementById('cvScholarshipStatus');
-      var warningEl = document.getElementById('cvScholarshipWarning');
-
-      if (scholarshipMonths <= defaultScholarshipMonths) {
-        // Within default - no approval needed
-        statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Trong mức mặc định - Không cần duyệt';
-        statusEl.style.color = '#16a34a';
-        statusEl.style.display = 'block';
-        warningEl.style.display = 'none';
-      } else {
-        // Exceeds default - needs approval
-        statusEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Vượt ' + (scholarshipMonths - defaultScholarshipMonths) + ' tháng';
-        statusEl.style.color = '#d97706';
-        statusEl.style.display = 'block';
-        warningEl.style.display = 'block';
-      }
-
-      updateTotalMonths();
-    }
-
-    function updateTotalMonths() {
-      var mainMonths = parseInt(document.getElementById('cvMainCourseMonths').dataset.months) || 0;
-      var bonusMonths = parseInt(document.getElementById('cvScholarshipMonths').value) || 0;
-      var total = mainMonths + bonusMonths;
-
+      const bonusMonths = parseInt(document.getElementById('cvScholarshipMonths').value) || 0;
+      const mainMonths = parseInt(document.getElementById('cvMainCourseMonths').dataset.months) || 0;
       document.getElementById('cvBonusMonths').textContent = '+' + bonusMonths + ' tháng';
-      document.getElementById('cvTotalMonths').textContent = total + ' tháng';
     }
 
     function applyPromoProgram() {
-      var select = document.getElementById('cvPromoProgram');
-      var programId = select.value;
-      var infoDiv = document.getElementById('promoDiscountInfo');
-
+      const programId = document.getElementById('cvPromoProgram').value;
       if (!programId) {
         document.getElementById('cvPromoDiscount').value = '0đ';
         document.getElementById('cvPromoDiscount').dataset.rawValue = 0;
-        infoDiv.style.display = 'none';
         calcFeeTotal();
         return;
       }
-
-      var program = promoData.programs.find(function (p) { return p.id == programId; });
+      const program = promoData.programs.find(p => p.id == programId);
       if (!program) return;
-
-      var orig = parseCurrency(document.getElementById('cvFeeOriginal').value);
-      var discount = 0;
-
+      const orig = parseCurrency(document.getElementById('cvFeeOriginal').value);
+      let discount = 0;
       if (program.discount_type === 'percent') {
         discount = Math.round(orig * program.discount_value / 100);
-        if (program.max_discount && discount > program.max_discount) {
-          discount = program.max_discount;
-        }
-        infoDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + escapeHtml(program.name) + ' (-' + program.discount_value + '%)';
+        if (program.max_discount && discount > program.max_discount) discount = program.max_discount;
       } else {
         discount = program.discount_value;
-        infoDiv.innerHTML = '<i class="fas fa-check-circle"></i> ' + escapeHtml(program.name) + ' (-' + formatCurrency(discount) + ')';
       }
-
       document.getElementById('cvPromoDiscount').value = formatCurrency(discount);
       document.getElementById('cvPromoDiscount').dataset.rawValue = discount;
-      infoDiv.style.display = 'block';
       calcFeeTotal();
     }
 
     async function openConvertModal(id) {
       try {
-        // Load lead data
         const res = await api.get('/leads/' + id);
         currentConvertLead = res.data;
         document.getElementById('convertLeadId').value = id;
-
-        // Fill student info from lead
         document.getElementById('cvStudentName').value = currentConvertLead.student_name || '';
         document.getElementById('cvStudentBirthYear').value = currentConvertLead.birth_year || '';
-        document.getElementById('cvStudentAddress').value = currentConvertLead.address || '';
-        document.getElementById('cvStudentSchool').value = currentConvertLead.school || '';
-
-        // Fill parent info
+        document.getElementById('cvStudentAddress').value = '';
+        document.getElementById('cvStudentSchool').value = '';
         document.getElementById('cvParentName').value = currentConvertLead.customer_name || '';
         document.getElementById('cvParentPhone').value = currentConvertLead.customer_phone || '';
-        document.getElementById('cvParentJob').value = currentConvertLead.parent_job || '';
-
-        // Reset payment fields
+        document.getElementById('cvParentJob').value = '';
         document.getElementById('cvPaymentStatus').value = 'pending';
-        document.getElementById('cvDepositAmount').value = '0đ';
-        document.getElementById('cvDepositAmount').dataset.rawValue = 0;
-        document.getElementById('cvPaidAmount').value = '0đ';
-        document.getElementById('cvPaidAmount').dataset.rawValue = 0;
+        document.getElementById('cvDepositAmount').value = '0đ'; document.getElementById('cvDepositAmount').dataset.rawValue = 0;
+        document.getElementById('cvPaidAmount').value = '0đ'; document.getElementById('cvPaidAmount').dataset.rawValue = 0;
         document.getElementById('depositGroup').style.display = 'none';
         document.getElementById('paidGroup').style.display = 'none';
         document.getElementById('remainingRow').style.display = 'none';
         document.getElementById('cvNote').value = '';
-
-        // Reset totals
-        document.getElementById('cvFeeOriginal').value = '0đ';
-        document.getElementById('cvFeeOriginal').dataset.rawValue = 0;
-        document.getElementById('cvPromoDiscount').value = '0đ';
-        document.getElementById('cvPromoDiscount').dataset.rawValue = 0;
-        document.getElementById('cvFeeTotal').textContent = '0đ';
-        document.getElementById('cvFeeTotal').dataset.rawValue = 0;
-        document.getElementById('cvMainCourseMonths').textContent = '0 tháng';
-        document.getElementById('cvMainCourseMonths').dataset.months = 0;
+        document.getElementById('cvFeeOriginal').value = '0đ'; document.getElementById('cvFeeOriginal').dataset.rawValue = 0;
+        document.getElementById('cvPromoDiscount').value = '0đ'; document.getElementById('cvPromoDiscount').dataset.rawValue = 0;
+        document.getElementById('cvFeeTotal').textContent = '0đ'; document.getElementById('cvFeeTotal').dataset.rawValue = 0;
+        document.getElementById('cvMainCourseMonths').textContent = '0 tháng'; document.getElementById('cvMainCourseMonths').dataset.months = 0;
         document.getElementById('cvBonusMonths').textContent = '+0 tháng';
         document.getElementById('cvScholarshipMonths').value = 0;
-        document.getElementById('cvTotalMonths').textContent = '0 tháng';
-        document.getElementById('promoDiscountInfo').style.display = 'none';
         document.getElementById('cvDefaultScholarshipBadge').style.display = 'none';
-        document.getElementById('cvScholarshipStatus').style.display = 'none';
-        document.getElementById('cvScholarshipWarning').style.display = 'none';
         defaultScholarshipMonths = 0;
-
-        // Load promo and packages data
         await loadConvertData();
-
         document.getElementById('convertModal').classList.add('show');
       } catch (e) { ui.error(e.message); }
     }
 
     async function loadConvertData() {
       try {
-        // Load promotions
-        var promoRes = await api.get('/promotions/convert-data');
+        const promoRes = await api.get('/promotions/convert-data');
         promoData = promoRes.data || { programs: [], items: [] };
-
-        // Load packages (using existing /packages endpoint)
-        var pkgRes = await api.get('/packages');
+        const pkgRes = await api.get('/packages');
         packagesData = pkgRes.data || [];
-
-        // Populate packages dropdown
-        var pkgSelect = document.getElementById('cvTuitionPackage');
-        pkgSelect.innerHTML = '<option value="">-- Chọn gói học phí --</option>' +
-          packagesData.map(function (p) {
-            var defaultHB = p.default_scholarship_months || 0;
-            var hbText = defaultHB > 0 ? ' + HB ' + defaultHB + 'T' : '';
-            return '<option value="' + p.id + '">' + escapeHtml(p.name) + ' (' + p.months + ' tháng - ' + formatCurrency(p.price) + hbText + ')</option>';
-          }).join('');
-
-        // Populate programs dropdown
-        var programSelect = document.getElementById('cvPromoProgram');
-        programSelect.innerHTML = '<option value="">-- Không áp dụng --</option>' +
-          promoData.programs.map(function (p) {
-            return '<option value="' + p.id + '">' + escapeHtml(p.name) +
-              ' (' + (p.discount_type === 'percent' ? p.discount_value + '%' : formatCurrency(p.discount_value)) + ')' +
-              '</option>';
-          }).join('');
-
-        // Populate gift items as checkboxes
-        var giftContainer = document.getElementById('giftItemsContainer');
-        var categoryIcons = { gift: '🎁', book: '📚', material: '🔧' };
+        document.getElementById('cvTuitionPackage').innerHTML = '<option value="">-- Chọn gói --</option>' + packagesData.map(p => '<option value="' + p.id + '">' + escapeHtml(p.name) + ' (' + p.months + 'T - ' + formatCurrency(p.price) + ')</option>').join('');
+        document.getElementById('cvPromoProgram').innerHTML = '<option value="">-- Không áp dụng --</option>' + promoData.programs.map(p => '<option value="' + p.id + '">' + escapeHtml(p.name) + ' (' + (p.discount_type === 'percent' ? p.discount_value + '%' : formatCurrency(p.discount_value)) + ')</option>').join('');
+        const giftContainer = document.getElementById('giftItemsContainer');
         if (promoData.items && promoData.items.length) {
-          giftContainer.innerHTML = promoData.items.map(function (i) {
-            return '<label style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff;border-radius:20px;cursor:pointer;border:1px solid #e5e7eb">' +
-              '<input type="checkbox" class="gift-checkbox" data-id="' + i.id + '" data-name="' + escapeHtml(i.name) + '">' +
-              '<span>' + (categoryIcons[i.category] || '🎁') + ' ' + escapeHtml(i.name) + '</span>' +
-              '<small style="color:#6b7280">(' + i.stock_quantity + ')</small>' +
-              '</label>';
-          }).join('');
-        } else {
-          giftContainer.innerHTML = '<span style="color:#6b7280;font-size:13px">Chưa có quà tặng</span>';
-        }
-      } catch (e) {
-        console.error('Load convert data error:', e);
-      }
+          giftContainer.innerHTML = promoData.items.map(i => '<label style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff;border-radius:20px;cursor:pointer;border:1px solid #e5e7eb"><input type="checkbox" class="gift-checkbox" data-id="' + i.id + '" data-name="' + escapeHtml(i.name) + '"><span>🎁 ' + escapeHtml(i.name) + '</span><small style="color:#6b7280">(' + i.stock_quantity + ')</small></label>').join('');
+        } else { giftContainer.innerHTML = '<span style="color:#6b7280">Chưa có quà tặng</span>'; }
+      } catch (e) { console.error(e); }
     }
 
     function closeConvertModal() { document.getElementById('convertModal').classList.remove('show'); }
 
-    function closeConvertSuccessModal() {
-      document.getElementById('convertSuccessModal').classList.remove('show');
-    }
-
-    async function confirmPaymentReceived() {
-      var studentId = document.getElementById('newStudentId').value;
-      var remaining = parseFloat(document.getElementById('successRemainingRaw').value) || 0;
-
-      if (!studentId) {
-        ui.warning('Không tìm thấy thông tin học sinh');
-        return;
-      }
-
-      if (remaining <= 0) {
-        ui.info('Không còn số tiền cần thanh toán');
-        return;
-      }
-
-      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(remaining) + ' từ phụ huynh?')) {
-        return;
-      }
-
-      try {
-        await api.post('/students/' + studentId + '/confirm-payment', {
-          amount: remaining,
-          paymentMethod: 'bank_transfer',
-          note: 'Thanh toán qua QR sau chuyển đổi'
-        });
-
-        ui.success('Đã ghi nhận thanh toán ' + formatCurrency(remaining));
-
-        // Update UI
-        var currentPaid = parseCurrency(document.getElementById('successPaidAmount').textContent);
-        document.getElementById('successPaidAmount').textContent = formatCurrency(currentPaid + remaining);
-        document.getElementById('successRemainingAmount').textContent = '0đ';
-        document.getElementById('successRemainingRaw').value = '0';
-
-        // Hide QR, show full paid
-        document.getElementById('successQRSection').style.display = 'none';
-        document.getElementById('successFullPaidSection').style.display = 'block';
-
-        loadStats(); loadData();
-      } catch (e) {
-        ui.error(e.message);
-      }
-    }
-
-    function downloadEnrollmentFormFromSuccess() {
-      var studentId = document.getElementById('newStudentId').value;
-      if (!studentId) {
-        ui.warning('Không tìm thấy thông tin học sinh');
-        return;
-      }
-      downloadEnrollmentForm(studentId);
-    }
-
-    function downloadEnrollmentForm(studentId) {
-      var token = localStorage.getItem('token');
-      var url = window.LMS_CONFIG.API_BASE + '/enrollment/' + studentId + '/form';
-
-      // Show loading
-      ui.info('Đang tạo đơn nhập học...');
-
-      fetch(url, {
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + token }
-      })
-        .then(function (response) {
-          if (!response.ok) throw new Error('Lỗi tải file');
-          return response.blob();
-        })
-        .then(function (blob) {
-          var link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = 'Don_nhap_hoc_' + studentId + '.docx';
-          link.click();
-          URL.revokeObjectURL(link.href);
-          ui.success('Đã tải đơn nhập học');
-        })
-        .catch(function (e) {
-          ui.error(e.message);
-        });
-    }
-
     async function convertLead() {
-      var id = document.getElementById('convertLeadId').value;
+      const id = document.getElementById('convertLeadId').value;
+      const studentName = document.getElementById('cvStudentName').value.trim();
+      const parentName = document.getElementById('cvParentName').value.trim();
+      const parentPhone = document.getElementById('cvParentPhone').value.trim();
+      const packageId = document.getElementById('cvTuitionPackage').value;
+      const feeOriginal = parseCurrency(document.getElementById('cvFeeOriginal').value);
+      const promoDiscount = parseCurrency(document.getElementById('cvPromoDiscount').value);
+      const feeTotal = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
+      const scholarshipMonths = parseInt(document.getElementById('cvScholarshipMonths').value) || 0;
+      const depositAmount = parseCurrency(document.getElementById('cvDepositAmount').value);
+      const paidAmount = parseCurrency(document.getElementById('cvPaidAmount').value);
+      const programId = document.getElementById('cvPromoProgram').value || null;
 
-      // Student info
-      var studentName = document.getElementById('cvStudentName').value.trim();
-      var studentBirthYear = document.getElementById('cvStudentBirthYear').value;
-      var studentAddress = document.getElementById('cvStudentAddress').value;
-      var studentSchool = document.getElementById('cvStudentSchool').value;
+      if (!studentName) { ui.warning('Vui lòng nhập họ tên học sinh'); return; }
+      if (!parentName || !parentPhone) { ui.warning('Vui lòng nhập thông tin phụ huynh'); return; }
+      if (!packageId) { ui.warning('Vui lòng chọn gói học phí'); return; }
 
-      // Parent info
-      var parentName = document.getElementById('cvParentName').value.trim();
-      var parentPhone = document.getElementById('cvParentPhone').value.trim();
-      var parentJob = document.getElementById('cvParentJob').value;
+      const selectedGifts = [];
+      document.querySelectorAll('.gift-checkbox:checked').forEach(cb => selectedGifts.push({ id: cb.dataset.id, name: cb.dataset.name }));
 
-      // Course info
-      var packageId = document.getElementById('cvTuitionPackage').value || null;
-      var feeOriginal = parseCurrency(document.getElementById('cvFeeOriginal').value);
-      var promoDiscount = parseCurrency(document.getElementById('cvPromoDiscount').value);
-      var feeTotal = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
-      var programId = document.getElementById('cvPromoProgram').value || null;
-
-      // Scholarship info
-      var scholarshipMonths = parseInt(document.getElementById('cvScholarshipMonths').value) || 0;
-      var needsApproval = scholarshipMonths > defaultScholarshipMonths;
-
-      // Payment info
-      var depositAmount = parseCurrency(document.getElementById('cvDepositAmount').value);
-      var paidAmount = parseCurrency(document.getElementById('cvPaidAmount').value);
-      var paymentStatus = document.getElementById('cvPaymentStatus').value;
-      var note = document.getElementById('cvNote').value;
-
-      // Get selected gifts
-      var selectedGifts = [];
-      document.querySelectorAll('.gift-checkbox:checked').forEach(function (cb) {
-        selectedGifts.push({ item_id: cb.dataset.id, name: cb.dataset.name });
-      });
-
-      // Validation
-      if (!studentName) {
-        ui.warning('Vui lòng nhập họ tên học sinh');
-        return;
-      }
-      if (!parentName || !parentPhone) {
-        ui.warning('Vui lòng nhập thông tin phụ huynh');
-        return;
-      }
-      if (!packageId) {
-        ui.warning('Vui lòng chọn gói học phí');
-        return;
-      }
-
-      // Warn if scholarship exceeds default
-      if (needsApproval) {
-        var extraMonths = scholarshipMonths - defaultScholarshipMonths;
-        if (!confirm('Học bổng vượt mức mặc định ' + extraMonths + ' tháng. Yêu cầu này cần GDV duyệt. Tiếp tục?')) {
-          return;
-        }
-      }
-
-      // actual_revenue = tiền đã thu
-      var actualRevenue = depositAmount + paidAmount;
-
-      console.log('Converting with:', { studentName, packageId, feeOriginal, promoDiscount, feeTotal, scholarshipMonths, needsApproval });
+      // TÍNH TỔNG TIỀN ĐÃ ĐÓNG
+      const totalPaid = depositAmount + paidAmount;
 
       try {
-        var result = await api.post('/leads/' + id + '/convert', {
-          // Student
-          studentName: studentName,
-          birthYear: studentBirthYear,
-          address: studentAddress,
-          school: studentSchool,
-          // Parent
-          customerName: parentName,
-          customerPhone: parentPhone,
-          parentJob: parentJob,
-          // Course
-          packageId: packageId,
-          feeOriginal: feeOriginal,
-          feeDiscount: promoDiscount,
-          feeTotal: feeTotal,
-          // Scholarship
-          scholarshipMonths: scholarshipMonths,
-          defaultScholarshipMonths: defaultScholarshipMonths,
-          scholarshipNeedsApproval: needsApproval,
-          // Payment
-          depositAmount: depositAmount,
-          paidAmount: paidAmount,
-          actualRevenue: actualRevenue,
-          paymentStatus: paymentStatus,
-          // Promo
-          programId: programId,
-          gifts: selectedGifts,
-          // Note
-          note: note
+        const result = await api.post('/leads/' + id + '/convert', {
+          studentName, birthYear: document.getElementById('cvStudentBirthYear').value,
+          address: document.getElementById('cvStudentAddress').value, school: document.getElementById('cvStudentSchool').value,
+          customerName: parentName, customerPhone: parentPhone, parentJob: document.getElementById('cvParentJob').value,
+          packageId, feeOriginal, feeDiscount: promoDiscount, feeTotal, scholarshipMonths,
+          defaultScholarshipMonths, scholarshipNeedsApproval: scholarshipMonths > defaultScholarshipMonths,
+          depositAmount, paidAmount, paymentStatus: document.getElementById('cvPaymentStatus').value,
+          programId, gifts: selectedGifts, note: document.getElementById('cvNote').value
         });
 
         closeConvertModal();
 
-        // Show success modal with QR
-        var student = result.data || result.student || {};
-        var studentId = student.id || student.studentId;
-        var studentCode = student.student_code || student.studentCode || '';
-        // Chưa ghi doanh thu, remaining = toàn bộ học phí
-        var remaining = feeTotal;
+        const student = result.data || {};
+        const studentId = student.id || student.studentId;
+        const studentCode = student.student_code || student.studentCode || '';
+        const paymentStatus = document.getElementById('cvPaymentStatus').value;
 
         document.getElementById('newStudentId').value = studentId;
         document.getElementById('successStudentName').textContent = studentName;
         document.getElementById('successStudentCode').textContent = 'Mã: ' + studentCode;
-        document.getElementById('successPaidAmount').textContent = '0đ'; // Chưa thanh toán
-        document.getElementById('successRemainingAmount').textContent = formatCurrency(remaining);
-        document.getElementById('successRemainingRaw').value = remaining;
+
+        const desc = encodeURIComponent(studentCode + ' ' + studentName.substring(0, 15));
         document.getElementById('successPaymentDesc').textContent = studentCode + ' ' + studentName.substring(0, 15);
 
-        if (remaining > 0) {
-          // Show QR for remaining payment
+        // LOGIC HIỂN THỊ QR THEO TRẠNG THÁI THANH TOÁN
+        if (paymentStatus === 'pending') {
+          // Chưa đóng: Không hiện QR, chỉ thông báo
+          document.getElementById('successQRSection').style.display = 'none';
+          document.getElementById('successFullPaidSection').style.display = 'none';
+          document.getElementById('successPaidAmount').textContent = '0đ';
+          document.getElementById('successRemainingAmount').textContent = formatCurrency(feeTotal);
+          document.getElementById('successRemainingRaw').value = feeTotal;
+        } else if (paymentStatus === 'deposit') {
+          // Đặt cọc: QR hiện SỐ TIỀN CỌC để PH chuyển khoản
           document.getElementById('successQRSection').style.display = 'block';
           document.getElementById('successFullPaidSection').style.display = 'none';
-
-          // Generate VietQR URL
-          var desc = encodeURIComponent(studentCode + ' ' + studentName.substring(0, 15));
-          var qrUrl = 'https://img.vietqr.io/image/970422-0866766189-compact2.png?amount=' + remaining + '&addInfo=' + desc;
-          document.getElementById('successQRImage').src = qrUrl;
-        } else {
-          // Full paid
-          document.getElementById('successQRSection').style.display = 'none';
-          document.getElementById('successFullPaidSection').style.display = 'block';
+          document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
+          document.getElementById('successRemainingAmount').textContent = formatCurrency(depositAmount);
+          document.getElementById('successRemainingRaw').value = depositAmount;
+          document.getElementById('successQRImage').src = getQRUrl(depositAmount, studentCode + ' ' + studentName.substring(0, 15));
+        } else if (paymentStatus === 'partial') {
+          // Đóng 1 phần: QR hiện số tiền đã đóng (cọc + paid)
+          const amountToPay = depositAmount + paidAmount;
+          document.getElementById('successQRSection').style.display = 'block';
+          document.getElementById('successFullPaidSection').style.display = 'none';
+          document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
+          document.getElementById('successRemainingAmount').textContent = formatCurrency(amountToPay);
+          document.getElementById('successRemainingRaw').value = amountToPay;
+          document.getElementById('successQRImage').src = getQRUrl(amountToPay, studentCode + ' ' + studentName.substring(0, 15));
+        } else if (paymentStatus === 'paid') {
+          // Đóng đủ: QR hiện TOÀN BỘ học phí
+          document.getElementById('successQRSection').style.display = 'block';
+          document.getElementById('successFullPaidSection').style.display = 'none';
+          document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
+          document.getElementById('successRemainingAmount').textContent = formatCurrency(feeTotal);
+          document.getElementById('successRemainingRaw').value = feeTotal;
+          document.getElementById('successQRImage').src = getQRUrl(feeTotal, studentCode + ' ' + studentName.substring(0, 15));
         }
 
         document.getElementById('convertSuccessModal').classList.add('show');
-
-        var msg = 'Chuyển đổi thành công!';
-        if (needsApproval) {
-          msg += ' Học bổng vượt mức đang chờ GDV duyệt.';
-        }
-        ui.success(msg);
+        ui.success('Chuyển đổi thành công!');
         loadStats(); loadData();
       } catch (e) { ui.error(e.message); }
     }
 
-    // ========== CURRENCY FORMATTING ==========
-    function formatCurrency(v) {
-      return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ';
+    function closeConvertSuccessModal() { document.getElementById('convertSuccessModal').classList.remove('show'); }
+
+    async function confirmPaymentReceived() {
+      const studentId = document.getElementById('newStudentId').value;
+      const amountToConfirm = parseFloat(document.getElementById('successRemainingRaw').value) || 0;
+      if (!studentId || amountToConfirm <= 0) return;
+      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(amountToConfirm) + '?')) return;
+      try {
+        await api.post('/students/' + studentId + '/confirm-payment', { amount: amountToConfirm, paymentMethod: 'bank_transfer', note: 'Thanh toán qua QR' });
+        ui.success('Đã ghi nhận thanh toán ' + formatCurrency(amountToConfirm));
+
+        // Cập nhật hiển thị
+        const currentPaid = parseCurrency(document.getElementById('successPaidAmount').textContent);
+        const newPaid = currentPaid + amountToConfirm;
+        document.getElementById('successPaidAmount').textContent = formatCurrency(newPaid);
+
+        // Lấy tổng học phí để tính còn nợ
+        // Ẩn QR section, hiện thông báo đã thanh toán
+        document.getElementById('successQRSection').style.display = 'none';
+        document.getElementById('successFullPaidSection').style.display = 'block';
+        document.getElementById('successRemainingRaw').value = 0;
+
+        loadStats(); loadData();
+      } catch (e) { ui.error(e.message); }
     }
 
-    function parseCurrency(str) {
-      // Remove all non-digits
-      return parseInt(String(str).replace(/[^\d]/g, '')) || 0;
+    function downloadEnrollmentForm() {
+      const studentId = document.getElementById('newStudentId').value;
+      if (!studentId) return;
+      const token = localStorage.getItem('token');
+      fetch(window.LMS_CONFIG.API_BASE + '/enrollment/' + studentId + '/form', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(r => r.blob())
+        .then(blob => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Don_nhap_hoc_' + studentId + '.docx'; a.click(); })
+        .catch(e => ui.error(e.message));
     }
 
-    function formatCurrencyField(input) {
-      var cursorPos = input.selectionStart;
-      var oldLen = input.value.length;
-      var rawValue = parseCurrency(input.value);
-
-      if (rawValue > 0) {
-        input.value = new Intl.NumberFormat('vi-VN').format(rawValue) + 'đ';
-      } else {
-        input.value = '0đ';
-      }
-
-      // Store raw value for calculations
-      input.dataset.rawValue = rawValue;
-
-      // Adjust cursor position
-      var newLen = input.value.length;
-      var newPos = Math.max(0, cursorPos + (newLen - oldLen));
-      if (newPos >= input.value.length - 1) newPos = input.value.length - 1; // Before 'đ'
-      try { input.setSelectionRange(newPos, newPos); } catch (e) { }
-    }
-
-    function getCurrencyValue(inputId) {
-      var input = document.getElementById(inputId);
-      return parseFloat(input.dataset.rawValue) || parseCurrency(input.value);
-    }
-
-    // Auto select all on focus for currency inputs
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelectorAll('.currency-input').forEach(function (input) {
-        input.addEventListener('focus', function () {
-          this.select();
-        });
-      });
-    });
-
-    // ========== PAYMENT UPDATE FUNCTIONS ==========
-    var currentPaymentLead = null;
-
+    // Payment Modal
     async function openPaymentModal(id) {
       try {
         const res = await api.get('/leads/' + id);
-        currentPaymentLead = res.data;
-
-        var feeTotal = parseFloat(currentPaymentLead.fee_total) || 0;
-        var actualRev = parseFloat(currentPaymentLead.actual_revenue) || 0;
-        var remaining = Math.max(0, feeTotal - actualRev);
-
-        // Kiểm tra nếu đã đóng đủ
-        if (remaining <= 0) {
-          ui.info('Học sinh đã đóng đủ học phí!');
-          return;
-        }
-
+        const lead = res.data;
+        const feeTotal = parseFloat(lead.fee_total) || 0;
+        const actualRev = parseFloat(lead.actual_revenue) || 0;
+        const remaining = Math.max(0, feeTotal - actualRev);
+        if (remaining <= 0) { ui.info('Đã đóng đủ!'); return; }
         document.getElementById('paymentLeadId').value = id;
-        document.getElementById('paymentStudentId').value = currentPaymentLead.student_id || '';
+        document.getElementById('paymentStudentId').value = lead.converted_student_id || '';
         document.getElementById('paymentRemainingRaw').value = remaining;
-
-        // Student info
-        var studentName = currentPaymentLead.student_name || '';
-        var studentCode = currentPaymentLead.code || '';
-        document.getElementById('paymentStudentName').textContent = studentName;
-        document.getElementById('paymentStudentCode').textContent = 'Mã: ' + studentCode;
-
-        // Payment info
+        document.getElementById('paymentStudentName').textContent = lead.student_name || '';
+        document.getElementById('paymentStudentCode').textContent = 'Mã: ' + (lead.converted_student_code || lead.code || '');
         document.getElementById('paymentFeeTotal').textContent = formatCurrency(feeTotal);
         document.getElementById('paymentRemaining').textContent = formatCurrency(remaining);
-
-        // Transfer description
-        var transferDesc = studentCode + ' ' + studentName.substring(0, 15);
+        const transferDesc = (lead.converted_student_code || lead.code) + ' ' + (lead.student_name || '').substring(0, 15);
         document.getElementById('paymentTransferDesc').textContent = transferDesc;
-
-        // Generate QR
-        var desc = encodeURIComponent(transferDesc);
-        var qrUrl = 'https://img.vietqr.io/image/970422-0866766189-compact2.png?amount=' + remaining + '&addInfo=' + desc;
-        document.getElementById('paymentQRImage').src = qrUrl;
-
-        // Show/hide confirm button based on student_id
-        if (currentPaymentLead.student_id) {
-          document.getElementById('btnConfirmLeadPayment').style.display = 'block';
-        } else {
-          document.getElementById('btnConfirmLeadPayment').style.display = 'none';
-        }
-
+        document.getElementById('paymentQRImage').src = getQRUrl(remaining, transferDesc);
+        document.getElementById('btnConfirmLeadPayment').style.display = lead.converted_student_id ? 'block' : 'none';
         document.getElementById('paymentModal').classList.add('show');
       } catch (e) { ui.error(e.message); }
     }
@@ -1744,94 +1209,19 @@
     function closePaymentModal() { document.getElementById('paymentModal').classList.remove('show'); }
 
     async function confirmLeadPayment() {
-      var studentId = document.getElementById('paymentStudentId').value;
-      var remaining = parseFloat(document.getElementById('paymentRemainingRaw').value) || 0;
-
-      if (!studentId) {
-        ui.warning('Học sinh chưa được chuyển đổi. Vui lòng chuyển đổi trước.');
-        return;
-      }
-
-      if (remaining <= 0) {
-        ui.info('Không còn số tiền cần thanh toán');
-        return;
-      }
-
-      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(remaining) + ' từ phụ huynh?')) {
-        return;
-      }
-
+      const studentId = document.getElementById('paymentStudentId').value;
+      const remaining = parseFloat(document.getElementById('paymentRemainingRaw').value) || 0;
+      if (!studentId || remaining <= 0) return;
+      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(remaining) + '?')) return;
       try {
-        await api.post('/students/' + studentId + '/confirm-payment', {
-          amount: remaining,
-          paymentMethod: 'bank_transfer',
-          note: 'Thanh toán qua QR'
-        });
-
-        ui.success('Đã ghi nhận thanh toán ' + formatCurrency(remaining));
-        closePaymentModal();
-        loadStats();
-        loadData();
-      } catch (e) {
-        ui.error(e.message);
-      }
+        await api.post('/students/' + studentId + '/confirm-payment', { amount: remaining, paymentMethod: 'bank_transfer', note: 'Thanh toán qua QR' });
+        ui.success('Đã ghi nhận thanh toán');
+        closePaymentModal(); loadStats(); loadData();
+      } catch (e) { ui.error(e.message); }
     }
 
-    function openImportModal() { document.getElementById('importModal').classList.add('show'); document.getElementById('importPreview').style.display = 'none'; document.getElementById('excelFile').value = ''; importData = []; }
-    function closeImportModal() { document.getElementById('importModal').classList.remove('show'); }
-    function handleFileSelect(e) { const f = e.target.files[0]; if (f) processExcelFile(f); }
-
-    async function processExcelFile(file) {
-      if (!file.name.match(/\.(xlsx|xls)$/i)) { ui.error('Chọn file Excel'); return; }
-      try {
-        if (typeof XLSX === 'undefined') await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
-        const data = await file.arrayBuffer();
-        const wb = XLSX.read(data, { type: 'array' });
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
-        if (rows.length < 2) { ui.error('File rỗng'); return; }
-        const h = rows[0].map(function (x) { return String(x || '').toLowerCase(); });
-        var colSn = h.findIndex(function (x) { return x.indexOf('học sinh') >= 0 || x.indexOf('hoc sinh') >= 0; });
-        var colCn = h.findIndex(function (x) { return x.indexOf('phụ huynh') >= 0 || x.indexOf('phu huynh') >= 0; });
-        var colPh = h.findIndex(function (x) { return x.indexOf('điện thoại') >= 0 || x.indexOf('phone') >= 0 || x.indexOf('sđt') >= 0; });
-        if (colSn === -1 || colPh === -1) { ui.error('Thiếu cột: Tên học sinh, SĐT'); return; }
-        importData = []; var valid = 0, err = 0;
-        var tb = document.getElementById('previewBody'); tb.innerHTML = '';
-        for (var i = 1; i < rows.length; i++) {
-          var r = rows[i]; if (!r || !r.length) continue;
-          var sn = String(r[colSn] || '').trim(), cn = String(r[colCn] || sn).trim(), ph = String(r[colPh] || '').replace(/[^0-9]/g, '');
-          var ok = true, e = '';
-          if (!sn) { ok = false; e = 'Thiếu tên'; } else if (ph.length < 9) { ok = false; e = 'SĐT lỗi'; }
-          if (ok) { valid++; importData.push({ studentName: sn, customerName: cn, customerPhone: ph, source: 'other' }); } else err++;
-          tb.innerHTML += '<tr class="' + (ok ? '' : 'text-danger') + '"><td>' + i + '</td><td>' + (sn || '-') + '</td><td>' + (cn || '-') + '</td><td>' + (ph || '-') + '</td><td>' + (ok ? '<span class="badge badge-success">OK</span>' : '<span class="badge badge-danger">' + e + '</span>') + '</td></tr>';
-        }
-        document.getElementById('previewTotal').textContent = rows.length - 1;
-        document.getElementById('previewValid').textContent = valid;
-        document.getElementById('previewError').textContent = err;
-        document.getElementById('importCount').textContent = valid;
-        document.getElementById('importBtn').disabled = valid === 0;
-        document.getElementById('importPreview').style.display = 'block';
-      } catch (e) { ui.error('Lỗi: ' + e.message); }
-    }
-
-    function loadScript(src) { return new Promise(function (res, rej) { var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
-
-    async function importLeads() {
-      if (!importData.length) return;
-      document.getElementById('importBtn').disabled = true;
-      document.getElementById('importBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-      var ok = 0;
-      for (var i = 0; i < importData.length; i++) { try { await api.post('/leads', importData[i]); ok++; } catch (e) { } }
-      ui.success('Import ' + ok + ' leads');
-      closeImportModal(); loadStats(); loadData();
-    }
-
-    function downloadTemplate() {
-      if (typeof XLSX === 'undefined') loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js').then(dl); else dl();
-      function dl() { var ws = XLSX.utils.aoa_to_sheet([['Tên học sinh', 'Tên phụ huynh', 'Số điện thoại', 'Nguồn'], ['Nguyễn A', 'Nguyễn B', '0901234567', 'facebook']]); var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Leads'); XLSX.writeFile(wb, 'leads_template.xlsx'); }
-    }
-
-    var currentCallSid = null, callTimer = null, callSeconds = 0, callConfigured = false;
-
+    // Call Modal
+    let callTimer = null, callSeconds = 0;
     function openCallModal(id, name, phone) {
       document.getElementById('callLeadId').value = id;
       document.getElementById('callName').textContent = name;
@@ -1842,93 +1232,37 @@
       document.getElementById('callTimer').style.display = 'none';
       document.getElementById('startCallBtn').style.display = 'inline-flex';
       document.getElementById('hangupBtn').style.display = 'none';
-      document.getElementById('muteBtn').style.display = 'none';
       document.getElementById('callNote').value = '';
       document.getElementById('callResult').value = '';
       loadCallHistory(id);
       document.getElementById('callModal').classList.add('show');
-      checkCallConfig();
     }
-
-    function closeCallModal() { document.getElementById('callModal').classList.remove('show'); stopTimer(); }
-
-    async function checkCallConfig() {
-      try {
-        var res = await api.get('/call/config');
-        callConfigured = res.data?.configured || false;
-        console.log('Call configured:', callConfigured);
-      } catch (e) {
-        console.log('Call config error:', e.message);
-        callConfigured = false;
-      }
-    }
-
-    async function startCall() {
-      var phone = document.getElementById('callPhone').textContent;
-
+    function closeCallModal() { document.getElementById('callModal').classList.remove('show'); if (callTimer) { clearInterval(callTimer); callTimer = null; } }
+    function startCall() {
+      const phone = document.getElementById('callPhone').textContent;
       document.getElementById('callStatus').textContent = 'Đang gọi...';
       document.getElementById('callStatus').className = 'call-status connecting';
       document.getElementById('startCallBtn').style.display = 'none';
       document.getElementById('hangupBtn').style.display = 'inline-flex';
       document.getElementById('callTimer').style.display = 'block';
-      startTimer();
-
-      if (callConfigured) {
-        // Gọi qua SignalWire
-        try {
-          var res = await api.post('/call/make', { to: phone });
-          if (res.success) {
-            currentCallSid = res.data.callSid;
-            document.getElementById('callStatus').textContent = 'Đang kết nối...';
-            // Poll call status
-            pollCallStatus();
-          } else {
-            throw new Error(res.message || 'Lỗi gọi điện');
-          }
-        } catch (e) {
-          console.log('SignalWire call error:', e.message);
-          // Fallback to tel: link
-          ui.warning('Không thể gọi qua hệ thống, đang mở điện thoại...');
-          window.open('tel:' + phone, '_self');
-        }
-      } else {
-        // Fallback: Gọi qua điện thoại
-        window.open('tel:' + phone, '_self');
-        document.getElementById('callStatus').textContent = 'Gọi qua ĐT...';
-      }
+      callSeconds = 0; document.getElementById('callTimer').textContent = '00:00';
+      callTimer = setInterval(() => { callSeconds++; document.getElementById('callTimer').textContent = Math.floor(callSeconds / 60).toString().padStart(2, '0') + ':' + (callSeconds % 60).toString().padStart(2, '0'); }, 1000);
+      window.open('tel:' + phone, '_self');
     }
-
-    async function pollCallStatus() {
-      if (!currentCallSid) return;
-      try {
-        var res = await api.get('/call/status/' + currentCallSid);
-        var status = res.data?.status;
-        if (status === 'in-progress' || status === 'ringing') {
-          document.getElementById('callStatus').textContent = status === 'ringing' ? 'Đang đổ chuông...' : 'Đang nói chuyện';
-          document.getElementById('callStatus').className = 'call-status connected';
-          setTimeout(pollCallStatus, 2000);
-        } else if (status === 'completed' || status === 'busy' || status === 'no-answer' || status === 'failed') {
-          onCallEnded();
-        } else {
-          setTimeout(pollCallStatus, 2000);
-        }
-      } catch (e) {
-        console.log('Poll status error:', e.message);
-      }
+    function endCall() {
+      if (callTimer) { clearInterval(callTimer); callTimer = null; }
+      document.getElementById('callStatus').textContent = 'Kết thúc';
+      document.getElementById('callStatus').className = 'call-status ended';
+      document.getElementById('startCallBtn').style.display = 'inline-flex';
+      document.getElementById('hangupBtn').style.display = 'none';
     }
-
-    function endCall() { onCallEnded(); currentCallSid = null; }
-    function onCallEnded() { stopTimer(); document.getElementById('callStatus').textContent = 'Kết thúc (' + fmtTime(callSeconds) + ')'; document.getElementById('callStatus').className = 'call-status ended'; resetCallUI(); currentCallSid = null; }
-    function resetCallUI() { document.getElementById('startCallBtn').style.display = 'inline-flex'; document.getElementById('hangupBtn').style.display = 'none'; document.getElementById('muteBtn').style.display = 'none'; }
-    function startTimer() { callSeconds = 0; document.getElementById('callTimer').style.display = 'block'; document.getElementById('callTimer').textContent = '00:00'; callTimer = setInterval(function () { callSeconds++; document.getElementById('callTimer').textContent = fmtTime(callSeconds); }, 1000); }
-    function stopTimer() { if (callTimer) { clearInterval(callTimer); callTimer = null; } }
-    function fmtTime(s) { return Math.floor(s / 60).toString().padStart(2, '0') + ':' + (s % 60).toString().padStart(2, '0'); }
-
     async function saveCallNote() {
-      var id = document.getElementById('callLeadId').value, note = document.getElementById('callNote').value, result = document.getElementById('callResult').value;
+      const id = document.getElementById('callLeadId').value;
+      const note = document.getElementById('callNote').value;
+      const result = document.getElementById('callResult').value;
       if (!note && !result) { ui.warning('Nhập ghi chú hoặc kết quả'); return; }
       try {
-        await api.post('/leads/' + id + '/call-log', { duration: callSeconds, result: result, note: note, called_at: new Date().toISOString() });
+        await api.post('/leads/' + id + '/call-log', { duration: callSeconds, result, note, called_at: new Date().toISOString() });
         ui.success('Đã lưu');
         document.getElementById('callNote').value = '';
         document.getElementById('callResult').value = '';
@@ -1936,20 +1270,18 @@
         loadCallHistory(id);
       } catch (e) { ui.error(e.message); }
     }
-
     async function loadCallHistory(id) {
-      var c = document.getElementById('callHistory');
+      const c = document.getElementById('callHistory');
       try {
-        var res = await api.get('/leads/' + id + '/call-logs');
-        var logs = res.data || [];
+        const res = await api.get('/leads/' + id + '/call-logs');
+        const logs = res.data || [];
         if (!logs.length) { c.innerHTML = '<p class="text-muted text-center">Chưa có</p>'; return; }
-        var lbl = { answered: 'Đã nghe', no_answer: 'Không nghe', busy: 'Máy bận', interested: 'Quan tâm', callback: 'Gọi lại' };
-        c.innerHTML = logs.map(function (l) { return '<div class="call-history-item"><div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--text-muted)">' + fmtDT(l.called_at) + '</span><span style="color:var(--primary)">' + fmtTime(l.duration || 0) + '</span></div>' + (l.result ? '<span class="badge badge-info">' + (lbl[l.result] || l.result) + '</span>' : '') + (l.note ? '<div style="font-size:12px;margin-top:4px">' + l.note + '</div>' : '') + '</div>'; }).join('');
+        const lbl = { answered: 'Đã nghe', no_answer: 'Không nghe', busy: 'Máy bận', interested: 'Quan tâm', callback: 'Gọi lại' };
+        c.innerHTML = logs.map(l => '<div class="call-history-item"><div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--text-muted)">' + formatDate(l.called_at) + '</span></div>' + (l.result ? '<span class="badge badge-info">' + (lbl[l.result] || l.result) + '</span>' : '') + (l.note ? '<div style="font-size:12px;margin-top:4px">' + l.note + '</div>' : '') + '</div>').join('');
       } catch (e) { c.innerHTML = '<p class="text-muted">Lỗi</p>'; }
     }
 
     function formatDate(d) { return d ? new Date(d).toLocaleDateString('vi-VN') : '-'; }
-    function fmtDT(d) { if (!d) return '-'; var x = new Date(d); return x.toLocaleDateString('vi-VN') + ' ' + x.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }); }
 
     document.addEventListener('DOMContentLoaded', init);
   </script>
