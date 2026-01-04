@@ -40,7 +40,7 @@ function buildSidebar(containerId, activePage = '') {
   // ========================
   // ADMIN - Toàn quyền
   // ========================
-  if (role === 'ADMIN') {
+  if (role === 'ADMIN' || role === 'GDV' || role === 'CHU') {
     html += `
       <div class="nav-section-title">Tuyển sinh</div>
       <a href="${prefix}leads.html" class="nav-item ${isActive('leads')}"><i class="fas fa-user-plus"></i><span>Leads</span></a>
@@ -194,6 +194,7 @@ function buildSidebar(containerId, activePage = '') {
 // Helper function to get role display name
 function getRoleDisplay(role) {
   const roleNames = {
+    'GDV': 'Giám đốc vùng',
     'ADMIN': 'Administrator',
     'CHU': 'Chủ doanh nghiệp',
     'OM': 'Operation Manager',

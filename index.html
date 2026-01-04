@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,34 +8,166 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-top: 20px; }
-    .dashboard-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
-    .dashboard-card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .dashboard-card-header h3 { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-    .dashboard-card-header h3 i { color: var(--primary); }
-    .dashboard-card-body { padding: 16px 20px; }
-    .dashboard-card-body .empty { color: var(--text-muted); text-align: center; padding: 20px; }
-    .mini-table { width: 100%; }
-    .mini-table td { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-    .mini-table tr:last-child td { border-bottom: none; }
-    .mini-table .label { color: var(--text-muted); }
-    .quick-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .quick-stat { background: var(--bg-secondary); padding: 12px; border-radius: 8px; text-align: center; }
-    .quick-stat .value { font-size: 24px; font-weight: 700; color: var(--primary); }
-    .quick-stat .label { font-size: 12px; color: var(--text-muted); }
-    .session-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
-    .session-item:last-child { border-bottom: none; }
-    .session-time { background: var(--primary); color: white; padding: 8px 12px; border-radius: 8px; font-weight: 600; margin-right: 12px; min-width: 60px; text-align: center; }
-    .session-info { flex: 1; }
-    .session-info .class-name { font-weight: 600; }
-    .session-info .meta { font-size: 12px; color: var(--text-muted); }
-    .trial-progress { display: flex; align-items: center; gap: 8px; }
-    .trial-progress .bar { flex: 1; height: 6px; background: var(--bg-secondary); border-radius: 3px; overflow: hidden; }
-    .trial-progress .bar-fill { height: 100%; background: var(--primary); border-radius: 3px; }
-    .trial-progress .text { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
-    .branch-tag-sm { display: inline-block; background: var(--bg-secondary); color: var(--primary); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; margin-left: 4px; }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .dashboard-card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .dashboard-card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dashboard-card-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dashboard-card-header h3 i {
+      color: var(--primary);
+    }
+
+    .dashboard-card-body {
+      padding: 16px 20px;
+    }
+
+    .dashboard-card-body .empty {
+      color: var(--text-muted);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .mini-table {
+      width: 100%;
+    }
+
+    .mini-table td {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .mini-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .mini-table .label {
+      color: var(--text-muted);
+    }
+
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .quick-stat {
+      background: var(--bg-secondary);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .quick-stat .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .quick-stat .label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .session-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .session-item:last-child {
+      border-bottom: none;
+    }
+
+    .session-time {
+      background: var(--primary);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-right: 12px;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .session-info {
+      flex: 1;
+    }
+
+    .session-info .class-name {
+      font-weight: 600;
+    }
+
+    .session-info .meta {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .trial-progress {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .trial-progress .bar {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-secondary);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .trial-progress .bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 3px;
+    }
+
+    .trial-progress .text {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .branch-tag-sm {
+      display: inline-block;
+      background: var(--bg-secondary);
+      color: var(--primary);
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-left: 4px;
+    }
   </style>
 </head>
+
 <body>
   <div class="app-container">
     <aside class="sidebar" id="sidebar"></aside>
@@ -42,7 +175,8 @@
     <main class="main-content">
       <header class="header">
         <div class="header-left">
-          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i
+              class="fas fa-bars"></i></button>
           <div>
             <h1 class="page-title">Dashboard</h1>
             <p class="page-subtitle">Xin chào, <span id="welcomeName">User</span>!</p>
@@ -55,13 +189,20 @@
           </button>
           <div class="user-menu" onclick="auth.logout()">
             <div class="user-avatar" id="userAvatar">U</div>
-            <div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div>
+            <div class="user-info">
+              <div class="user-name" id="userName">User</div>
+              <div class="user-role" id="userRole">Role</div>
+            </div>
           </div>
         </div>
       </header>
 
       <div class="page-content">
-        <div id="dashboardContent"><div class="loading"><div class="spinner"></div></div></div>
+        <div id="dashboardContent">
+          <div class="loading">
+            <div class="spinner"></div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
@@ -73,29 +214,61 @@
     async function loadDashboard() {
       const role = auth.user?.role_name;
       const container = document.getElementById('dashboardContent');
-      
+
       try {
         let endpoint = '/dashboard/admin';
-        if (role === 'SALE') endpoint = '/dashboard/sale';
-        else if (role === 'TEACHER') endpoint = '/dashboard/teacher';
-        else if (role === 'CM') endpoint = '/dashboard/cm';
-        else if (role === 'CHU') endpoint = '/dashboard/owner';
-        else if (role === 'OM') endpoint = '/dashboard/om';
-        else if (role === 'HOEC') endpoint = '/dashboard/hoec';
-        else if (role === 'EC' || role === 'SALE') endpoint = '/dashboard/ec';
+        let renderFn = renderAdminDashboard;
+
+        // Xác định endpoint và render function theo role
+        switch (role) {
+          case 'ADMIN':
+          case 'GDV':
+            endpoint = '/dashboard/admin';
+            renderFn = renderAdminDashboard;
+            break;
+          case 'CHU':
+            endpoint = '/dashboard/owner';
+            renderFn = renderOwnerDashboard;
+            break;
+          case 'QLCS':
+            endpoint = '/dashboard/qlcs';
+            renderFn = renderOwnerDashboard;
+            break;
+          case 'HOEC':
+            endpoint = '/dashboard/hoec';
+            renderFn = renderHOECDashboard;
+            break;
+          case 'OM':
+            endpoint = '/dashboard/om';
+            renderFn = renderOMDashboard;
+            break;
+          case 'CM':
+            endpoint = '/dashboard/cm';
+            renderFn = renderCMDashboard;
+            break;
+          case 'EC':
+          case 'SALE':
+            endpoint = '/dashboard/ec';
+            renderFn = renderECDashboard;
+            break;
+          case 'TEACHER':
+            endpoint = '/dashboard/teacher';
+            renderFn = renderTeacherDashboard;
+            break;
+          case 'TA':
+            endpoint = '/dashboard/ta';
+            renderFn = renderTeacherDashboard;
+            break;
+          default:
+            endpoint = '/dashboard/ec';
+            renderFn = renderECDashboard;
+        }
 
         const query = branch.buildQuery({});
         const result = await api.get(endpoint + query);
         const data = result.data;
 
-        if (role === 'ADMIN') renderAdminDashboard(container, data);
-        else if (role === 'CHU') renderOwnerDashboard(container, data);
-        else if (role === 'OM') renderOMDashboard(container, data);
-        else if (role === 'HOEC') renderHOECDashboard(container, data);
-        else if (role === 'CM') renderCMDashboard(container, data);
-        else if (role === 'TEACHER') renderTeacherDashboard(container, data);
-        else if (role === 'EC' || role === 'SALE') renderECDashboard(container, data);
-        else container.innerHTML = '<div class="empty-state"><p>Không có quyền truy cập</p></div>';
+        renderFn(container, data);
       } catch (error) {
         container.innerHTML = `<div class="empty-state"><p>Không thể tải dữ liệu: ${error.message}</p></div>`;
       }
@@ -126,12 +299,12 @@
                   </td>
                   <td>${l.subject_name || '-'}</td>
                   <td>
-                    ${l.status === 'waiting' ? 
-                      `<span class="badge" style="background:#cffafe;color:#0891b2;"><i class="fas fa-clock"></i> Chờ (${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3})</span>` :
-                      l.status === 'trial' ?
-                      `<span class="badge badge-info">${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3} buổi</span>` :
-                      `<span class="badge badge-warning">${l.scheduled_time?.substring(0,5) || '-'}</span>`
-                    }
+                    ${l.status === 'waiting' ?
+          `<span class="badge" style="background:#cffafe;color:#0891b2;"><i class="fas fa-clock"></i> Chờ (${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3})</span>` :
+          l.status === 'trial' ?
+            `<span class="badge badge-info">${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3} buổi</span>` :
+            `<span class="badge badge-warning">${l.scheduled_time?.substring(0, 5) || '-'}</span>`
+        }
                   </td>
                 </tr>`).join('')}
               </table>` : '<p class="empty">Không có leads cần xử lý</p>'}
@@ -143,7 +316,7 @@
             <div class="dashboard-card-body">
               ${data.todaySessions?.length ? data.todaySessions.map(s => `
                 <div class="session-item">
-                  <div class="session-time">${s.start_time?.substring(0,5)}</div>
+                  <div class="session-time">${s.start_time?.substring(0, 5)}</div>
                   <div class="session-info">
                     <div class="class-name">${s.class_name} <span class="branch-tag-sm">${s.branch_code}</span></div>
                     <div class="meta">GV: ${s.teacher_name || 'N/A'}</div>
@@ -202,7 +375,7 @@
             <div class="dashboard-card-body">
               ${data.todayLeads?.length ? data.todayLeads.map(l => `
                 <div class="session-item">
-                  <div class="session-time">${l.scheduled_time?.substring(0,5) || '--:--'}</div>
+                  <div class="session-time">${l.scheduled_time?.substring(0, 5) || '--:--'}</div>
                   <div class="session-info">
                     <div class="class-name">${l.student_name} <span class="branch-tag-sm">${l.branch_code}</span></div>
                     <div class="meta">${l.customer_name} - ${l.customer_phone}</div>
@@ -228,7 +401,7 @@
                   <td>${l.subject_name || '-'}</td>
                   <td>
                     <div class="trial-progress">
-                      <div class="bar"><div class="bar-fill" style="width:${((l.trial_sessions_attended || 0)/(l.trial_sessions_max || 3))*100}%"></div></div>
+                      <div class="bar"><div class="bar-fill" style="width:${((l.trial_sessions_attended || 0) / (l.trial_sessions_max || 3)) * 100}%"></div></div>
                       <span class="text">${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3}</span>
                     </div>
                   </td>
@@ -250,7 +423,7 @@
                   <td>${l.customer_phone}</td>
                   <td>
                     <div class="trial-progress">
-                      <div class="bar"><div class="bar-fill" style="width:${((l.trial_sessions_attended || 0)/(l.trial_sessions_max || 3))*100}%"></div></div>
+                      <div class="bar"><div class="bar-fill" style="width:${((l.trial_sessions_attended || 0) / (l.trial_sessions_max || 3)) * 100}%"></div></div>
                       <span class="text">${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3}</span>
                     </div>
                   </td>
@@ -278,14 +451,14 @@
             <div class="dashboard-card-body">
               ${data.todaySessions?.length ? data.todaySessions.map(s => `
                 <div class="session-item">
-                  <div class="session-time">${s.start_time?.substring(0,5)}</div>
+                  <div class="session-time">${s.start_time?.substring(0, 5)}</div>
                   <div class="session-info">
                     <div class="class-name">${s.class_name} - Buổi ${s.session_number}</div>
                     <div class="meta">${s.student_count} học sinh</div>
                   </div>
-                  ${s.attendance_submitted 
-                    ? '<span class="badge badge-success">Đã điểm danh</span>' 
-                    : `<a href="pages/attendance.html?sessionId=${s.id}" class="btn btn-sm btn-primary">Điểm danh</a>`}
+                  ${s.attendance_submitted
+          ? '<span class="badge badge-success">Đã điểm danh</span>'
+          : `<a href="pages/attendance.html?sessionId=${s.id}" class="btn btn-sm btn-primary">Điểm danh</a>`}
                 </div>
               `).join('') : '<p class="empty">Không có buổi học hôm nay</p>'}
             </div>
@@ -310,7 +483,7 @@
               ${data.classes?.length ? `<table class="mini-table">
                 ${data.classes.map(c => `<tr>
                   <td><strong>${c.class_name}</strong><br><small class="text-muted">${c.subject_name || ''} - ${c.level_name || ''}</small></td>
-                  <td>${c.study_days || ''}<br><small>${c.start_time?.substring(0,5) || ''}</small></td>
+                  <td>${c.study_days || ''}<br><small>${c.start_time?.substring(0, 5) || ''}</small></td>
                   <td><span class="badge badge-info">${c.student_count} HS</span></td>
                 </tr>`).join('')}
               </table>` : '<p class="empty">Chưa có lớp nào</p>'}
@@ -335,7 +508,7 @@
             <div class="dashboard-card-header" style="background:#fef3c7;"><h3 style="color:#b45309;"><i class="fas fa-exclamation-triangle"></i> Cần gia hạn (${data.expiringStudents.length})</h3><a href="pages/fee-warning.html" class="btn btn-sm btn-warning">Xử lý</a></div>
             <div class="dashboard-card-body">
               <table class="mini-table">
-                ${data.expiringStudents.slice(0,5).map(s => `<tr>
+                ${data.expiringStudents.slice(0, 5).map(s => `<tr>
                   <td><strong>${s.full_name}</strong></td>
                   <td>${s.class_name || '-'}</td>
                   <td><strong class="${s.remaining_sessions <= 0 ? 'text-danger' : 'text-warning'}">${s.remaining_sessions || 0} buổi</strong></td>
@@ -349,7 +522,7 @@
             <div class="dashboard-card-body">
               ${data.todaySessions?.length ? data.todaySessions.map(s => `
                 <div class="session-item">
-                  <div class="session-time">${s.start_time?.substring(0,5)}</div>
+                  <div class="session-time">${s.start_time?.substring(0, 5)}</div>
                   <div class="session-info">
                     <div class="class-name">${s.class_name}</div>
                     <div class="meta">GV: ${s.teacher_name || 'N/A'}</div>
@@ -365,7 +538,7 @@
             <div class="dashboard-card-header"><h3><i class="fas fa-user-clock"></i> Chờ xếp lớp (${data.pendingStudents.length})</h3></div>
             <div class="dashboard-card-body">
               <table class="mini-table">
-                ${data.pendingStudents.slice(0,5).map(s => `<tr>
+                ${data.pendingStudents.slice(0, 5).map(s => `<tr>
                   <td><strong>${s.full_name}</strong></td>
                   <td>${s.subject_name || '-'}</td>
                   <td>${s.parent_phone || '-'}</td>
@@ -392,8 +565,8 @@
             <div class="dashboard-card-header"><h3><i class="fas fa-trophy"></i> Top EC tháng ${data.currentMonth}</h3><a href="pages/sale-reports.html" class="btn btn-sm btn-primary">Xem chi tiết</a></div>
             <div class="dashboard-card-body">
               ${data.topEcs?.length ? `<table class="mini-table">
-                ${data.topEcs.slice(0,5).map((e, i) => `<tr>
-                  <td>${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1)}</td>
+                ${data.topEcs.slice(0, 5).map((e, i) => `<tr>
+                  <td>${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1)}</td>
                   <td><strong>${e.ec_name}</strong> <span class="branch-tag-sm">${e.branch_code || ''}</span></td>
                   <td class="text-success"><strong>${formatCurrency(e.revenue)}</strong></td>
                   <td><span class="badge ${e.kpi_percent >= 100 ? 'badge-success' : 'badge-warning'}">${e.kpi_percent || 0}%</span></td>
@@ -420,7 +593,7 @@
             <div class="dashboard-card-header" style="background:#fef2f2;"><h3 style="color:#dc2626;"><i class="fas fa-exclamation-triangle"></i> Học viên cần gia hạn</h3><a href="pages/fee-warning.html" class="btn btn-sm btn-danger">Xem tất cả</a></div>
             <div class="dashboard-card-body">
               <table class="mini-table">
-                ${data.expiringStudents.slice(0,5).map(s => `<tr>
+                ${data.expiringStudents.slice(0, 5).map(s => `<tr>
                   <td><strong>${s.full_name}</strong> <span class="branch-tag-sm">${s.branch_code}</span></td>
                   <td><strong class="${s.remaining_sessions <= 0 ? 'text-danger' : 'text-warning'}">${s.remaining_sessions || 0} buổi</strong></td>
                 </tr>`).join('')}
@@ -446,7 +619,7 @@
             <div class="dashboard-card-body">
               ${data.todaySessions?.length ? data.todaySessions.map(s => `
                 <div class="session-item">
-                  <div class="session-time">${s.start_time?.substring(0,5)}</div>
+                  <div class="session-time">${s.start_time?.substring(0, 5)}</div>
                   <div class="session-info">
                     <div class="class-name">${s.class_name} <span class="branch-tag-sm">${s.branch_code}</span></div>
                     <div class="meta">GV: ${s.teacher_name || 'N/A'} | ${s.student_count || 0} HS</div>
@@ -462,7 +635,7 @@
             <div class="dashboard-card-header" style="background:#fef3c7;"><h3 style="color:#b45309;"><i class="fas fa-exclamation-triangle"></i> Cần gia hạn</h3><a href="pages/fee-warning.html" class="btn btn-sm btn-warning">Xử lý</a></div>
             <div class="dashboard-card-body">
               <table class="mini-table">
-                ${data.expiringStudents.slice(0,5).map(s => `<tr>
+                ${data.expiringStudents.slice(0, 5).map(s => `<tr>
                   <td><strong>${s.full_name}</strong> <span class="branch-tag-sm">${s.branch_code}</span></td>
                   <td>${s.class_name || '-'}</td>
                   <td><strong class="text-warning">${s.remaining_sessions || 0} buổi</strong></td>
@@ -490,7 +663,7 @@
             <div class="dashboard-card-body">
               ${data.ecRanking?.length ? `<table class="mini-table">
                 ${data.ecRanking.map((e, i) => `<tr>
-                  <td>${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1)}</td>
+                  <td>${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1)}</td>
                   <td><strong>${e.ec_name}</strong> <span class="branch-tag-sm">${e.branch_code || ''}</span></td>
                   <td class="text-success"><strong>${formatCurrency(e.revenue)}</strong></td>
                   <td><span class="badge ${e.kpi_percent >= 100 ? 'badge-success' : e.kpi_percent >= 70 ? 'badge-warning' : 'badge-danger'}">${e.kpi_percent || 0}%</span></td>
@@ -534,7 +707,7 @@
                 <p class="text-muted">Hoàn thành KPI</p>
               </div>
               <div style="background:var(--bg-secondary);border-radius:8px;height:20px;overflow:hidden">
-                <div style="width:${Math.min(kpiPercent,100)}%;height:100%;background:${kpiPercent >= 100 ? '#10b981' : kpiPercent >= 70 ? '#f59e0b' : '#ef4444'};border-radius:8px"></div>
+                <div style="width:${Math.min(kpiPercent, 100)}%;height:100%;background:${kpiPercent >= 100 ? '#10b981' : kpiPercent >= 70 ? '#f59e0b' : '#ef4444'};border-radius:8px"></div>
               </div>
               <div class="quick-stats" style="margin-top:15px">
                 <div class="quick-stat"><div class="value text-success">${formatCurrency(data.myReport?.revenue)}</div><div class="label">Doanh số</div></div>
@@ -553,7 +726,7 @@
             <div class="dashboard-card-body">
               ${data.todayLeads?.length ? data.todayLeads.map(l => `
                 <div class="session-item">
-                  <div class="session-time">${l.scheduled_time?.substring(0,5) || '--:--'}</div>
+                  <div class="session-time">${l.scheduled_time?.substring(0, 5) || '--:--'}</div>
                   <div class="session-info">
                     <div class="class-name">${l.student_name}</div>
                     <div class="meta">${l.customer_phone}</div>
@@ -569,7 +742,7 @@
             <div class="dashboard-card-header" style="background:#cffafe;"><h3 style="color:#0891b2;"><i class="fas fa-clock"></i> Chờ đặt lịch (${data.waitingLeads.length})</h3><a href="pages/leads.html?status=waiting" class="btn btn-sm" style="background:#0891b2;color:white;">Xử lý</a></div>
             <div class="dashboard-card-body">
               <table class="mini-table">
-                ${data.waitingLeads.slice(0,5).map(l => `<tr>
+                ${data.waitingLeads.slice(0, 5).map(l => `<tr>
                   <td><strong>${l.student_name}</strong></td>
                   <td>${l.customer_phone}</td>
                   <td><span class="badge badge-info">${l.trial_sessions_attended || 0} buổi</span></td>
@@ -591,4 +764,5 @@
     });
   </script>
 </body>
+
 </html>

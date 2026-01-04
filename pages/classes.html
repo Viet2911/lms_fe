@@ -1171,6 +1171,7 @@
       } else {
         ui.warning('Buổi học chưa diễn ra hoặc bạn không có quyền điểm danh.');
       }
+
     }
 
     async function selectSession(sessionId) {
@@ -1474,12 +1475,18 @@
       modal.show('addStudentModal');
 
       try {
-        // Load students with status waiting or pending (chờ lớp)
+        // Load students with status waiting, pending, or active (để có thể thêm vào lớp)
         const branchId = currentClass.branch_id;
-        const res = await api.get(`/students?status=waiting&branchId=${branchId}&limit=100`);
-        const res2 = await api.get(`/students?status=pending&branchId=${branchId}&limit=100`);
+        const [res1, res2, res3] = await Promise.all([
+          api.get(`/students?status=waiting&branchId=${branchId}&limit=100`),
+          api.get(`/students?status=pending&branchId=${branchId}&limit=100`),
+          api.get(`/students?status=active&branchId=${branchId}&limit=100`)
+        ]);
 
-        waitingStudents = [...(res.data || []), ...(res2.data || [])];
+        waitingStudents = [...(res1.data || []), ...(res2.data || []), ...(res3.data || [])];
+
+        // Remove duplicates by id
+        waitingStudents = waitingStudents.filter((s, i, arr) => arr.findIndex(x => x.id === s.id) === i);
 
         // Filter out students already in class
         const existingIds = currentStudents.map(s => s.id);
@@ -1522,7 +1529,7 @@
             <div class="student-select-meta">
               <span><i class="fas fa-phone"></i> ${s.parent_phone || '-'}</span>
               <span style="margin-left:12px"><i class="fas fa-book"></i> ${s.subject_name || 'Chưa chọn môn'}</span>
-              <span style="margin-left:12px;color:#f59e0b"><i class="fas fa-clock"></i> ${s.status === 'waiting' ? 'Đợi lớp' : 'Chờ xếp lớp'}</span>
+              <span style="margin-left:12px;color:${s.status === 'active' ? '#10b981' : '#f59e0b'}"><i class="fas fa-${s.status === 'active' ? 'check-circle' : 'clock'}"></i> ${s.status === 'waiting' ? 'Đợi lớp' : s.status === 'pending' ? 'Chờ xếp lớp' : 'Đang học'}</span>
             </div>
           </div>
           <code style="font-size:11px;color:#9ca3af">${s.student_code || ''}</code>

@@ -719,16 +719,47 @@
     let leads = [], currentStatus = '', currentView = 'table', canDelete = false;
     const statusCfg = { new: { label: 'Mới' }, scheduled: { label: 'Đã hẹn' }, attended: { label: 'Đã TN' }, waiting: { label: 'Chờ xử lý' }, converted: { label: 'Chuyển đổi' }, cancelled: { label: 'Lỗi' } };
 
-    // Payment config - sẽ được load từ API
+    // Payment config - mặc định, sẽ được override theo chi nhánh
     let paymentCfg = { bank_code: '970422', account_no: '0866766189', qr_template: 'compact2' };
+    let branchesData = []; // Cache branches data
 
-    function getQRUrl(amount, description) {
+    function getQRUrl(amount, description, branchId = null) {
+      let cfg = paymentCfg;
+
+      // Nếu có branchId, tìm config của branch đó
+      if (branchId && branchesData.length) {
+        const branch = branchesData.find(b => b.id == branchId);
+        if (branch && branch.bank_account) {
+          cfg = {
+            bank_code: branch.bank_code || '970422',
+            account_no: branch.bank_account,
+            qr_template: 'compact2'
+          };
+        }
+      }
+
       const desc = encodeURIComponent(description || 'Thanh toan');
-      return 'https://img.vietqr.io/image/' + paymentCfg.bank_code + '-' + paymentCfg.account_no + '-' + paymentCfg.qr_template + '.png?amount=' + amount + '&addInfo=' + desc;
+      return 'https://img.vietqr.io/image/' + cfg.bank_code + '-' + cfg.account_no + '-' + cfg.qr_template + '.png?amount=' + amount + '&addInfo=' + desc;
+    }
+
+    function getBranchBankInfo(branchId) {
+      if (branchId && branchesData.length) {
+        const branch = branchesData.find(b => b.id == branchId);
+        if (branch && branch.bank_account) {
+          return {
+            bank_code: branch.bank_code,
+            bank_account: branch.bank_account,
+            bank_name: branch.bank_name,
+            branch_name: branch.name
+          };
+        }
+      }
+      return null;
     }
 
     async function loadPaymentConfig() {
       try {
+        // Load default payment config
         const res = await api.get('/settings/payment');
         if (res.data && res.data.account_no) {
           paymentCfg = {
@@ -737,6 +768,10 @@
             qr_template: res.data.qr_template || 'compact2'
           };
         }
+
+        // Load branches data with bank info
+        const branchRes = await api.get('/branches');
+        branchesData = branchRes.data || [];
       } catch (e) { console.log('Using default payment config'); }
     }
 
@@ -1102,8 +1137,17 @@
         document.getElementById('successStudentName').textContent = studentName;
         document.getElementById('successStudentCode').textContent = 'Mã: ' + studentCode;
 
+        // Lấy branch_id từ lead để tạo QR theo chi nhánh
+        const leadBranchId = currentConvertLead?.branch_id || null;
+        const branchInfo = getBranchBankInfo(leadBranchId);
+
         const desc = encodeURIComponent(studentCode + ' ' + studentName.substring(0, 15));
         document.getElementById('successPaymentDesc').textContent = studentCode + ' ' + studentName.substring(0, 15);
+
+        // Hiển thị thông tin ngân hàng của chi nhánh nếu có
+        if (branchInfo) {
+          document.getElementById('successPaymentDesc').innerHTML = studentCode + ' ' + studentName.substring(0, 15) + '<br><small style="color:#6b7280">(' + branchInfo.branch_name + ')</small>';
+        }
 
         // LOGIC HIỂN THỊ QR THEO TRẠNG THÁI THANH TOÁN
         if (paymentStatus === 'pending') {
@@ -1120,7 +1164,7 @@
           document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
           document.getElementById('successRemainingAmount').textContent = formatCurrency(depositAmount);
           document.getElementById('successRemainingRaw').value = depositAmount;
-          document.getElementById('successQRImage').src = getQRUrl(depositAmount, studentCode + ' ' + studentName.substring(0, 15));
+          document.getElementById('successQRImage').src = getQRUrl(depositAmount, studentCode + ' ' + studentName.substring(0, 15), leadBranchId);
         } else if (paymentStatus === 'partial') {
           // Đóng 1 phần: QR hiện số tiền đã đóng (cọc + paid)
           const amountToPay = depositAmount + paidAmount;
@@ -1129,7 +1173,7 @@
           document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
           document.getElementById('successRemainingAmount').textContent = formatCurrency(amountToPay);
           document.getElementById('successRemainingRaw').value = amountToPay;
-          document.getElementById('successQRImage').src = getQRUrl(amountToPay, studentCode + ' ' + studentName.substring(0, 15));
+          document.getElementById('successQRImage').src = getQRUrl(amountToPay, studentCode + ' ' + studentName.substring(0, 15), leadBranchId);
         } else if (paymentStatus === 'paid') {
           // Đóng đủ: QR hiện TOÀN BỘ học phí
           document.getElementById('successQRSection').style.display = 'block';
@@ -1137,7 +1181,7 @@
           document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
           document.getElementById('successRemainingAmount').textContent = formatCurrency(feeTotal);
           document.getElementById('successRemainingRaw').value = feeTotal;
-          document.getElementById('successQRImage').src = getQRUrl(feeTotal, studentCode + ' ' + studentName.substring(0, 15));
+          document.getElementById('successQRImage').src = getQRUrl(feeTotal, studentCode + ' ' + studentName.substring(0, 15), leadBranchId);
         }
 
         document.getElementById('convertSuccessModal').classList.add('show');
@@ -1200,7 +1244,13 @@
         document.getElementById('paymentRemaining').textContent = formatCurrency(remaining);
         const transferDesc = (lead.converted_student_code || lead.code) + ' ' + (lead.student_name || '').substring(0, 15);
         document.getElementById('paymentTransferDesc').textContent = transferDesc;
-        document.getElementById('paymentQRImage').src = getQRUrl(remaining, transferDesc);
+
+        // Lấy branch_id từ lead để tạo QR theo chi nhánh
+        const branchInfo = getBranchBankInfo(lead.branch_id);
+        if (branchInfo) {
+          document.getElementById('paymentTransferDesc').innerHTML = transferDesc + '<br><small style="color:#6b7280">(' + branchInfo.branch_name + ' - ' + branchInfo.bank_name + ')</small>';
+        }
+        document.getElementById('paymentQRImage').src = getQRUrl(remaining, transferDesc, lead.branch_id);
         document.getElementById('btnConfirmLeadPayment').style.display = lead.converted_student_id ? 'block' : 'none';
         document.getElementById('paymentModal').classList.add('show');
       } catch (e) { ui.error(e.message); }
