@@ -4,21 +4,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Học sinh - LMS</title>
+  <title>Học viên - LMS</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/style.css">
   <style>
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 12px;
       margin-bottom: 20px;
     }
 
     .stat-card {
-      background: white;
+      background: var(--bg-card);
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -29,22 +29,22 @@
 
     .stat-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-lg);
     }
 
     .stat-card.active {
-      border-color: var(--primary-color);
-      background: #f0f9ff;
+      border-color: var(--primary);
+      background: rgba(52, 168, 83, 0.08);
     }
 
     .stat-icon {
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 16px;
     }
 
     .stat-icon.primary {
@@ -83,21 +83,21 @@
     }
 
     .stat-value {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
-      color: #1f2937;
+      color: var(--text-primary);
     }
 
     .stat-label {
-      font-size: 12px;
-      color: #6b7280;
+      font-size: 11px;
+      color: var(--text-secondary);
     }
 
     .status-badge {
       padding: 4px 10px;
       border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
+      font-size: 11px;
+      font-weight: 600;
     }
 
     .status-badge.pending {
@@ -140,59 +140,6 @@
       color: #7c3aed;
     }
 
-    .action-dropdown {
-      position: relative;
-      display: inline-block;
-    }
-
-    .action-dropdown-content {
-      display: none;
-      position: absolute;
-      right: 0;
-      top: 100%;
-      background: white;
-      min-width: 180px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      border-radius: 8px;
-      z-index: 100;
-      overflow: hidden;
-    }
-
-    .action-dropdown:hover .action-dropdown-content {
-      display: block;
-    }
-
-    .action-dropdown-content a {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      color: #374151;
-      text-decoration: none;
-      font-size: 13px;
-    }
-
-    .action-dropdown-content a:hover {
-      background: #f3f4f6;
-    }
-
-    .action-dropdown-content a.danger {
-      color: #dc2626;
-    }
-
-    .action-dropdown-content a.warning {
-      color: #d97706;
-    }
-
-    .action-dropdown-content a.success {
-      color: #16a34a;
-    }
-
-    .action-dropdown-content .divider {
-      border-top: 1px solid #e5e7eb;
-      margin: 4px 0;
-    }
-
     .student-info {
       display: flex;
       flex-direction: column;
@@ -200,170 +147,401 @@
 
     .student-name {
       font-weight: 600;
-      color: #1f2937;
+      color: var(--text-primary);
+      cursor: pointer;
     }
 
-    .student-subject {
+    .student-name:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
+    .student-meta {
       font-size: 12px;
-      color: #6b7280;
+      color: var(--text-secondary);
     }
 
-    .fee-info {
+    .sessions-badge {
+      padding: 4px 8px;
+      border-radius: 6px;
       font-size: 12px;
-    }
-
-    .fee-info .remaining {
-      color: #dc2626;
       font-weight: 600;
     }
 
-    .fee-info .sessions {
-      color: #6b7280;
+    .sessions-badge.low {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .sessions-badge.normal {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .detail-section {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .detail-section h4 {
+      margin: 0 0 12px;
+      color: var(--primary);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .detail-row {
+      display: flex;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      width: 120px;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .detail-value {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .action-buttons .btn {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .tab-nav {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .tab-btn {
+      padding: 10px 16px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-weight: 500;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--primary);
+    }
+
+    .history-item {
+      padding: 12px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .history-item .time {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .history-item .content {
+      font-size: 13px;
+      margin-top: 4px;
     }
   </style>
 </head>
 
 <body>
-  <div class="app-container">
-    <aside class="sidebar" id="sidebar"></aside>
-    <main class="main-content">
-      <header class="header">
-        <div class="header-left">
-          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i
-              class="fas fa-bars"></i></button>
-          <div>
-            <h1 class="page-title">Học sinh</h1>
-          </div>
-        </div>
-        <div class="header-right">
-          <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-sync"></i></button>
-          <button class="btn btn-primary" onclick="openModal()" id="btnCreate"><i class="fas fa-plus"></i> Thêm</button>
-          <div class="user-menu" onclick="auth.logout()">
-            <div class="user-avatar" id="userAvatar">U</div>
-            <div class="user-info">
-              <div class="user-name" id="userName">User</div>
-              <div class="user-role" id="userRole">Role</div>
-            </div>
-          </div>
-        </div>
-      </header>
+  <nav class="sidebar" id="sidebar"></nav>
+  <main class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')"><i
+            class="fas fa-bars"></i></button>
+        <h1><i class="fas fa-user-graduate"></i> Học viên</h1>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-sync"></i></button>
+        <button class="btn btn-primary" onclick="openCreateModal()" id="btnCreate"><i class="fas fa-plus"></i> Thêm học
+          viên</button>
+      </div>
+    </div>
 
-      <div class="page-content">
-        <!-- Stats Grid - Click to filter -->
-        <div class="stats-grid" id="statsGrid"></div>
+    <!-- Stats Grid -->
+    <div class="stats-grid" id="statsGrid"></div>
 
-        <!-- Search -->
-        <div class="filters-bar" style="margin-bottom:16px">
-          <div class="search-box" style="flex:1;max-width:400px">
+    <!-- Filters -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-body" style="padding:16px">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div class="search-box" style="flex:1;min-width:250px">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Tìm theo tên, SĐT, mã học sinh..."
+            <input type="text" id="searchInput" placeholder="Tìm tên, SĐT, mã học viên..."
               onkeyup="if(event.key==='Enter')loadData()">
           </div>
+          <select id="classFilter" class="form-control" style="width:180px" onchange="loadData()">
+            <option value="">Tất cả lớp</option>
+          </select>
           <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i> Tìm</button>
         </div>
-
-        <!-- Data Table -->
-        <div class="card">
-          <div class="table-container" id="dataTable">
-            <div class="loading">
-              <div class="spinner"></div>
-            </div>
-          </div>
-        </div>
-        <div id="pagination" style="margin-top:16px"></div>
       </div>
-    </main>
-  </div>
+    </div>
 
-  <!-- Add/Edit Modal -->
-  <div class="modal-overlay" id="formModal">
+    <!-- Data Table -->
+    <div class="card">
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Mã</th>
+              <th>Học viên</th>
+              <th>SĐT PH</th>
+              <th>Lớp</th>
+              <th>Buổi còn</th>
+              <th>Trạng thái</th>
+              <th class="text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="7" class="text-center">Đang tải...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="pagination" style="margin-top:16px"></div>
+  </main>
+
+  <!-- Create/Edit Modal -->
+  <div class="modal" id="formModal">
     <div class="modal-content modal-lg">
       <div class="modal-header">
-        <h3 class="modal-title" id="modalTitle">Thêm học sinh</h3><button class="modal-close"
-          onclick="modal.hide('formModal')">&times;</button>
+        <div class="modal-title" id="modalTitle"><i class="fas fa-user-plus"></i> Thêm học viên</div>
+        <button class="modal-close" onclick="closeFormModal()">&times;</button>
       </div>
-      <div class="modal-body">
-        <form id="dataForm">
-          <input type="hidden" id="itemId">
+      <div class="modal-body" style="max-height:75vh;overflow-y:auto">
+        <form id="studentForm">
+          <input type="hidden" id="studentId">
 
-          <div class="form-row" id="branchRow">
-            <div class="form-group">
-              <label class="form-label required"><i class="fas fa-building"></i> Cơ sở</label>
-              <select name="branchId" id="branchSelect" class="form-control" required>
-                <option value="">Đang tải...</option>
-              </select>
+          <!-- Thông tin học sinh -->
+          <div class="detail-section" style="background:linear-gradient(135deg,#dbeafe,#e0e7ff)">
+            <h4 style="color:#1e40af"><i class="fas fa-child"></i> Thông tin Học viên</h4>
+            <div class="form-row">
+              <div class="form-group" style="flex:2"><label class="required">Họ tên</label><input type="text"
+                  name="fullName" class="form-control" required></div>
+              <div class="form-group"><label class="required">Năm sinh</label><input type="number" name="birthYear"
+                  class="form-control" min="2005" max="2022" required></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Giới tính</label>
+                <select name="gender" class="form-control">
+                  <option value="">Chọn</option>
+                  <option value="male">Nam</option>
+                  <option value="female">Nữ</option>
+                </select>
+              </div>
+              <div class="form-group" style="flex:2"><label>Địa chỉ</label><input type="text" name="address"
+                  class="form-control"></div>
             </div>
           </div>
 
-          <h4 style="margin: 16px 0 12px; color: var(--primary-color);"><i class="fas fa-user-graduate"></i> Thông tin
-            học sinh</h4>
-
-          <div class="form-row">
-            <div class="form-group"><label class="form-label required">Họ tên</label><input type="text" name="fullName"
-                class="form-control" required></div>
-            <div class="form-group"><label class="form-label required">Năm sinh</label><input type="number"
-                name="birthYear" class="form-control" min="2005" max="2022" required></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Giới tính</label>
-              <select name="gender" class="form-control">
-                <option value="">Chọn</option>
-                <option value="male">Nam</option>
-                <option value="female">Nữ</option>
-              </select>
+          <!-- Thông tin phụ huynh -->
+          <div class="detail-section" style="background:linear-gradient(135deg,#fef3c7,#fde68a)">
+            <h4 style="color:#92400e"><i class="fas fa-users"></i> Thông tin Phụ huynh</h4>
+            <div class="form-row">
+              <div class="form-group" style="flex:2"><label class="required">Họ tên PH</label><input type="text"
+                  name="parentName" class="form-control" required></div>
+              <div class="form-group"><label class="required">SĐT</label><input type="tel" name="parentPhone"
+                  class="form-control" required></div>
             </div>
-            <div class="form-group"><label class="form-label">Địa chỉ</label><input type="text" name="address"
-                class="form-control"></div>
-          </div>
-
-          <h4 style="margin: 20px 0 12px; color: var(--primary-color);"><i class="fas fa-user-friends"></i> Thông tin
-            phụ huynh</h4>
-
-          <div class="form-row">
-            <div class="form-group"><label class="form-label required">Tên phụ huynh</label><input type="text"
-                name="parentName" class="form-control" required></div>
-            <div class="form-group"><label class="form-label required">SĐT phụ huynh</label><input type="tel"
-                name="parentPhone" class="form-control" required></div>
-          </div>
-          <div class="form-group"><label class="form-label">Email phụ huynh</label><input type="email"
-              name="parentEmail" class="form-control"></div>
-
-          <h4 style="margin: 20px 0 12px; color: var(--primary-color);"><i class="fas fa-book"></i> Thông tin học tập
-          </h4>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Môn học</label>
-              <select name="subjectId" id="subjectSelect" class="form-control">
-                <option value="">Chọn môn</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Cấp độ</label>
-              <select name="levelId" id="levelSelect" class="form-control">
-                <option value="">Chọn cấp độ</option>
-              </select>
+            <div class="form-group"><label>Email</label><input type="email" name="parentEmail" class="form-control">
             </div>
           </div>
-          <div class="form-group"><label class="form-label">Lộ trình học</label><input type="text" name="learningPath"
-              class="form-control" placeholder="VD: Robotics Beginner 6 tháng"></div>
 
-          <div class="form-group"><label class="form-label">Ghi chú</label><textarea name="note" class="form-control"
-              rows="2"></textarea></div>
+          <!-- Thông tin học tập -->
+          <div class="detail-section" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0)">
+            <h4 style="color:#166534"><i class="fas fa-book"></i> Thông tin Học tập</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Môn học</label>
+                <select name="subjectId" id="subjectSelect" class="form-control">
+                  <option value="">Chọn môn</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Cấp độ</label>
+                <select name="levelId" id="levelSelect" class="form-control">
+                  <option value="">Chọn cấp độ</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group"><label>Lộ trình học</label><input type="text" name="learningPath"
+                class="form-control" placeholder="VD: Robotics Beginner 6 tháng"></div>
+          </div>
+
+          <div class="form-group"><label>Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea>
+          </div>
         </form>
       </div>
-      <div class="modal-footer"><button class="btn btn-secondary" onclick="modal.hide('formModal')">Hủy</button><button
-          class="btn btn-primary" onclick="saveData()"><i class="fas fa-save"></i> Lưu</button></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeFormModal()">Hủy</button>
+        <button class="btn btn-primary" onclick="saveStudent()"><i class="fas fa-save"></i> Lưu</button>
+      </div>
     </div>
   </div>
 
-  <!-- Change Status Modal -->
-  <div class="modal-overlay" id="statusModal">
+  <!-- Detail Modal -->
+  <div class="modal" id="detailModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-user-graduate"></i> Chi tiết học viên</div>
+        <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="max-height:75vh;overflow-y:auto">
+        <!-- Header Info -->
+        <div
+          style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+          <div
+            style="width:64px;height:64px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold"
+            id="detailAvatar">H</div>
+          <div style="flex:1">
+            <h3 style="margin:0" id="detailName">Tên học viên</h3>
+            <div style="color:var(--text-secondary);font-size:13px" id="detailCode">Mã: ---</div>
+            <div style="margin-top:6px" id="detailStatus"></div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:13px;color:var(--text-secondary)">Buổi còn lại</div>
+            <div style="font-size:28px;font-weight:bold;color:var(--primary)" id="detailSessions">0</div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-nav">
+          <button class="tab-btn active" onclick="switchDetailTab('info')">Thông tin</button>
+          <button class="tab-btn" onclick="switchDetailTab('class')">Lớp học</button>
+          <button class="tab-btn" onclick="switchDetailTab('attendance')">Điểm danh</button>
+          <button class="tab-btn" onclick="switchDetailTab('payment')">Thanh toán</button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div id="tabInfo" class="tab-content">
+          <div class="detail-section">
+            <h4><i class="fas fa-child"></i> Thông tin học viên</h4>
+            <div class="detail-row"><span class="detail-label">Họ tên</span><span class="detail-value"
+                id="infoFullName">-</span></div>
+            <div class="detail-row"><span class="detail-label">Năm sinh</span><span class="detail-value"
+                id="infoBirthYear">-</span></div>
+            <div class="detail-row"><span class="detail-label">Giới tính</span><span class="detail-value"
+                id="infoGender">-</span></div>
+            <div class="detail-row"><span class="detail-label">Địa chỉ</span><span class="detail-value"
+                id="infoAddress">-</span></div>
+          </div>
+          <div class="detail-section">
+            <h4><i class="fas fa-users"></i> Thông tin phụ huynh</h4>
+            <div class="detail-row"><span class="detail-label">Họ tên PH</span><span class="detail-value"
+                id="infoParentName">-</span></div>
+            <div class="detail-row"><span class="detail-label">SĐT</span><span class="detail-value"
+                id="infoParentPhone">-</span></div>
+            <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value"
+                id="infoParentEmail">-</span></div>
+          </div>
+          <div class="detail-section">
+            <h4><i class="fas fa-book"></i> Thông tin học tập</h4>
+            <div class="detail-row"><span class="detail-label">Môn học</span><span class="detail-value"
+                id="infoSubject">-</span></div>
+            <div class="detail-row"><span class="detail-label">Cấp độ</span><span class="detail-value"
+                id="infoLevel">-</span></div>
+            <div class="detail-row"><span class="detail-label">Lộ trình</span><span class="detail-value"
+                id="infoPath">-</span></div>
+            <div class="detail-row"><span class="detail-label">Ngày nhập học</span><span class="detail-value"
+                id="infoEnrollDate">-</span></div>
+          </div>
+        </div>
+
+        <div id="tabClass" class="tab-content" style="display:none">
+          <div class="detail-section">
+            <h4><i class="fas fa-chalkboard"></i> Lớp đang học</h4>
+            <div id="classInfo">
+              <p class="text-muted">Chưa xếp lớp</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="tabAttendance" class="tab-content" style="display:none">
+          <div class="detail-section">
+            <h4><i class="fas fa-calendar-check"></i> Lịch sử điểm danh</h4>
+            <div id="attendanceHistory">
+              <p class="text-muted">Chưa có dữ liệu</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="tabPayment" class="tab-content" style="display:none">
+          <div class="detail-section">
+            <h4><i class="fas fa-credit-card"></i> Thông tin thanh toán</h4>
+            <div class="detail-row"><span class="detail-label">Tổng học phí</span><span class="detail-value"
+                id="payTotal">0đ</span></div>
+            <div class="detail-row"><span class="detail-label">Đã thanh toán</span><span class="detail-value"
+                id="payPaid" style="color:#16a34a">0đ</span></div>
+            <div class="detail-row"><span class="detail-label">Còn lại</span><span class="detail-value"
+                id="payRemaining" style="color:#dc2626">0đ</span></div>
+          </div>
+          <div style="text-align:center;margin-top:16px">
+            <button class="btn btn-primary" onclick="showPaymentQR(currentStudentId)"><i class="fas fa-qrcode"></i> Xem
+              QR thanh toán</button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons" id="detailActions">
+          <button class="btn btn-secondary" onclick="editStudent(currentStudentId)"><i class="fas fa-edit"></i>
+            Sửa</button>
+          <button class="btn btn-info" onclick="downloadEnrollmentForm(currentStudentId)"><i
+              class="fas fa-file-word"></i> Xuất đơn</button>
+          <button class="btn btn-primary" onclick="showPaymentQR(currentStudentId)"><i class="fas fa-qrcode"></i> QR
+            Code</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Change Modal -->
+  <div class="modal" id="statusModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">Thay đổi trạng thái</h3><button class="modal-close"
-          onclick="modal.hide('statusModal')">&times;</button>
+        <div class="modal-title"><i class="fas fa-exchange-alt"></i> Thay đổi trạng thái</div>
+        <button class="modal-close" onclick="closeStatusModal()">&times;</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="statusStudentId">
@@ -371,19 +549,18 @@
         <div id="statusFormContent"></div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="modal.hide('statusModal')">Hủy</button>
+        <button class="btn btn-secondary" onclick="closeStatusModal()">Hủy</button>
         <button class="btn btn-primary" onclick="confirmStatusChange()"><i class="fas fa-check"></i> Xác nhận</button>
       </div>
     </div>
   </div>
 
   <!-- Payment QR Modal -->
-  <div class="modal-overlay" id="qrModal">
-    <div class="modal-content" style="max-width:400px">
-      <div class="modal-header"
-        style="background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;border-radius:12px 12px 0 0">
-        <h3 class="modal-title"><i class="fas fa-qrcode"></i> QR Thanh toán</h3>
-        <button class="modal-close" onclick="modal.hide('qrModal')" style="color:white">&times;</button>
+  <div class="modal" id="qrModal">
+    <div class="modal-content" style="max-width:420px">
+      <div class="modal-header" style="background:linear-gradient(135deg,#3b82f6,#2563eb);color:white">
+        <div class="modal-title"><i class="fas fa-qrcode"></i> QR Thanh toán</div>
+        <button class="modal-close" onclick="closeQRModal()" style="color:white">&times;</button>
       </div>
       <div class="modal-body" style="text-align:center;padding:24px">
         <input type="hidden" id="qrRemainingRaw" value="0">
@@ -398,8 +575,8 @@
           <i class="fas fa-check-double"></i> Xác nhận đã nhận tiền
         </button>
         <button class="btn btn-primary" onclick="downloadEnrollmentFormFromQR()"><i class="fas fa-file-word"></i> Xuất
-          đơn Word</button>
-        <button class="btn btn-secondary" onclick="modal.hide('qrModal')">Đóng</button>
+          đơn</button>
+        <button class="btn btn-secondary" onclick="closeQRModal()">Đóng</button>
       </div>
     </div>
   </div>
@@ -410,6 +587,7 @@
   <script>
     let currentPage = 1;
     let currentFilter = '';
+    let currentStudentId = null;
     let stats = {};
 
     const STATUS_CONFIG = {
@@ -418,17 +596,15 @@
       active: { label: 'Đang học', icon: 'user-check', color: 'success' },
       paused: { label: 'Tạm dừng', icon: 'pause-circle', color: 'info' },
       expired: { label: 'Hết học phí', icon: 'exclamation-circle', color: 'danger' },
-      quit_paid: { label: 'Nghỉ (bỏ phí)', icon: 'user-times', color: 'danger' },
-      quit_refund: { label: 'Nghỉ (rút phí)', icon: 'hand-holding-usd', color: 'warning' },
+      quit_paid: { label: 'Nghỉ bỏ phí', icon: 'user-times', color: 'danger' },
+      quit_refund: { label: 'Nghỉ rút phí', icon: 'hand-holding-usd', color: 'warning' },
       reserved: { label: 'Bảo lưu', icon: 'archive', color: 'purple' }
     };
 
     async function init() {
       if (!auth.checkAuth()) return;
       buildSidebar('sidebar');
-      if (!auth.hasRole('SALE', 'ADMIN')) document.getElementById('btnCreate').style.display = 'none';
 
-      setupBranchSelect();
       await loadOptions();
       await loadStats();
       await loadData();
@@ -436,21 +612,24 @@
 
     async function loadOptions() {
       try {
-        const [subjects, levels] = await Promise.all([
+        const [subjects, levels, classes] = await Promise.all([
           api.get('/common/subjects'),
-          api.get('/common/levels')
+          api.get('/common/levels'),
+          api.get('/classes' + branch.buildQuery({}))
         ]);
+
         document.getElementById('subjectSelect').innerHTML = '<option value="">Chọn môn</option>' +
           (subjects.data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
         document.getElementById('levelSelect').innerHTML = '<option value="">Chọn cấp độ</option>' +
           (levels.data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+        document.getElementById('classFilter').innerHTML = '<option value="">Tất cả lớp</option>' +
+          (classes.data || []).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
       } catch (e) { console.error(e); }
     }
 
     async function loadStats() {
       try {
-        const query = branch.buildQuery({});
-        const result = await api.get('/students/stats' + query);
+        const result = await api.get('/students/stats' + branch.buildQuery({}));
         stats = result.data || {};
         renderStats();
       } catch (e) { console.error(e); }
@@ -458,20 +637,16 @@
 
     function renderStats() {
       const s = stats;
-      const container = document.getElementById('statsGrid');
-
       const items = [
         { key: '', label: 'Tổng', value: s.total || 0, icon: 'users', color: 'primary' },
         { key: 'active', label: 'Đang học', value: s.active || 0, icon: 'user-check', color: 'success' },
         { key: 'waiting', label: 'Đợi lớp', value: s.waiting || 0, icon: 'hourglass-half', color: 'info' },
         { key: 'paused', label: 'Tạm dừng', value: s.paused || 0, icon: 'pause-circle', color: 'warning' },
         { key: 'expired', label: 'Hết phí', value: s.expired || 0, icon: 'exclamation-circle', color: 'danger' },
-        { key: 'quit_paid', label: 'Nghỉ bỏ phí', value: s.quit_paid || 0, icon: 'user-times', color: 'danger' },
-        { key: 'quit_refund', label: 'Rút phí', value: s.quit_refund || 0, icon: 'hand-holding-usd', color: 'gray' },
         { key: 'reserved', label: 'Bảo lưu', value: s.reserved || 0, icon: 'archive', color: 'purple' }
       ];
 
-      container.innerHTML = items.map(item => `
+      document.getElementById('statsGrid').innerHTML = items.map(item => `
         <div class="stat-card ${currentFilter === item.key ? 'active' : ''}" onclick="filterByStatus('${item.key}')">
           <div class="stat-icon ${item.color}"><i class="fas fa-${item.icon}"></i></div>
           <div>
@@ -492,302 +667,304 @@
     async function loadData(page = 1) {
       currentPage = page;
       const search = document.getElementById('searchInput').value;
-      const container = document.getElementById('dataTable');
-      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      const classId = document.getElementById('classFilter').value;
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center"><div class="spinner"></div></td></tr>';
 
       try {
         const params = { page, limit: 20 };
         if (search) params.search = search;
         if (currentFilter) params.status = currentFilter;
-        const query = branch.buildQuery(params);
-        const result = await api.get('/students' + query);
+        if (classId) params.classId = classId;
+
+        const result = await api.get('/students' + branch.buildQuery(params));
         renderTable(result.data || [], result.pagination);
-      } catch (e) { container.innerHTML = '<p class="text-danger">Lỗi: ' + e.message + '</p>'; }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Lỗi: ${e.message}</td></tr>`;
+      }
     }
 
     function renderTable(items, pagination) {
-      const showBranch = auth.user?.is_system_wide && !branch.getId();
-
       if (!items.length) {
-        document.getElementById('dataTable').innerHTML = '<div class="empty-state" style="padding:40px;text-align:center"><i class="fas fa-user-graduate" style="font-size:48px;color:#d1d5db;margin-bottom:16px"></i><p style="color:#6b7280">Không có học sinh nào</p></div>';
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" class="text-center text-muted">Không có học viên nào</td></tr>';
         document.getElementById('pagination').innerHTML = '';
         return;
       }
 
-      let html = `<table class="table"><thead><tr>
-        <th>Mã</th>
-        ${showBranch ? '<th>Cơ sở</th>' : ''}
-        <th>Họ tên</th>
-        <th>SĐT PH</th>
-        <th>Lớp</th>
-        <th>Buổi còn</th>
-        <th>Trạng thái</th>
-        <th style="width:50px"></th>
-      </tr></thead><tbody>`;
-
+      let html = '';
       items.forEach(s => {
         const statusCfg = STATUS_CONFIG[s.status] || { label: s.status, color: 'gray' };
         const sessionsLeft = s.sessions_remaining || 0;
+        const sessionsClass = sessionsLeft <= 4 ? 'low' : 'normal';
 
         html += `<tr>
-          <td><span style="font-family:monospace;font-size:12px">${s.student_code || '-'}</span></td>
-          ${showBranch ? `<td><span class="branch-tag"><i class="fas fa-building"></i> ${s.branch_name || '-'}</span></td>` : ''}
+          <td><code style="font-size:11px">${s.student_code || '-'}</code></td>
           <td>
             <div class="student-info">
-              <span class="student-name">${escapeHtml(s.full_name)}</span>
-              <span class="student-subject">${s.subject_name || ''} ${s.level_name || ''}</span>
+              <span class="student-name" onclick="viewDetail(${s.id})">${escapeHtml(s.full_name)}</span>
+              <span class="student-meta">${s.subject_name || ''} ${s.level_name ? '• ' + s.level_name : ''}</span>
             </div>
           </td>
-          <td>${s.parent_phone || '-'}</td>
+          <td><a href="tel:${s.parent_phone}" style="color:var(--primary)">${s.parent_phone || '-'}</a></td>
           <td>${s.class_name || '<span class="text-muted">Chưa xếp</span>'}</td>
-          <td>
-            <div class="fee-info">
-              <span class="sessions ${sessionsLeft <= 4 ? 'remaining' : ''}">${sessionsLeft} buổi</span>
-            </div>
-          </td>
+          <td><span class="sessions-badge ${sessionsClass}">${sessionsLeft} buổi</span></td>
           <td><span class="status-badge ${s.status}">${statusCfg.label}</span></td>
-          <td>
-            <div class="action-dropdown">
-              <button class="btn btn-sm btn-secondary"><i class="fas fa-ellipsis-v"></i></button>
-              <div class="action-dropdown-content">
-                <a href="#" onclick="editItem(${s.id});return false"><i class="fas fa-edit"></i> Chỉnh sửa</a>
-                <a href="#" onclick="viewDetail(${s.id});return false"><i class="fas fa-eye"></i> Xem chi tiết</a>
-                <div class="divider"></div>
-                <a href="#" onclick="downloadEnrollmentForm(${s.id});return false"><i class="fas fa-file-word"></i> Xuất đơn nhập học</a>
-                <a href="#" onclick="showPaymentQR(${s.id});return false"><i class="fas fa-qrcode"></i> QR thanh toán</a>
-                <div class="divider"></div>
-                ${s.status === 'pending' || s.status === 'waiting' ? `
-                  <a href="#" onclick="changeStatus(${s.id},'active');return false" class="success"><i class="fas fa-play"></i> Bắt đầu học</a>
-                ` : ''}
-                ${s.status === 'active' ? `
-                  <a href="#" onclick="changeStatus(${s.id},'paused');return false" class="warning"><i class="fas fa-pause"></i> Tạm dừng</a>
-                ` : ''}
-                ${s.status === 'paused' ? `
-                  <a href="#" onclick="changeStatus(${s.id},'active');return false" class="success"><i class="fas fa-play"></i> Tiếp tục học</a>
-                ` : ''}
-                ${s.status === 'active' || s.status === 'paused' ? `
-                  <a href="#" onclick="changeStatus(${s.id},'reserved');return false"><i class="fas fa-archive"></i> Bảo lưu</a>
-                ` : ''}
-                ${s.status === 'reserved' ? `
-                  <a href="#" onclick="changeStatus(${s.id},'active');return false" class="success"><i class="fas fa-undo"></i> Kích hoạt lại</a>
-                ` : ''}
-                <div class="divider"></div>
-                <a href="#" onclick="changeStatus(${s.id},'quit_paid');return false" class="danger"><i class="fas fa-user-times"></i> Nghỉ (bỏ phí)</a>
-                <a href="#" onclick="changeStatus(${s.id},'quit_refund');return false" class="warning"><i class="fas fa-hand-holding-usd"></i> Nghỉ (rút phí)</a>
+          <td class="text-center">
+            <div class="btn-group">
+              <button class="btn btn-sm btn-secondary" onclick="viewDetail(${s.id})" title="Xem"><i class="fas fa-eye"></i></button>
+              <button class="btn btn-sm btn-secondary" onclick="editStudent(${s.id})" title="Sửa"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-sm btn-secondary" onclick="showPaymentQR(${s.id})" title="QR"><i class="fas fa-qrcode"></i></button>
+              <div class="dropdown" style="display:inline-block">
+                <button class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown"><i class="fas fa-ellipsis-v"></i></button>
+                <div class="dropdown-menu dropdown-menu-right">
+                  <a class="dropdown-item" href="#" onclick="downloadEnrollmentForm(${s.id});return false"><i class="fas fa-file-word"></i> Xuất đơn nhập học</a>
+                  <div class="dropdown-divider"></div>
+                  ${renderStatusActions(s)}
+                </div>
               </div>
             </div>
           </td>
         </tr>`;
       });
-      html += '</tbody></table>';
-      document.getElementById('dataTable').innerHTML = html;
+
+      document.getElementById('tableBody').innerHTML = html;
       document.getElementById('pagination').innerHTML = ui.pagination ? ui.pagination(pagination?.page || 1, pagination?.totalPages || 1, 'loadData') : '';
+
+      // Simple dropdown toggle
+      document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+        btn.onclick = function (e) {
+          e.stopPropagation();
+          const menu = this.nextElementSibling;
+          document.querySelectorAll('.dropdown-menu.show').forEach(m => m !== menu && m.classList.remove('show'));
+          menu.classList.toggle('show');
+        };
+      });
+      document.addEventListener('click', () => document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show')));
     }
+
+    function renderStatusActions(s) {
+      let html = '';
+      if (s.status === 'pending' || s.status === 'waiting') {
+        html += `<a class="dropdown-item text-success" href="#" onclick="changeStatus(${s.id},'active');return false"><i class="fas fa-play"></i> Bắt đầu học</a>`;
+      }
+      if (s.status === 'active') {
+        html += `<a class="dropdown-item text-warning" href="#" onclick="changeStatus(${s.id},'paused');return false"><i class="fas fa-pause"></i> Tạm dừng</a>`;
+      }
+      if (s.status === 'paused') {
+        html += `<a class="dropdown-item text-success" href="#" onclick="changeStatus(${s.id},'active');return false"><i class="fas fa-play"></i> Tiếp tục học</a>`;
+      }
+      if (s.status === 'active' || s.status === 'paused') {
+        html += `<a class="dropdown-item" href="#" onclick="changeStatus(${s.id},'reserved');return false"><i class="fas fa-archive"></i> Bảo lưu</a>`;
+      }
+      if (s.status === 'reserved') {
+        html += `<a class="dropdown-item text-success" href="#" onclick="changeStatus(${s.id},'active');return false"><i class="fas fa-undo"></i> Kích hoạt lại</a>`;
+      }
+      html += `<div class="dropdown-divider"></div>`;
+      html += `<a class="dropdown-item text-danger" href="#" onclick="changeStatus(${s.id},'quit_paid');return false"><i class="fas fa-user-times"></i> Nghỉ bỏ phí</a>`;
+      html += `<a class="dropdown-item text-warning" href="#" onclick="changeStatus(${s.id},'quit_refund');return false"><i class="fas fa-hand-holding-usd"></i> Nghỉ rút phí</a>`;
+      return html;
+    }
+
+    // ==================== MODALS ====================
+
+    function openCreateModal() {
+      document.getElementById('studentId').value = '';
+      document.getElementById('studentForm').reset();
+      document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Thêm học viên mới';
+      document.getElementById('formModal').classList.add('show');
+    }
+
+    function closeFormModal() {
+      document.getElementById('formModal').classList.remove('show');
+    }
+
+    async function editStudent(id) {
+      try {
+        const result = await api.get('/students/' + id);
+        const s = result.data;
+
+        document.getElementById('studentId').value = s.id;
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa thông tin học viên';
+
+        const form = document.getElementById('studentForm');
+        form.fullName.value = s.full_name || '';
+        form.birthYear.value = s.birth_year || '';
+        form.gender.value = s.gender || '';
+        form.address.value = s.address || '';
+        form.parentName.value = s.parent_name || '';
+        form.parentPhone.value = s.parent_phone || '';
+        form.parentEmail.value = s.parent_email || '';
+        form.subjectId.value = s.subject_id || '';
+        form.levelId.value = s.level_id || '';
+        form.learningPath.value = s.learning_path || '';
+        form.note.value = s.note || '';
+
+        closeDetailModal();
+        document.getElementById('formModal').classList.add('show');
+      } catch (e) { ui.error(e.message); }
+    }
+
+    async function saveStudent() {
+      const form = document.getElementById('studentForm');
+      const id = document.getElementById('studentId').value;
+
+      const data = {
+        full_name: form.fullName.value,
+        birth_year: form.birthYear.value,
+        gender: form.gender.value,
+        address: form.address.value,
+        parent_name: form.parentName.value,
+        parent_phone: form.parentPhone.value,
+        parent_email: form.parentEmail.value,
+        subject_id: form.subjectId.value || null,
+        level_id: form.levelId.value || null,
+        learning_path: form.learningPath.value,
+        note: form.note.value,
+        branch_id: branch.getId()
+      };
+
+      try {
+        if (id) {
+          await api.put('/students/' + id, data);
+          ui.success('Cập nhật thành công');
+        } else {
+          await api.post('/students', data);
+          ui.success('Thêm học viên thành công');
+        }
+        closeFormModal();
+        loadStats();
+        loadData();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    // ==================== DETAIL MODAL ====================
+
+    async function viewDetail(id) {
+      currentStudentId = id;
+      document.getElementById('detailModal').classList.add('show');
+
+      // Reset tabs
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.tab-btn').classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      document.getElementById('tabInfo').style.display = 'block';
+
+      try {
+        const result = await api.get('/students/' + id);
+        const s = result.data;
+
+        // Header
+        document.getElementById('detailAvatar').textContent = (s.full_name || 'H').charAt(0).toUpperCase();
+        document.getElementById('detailName').textContent = s.full_name;
+        document.getElementById('detailCode').textContent = 'Mã: ' + (s.student_code || '-');
+        document.getElementById('detailSessions').textContent = s.sessions_remaining || 0;
+
+        const statusCfg = STATUS_CONFIG[s.status] || { label: s.status };
+        document.getElementById('detailStatus').innerHTML = `<span class="status-badge ${s.status}">${statusCfg.label}</span>`;
+
+        // Info tab
+        document.getElementById('infoFullName').textContent = s.full_name || '-';
+        document.getElementById('infoBirthYear').textContent = s.birth_year || '-';
+        document.getElementById('infoGender').textContent = s.gender === 'male' ? 'Nam' : s.gender === 'female' ? 'Nữ' : '-';
+        document.getElementById('infoAddress').textContent = s.address || '-';
+        document.getElementById('infoParentName').textContent = s.parent_name || '-';
+        document.getElementById('infoParentPhone').textContent = s.parent_phone || '-';
+        document.getElementById('infoParentEmail').textContent = s.parent_email || '-';
+        document.getElementById('infoSubject').textContent = s.subject_name || '-';
+        document.getElementById('infoLevel').textContent = s.level_name || '-';
+        document.getElementById('infoPath').textContent = s.learning_path || '-';
+        document.getElementById('infoEnrollDate').textContent = s.enrollment_date ? formatDate(s.enrollment_date) : '-';
+
+        // Class tab
+        document.getElementById('classInfo').innerHTML = s.class_name
+          ? `<div class="detail-row"><span class="detail-label">Lớp</span><span class="detail-value">${s.class_name}</span></div>
+             <div class="detail-row"><span class="detail-label">Giáo viên</span><span class="detail-value">${s.teacher_name || '-'}</span></div>`
+          : '<p class="text-muted">Chưa xếp lớp</p>';
+
+        // Payment tab
+        const total = s.total_tuition || 0;
+        const paid = s.paid_amount || 0;
+        const remaining = total - paid;
+        document.getElementById('payTotal').textContent = formatCurrency(total) + 'đ';
+        document.getElementById('payPaid').textContent = formatCurrency(paid) + 'đ';
+        document.getElementById('payRemaining').textContent = formatCurrency(remaining) + 'đ';
+
+      } catch (e) { ui.error(e.message); }
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.remove('show');
+    }
+
+    function switchDetailTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).style.display = 'block';
+    }
+
+    // ==================== STATUS CHANGE ====================
 
     function changeStatus(studentId, newStatus) {
       const statusCfg = STATUS_CONFIG[newStatus] || { label: newStatus };
       document.getElementById('statusStudentId').value = studentId;
       document.getElementById('statusNewStatus').value = newStatus;
 
-      let formHtml = `<p style="margin-bottom:16px">Xác nhận chuyển học sinh sang trạng thái: <strong>${statusCfg.label}</strong>?</p>`;
+      let formHtml = `<p>Xác nhận chuyển học viên sang trạng thái: <strong>${statusCfg.label}</strong>?</p>`;
 
-      if (newStatus === 'paused') {
+      if (newStatus === 'paused' || newStatus === 'reserved') {
         formHtml += `
-          <div class="form-group">
-            <label class="form-label">Lý do tạm dừng</label>
-            <textarea id="statusReason" class="form-control" rows="2" placeholder="Nhập lý do..."></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Dự kiến quay lại</label>
-            <input type="date" id="statusExpectedReturn" class="form-control">
-          </div>
+          <div class="form-group"><label>Lý do</label><textarea id="statusReason" class="form-control" rows="2"></textarea></div>
+          <div class="form-group"><label>Dự kiến quay lại</label><input type="date" id="statusExpectedReturn" class="form-control"></div>
         `;
-      } else if (newStatus === 'reserved') {
+      }
+      if (newStatus === 'quit_refund') {
         formHtml += `
-          <div class="form-group">
-            <label class="form-label">Thời gian bảo lưu (tháng)</label>
-            <input type="number" id="statusReserveMonths" class="form-control" value="3" min="1" max="12">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Lý do bảo lưu</label>
-            <textarea id="statusReason" class="form-control" rows="2" placeholder="Nhập lý do..."></textarea>
-          </div>
+          <div class="form-group"><label>Số tiền hoàn</label><input type="text" id="statusRefundAmount" class="form-control" placeholder="0đ"></div>
+          <div class="form-group"><label>Lý do nghỉ</label><textarea id="statusReason" class="form-control" rows="2"></textarea></div>
         `;
-      } else if (newStatus === 'quit_paid' || newStatus === 'quit_refund') {
-        formHtml += `
-          <div class="form-group">
-            <label class="form-label required">Lý do nghỉ</label>
-            <textarea id="statusReason" class="form-control" rows="2" placeholder="Nhập lý do..." required></textarea>
-          </div>
-        `;
-        if (newStatus === 'quit_refund') {
-          formHtml += `
-            <div class="form-group">
-              <label class="form-label">Số tiền hoàn</label>
-              <input type="text" id="statusRefundAmount" class="form-control" placeholder="0đ" oninput="formatCurrencyInput(this)">
-            </div>
-          `;
-        }
       }
 
       document.getElementById('statusFormContent').innerHTML = formHtml;
-      modal.show('statusModal');
+      document.getElementById('statusModal').classList.add('show');
+    }
+
+    function closeStatusModal() {
+      document.getElementById('statusModal').classList.remove('show');
     }
 
     async function confirmStatusChange() {
       const studentId = document.getElementById('statusStudentId').value;
       const newStatus = document.getElementById('statusNewStatus').value;
-      const reasonEl = document.getElementById('statusReason');
-
-      const data = { status: newStatus };
-
-      if (reasonEl) data.reason = reasonEl.value;
-
-      const expectedReturnEl = document.getElementById('statusExpectedReturn');
-      if (expectedReturnEl && expectedReturnEl.value) data.expectedReturn = expectedReturnEl.value;
-
-      const reserveMonthsEl = document.getElementById('statusReserveMonths');
-      if (reserveMonthsEl) data.reserveMonths = reserveMonthsEl.value;
-
-      const refundAmountEl = document.getElementById('statusRefundAmount');
-      if (refundAmountEl) data.refundAmount = parseCurrency(refundAmountEl.value);
+      const reason = document.getElementById('statusReason')?.value || '';
+      const expectedReturn = document.getElementById('statusExpectedReturn')?.value || null;
 
       try {
-        await api.put(`/students/${studentId}/status`, data);
-        ui.success('Cập nhật trạng thái thành công');
-        modal.hide('statusModal');
-        loadStats();
-        loadData(currentPage);
-      } catch (e) { ui.error(e.message); }
-    }
-
-    function viewDetail(id) {
-      window.location.href = `student-detail.html?id=${id}`;
-    }
-
-    function openModal() {
-      document.getElementById('modalTitle').textContent = 'Thêm học sinh';
-      document.getElementById('itemId').value = '';
-      form.reset(document.getElementById('dataForm'));
-
-      const branchSelect = document.getElementById('branchSelect');
-      if (branchSelect && branch.getId()) {
-        branchSelect.value = branch.getId();
-      }
-
-      modal.show('formModal');
-    }
-
-    async function editItem(id) {
-      try {
-        const result = await api.get(`/students/${id}`);
-        const s = result.data;
-        document.getElementById('modalTitle').textContent = 'Sửa học sinh';
-        document.getElementById('itemId').value = id;
-        form.setData(document.getElementById('dataForm'), {
-          branchId: s.branch_id,
-          fullName: s.full_name,
-          birthYear: s.birth_year,
-          gender: s.gender,
-          address: s.address,
-          parentName: s.parent_name,
-          parentPhone: s.parent_phone,
-          parentEmail: s.parent_email,
-          subjectId: s.subject_id,
-          levelId: s.level_id,
-          learningPath: s.learning_path,
-          note: s.note
+        await api.put('/students/' + studentId + '/status', {
+          status: newStatus,
+          reason,
+          expected_return: expectedReturn
         });
-        modal.show('formModal');
-      } catch (e) { ui.error(e.message); }
-    }
 
-    async function saveData() {
-      const formEl = document.getElementById('dataForm');
-      if (!form.validate(formEl)) { ui.error('Điền đầy đủ'); return; }
-      const data = form.getData(formEl);
-      const id = document.getElementById('itemId').value;
-
-      if (!id && !data.branchId) {
-        data.branchId = branch.getId();
-      }
-
-      try {
-        if (id) await api.put(`/students/${id}`, data);
-        else await api.post('/students', data);
-        ui.success('Lưu thành công');
-        modal.hide('formModal');
+        ui.success('Cập nhật trạng thái thành công');
+        closeStatusModal();
+        closeDetailModal();
         loadStats();
-        loadData(currentPage);
+        loadData();
       } catch (e) { ui.error(e.message); }
     }
 
-    function setupBranchSelect() {
-      loadBranchOptions();
-    }
-
-    async function loadBranchOptions() {
-      const branchRow = document.getElementById('branchRow');
-      const branchSelect = document.getElementById('branchSelect');
-
-      try {
-        const result = await api.get('/branches');
-        const allBranches = result.data || [];
-
-        if (allBranches.length === 0) {
-          branchSelect.innerHTML = '<option value="">Chưa có cơ sở</option>';
-          return;
-        }
-
-        const userBranches = auth.user?.branches || [];
-        const isAdmin = auth.user?.is_system_wide;
-        let displayBranches = isAdmin ? allBranches : (userBranches.length ? userBranches : allBranches);
-
-        if (displayBranches.length === 1 && !isAdmin) {
-          branchRow.style.display = 'none';
-          branchSelect.innerHTML = `<option value="${displayBranches[0].id}" selected>${displayBranches[0].name}</option>`;
-        } else {
-          branchRow.style.display = 'flex';
-          const currentBranchId = branch.getId() || displayBranches[0]?.id;
-          branchSelect.innerHTML = displayBranches.map(b =>
-            `<option value="${b.id}" ${b.id == currentBranchId ? 'selected' : ''}>${b.name}</option>`
-          ).join('');
-        }
-      } catch (e) {
-        console.error('Load branches error:', e);
-        branchSelect.innerHTML = '<option value="">Lỗi tải</option>';
-      }
-    }
-
-    function escapeHtml(str) {
-      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
-    function formatCurrencyInput(input) {
-      const val = parseCurrency(input.value);
-      if (val > 0) {
-        input.value = new Intl.NumberFormat('vi-VN').format(val) + 'đ';
-      } else {
-        input.value = '';
-      }
-    }
-
-    function parseCurrency(str) {
-      return parseInt(String(str).replace(/[^\d]/g, '')) || 0;
-    }
-
-    // QR and Enrollment Form
-    let currentQRStudentId = null;
+    // ==================== QR PAYMENT ====================
 
     async function showPaymentQR(studentId) {
-      currentQRStudentId = studentId;
+      currentStudentId = studentId;
       document.getElementById('qrContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
       document.getElementById('qrRemainingRaw').value = '0';
       document.getElementById('btnConfirmPaymentQR').style.display = 'none';
-      modal.show('qrModal');
+      document.getElementById('qrModal').classList.add('show');
 
       try {
-        const res = await api.get(`/enrollment/${studentId}/preview`);
+        const res = await api.get('/enrollment/' + studentId + '/preview');
         const data = res.data;
 
         if (!data.qrUrl || data.remainingAmount <= 0) {
@@ -795,13 +972,12 @@
             <div style="padding:20px">
               <i class="fas fa-check-circle" style="font-size:64px;color:#22c55e;margin-bottom:16px"></i>
               <h4 style="color:#166534;margin-bottom:8px">Đã thanh toán đủ!</h4>
-              <p style="color:#6b7280">Học sinh đã hoàn thành thanh toán</p>
+              <p style="color:#6b7280">Học viên đã hoàn thành thanh toán</p>
             </div>
           `;
           return;
         }
 
-        // Store remaining for confirm payment
         document.getElementById('qrRemainingRaw').value = data.remainingAmount;
         document.getElementById('btnConfirmPaymentQR').style.display = 'inline-flex';
 
@@ -810,14 +986,14 @@
             <strong style="font-size:16px">${escapeHtml(data.student.full_name)}</strong>
             <div style="color:#6b7280;font-size:13px">${data.student.student_code}</div>
           </div>
-          <img src="${data.qrUrl}" alt="QR Code" style="max-width:250px;border-radius:8px;margin-bottom:16px">
+          <img src="${data.qrUrl}" alt="QR Code" style="max-width:220px;border-radius:8px;margin-bottom:16px">
           <div style="background:#fee2e2;padding:12px;border-radius:8px;margin-bottom:12px">
             <div style="color:#991b1b;font-size:13px">Số tiền còn lại</div>
-            <div style="color:#dc2626;font-size:24px;font-weight:700" id="qrRemainingDisplay">${formatCurrency(data.remainingAmount)}đ</div>
+            <div style="color:#dc2626;font-size:22px;font-weight:700">${formatCurrency(data.remainingAmount)}đ</div>
           </div>
           <div style="background:#f3f4f6;padding:12px;border-radius:8px">
-            <div style="font-size:12px;color:#6b7280">Nội dung chuyển khoản:</div>
-            <div style="font-weight:600;color:#1f2937">${data.student.student_code} ${escapeHtml(data.student.full_name).substring(0, 15)}</div>
+            <div style="font-size:12px;color:#6b7280">Nội dung CK:</div>
+            <div style="font-weight:600">${data.student.student_code} ${escapeHtml(data.student.full_name).substring(0, 15)}</div>
           </div>
         `;
       } catch (e) {
@@ -825,34 +1001,32 @@
       }
     }
 
-    async function confirmPaymentFromQR() {
-      if (!currentQRStudentId) { ui.warning('Không tìm thấy học sinh'); return; }
+    function closeQRModal() {
+      document.getElementById('qrModal').classList.remove('show');
+    }
 
+    async function confirmPaymentFromQR() {
       const remaining = parseFloat(document.getElementById('qrRemainingRaw').value) || 0;
-      if (remaining <= 0) { ui.info('Không còn số tiền cần thanh toán'); return; }
+      if (remaining <= 0 || !currentStudentId) return;
 
       if (!confirm('Xác nhận đã nhận được ' + formatCurrency(remaining) + 'đ từ phụ huynh?')) return;
 
       try {
-        await api.post('/students/' + currentQRStudentId + '/confirm-payment', {
+        await api.post('/students/' + currentStudentId + '/confirm-payment', {
           amount: remaining,
           paymentMethod: 'bank_transfer',
           note: 'Thanh toán qua QR'
         });
 
-        ui.success('Đã ghi nhận thanh toán ' + formatCurrency(remaining) + 'đ');
-
-        // Update UI
+        ui.success('Đã ghi nhận thanh toán');
         document.getElementById('qrRemainingRaw').value = '0';
         document.getElementById('btnConfirmPaymentQR').style.display = 'none';
         document.getElementById('qrContent').innerHTML = `
           <div style="padding:20px">
             <i class="fas fa-check-circle" style="font-size:64px;color:#22c55e;margin-bottom:16px"></i>
-            <h4 style="color:#166534;margin-bottom:8px">Đã thanh toán đủ!</h4>
-            <p style="color:#6b7280">Đã ghi nhận thanh toán thành công</p>
+            <h4 style="color:#166534">Đã thanh toán đủ!</h4>
           </div>
         `;
-
         loadData();
       } catch (e) { ui.error(e.message); }
     }
@@ -873,20 +1047,28 @@
           link.href = URL.createObjectURL(blob);
           link.download = 'Don_nhap_hoc_' + studentId + '.docx';
           link.click();
-          URL.revokeObjectURL(link.href);
           ui.success('Đã tải đơn nhập học');
         })
         .catch(e => ui.error(e.message));
     }
 
     function downloadEnrollmentFormFromQR() {
-      if (currentQRStudentId) {
-        downloadEnrollmentForm(currentQRStudentId);
-      }
+      if (currentStudentId) downloadEnrollmentForm(currentStudentId);
+    }
+
+    // ==================== UTILITIES ====================
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
     function formatCurrency(amount) {
       return new Intl.NumberFormat('vi-VN').format(amount || 0);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      return new Date(dateStr).toLocaleDateString('vi-VN');
     }
 
     document.addEventListener('DOMContentLoaded', init);
