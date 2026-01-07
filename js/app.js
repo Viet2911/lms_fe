@@ -15,7 +15,7 @@ const security = {
     div.textContent = String(text);
     return div.innerHTML;
   },
-  
+
   sanitize(obj) {
     if (typeof obj === 'string') return this.escapeHtml(obj);
     if (Array.isArray(obj)) return obj.map(item => this.sanitize(item));
@@ -66,7 +66,7 @@ const api = {
 
     try {
       const response = await fetch(`${API_BASE}${endpoint}`, options);
-      
+
       // Handle network errors
       if (!response.ok && response.status === 0) {
         throw new Error('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
@@ -184,18 +184,53 @@ const auth = {
   },
 
   hasRole(...roles) {
-    return roles.includes(this.user?.role_name);
+    if (!this.user) return false;
+    const userRole = this.user.role_name?.toUpperCase();
+    // ADMIN và GDV luôn có tất cả quyền
+    if (userRole === 'ADMIN' || userRole === 'GDV') return true;
+    return roles.map(r => r.toUpperCase()).includes(userRole);
   },
 
+  // Check permission from user.permissions array (loaded from API)
   hasPermission(permission) {
-    const rolePermissions = {
-      ADMIN: ['all'],
-      CM: ['manage_classes', 'manage_students', 'manage_sessions', 'manage_assignments'],
-      TEACHER: ['view_classes', 'manage_attendance', 'manage_assignments'],
-      SALE: ['manage_experience', 'manage_trial', 'view_students']
+    if (!this.user) return false;
+    const userRole = this.user.role_name?.toUpperCase();
+    // ADMIN và GDV luôn có tất cả quyền
+    if (userRole === 'ADMIN' || userRole === 'GDV') return true;
+    // Check từ permissions được load từ API
+    const permissions = this.user.permissions || [];
+    return permissions.includes(permission);
+  },
+
+  // Check nếu user có ít nhất 1 trong các permissions
+  hasAnyPermission(...permissions) {
+    if (!this.user) return false;
+    const userRole = this.user.role_name?.toUpperCase();
+    if (userRole === 'ADMIN' || userRole === 'GDV') return true;
+    const userPerms = this.user.permissions || [];
+    return permissions.some(p => userPerms.includes(p));
+  },
+
+  // Check module access
+  canAccess(module) {
+    const modulePermissions = {
+      leads: ['leads.view', 'leads.create', 'leads.edit'],
+      students: ['students.view', 'students.create', 'students.edit'],
+      classes: ['classes.view', 'classes.create', 'classes.edit'],
+      attendance: ['attendance.view', 'attendance.checkin'],
+      reports: ['reports.view', 'reports.export'],
+      settings: ['settings.view', 'settings.edit'],
+      users: ['users.view', 'users.create'],
+      renewals: ['renewals.view', 'renewals.create'],
+      schedule: ['schedule.view'],
+      dashboard: ['dashboard.view']
     };
-    const perms = rolePermissions[this.user?.role_name] || [];
-    return perms.includes('all') || perms.includes(permission);
+    const perms = modulePermissions[module] || [];
+    return this.hasAnyPermission(...perms);
+  },
+
+  isSystemWide() {
+    return this.user?.is_system_wide === 1 || ['ADMIN', 'GDV', 'CHU'].includes(this.user?.role_name?.toUpperCase());
   }
 };
 
@@ -452,7 +487,7 @@ const form = {
 
   validate(formEl) {
     let valid = true;
-    
+
     // Clear previous errors
     formEl.querySelectorAll('.is-invalid').forEach(el => {
       el.classList.remove('is-invalid');
@@ -508,7 +543,7 @@ const form = {
       const min = input.getAttribute('min');
       const max = input.getAttribute('max');
       const value = parseFloat(input.value);
-      
+
       if (input.value && min !== null && value < parseFloat(min)) {
         valid = false;
         this.showError(input, `Giá trị tối thiểu là ${min}`);
@@ -758,13 +793,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // ===========================================
 // GLOBAL ERROR HANDLER
 // ===========================================
-window.onerror = function(message, source, lineno, colno, error) {
+window.onerror = function (message, source, lineno, colno, error) {
   console.error('Global error:', { message, source, lineno, colno, error });
   // Don't show UI error for script errors
   return false;
 };
 
-window.addEventListener('unhandledrejection', function(event) {
+window.addEventListener('unhandledrejection', function (event) {
   console.error('Unhandled promise rejection:', event.reason);
   if (event.reason?.message) {
     ui.error(event.reason.message);

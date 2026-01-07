@@ -1,17 +1,21 @@
 // Sidebar Builder - ARMY Technology LMS v4.0
-// Builds navigation based on user role
+// Builds navigation based on user role and permissions
 
 function buildSidebar(containerId, activePage = '') {
   const nav = document.getElementById(containerId);
   if (!nav) return;
 
-  const role = auth.user?.role_name;
+  const role = auth.user?.role_name?.toUpperCase();
   const currentPath = window.location.pathname;
   const branches = auth.user?.branches || [];
 
   const isActive = (page) => currentPath.includes(page) ? 'active' : '';
   const prefix = currentPath.includes('/pages/') ? '' : 'pages/';
   const homeLink = currentPath.includes('/pages/') ? '../index.html' : 'index.html';
+
+  // Check permission helper
+  const can = (perm) => auth.hasPermission(perm);
+  const canAny = (...perms) => auth.hasAnyPermission(...perms);
 
   let html = `
     <div class="sidebar-logo">
@@ -20,7 +24,7 @@ function buildSidebar(containerId, activePage = '') {
     </div>
   `;
 
-  // Branch selector (if user has multiple branches or is admin)
+  // Branch selector
   if (branches.length > 1 || auth.user?.is_system_wide) {
     html += `<div id="branchSelector" class="sidebar-branch"></div>`;
   } else if (branches.length === 1) {
@@ -38,128 +42,88 @@ function buildSidebar(containerId, activePage = '') {
   html += `<a href="${homeLink}" class="nav-item ${currentPath.endsWith('index.html') || currentPath.endsWith('/') ? 'active' : ''}"><i class="fas fa-home"></i><span>Dashboard</span></a>`;
 
   // ========================
-  // ADMIN - Toàn quyền
+  // TUYỂN SINH - Leads, Trial
   // ========================
-  if (role === 'ADMIN' || role === 'GDV' || role === 'CHU') {
-    html += `
-      <div class="nav-section-title">Tuyển sinh</div>
-      <a href="${prefix}leads.html" class="nav-item ${isActive('leads')}"><i class="fas fa-user-plus"></i><span>Leads</span></a>
-      <a href="${prefix}trial-calendar.html" class="nav-item ${isActive('trial-calendar')}"><i class="fas fa-calendar-alt"></i><span>Lịch trải nghiệm</span></a>
-      <a href="${prefix}students.html" class="nav-item ${isActive('students')}"><i class="fas fa-user-graduate"></i><span>Học viên</span></a>
-      
-      <div class="nav-section-title">Quản lý lớp</div>
-      <a href="${prefix}classes.html" class="nav-item ${isActive('classes')}"><i class="fas fa-chalkboard"></i><span>Lớp học</span></a>
-      <a href="${prefix}sessions.html" class="nav-item ${isActive('sessions')}"><i class="fas fa-calendar-check"></i><span>Buổi học</span></a>
-      <a href="${prefix}attendance.html" class="nav-item ${isActive('attendance')}"><i class="fas fa-clipboard-check"></i><span>Điểm danh</span></a>
-      
-      <div class="nav-section-title">Kinh doanh</div>
-      <a href="${prefix}sale-reports.html" class="nav-item ${isActive('sale-reports')}"><i class="fas fa-chart-line"></i><span>Báo cáo Sale</span></a>
-      <a href="${prefix}kpi.html" class="nav-item ${isActive('kpi')}"><i class="fas fa-bullseye"></i><span>KPI</span></a>
-      <a href="${prefix}promotions.html" class="nav-item ${isActive('promotions')}"><i class="fas fa-gift"></i><span>Khuyến mại</span></a>
-      
-      <div class="nav-section-title">Tài liệu</div>
-      <a href="${prefix}files.html" class="nav-item ${isActive('files')}"><i class="fas fa-folder"></i><span>Thư viện File</span></a>
-      <a href="${prefix}assignments.html" class="nav-item ${isActive('assignments')}"><i class="fas fa-tasks"></i><span>Bài tập</span></a>
-      
-      <div class="nav-section-title">Hệ thống</div>
-      <a href="${prefix}admin-settings.html" class="nav-item ${isActive('admin-settings')}"><i class="fas fa-cog"></i><span>Cài đặt</span></a>
-      <a href="${prefix}packages.html" class="nav-item ${isActive('packages')}"><i class="fas fa-box"></i><span>Gói học phí</span></a>
-      <a href="${prefix}branches.html" class="nav-item ${isActive('branches')}"><i class="fas fa-building"></i><span>Cơ sở</span></a>
-      <a href="${prefix}users.html" class="nav-item ${isActive('users')}"><i class="fas fa-users-cog"></i><span>Người dùng</span></a>
-    `;
+  if (canAny('leads.view', 'trial.view')) {
+    html += `<div class="nav-section-title">Tuyển sinh</div>`;
+    if (can('leads.view')) {
+      html += `<a href="${prefix}leads.html" class="nav-item ${isActive('leads')}"><i class="fas fa-user-plus"></i><span>Leads</span></a>`;
+    }
+    if (can('trial.view')) {
+      html += `<a href="${prefix}trial-calendar.html" class="nav-item ${isActive('trial-calendar')}"><i class="fas fa-calendar-alt"></i><span>Lịch trải nghiệm</span></a>`;
+    }
   }
 
   // ========================
-  // CHU - Chủ doanh nghiệp
+  // HỌC VIÊN
   // ========================
-  else if (role === 'CHU') {
-    html += `
-      <div class="nav-section-title">Tổng quan</div>
-      <a href="${prefix}students.html" class="nav-item ${isActive('students')}"><i class="fas fa-user-graduate"></i><span>Học viên</span></a>
-      <a href="${prefix}classes.html" class="nav-item ${isActive('classes')}"><i class="fas fa-chalkboard"></i><span>Lớp học</span></a>
-      
-      <div class="nav-section-title">Báo cáo</div>
-      <a href="${prefix}sale-reports.html" class="nav-item ${isActive('sale-reports')}"><i class="fas fa-chart-line"></i><span>Báo cáo Sale</span></a>
-      <a href="${prefix}fee-warning.html" class="nav-item ${isActive('fee-warning')}"><i class="fas fa-exclamation-triangle"></i><span>Cảnh báo học phí</span></a>
-    `;
+  if (can('students.view')) {
+    html += `<a href="${prefix}students.html" class="nav-item ${isActive('students')}"><i class="fas fa-user-graduate"></i><span>Học viên</span></a>`;
   }
 
   // ========================
-  // OM - Operation Manager
+  // QUẢN LÝ LỚP
   // ========================
-  else if (role === 'OM') {
-    html += `
-      <div class="nav-section-title">Quản lý lớp</div>
-      <a href="${prefix}classes.html" class="nav-item ${isActive('classes')}"><i class="fas fa-chalkboard"></i><span>Lớp học</span></a>
-      <a href="${prefix}sessions.html" class="nav-item ${isActive('sessions')}"><i class="fas fa-calendar-check"></i><span>Buổi học</span></a>
-      <a href="${prefix}students.html" class="nav-item ${isActive('students')}"><i class="fas fa-user-graduate"></i><span>Học viên</span></a>
-      
-      <div class="nav-section-title">Cảnh báo</div>
-      <a href="${prefix}fee-warning.html" class="nav-item ${isActive('fee-warning')}"><i class="fas fa-exclamation-triangle"></i><span>Sắp hết phí</span></a>
-    `;
+  if (canAny('classes.view', 'sessions.view', 'attendance.view', 'attendance.checkin')) {
+    html += `<div class="nav-section-title">Quản lý lớp</div>`;
+    if (can('classes.view')) {
+      html += `<a href="${prefix}classes.html" class="nav-item ${isActive('classes')}"><i class="fas fa-chalkboard"></i><span>Lớp học</span></a>`;
+    }
+    if (can('sessions.view')) {
+      html += `<a href="${prefix}sessions.html" class="nav-item ${isActive('sessions')}"><i class="fas fa-calendar-check"></i><span>Buổi học</span></a>`;
+    }
+    if (canAny('attendance.view', 'attendance.checkin')) {
+      html += `<a href="${prefix}attendance.html" class="nav-item ${isActive('attendance')}"><i class="fas fa-clipboard-check"></i><span>Điểm danh</span></a>`;
+    }
   }
 
   // ========================
-  // HOEC - Head of EC
+  // TÁI PHÍ
   // ========================
-  else if (role === 'HOEC') {
-    html += `
-      <div class="nav-section-title">Quản lý Sale</div>
-      <a href="${prefix}sale-reports.html" class="nav-item ${isActive('sale-reports')}"><i class="fas fa-chart-line"></i><span>Báo cáo Sale</span></a>
-      <a href="${prefix}kpi.html" class="nav-item ${isActive('kpi')}"><i class="fas fa-bullseye"></i><span>KPI</span></a>
-      <a href="${prefix}ec-management.html" class="nav-item ${isActive('ec-management')}"><i class="fas fa-users"></i><span>Quản lý EC</span></a>
-      
-      <div class="nav-section-title">Tuyển sinh</div>
-      <a href="${prefix}leads.html" class="nav-item ${isActive('leads')}"><i class="fas fa-user-plus"></i><span>Leads</span></a>
-    `;
+  if (canAny('renewals.view', 'renewals.create')) {
+    html += `<div class="nav-section-title">Học phí</div>`;
+    if (can('renewals.view')) {
+      html += `<a href="${prefix}fee-warning.html" class="nav-item ${isActive('fee-warning')}"><i class="fas fa-exclamation-triangle"></i><span>Cảnh báo phí</span></a>`;
+    }
   }
 
   // ========================
-  // CM - Class Manager
+  // BÁO CÁO & KPI
   // ========================
-  else if (role === 'CM') {
-    html += `
-      <div class="nav-section-title">Quản lý</div>
-      <a href="${prefix}classes.html" class="nav-item ${isActive('classes')}"><i class="fas fa-chalkboard"></i><span>Lớp học</span></a>
-      <a href="${prefix}students.html" class="nav-item ${isActive('students')}"><i class="fas fa-user-graduate"></i><span>Học viên</span></a>
-      <a href="${prefix}sessions.html" class="nav-item ${isActive('sessions')}"><i class="fas fa-calendar-check"></i><span>Buổi học</span></a>
-      <a href="${prefix}attendance.html" class="nav-item ${isActive('attendance')}"><i class="fas fa-clipboard-check"></i><span>Điểm danh</span></a>
-      
-      <div class="nav-section-title">Cảnh báo</div>
-      <a href="${prefix}fee-warning.html" class="nav-item ${isActive('fee-warning')}"><i class="fas fa-exclamation-triangle"></i><span>Sắp hết phí</span></a>
-      
-      <div class="nav-section-title">Tài liệu</div>
-      <a href="${prefix}files.html" class="nav-item ${isActive('files')}"><i class="fas fa-folder"></i><span>Thư viện File</span></a>
-      <a href="${prefix}assignments.html" class="nav-item ${isActive('assignments')}"><i class="fas fa-tasks"></i><span>Bài tập</span></a>
-    `;
+  if (canAny('reports.view', 'dashboard.revenue')) {
+    html += `<div class="nav-section-title">Báo cáo</div>`;
+    if (can('reports.view')) {
+      html += `<a href="${prefix}sale-reports.html" class="nav-item ${isActive('sale-reports')}"><i class="fas fa-chart-line"></i><span>Báo cáo Sale</span></a>`;
+    }
+    // KPI cho HOEC, QLCS, Admin
+    if (auth.hasRole('HOEC', 'QLCS', 'CHU', 'GDV', 'ADMIN')) {
+      html += `<a href="${prefix}kpi.html" class="nav-item ${isActive('kpi')}"><i class="fas fa-bullseye"></i><span>KPI</span></a>`;
+    }
+    // EC xem KPI của mình
+    if (role === 'EC' || role === 'SALE') {
+      html += `<a href="${prefix}my-kpi.html" class="nav-item ${isActive('my-kpi')}"><i class="fas fa-chart-bar"></i><span>KPI của tôi</span></a>`;
+    }
   }
 
   // ========================
-  // TEACHER - Giáo viên
+  // BÀI TẬP & TÀI LIỆU
   // ========================
-  else if (role === 'TEACHER') {
-    html += `
-      <div class="nav-section-title">Giảng dạy</div>
-      <a href="${prefix}classes.html" class="nav-item ${isActive('classes')}"><i class="fas fa-chalkboard"></i><span>Lớp của tôi</span></a>
-      <a href="${prefix}sessions.html" class="nav-item ${isActive('sessions')}"><i class="fas fa-calendar-check"></i><span>Buổi học</span></a>
-      <a href="${prefix}attendance.html" class="nav-item ${isActive('attendance')}"><i class="fas fa-clipboard-check"></i><span>Điểm danh</span></a>
-      <a href="${prefix}assignments.html" class="nav-item ${isActive('assignments')}"><i class="fas fa-tasks"></i><span>Bài tập</span></a>
-    `;
+  if (canAny('assignments.view', 'assignments.create')) {
+    html += `<div class="nav-section-title">Tài liệu</div>`;
+    html += `<a href="${prefix}assignments.html" class="nav-item ${isActive('assignments')}"><i class="fas fa-tasks"></i><span>Bài tập</span></a>`;
+    html += `<a href="${prefix}files.html" class="nav-item ${isActive('files')}"><i class="fas fa-folder"></i><span>Thư viện File</span></a>`;
   }
 
   // ========================
-  // EC (SALE) - Education Consultant
+  // HỆ THỐNG (Admin only)
   // ========================
-  else if (role === 'EC' || role === 'SALE') {
-    html += `
-      <div class="nav-section-title">Tuyển sinh</div>
-      <a href="${prefix}leads.html" class="nav-item ${isActive('leads')}"><i class="fas fa-user-plus"></i><span>Leads</span></a>
-      <a href="${prefix}trial-calendar.html" class="nav-item ${isActive('trial-calendar')}"><i class="fas fa-calendar-alt"></i><span>Lịch trải nghiệm</span></a>
-      <a href="${prefix}students.html" class="nav-item ${isActive('students')}"><i class="fas fa-user-graduate"></i><span>Học viên</span></a>
-      
-      <div class="nav-section-title">KPI</div>
-      <a href="${prefix}my-kpi.html" class="nav-item ${isActive('my-kpi')}"><i class="fas fa-chart-bar"></i><span>KPI của tôi</span></a>
-    `;
+  if (auth.hasRole('ADMIN', 'GDV')) {
+    html += `<div class="nav-section-title">Hệ thống</div>`;
+    html += `<a href="${prefix}admin-settings.html" class="nav-item ${isActive('admin-settings')}"><i class="fas fa-cog"></i><span>Cài đặt</span></a>`;
+    html += `<a href="${prefix}packages.html" class="nav-item ${isActive('packages')}"><i class="fas fa-box"></i><span>Gói học phí</span></a>`;
+    html += `<a href="${prefix}promotions.html" class="nav-item ${isActive('promotions')}"><i class="fas fa-gift"></i><span>Khuyến mại</span></a>`;
+    html += `<a href="${prefix}branches.html" class="nav-item ${isActive('branches')}"><i class="fas fa-building"></i><span>Cơ sở</span></a>`;
+    html += `<a href="${prefix}users.html" class="nav-item ${isActive('users')}"><i class="fas fa-users-cog"></i><span>Người dùng</span></a>`;
   }
 
   html += `</div>`;
@@ -183,7 +147,7 @@ function buildSidebar(containerId, activePage = '') {
 
   nav.innerHTML = html;
 
-  // Initialize branch selector after sidebar is rendered
+  // Initialize branch selector
   setTimeout(() => {
     if (typeof branch !== 'undefined') {
       branch.renderSelector();
@@ -194,17 +158,19 @@ function buildSidebar(containerId, activePage = '') {
 // Helper function to get role display name
 function getRoleDisplay(role) {
   const roleNames = {
-    'GDV': 'Giám đốc vùng',
     'ADMIN': 'Administrator',
-    'CHU': 'Chủ doanh nghiệp',
-    'OM': 'Operation Manager',
-    'HOEC': 'Head of EC',
-    'CM': 'Class Manager',
+    'GDV': 'Giám đốc vùng',
+    'CHU': 'Chủ cơ sở',
+    'QLCS': 'Quản lý cơ sở',
+    'HOEC': 'Trưởng EC',
+    'OM': 'Trưởng vận hành',
+    'CM': 'Quản lý lớp',
+    'EC': 'Tư vấn viên',
+    'SALE': 'Tư vấn viên',
     'TEACHER': 'Giáo viên',
-    'EC': 'EC Sale',
-    'SALE': 'Sale'
+    'TA': 'Trợ giảng'
   };
-  return roleNames[role] || role;
+  return roleNames[role?.toUpperCase()] || role;
 }
 
 window.buildSidebar = buildSidebar;
