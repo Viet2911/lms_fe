@@ -90,10 +90,14 @@ function buildSidebar(containerId, activePage = '') {
   // ========================
   // BÁO CÁO & KPI
   // ========================
-  if (canAny('reports.view', 'dashboard.revenue')) {
+  if (canAny('reports.view', 'dashboard.revenue', 'checkin.view')) {
     html += `<div class="nav-section-title">Báo cáo</div>`;
     if (can('reports.view')) {
       html += `<a href="${prefix}sale-reports.html" class="nav-item ${isActive('sale-reports')}"><i class="fas fa-chart-line"></i><span>Báo cáo Sale</span></a>`;
+    }
+    // Báo cáo trải nghiệm cho quản lý
+    if (auth.hasRole('HOEC', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'OM', 'CM', 'EC')) {
+      html += `<a href="${prefix}trial-report.html" class="nav-item ${isActive('trial-report')}"><i class="fas fa-clipboard-check"></i><span>Báo cáo Trải nghiệm</span></a>`;
     }
     // KPI cho HOEC, QLCS, Admin
     if (auth.hasRole('HOEC', 'QLCS', 'CHU', 'GDV', 'ADMIN')) {

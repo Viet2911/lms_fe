@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,25 +8,43 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
   <div class="app-container">
     <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
       <header class="header">
         <div class="header-left">
-          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
-          <div><h1 class="page-title">Học sinh thử</h1><p class="page-subtitle">Quản lý học sinh đang học thử</p></div>
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i
+              class="fas fa-bars"></i></button>
+          <div>
+            <h1 class="page-title">Học sinh thử</h1>
+            <p class="page-subtitle">Quản lý học sinh đang học thử</p>
+          </div>
         </div>
         <div class="header-right">
-          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
-          <div class="user-menu" onclick="auth.logout()"><div class="user-avatar" id="userAvatar">U</div><div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div></div>
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i
+              class="fas fa-sun"></i></button>
+          <div class="user-menu" onclick="auth.logout()">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-info">
+              <div class="user-name" id="userName">User</div>
+              <div class="user-role" id="userRole">Role</div>
+            </div>
+          </div>
         </div>
       </header>
       <div class="page-content">
         <div class="stats-grid" id="statsGrid"></div>
         <div class="filters-bar">
-          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Tìm kiếm..." onkeyup="if(event.key==='Enter') loadData()"></div>
-          <select id="statusFilter" class="filter-select" onchange="loadData()"><option value="">Tất cả</option><option value="active">Đang học thử</option><option value="converted">Đã chuyển đổi</option><option value="cancelled">Đã hủy</option></select>
+          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput"
+              placeholder="Tìm kiếm..." onkeyup="if(event.key==='Enter') loadData()"></div>
+          <select id="statusFilter" class="filter-select" onchange="loadData()">
+            <option value="">Tất cả</option>
+            <option value="active">Đang học thử</option>
+            <option value="converted">Đã chuyển đổi</option>
+            <option value="cancelled">Đã hủy</option>
+          </select>
           <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i></button>
         </div>
         <div class="table-container" id="dataTable"></div>
@@ -36,13 +55,18 @@
   <!-- Edit Modal -->
   <div class="modal-overlay" id="editModal">
     <div class="modal-content">
-      <div class="modal-header"><h3 class="modal-title">Sửa học sinh thử</h3><button class="modal-close" onclick="modal.hide('editModal')">&times;</button></div>
+      <div class="modal-header">
+        <h3 class="modal-title">Sửa học sinh thử</h3><button class="modal-close"
+          onclick="modal.hide('editModal')">&times;</button>
+      </div>
       <div class="modal-body">
         <form id="editForm">
           <input type="hidden" id="editId">
-          <div class="form-group"><label class="form-label required">Họ tên</label><input type="text" name="fullName" class="form-control" required></div>
+          <div class="form-group"><label class="form-label required">Họ tên</label><input type="text" name="fullName"
+              class="form-control" required></div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label">Năm sinh</label><input type="number" name="birthYear" class="form-control"></div>
+            <div class="form-group"><label class="form-label">Năm sinh</label><input type="number" name="birthYear"
+                class="form-control"></div>
             <div class="form-group"><label class="form-label">Trạng thái</label>
               <select name="status" class="form-control">
                 <option value="active">Đang học thử</option>
@@ -52,63 +76,201 @@
             </div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label">Tên PH</label><input type="text" name="parentName" class="form-control"></div>
-            <div class="form-group"><label class="form-label">SĐT PH</label><input type="tel" name="parentPhone" class="form-control"></div>
+            <div class="form-group"><label class="form-label">Tên PH</label><input type="text" name="parentName"
+                class="form-control"></div>
+            <div class="form-group"><label class="form-label">SĐT PH</label><input type="tel" name="parentPhone"
+                class="form-control"></div>
           </div>
-          <div class="form-group"><label class="form-label">Email PH</label><input type="email" name="parentEmail" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Email PH</label><input type="email" name="parentEmail"
+              class="form-control"></div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label">Môn học</label><select name="subjectId" class="form-control" id="editSubjectSelect"><option value="">Chọn</option></select></div>
-            <div class="form-group"><label class="form-label">Cấp độ</label><select name="levelId" class="form-control" id="editLevelSelect"><option value="">Chọn</option></select></div>
+            <div class="form-group"><label class="form-label">Môn học</label><select name="subjectId"
+                class="form-control" id="editSubjectSelect">
+                <option value="">Chọn</option>
+              </select></div>
+            <div class="form-group"><label class="form-label">Cấp độ</label><select name="levelId" class="form-control"
+                id="editLevelSelect">
+                <option value="">Chọn</option>
+              </select></div>
           </div>
-          <div class="form-group"><label class="form-label">Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea></div>
+          <div class="form-group"><label class="form-label">Ghi chú</label><textarea name="note" class="form-control"
+              rows="2"></textarea></div>
         </form>
       </div>
-      <div class="modal-footer"><button class="btn btn-secondary" onclick="modal.hide('editModal')">Hủy</button><button class="btn btn-primary" onclick="saveEdit()"><i class="fas fa-save"></i> Lưu</button></div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="modal.hide('editModal')">Hủy</button><button
+          class="btn btn-primary" onclick="saveEdit()"><i class="fas fa-save"></i> Lưu</button></div>
     </div>
   </div>
 
   <!-- Convert Modal -->
   <div class="modal-overlay" id="convertModal">
-    <div class="modal-content modal-lg">
-      <div class="modal-header"><h3 class="modal-title"><i class="fas fa-exchange-alt"></i> Chuyển thành học sinh chính thức</h3><button class="modal-close" onclick="modal.hide('convertModal')">&times;</button></div>
-      <div class="modal-body">
-        <div class="alert alert-info" style="margin-bottom:16px;">
-          <i class="fas fa-info-circle"></i> Vui lòng điền đầy đủ thông tin bắt buộc (<span class="text-danger">*</span>) để chuyển thành học sinh chính thức.
-        </div>
+    <div class="modal-content" style="max-width:900px">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-exchange-alt"></i> Chuyển thành học sinh chính thức</h3><button
+          class="modal-close" onclick="modal.hide('convertModal')">&times;</button>
+      </div>
+      <div class="modal-body" style="max-height:80vh;overflow-y:auto">
         <form id="convertForm">
           <input type="hidden" id="convertId">
-          
-          <!-- Branch info -->
-          <div class="form-group" id="convertBranchInfo"></div>
-          
-          <h4 style="margin-bottom:12px;color:var(--primary);">Thông tin học sinh</h4>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label required">Họ tên</label><input type="text" name="fullName" class="form-control" required></div>
-            <div class="form-group"><label class="form-label required">Năm sinh</label><input type="number" name="birthYear" class="form-control" required></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label">Giới tính</label>
-              <select name="gender" class="form-control"><option value="">Chọn</option><option value="male">Nam</option><option value="female">Nữ</option></select>
+
+          <!-- Thông tin học sinh -->
+          <div
+            style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:12px;margin-bottom:16px">
+            <h4 style="margin:0 0 12px;color:#1e40af"><i class="fas fa-child"></i> Thông tin Học sinh</h4>
+            <div class="form-row">
+              <div class="form-group" style="flex:2"><label class="form-label required">Họ tên</label><input type="text"
+                  name="fullName" class="form-control" required></div>
+              <div class="form-group"><label class="form-label required">Năm sinh</label><input type="number"
+                  name="birthYear" class="form-control" required></div>
             </div>
-            <div class="form-group"><label class="form-label">Địa chỉ</label><input type="text" name="address" class="form-control"></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Giới tính</label>
+                <select name="gender" class="form-control">
+                  <option value="">Chọn</option>
+                  <option value="male">Nam</option>
+                  <option value="female">Nữ</option>
+                </select>
+              </div>
+              <div class="form-group" style="flex:2"><label class="form-label">Địa chỉ</label><input type="text"
+                  name="address" class="form-control"></div>
+            </div>
           </div>
-          
-          <h4 style="margin:20px 0 12px;color:var(--primary);">Thông tin phụ huynh</h4>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label required">Tên phụ huynh</label><input type="text" name="parentName" class="form-control" required></div>
-            <div class="form-group"><label class="form-label required">SĐT phụ huynh</label><input type="tel" name="parentPhone" class="form-control" required></div>
+
+          <!-- Thông tin phụ huynh -->
+          <div
+            style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:16px">
+            <h4 style="margin:0 0 12px;color:#92400e"><i class="fas fa-users"></i> Thông tin Phụ huynh</h4>
+            <div class="form-row">
+              <div class="form-group" style="flex:2"><label class="form-label required">Tên phụ huynh</label><input
+                  type="text" name="parentName" class="form-control" required></div>
+              <div class="form-group"><label class="form-label required">SĐT phụ huynh</label><input type="tel"
+                  name="parentPhone" class="form-control" required></div>
+            </div>
+            <div class="form-group"><label class="form-label">Email phụ huynh</label><input type="email"
+                name="parentEmail" class="form-control"></div>
           </div>
-          <div class="form-group"><label class="form-label">Email phụ huynh</label><input type="email" name="parentEmail" class="form-control"></div>
-          
-          <h4 style="margin:20px 0 12px;color:var(--primary);">Thông tin học tập</h4>
-          <div class="form-row">
-            <div class="form-group"><label class="form-label required">Môn học</label><select name="subjectId" class="form-control" id="convertSubjectSelect" required><option value="">Chọn</option></select></div>
-            <div class="form-group"><label class="form-label required">Cấp độ</label><select name="levelId" class="form-control" id="convertLevelSelect" required><option value="">Chọn</option></select></div>
+
+          <!-- Thông tin khóa học -->
+          <div
+            style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:16px">
+            <h4 style="margin:0 0 12px;color:#166534"><i class="fas fa-book"></i> Thông tin Khóa học</h4>
+            <div class="form-row">
+              <div class="form-group" style="flex:2">
+                <label class="form-label required">Gói học phí</label>
+                <select name="packageId" class="form-control" id="trialPackageSelect" onchange="onTrialPackageChange()"
+                  required>
+                  <option value="">-- Chọn gói --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Học phí gốc</label>
+                <input type="text" id="trialFeeOriginal" class="form-control" value="0đ" readonly
+                  style="background:#f3f4f6;font-weight:bold">
+              </div>
+            </div>
+
+            <!-- Giảm giá -->
+            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+              <label style="color:#16a34a;font-weight:600"><i class="fas fa-percent"></i> Giảm giá</label>
+              <div class="form-row" style="margin-top:8px">
+                <div class="form-group" style="flex:2;margin-bottom:0">
+                  <select name="promoId" class="form-control" id="trialPromoSelect" onchange="onTrialPromoChange()">
+                    <option value="">-- Không áp dụng --</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <input type="text" id="trialPromoDiscount" class="form-control" value="0đ" readonly
+                    style="background:#dcfce7;color:#16a34a;font-weight:bold;text-align:right">
+                </div>
+              </div>
+            </div>
+
+            <!-- Học bổng -->
+            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng
+                  tặng kèm</label>
+                <span id="trialDefaultScholarshipBadge"
+                  style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">Mặc
+                  định: <strong id="trialDefaultScholarshipMonths">0</strong> tháng</span>
+              </div>
+              <div class="form-row" style="align-items:center">
+                <div class="form-group" style="margin-bottom:0;flex:1">
+                  <input type="number" name="scholarshipMonths" class="form-control" value="0" min="0" max="12"
+                    onchange="onTrialScholarshipChange()" style="font-size:18px;font-weight:bold;text-align:center">
+                </div>
+                <span style="padding:0 12px;color:#6b7280">tháng</span>
+              </div>
+              <div id="trialScholarshipWarning"
+                style="display:none;background:#fef3c7;color:#92400e;padding:8px 12px;border-radius:6px;margin-top:8px;font-size:12px">
+                <i class="fas fa-exclamation-triangle"></i> Vượt mức mặc định, cần GDV duyệt
+              </div>
+            </div>
+
+            <!-- Quà tặng -->
+            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+              <label style="color:#db2777;font-weight:600"><i class="fas fa-gift"></i> Quà tặng</label>
+              <input type="text" name="giftName" class="form-control" placeholder="VD: Balo, Áo thun..."
+                style="margin-top:8px">
+            </div>
+
+            <!-- Tổng kết -->
+            <div style="background:#1f2937;color:white;padding:16px;border-radius:8px;margin-top:12px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                <span>Khóa học chính:</span><span id="trialMainMonths">0 tháng</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                <span>Học bổng tặng:</span><span id="trialBonusMonths" style="color:#4ade80">+0 tháng</span>
+              </div>
+              <div
+                style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #374151">
+                <span style="font-size:16px"><strong>HỌC PHÍ THỰC ĐÓNG:</strong></span>
+                <span id="trialFeeTotal" style="font-size:24px;font-weight:bold;color:#fbbf24">0đ</span>
+              </div>
+            </div>
           </div>
-          <div class="form-group"><label class="form-label">Lộ trình học</label><input type="text" name="learningPath" class="form-control" placeholder="VD: Robotics Beginner 6 tháng"></div>
+
+          <!-- Thanh toán -->
+          <div
+            style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);padding:16px;border-radius:12px;margin-bottom:16px">
+            <h4 style="margin:0 0 12px;color:#9d174d"><i class="fas fa-credit-card"></i> Thanh toán</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Trạng thái</label>
+                <select name="paymentStatus" class="form-control" onchange="updateTrialPaymentFields()">
+                  <option value="pending">Chưa đóng</option>
+                  <option value="deposit">Đặt cọc</option>
+                  <option value="partial">Đóng 1 phần</option>
+                  <option value="paid">Đã đóng đủ</option>
+                </select>
+              </div>
+              <div class="form-group" id="trialDepositGroup" style="display:none">
+                <label class="form-label">Tiền cọc</label>
+                <input type="text" name="depositAmount" class="form-control" value="0đ"
+                  oninput="formatTrialCurrency(this);updateTrialRemaining()">
+              </div>
+              <div class="form-group" id="trialPaidGroup" style="display:none">
+                <label class="form-label">Đã thanh toán</label>
+                <input type="text" name="paidAmount" class="form-control" value="0đ"
+                  oninput="formatTrialCurrency(this);updateTrialRemaining()">
+              </div>
+            </div>
+            <div id="trialRemainingRow"
+              style="display:none;background:white;padding:12px;border-radius:8px;margin-top:8px">
+              <div style="display:flex;justify-content:space-between">
+                <span>Còn phải đóng:</span>
+                <span id="trialRemaining" style="font-size:18px;font-weight:bold;color:#dc2626">0đ</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group"><label class="form-label">Ghi chú</label><textarea name="note" class="form-control"
+              rows="2"></textarea></div>
         </form>
       </div>
-      <div class="modal-footer"><button class="btn btn-secondary" onclick="modal.hide('convertModal')">Hủy</button><button class="btn btn-primary" onclick="confirmConvert()"><i class="fas fa-check"></i> Xác nhận chuyển đổi</button></div>
+      <div class="modal-footer"><button class="btn btn-secondary"
+          onclick="modal.hide('convertModal')">Hủy</button><button class="btn btn-success" onclick="confirmConvert()"><i
+            class="fas fa-check"></i> Chuyển đổi</button></div>
     </div>
   </div>
 
@@ -116,6 +278,8 @@
   <script src="../js/app.js"></script>
   <script src="../js/sidebar.js"></script>
   <script>
+    let packages = [], promoPrograms = [], trialSelectedPackage = null, trialDefaultScholarship = 0;
+
     async function init() {
       if (!auth.checkAuth()) return;
       buildSidebar('sidebar');
@@ -132,13 +296,103 @@
         ]);
         const subjectOptions = '<option value="">Chọn</option>' + (subjects.data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
         const levelOptions = '<option value="">Chọn</option>' + (levels.data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join('');
-        
-        document.getElementById('convertSubjectSelect').innerHTML = subjectOptions;
-        document.getElementById('convertLevelSelect').innerHTML = levelOptions;
+
         document.getElementById('editSubjectSelect').innerHTML = subjectOptions;
         document.getElementById('editLevelSelect').innerHTML = levelOptions;
       } catch (e) { console.error(e); }
+
+      // Load packages
+      try {
+        const pkgRes = await api.get('/packages' + branch.buildQuery());
+        packages = pkgRes.data || [];
+        document.getElementById('trialPackageSelect').innerHTML = '<option value="">-- Chọn gói --</option>' +
+          packages.map(p => `<option value="${p.id}" data-price="${p.price || p.base_price}" data-months="${p.months}" data-scholarship="${p.default_scholarship_months || 0}">${p.name} - ${formatCurrency(p.price || p.base_price)}</option>`).join('');
+      } catch (e) { packages = []; }
+
+      // Load promos
+      try {
+        const promoRes = await api.get('/promotions' + branch.buildQuery());
+        promoPrograms = promoRes.data || [];
+        document.getElementById('trialPromoSelect').innerHTML = '<option value="">-- Không áp dụng --</option>' +
+          promoPrograms.map(p => `<option value="${p.id}" data-type="${p.discount_type}" data-value="${p.discount_value}">${p.name}</option>`).join('');
+      } catch (e) { promoPrograms = []; }
     }
+
+    // Package/Promo functions for trial convert form
+    function onTrialPackageChange() {
+      const select = document.getElementById('trialPackageSelect');
+      const option = select.options[select.selectedIndex];
+      if (!option.value) {
+        trialSelectedPackage = null; trialDefaultScholarship = 0;
+        document.getElementById('trialFeeOriginal').value = '0đ';
+        document.getElementById('trialMainMonths').textContent = '0 tháng';
+        document.getElementById('trialDefaultScholarshipBadge').style.display = 'none';
+      } else {
+        trialSelectedPackage = { price: parseFloat(option.dataset.price) || 0, months: parseInt(option.dataset.months) || 0 };
+        trialDefaultScholarship = parseInt(option.dataset.scholarship) || 0;
+        document.getElementById('trialFeeOriginal').value = formatCurrency(trialSelectedPackage.price);
+        document.getElementById('trialMainMonths').textContent = trialSelectedPackage.months + ' tháng';
+        if (trialDefaultScholarship > 0) {
+          document.getElementById('trialDefaultScholarshipBadge').style.display = 'inline-block';
+          document.getElementById('trialDefaultScholarshipMonths').textContent = trialDefaultScholarship;
+        } else {
+          document.getElementById('trialDefaultScholarshipBadge').style.display = 'none';
+        }
+      }
+      calculateTrialTotals();
+    }
+
+    function onTrialPromoChange() { calculateTrialTotals(); }
+
+    function onTrialScholarshipChange() {
+      const form = document.getElementById('convertForm');
+      const months = parseInt(form.scholarshipMonths.value) || 0;
+      document.getElementById('trialScholarshipWarning').style.display = (months > trialDefaultScholarship && trialDefaultScholarship > 0) ? 'block' : 'none';
+      document.getElementById('trialBonusMonths').textContent = '+' + months + ' tháng';
+      calculateTrialTotals();
+    }
+
+    function calculateTrialTotals() {
+      if (!trialSelectedPackage) { document.getElementById('trialFeeTotal').textContent = '0đ'; return; }
+      let originalFee = trialSelectedPackage.price, discount = 0;
+      const promoSelect = document.getElementById('trialPromoSelect');
+      const promoOption = promoSelect.options[promoSelect.selectedIndex];
+      if (promoOption.value) {
+        const type = promoOption.dataset.type, val = parseFloat(promoOption.dataset.value) || 0;
+        discount = type === 'percent' ? originalFee * val / 100 : val;
+      }
+      document.getElementById('trialPromoDiscount').value = formatCurrency(discount);
+      document.getElementById('trialFeeTotal').textContent = formatCurrency(Math.max(0, originalFee - discount));
+      updateTrialRemaining();
+    }
+
+    function updateTrialPaymentFields() {
+      const form = document.getElementById('convertForm');
+      const status = form.paymentStatus.value;
+      document.getElementById('trialDepositGroup').style.display = status === 'deposit' ? 'block' : 'none';
+      document.getElementById('trialPaidGroup').style.display = (status === 'partial' || status === 'paid') ? 'block' : 'none';
+      document.getElementById('trialRemainingRow').style.display = (status === 'deposit' || status === 'partial') ? 'block' : 'none';
+      if (status === 'paid') form.paidAmount.value = document.getElementById('trialFeeTotal').textContent;
+      updateTrialRemaining();
+    }
+
+    function updateTrialRemaining() {
+      const total = parseCurrency(document.getElementById('trialFeeTotal').textContent);
+      const form = document.getElementById('convertForm');
+      const status = form.paymentStatus.value;
+      let paid = 0;
+      if (status === 'deposit') paid = parseCurrency(form.depositAmount.value);
+      else if (status === 'partial' || status === 'paid') paid = parseCurrency(form.paidAmount.value);
+      document.getElementById('trialRemaining').textContent = formatCurrency(Math.max(0, total - paid));
+    }
+
+    function formatTrialCurrency(input) {
+      const val = parseCurrency(input.value);
+      if (val > 0) input.value = formatCurrency(val);
+    }
+
+    function formatCurrency(val) { return val ? new Intl.NumberFormat('vi-VN').format(val) + 'đ' : '0đ'; }
+    function parseCurrency(str) { return parseInt(String(str).replace(/[^\d]/g, '')) || 0; }
 
     async function loadStats() {
       try {
@@ -154,27 +408,31 @@
       } catch (e) { console.error(e); }
     }
 
-    async function loadData() {
+    let currentPage = 1;
+    async function loadData(page = 1) {
+      currentPage = page;
       const search = document.getElementById('searchInput').value;
       const status = document.getElementById('statusFilter').value;
       const container = document.getElementById('dataTable');
       container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
 
       try {
-        const params = { };
-        if (search) params.search = search;
-        if (status) params.status = status;
-        const query = branch.buildQuery(params);
-        const result = await api.get('/trial-students' + query);
-        renderTable(result.data || []);
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (status) params.append('status', status);
+        if (branch.current?.id) params.append('branch_id', branch.current.id);
+        params.append('page', page);
+        params.append('limit', 20);
+        const result = await api.get('/trial-students?' + params.toString());
+        renderTable(result.data || [], result.pagination);
       } catch (e) { container.innerHTML = '<p>Lỗi: ' + e.message + '</p>'; }
     }
 
-    function renderTable(items) {
+    function renderTable(items, pagination) {
       const showBranch = auth.user?.is_system_wide && !branch.getId();
-      
+
       if (!items.length) { document.getElementById('dataTable').innerHTML = '<div class="empty-state"><p>Chưa có dữ liệu</p></div>'; return; }
-      
+
       let html = `<table class="table"><thead><tr>
         <th>Mã</th>
         ${showBranch ? '<th>Cơ sở</th>' : ''}
@@ -184,7 +442,7 @@
         <th>Trạng thái</th>
         <th>Thao tác</th>
       </tr></thead><tbody>`;
-      
+
       items.forEach(t => {
         const statusClass = t.status === 'active' ? 'info' : t.status === 'converted' ? 'success' : 'secondary';
         const statusText = t.status === 'active' ? 'Đang học thử' : t.status === 'converted' ? 'Đã chuyển đổi' : 'Đã hủy';
@@ -205,6 +463,10 @@
         </tr>`;
       });
       html += '</tbody></table>';
+      // Add pagination
+      if (pagination && pagination.totalPages > 1) {
+        html += ui.pagination(pagination, loadData);
+      }
       document.getElementById('dataTable').innerHTML = html;
     }
 
@@ -246,7 +508,7 @@
         const result = await api.get(`/trial-students/${id}`);
         const t = result.data;
         document.getElementById('convertId').value = id;
-        
+
         // Show branch info
         document.getElementById('convertBranchInfo').innerHTML = `
           <div class="branch-badge" style="margin-bottom:16px;">
@@ -254,7 +516,7 @@
             <span>Cơ sở: <strong>${t.branch_name || 'N/A'}</strong></span>
           </div>
         `;
-        
+
         form.setData(document.getElementById('convertForm'), {
           fullName: t.full_name,
           birthYear: t.birth_year,
@@ -270,8 +532,34 @@
 
     async function confirmConvert() {
       const formEl = document.getElementById('convertForm');
-      if (!form.validate(formEl)) { ui.error('Vui lòng điền đầy đủ thông tin bắt buộc'); return; }
-      const data = form.getData(formEl);
+      if (!formEl.fullName.value || !formEl.parentName.value || !formEl.parentPhone.value || !formEl.packageId.value) {
+        ui.error('Vui lòng điền đầy đủ thông tin bắt buộc');
+        return;
+      }
+
+      const paymentStatus = formEl.paymentStatus.value;
+      let paidAmount = 0;
+      if (paymentStatus === 'deposit') paidAmount = parseCurrency(formEl.depositAmount.value);
+      else if (paymentStatus === 'partial' || paymentStatus === 'paid') paidAmount = parseCurrency(formEl.paidAmount.value);
+
+      const data = {
+        fullName: formEl.fullName.value,
+        birthYear: formEl.birthYear.value || null,
+        gender: formEl.gender.value || null,
+        address: formEl.address.value || null,
+        parentName: formEl.parentName.value,
+        parentPhone: formEl.parentPhone.value,
+        parentEmail: formEl.parentEmail.value || null,
+        packageId: formEl.packageId.value,
+        tuitionFee: parseCurrency(document.getElementById('trialFeeTotal').textContent),
+        discountAmount: parseCurrency(document.getElementById('trialPromoDiscount').value),
+        scholarshipMonths: parseInt(formEl.scholarshipMonths.value) || 0,
+        giftName: formEl.giftName.value || null,
+        paidAmount: paidAmount,
+        paymentStatus: paymentStatus,
+        note: formEl.note.value || null
+      };
+
       const id = document.getElementById('convertId').value;
       try {
         await api.post(`/trial-students/${id}/convert`, data);
@@ -280,6 +568,32 @@
         loadStats();
         loadData();
       } catch (e) { ui.error(e.message); }
+    }
+
+    function openConvertModal(trial) {
+      document.getElementById('convertId').value = trial.id;
+      const form = document.getElementById('convertForm');
+      form.reset();
+      form.fullName.value = trial.student_name || '';
+      form.birthYear.value = trial.birth_year || '';
+      form.parentName.value = trial.parent_name || '';
+      form.parentPhone.value = trial.parent_phone || '';
+      form.parentEmail.value = trial.parent_email || '';
+
+      // Reset package/promo fields
+      trialSelectedPackage = null; trialDefaultScholarship = 0;
+      document.getElementById('trialFeeOriginal').value = '0đ';
+      document.getElementById('trialPromoDiscount').value = '0đ';
+      document.getElementById('trialFeeTotal').textContent = '0đ';
+      document.getElementById('trialMainMonths').textContent = '0 tháng';
+      document.getElementById('trialBonusMonths').textContent = '+0 tháng';
+      document.getElementById('trialDefaultScholarshipBadge').style.display = 'none';
+      document.getElementById('trialScholarshipWarning').style.display = 'none';
+      document.getElementById('trialDepositGroup').style.display = 'none';
+      document.getElementById('trialPaidGroup').style.display = 'none';
+      document.getElementById('trialRemainingRow').style.display = 'none';
+
+      modal.show('convertModal');
     }
 
     async function deleteTrial(id) {
@@ -295,4 +609,5 @@
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
+
 </html>

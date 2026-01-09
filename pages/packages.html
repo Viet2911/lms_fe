@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
   <nav class="sidebar" id="sidebar"></nav>
 
@@ -48,13 +50,16 @@
                 <th>Tên gói</th>
                 <th class="text-center">Số tháng</th>
                 <th class="text-center">Số buổi</th>
+                <th class="text-center">HB mặc định</th>
                 <th class="text-right">Giá cơ bản</th>
                 <th class="text-center">Trạng thái</th>
                 <th class="text-center">Thao tác</th>
               </tr>
             </thead>
             <tbody id="packagesTable">
-              <tr><td colspan="7" class="text-center">Đang tải...</td></tr>
+              <tr>
+                <td colspan="7" class="text-center">Đang tải...</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -83,7 +88,9 @@
               </tr>
             </thead>
             <tbody id="pricesTableBody">
-              <tr><td colspan="6" class="text-center text-muted">Chọn cơ sở để xem giá</td></tr>
+              <tr>
+                <td colspan="6" class="text-center text-muted">Chọn cơ sở để xem giá</td>
+              </tr>
             </tbody>
           </table>
           <div class="text-right" style="margin-top:15px">
@@ -106,7 +113,7 @@
       <div class="modal-body">
         <form id="packageForm">
           <input type="hidden" id="packageId">
-          
+
           <div class="form-row">
             <div class="form-group">
               <label>Mã gói *</label>
@@ -117,7 +124,7 @@
               <input type="text" id="name" class="form-control" placeholder="VD: 6 tháng" required>
             </div>
           </div>
-          
+
           <div class="form-row">
             <div class="form-group">
               <label>Số tháng *</label>
@@ -129,17 +136,23 @@
               <small class="text-muted">1 tháng = 4 buổi</small>
             </div>
           </div>
-          
+
           <div class="form-group">
             <label>Giá cơ bản (VNĐ) *</label>
             <input type="number" id="basePrice" class="form-control" min="0" step="100000" required>
           </div>
-          
+
+          <div class="form-group">
+            <label>Học bổng mặc định (tháng)</label>
+            <input type="number" id="defaultScholarship" class="form-control" min="0" max="12" value="0">
+            <small class="text-muted">Nếu vượt quá mức này, cần GDV duyệt</small>
+          </div>
+
           <div class="form-group">
             <label>Mô tả</label>
             <textarea id="description" class="form-control" rows="2"></textarea>
           </div>
-          
+
           <div class="form-group">
             <label class="checkbox-label">
               <input type="checkbox" id="isActive" checked>
@@ -184,19 +197,24 @@
       try {
         const res = await api.get('/packages');
         packages = res.data;
-        
+
         const tbody = document.getElementById('packagesTable');
         if (packages.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Chưa có gói học phí nào</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có gói học phí nào</td></tr>';
           return;
         }
-        
+
         tbody.innerHTML = packages.map(p => `
           <tr>
             <td><span class="badge badge-primary">${p.code}</span></td>
             <td><strong>${p.name}</strong></td>
             <td class="text-center">${p.months} tháng</td>
             <td class="text-center">${p.sessions_count} buổi</td>
+            <td class="text-center">
+              ${p.default_scholarship_months > 0
+            ? `<span class="badge badge-info">${p.default_scholarship_months} tháng</span>`
+            : '<span class="text-muted">-</span>'}
+            </td>
             <td class="text-right"><strong>${formatCurrency(p.base_price)}</strong></td>
             <td class="text-center">
               ${p.is_active ? '<span class="badge badge-success">Hoạt động</span>' : '<span class="badge badge-secondary">Tắt</span>'}
@@ -220,29 +238,29 @@
       try {
         const res = await api.get('/branches');
         branches = res.data;
-        
+
         const select = document.getElementById('branchSelect');
         branches.forEach(b => {
           select.innerHTML += `<option value="${b.id}">${b.code} - ${b.name}</option>`;
         });
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function loadBranchPrices() {
       const branchId = document.getElementById('branchSelect').value;
       const tbody = document.getElementById('pricesTableBody');
       const saveBtn = document.getElementById('savePricesBtn');
-      
+
       if (!branchId) {
         tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Chọn cơ sở để xem giá</td></tr>';
         saveBtn.style.display = 'none';
         return;
       }
-      
+
       try {
         const res = await api.get('/packages?branch_id=' + branchId);
         const data = res.data;
-        
+
         tbody.innerHTML = data.map(p => `
           <tr>
             <td><strong>${p.name}</strong> <span class="badge badge-light">${p.code}</span></td>
@@ -258,7 +276,7 @@
             </td>
           </tr>
         `).join('');
-        
+
         saveBtn.style.display = 'inline-block';
       } catch (e) {
         console.error('Error loading branch prices:', e);
@@ -268,7 +286,7 @@
     async function saveBranchPrices() {
       const branchId = document.getElementById('branchSelect').value;
       if (!branchId) return;
-      
+
       const prices = [];
       document.querySelectorAll('.price-input').forEach(input => {
         prices.push({
@@ -276,7 +294,7 @@
           price: parseFloat(input.value) || 0
         });
       });
-      
+
       try {
         await api.post('/packages/branch-prices/bulk', { branch_id: branchId, prices });
         ui.success('Lưu giá thành công');
@@ -290,6 +308,7 @@
       document.getElementById('packageId').value = '';
       document.getElementById('packageForm').reset();
       document.getElementById('isActive').checked = true;
+      document.getElementById('defaultScholarship').value = '0';
       document.getElementById('modalTitle').innerHTML = '<i class="fas fa-box"></i> Thêm gói học phí';
       document.getElementById('packageModal').classList.add('show');
     }
@@ -297,13 +316,14 @@
     function editPackage(id) {
       const p = packages.find(x => x.id === id);
       if (!p) return;
-      
+
       document.getElementById('packageId').value = p.id;
       document.getElementById('code').value = p.code;
       document.getElementById('name').value = p.name;
       document.getElementById('months').value = p.months;
       document.getElementById('sessionsCount').value = p.sessions_count;
       document.getElementById('basePrice').value = p.base_price;
+      document.getElementById('defaultScholarship').value = p.default_scholarship_months || 0;
       document.getElementById('description').value = p.description || '';
       document.getElementById('isActive').checked = p.is_active;
       document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa gói: ' + p.name;
@@ -327,10 +347,11 @@
         months: parseInt(document.getElementById('months').value),
         sessions_count: parseInt(document.getElementById('sessionsCount').value),
         base_price: parseFloat(document.getElementById('basePrice').value),
+        default_scholarship_months: parseInt(document.getElementById('defaultScholarship').value) || 0,
         description: document.getElementById('description').value,
         is_active: document.getElementById('isActive').checked ? 1 : 0
       };
-      
+
       try {
         if (id) {
           await api.put('/packages/' + id, data);
@@ -348,7 +369,7 @@
 
     async function deletePackage(id, name) {
       if (!confirm(`Xóa gói "${name}"?`)) return;
-      
+
       try {
         await api.delete('/packages/' + id);
         ui.success('Đã xóa gói');
@@ -366,4 +387,5 @@
     init();
   </script>
 </body>
+
 </html>

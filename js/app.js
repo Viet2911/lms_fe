@@ -1,5 +1,15 @@
 // LMS Frontend - API & Utilities (Production Ready)
-
+(function () {
+  if (!document.querySelector('link[rel="icon"]')) {
+    const favicon = document.createElement('link');
+    favicon.rel = 'icon';
+    favicon.type = 'image/png';
+    // Check if in /pages/ subdirectory
+    const isInPages = window.location.pathname.includes('/pages/');
+    favicon.href = isInPages ? '../css/graduation-cap-solid.png' : './css/graduation-cap-solid.png';
+    document.head.appendChild(favicon);
+  }
+})();
 // ===========================================
 // CONFIG
 // ===========================================
@@ -397,6 +407,62 @@ const ui = {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  },
+
+  // Pagination helper
+  pagination(data, callback) {
+    if (!data || !data.totalPages || data.totalPages <= 1) return '';
+
+    const { page, totalPages, total } = data;
+    let html = '<div class="pagination-wrapper">';
+
+    // Info text
+    html += `<div class="pagination-info">Trang ${page}/${totalPages} (${total} kết quả)</div>`;
+    html += '<div class="pagination-buttons">';
+
+    // Previous button
+    if (page > 1) {
+      html += `<button class="pagination-btn" onclick="${callback.name}(${page - 1})"><i class="fas fa-chevron-left"></i></button>`;
+    } else {
+      html += `<button class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>`;
+    }
+
+    // Page numbers
+    const maxVisible = 5;
+    let startPage = Math.max(1, page - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+    if (endPage - startPage < maxVisible - 1) {
+      startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    if (startPage > 1) {
+      html += `<button class="pagination-btn" onclick="${callback.name}(1)">1</button>`;
+      if (startPage > 2) html += '<span class="pagination-dots">...</span>';
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      if (i === page) {
+        html += `<button class="pagination-btn active">${i}</button>`;
+      } else {
+        html += `<button class="pagination-btn" onclick="${callback.name}(${i})">${i}</button>`;
+      }
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) html += '<span class="pagination-dots">...</span>';
+      html += `<button class="pagination-btn" onclick="${callback.name}(${totalPages})">${totalPages}</button>`;
+    }
+
+    // Next button
+    if (page < totalPages) {
+      html += `<button class="pagination-btn" onclick="${callback.name}(${page + 1})"><i class="fas fa-chevron-right"></i></button>`;
+    } else {
+      html += `<button class="pagination-btn" disabled><i class="fas fa-chevron-right"></i></button>`;
+    }
+
+    html += '</div></div>';
+    return html;
   }
 };
 

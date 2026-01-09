@@ -224,6 +224,11 @@
                             oninput="formatPrice(this)">
                     </div>
                     <div class="form-group">
+                        <label>Học bổng mặc định (tháng)</label>
+                        <input type="number" id="pkgScholarship" class="form-control" min="0" max="12" value="0">
+                        <small class="text-muted">Vượt mức này cần GDV duyệt</small>
+                    </div>
+                    <div class="form-group">
                         <label>Mô tả</label>
                         <textarea id="pkgDescription" class="form-control" rows="2"></textarea>
                     </div>
@@ -330,6 +335,12 @@
                   <i class="fas fa-clock"></i>
                   <span>${p.sessions_per_week} buổi/tuần</span>
                 </div>
+                ${p.default_scholarship_months > 0 ? `
+                <div class="package-info-row">
+                  <i class="fas fa-graduation-cap"></i>
+                  <span>HB mặc định: ${p.default_scholarship_months} tháng</span>
+                </div>
+                ` : ''}
                 ${p.description ? `
                 <div class="package-info-row">
                   <i class="fas fa-info-circle"></i>
@@ -354,6 +365,7 @@
         function openModal(pkg = null) {
             document.getElementById('packageForm').reset();
             document.getElementById('packageId').value = '';
+            document.getElementById('pkgScholarship').value = '0';
 
             if (pkg) {
                 document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa gói học phí';
@@ -364,6 +376,7 @@
                 document.getElementById('pkgDuration').value = pkg.duration_months;
                 document.getElementById('pkgSessions').value = pkg.sessions_per_week;
                 document.getElementById('pkgPrice').value = formatCurrency(pkg.price).replace('đ', '');
+                document.getElementById('pkgScholarship').value = pkg.default_scholarship_months || 0;
                 document.getElementById('pkgDescription').value = pkg.description || '';
             } else {
                 document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus"></i> Thêm gói học phí';
@@ -390,6 +403,7 @@
                 duration_months: parseInt(document.getElementById('pkgDuration').value) || 12,
                 sessions_per_week: parseInt(document.getElementById('pkgSessions').value) || 2,
                 price: parseCurrency(document.getElementById('pkgPrice').value),
+                default_scholarship_months: parseInt(document.getElementById('pkgScholarship').value) || 0,
                 description: document.getElementById('pkgDescription').value,
                 is_active: true
             };

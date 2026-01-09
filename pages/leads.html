@@ -319,6 +319,7 @@
             </tr>
           </tbody>
         </table>
+        <div id="leadsPagination"></div>
       </div>
     </div>
 
@@ -329,36 +330,143 @@
 
   <!-- Form Modal -->
   <div class="modal" id="formModal">
-    <div class="modal-content modal-lg">
+    <div class="modal-content" style="max-width:900px">
       <div class="modal-header">
         <div class="modal-title" id="modalTitle"><i class="fas fa-user-plus"></i> Thêm Lead</div>
         <button class="modal-close" onclick="closeFormModal()">&times;</button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="max-height:80vh;overflow-y:auto">
         <form id="leadForm">
           <input type="hidden" id="leadId">
-          <div class="form-row">
-            <div class="form-group"><label class="required">Tên học sinh</label><input type="text" name="studentName"
-                class="form-control" required></div>
-            <div class="form-group"><label>Năm sinh</label><input type="number" name="birthYear" class="form-control"
-                placeholder="2015"></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group"><label class="required">Tên phụ huynh</label><input type="text" name="customerName"
-                class="form-control" required></div>
-            <div class="form-group"><label class="required">SĐT</label><input type="tel" name="customerPhone"
-                class="form-control" required></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group"><label>Email</label><input type="email" name="customerEmail" class="form-control">
+
+          <!-- Thông tin học sinh -->
+          <div
+            style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:12px;margin-bottom:16px">
+            <h4 style="margin:0 0 12px;color:#1e40af"><i class="fas fa-child"></i> Thông tin Học sinh</h4>
+            <div class="form-row">
+              <div class="form-group" style="flex:2"><label class="required">Tên học sinh</label><input type="text"
+                  name="studentName" class="form-control" required></div>
+              <div class="form-group"><label>Năm sinh</label><input type="number" name="birthYear" class="form-control"
+                  placeholder="2015"></div>
             </div>
-            <div class="form-group"><label>Nguồn</label><select name="source" class="form-control">
-                <option value="facebook">Facebook</option>
-                <option value="zalo">Zalo</option>
-                <option value="walk-in">Walk-in</option>
-                <option value="referral">Giới thiệu</option>
-              </select></div>
+            <div class="form-row">
+              <div class="form-group"><label>Giới tính</label>
+                <select name="gender" class="form-control">
+                  <option value="">Chọn</option>
+                  <option value="male">Nam</option>
+                  <option value="female">Nữ</option>
+                </select>
+              </div>
+              <div class="form-group" style="flex:2"><label>Địa chỉ</label><input type="text" name="address"
+                  class="form-control"></div>
+            </div>
           </div>
+
+          <!-- Thông tin phụ huynh -->
+          <div
+            style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:16px">
+            <h4 style="margin:0 0 12px;color:#92400e"><i class="fas fa-users"></i> Thông tin Phụ huynh</h4>
+            <div class="form-row">
+              <div class="form-group" style="flex:2"><label class="required">Tên phụ huynh</label><input type="text"
+                  name="customerName" class="form-control" required></div>
+              <div class="form-group"><label class="required">SĐT</label><input type="tel" name="customerPhone"
+                  class="form-control" required></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Email</label><input type="email" name="customerEmail" class="form-control">
+              </div>
+              <div class="form-group"><label>Nguồn</label>
+                <select name="source" class="form-control">
+                  <option value="facebook">Facebook</option>
+                  <option value="zalo">Zalo</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="walk-in">Walk-in</option>
+                  <option value="referral">Giới thiệu</option>
+                  <option value="other">Khác</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Thông tin khóa học -->
+          <div
+            style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:16px">
+            <h4 style="margin:0 0 12px;color:#166534"><i class="fas fa-book"></i> Thông tin Khóa học (nếu có)</h4>
+            <div class="form-row">
+              <div class="form-group" style="flex:2">
+                <label>Gói học phí</label>
+                <select name="packageId" class="form-control" id="leadPackageSelect" onchange="onLeadPackageChange()">
+                  <option value="">-- Chưa chọn --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Học phí gốc</label>
+                <input type="text" id="leadFeeOriginal" class="form-control" value="0đ" readonly
+                  style="background:#f3f4f6;font-weight:bold">
+              </div>
+            </div>
+
+            <!-- Giảm giá -->
+            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+              <label style="color:#16a34a;font-weight:600"><i class="fas fa-percent"></i> Giảm giá</label>
+              <div class="form-row" style="margin-top:8px">
+                <div class="form-group" style="flex:2;margin-bottom:0">
+                  <select name="promoId" class="form-control" id="leadPromoSelect" onchange="onLeadPromoChange()">
+                    <option value="">-- Không áp dụng --</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <input type="text" id="leadPromoDiscount" class="form-control" value="0đ" readonly
+                    style="background:#dcfce7;color:#16a34a;font-weight:bold;text-align:right">
+                </div>
+              </div>
+            </div>
+
+            <!-- Học bổng -->
+            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng
+                  tặng kèm</label>
+                <span id="leadDefaultScholarshipBadge"
+                  style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">Mặc
+                  định: <strong id="leadDefaultScholarshipMonths">0</strong> tháng</span>
+              </div>
+              <div class="form-row" style="align-items:center">
+                <div class="form-group" style="margin-bottom:0;flex:1">
+                  <input type="number" name="scholarshipMonths" class="form-control" value="0" min="0" max="12"
+                    onchange="onLeadScholarshipChange()" style="font-size:18px;font-weight:bold;text-align:center">
+                </div>
+                <span style="padding:0 12px;color:#6b7280">tháng</span>
+              </div>
+              <div id="leadScholarshipWarning"
+                style="display:none;background:#fef3c7;color:#92400e;padding:8px 12px;border-radius:6px;margin-top:8px;font-size:12px">
+                <i class="fas fa-exclamation-triangle"></i> Vượt mức mặc định, cần GDV duyệt
+              </div>
+            </div>
+
+            <!-- Quà tặng -->
+            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+              <label style="color:#db2777;font-weight:600"><i class="fas fa-gift"></i> Quà tặng</label>
+              <input type="text" name="giftName" class="form-control" placeholder="VD: Balo, Áo thun..."
+                style="margin-top:8px">
+            </div>
+
+            <!-- Tổng kết -->
+            <div style="background:#1f2937;color:white;padding:16px;border-radius:8px;margin-top:12px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                <span>Khóa học chính:</span><span id="leadMainMonths">0 tháng</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                <span>Học bổng tặng:</span><span id="leadBonusMonths" style="color:#4ade80">+0 tháng</span>
+              </div>
+              <div
+                style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #374151">
+                <span style="font-size:16px"><strong>HỌC PHÍ DỰ KIẾN:</strong></span>
+                <span id="leadFeeTotal" style="font-size:24px;font-weight:bold;color:#fbbf24">0đ</span>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group"><label>Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea>
           </div>
         </form>
@@ -717,6 +825,7 @@
   <script src="../js/sidebar.js"></script>
   <script>
     let leads = [], currentStatus = '', currentView = 'table', canDelete = false;
+    let packages = [], promoPrograms = [], leadSelectedPackage = null, leadDefaultScholarship = 0;
     const statusCfg = { new: { label: 'Mới' }, scheduled: { label: 'Đã hẹn' }, attended: { label: 'Đã TN' }, waiting: { label: 'Chờ xử lý' }, converted: { label: 'Chuyển đổi' }, cancelled: { label: 'Lỗi' } };
 
     // Payment config - mặc định, sẽ được override theo chi nhánh
@@ -781,13 +890,94 @@
       const user = auth.user;
       canDelete = ['ADMIN', 'HOEC', 'OM'].includes(user?.role_name?.toUpperCase());
       await loadPaymentConfig();
-      await loadSubjects();
+      await Promise.all([loadSubjects(), loadPackagesAndPromos()]);
       await loadStats();
       await loadData();
     }
 
     let subjects = [];
     async function loadSubjects() { try { const res = await api.get('/common/subjects'); subjects = res.data || []; } catch (e) { console.error(e); } }
+
+    async function loadPackagesAndPromos() {
+      try {
+        const pkgRes = await api.get('/packages' + branch.buildQuery());
+        packages = pkgRes.data || [];
+        // Populate lead form package select
+        const leadPkgSelect = document.getElementById('leadPackageSelect');
+        if (leadPkgSelect) {
+          leadPkgSelect.innerHTML = '<option value="">-- Chưa chọn --</option>' +
+            packages.map(p => `<option value="${p.id}" data-price="${p.price || p.base_price}" data-months="${p.months}" data-scholarship="${p.default_scholarship_months || 0}">${p.name} - ${formatCurrency(p.price || p.base_price)}</option>`).join('');
+        }
+        // Populate convert form
+        const cvPkgSelect = document.getElementById('cvTuitionPackage');
+        if (cvPkgSelect) {
+          cvPkgSelect.innerHTML = '<option value="">-- Chọn gói --</option>' +
+            packages.map(p => `<option value="${p.id}" data-price="${p.price || p.base_price}" data-months="${p.months}" data-scholarship="${p.default_scholarship_months || 0}">${p.name} - ${formatCurrency(p.price || p.base_price)}</option>`).join('');
+        }
+      } catch (e) { console.error(e); }
+
+      try {
+        const promoRes = await api.get('/promotions' + branch.buildQuery());
+        promoPrograms = promoRes.data || [];
+        const leadPromoSelect = document.getElementById('leadPromoSelect');
+        if (leadPromoSelect) {
+          leadPromoSelect.innerHTML = '<option value="">-- Không áp dụng --</option>' +
+            promoPrograms.map(p => `<option value="${p.id}" data-type="${p.discount_type}" data-value="${p.discount_value}">${p.name}</option>`).join('');
+        }
+        const cvPromoSelect = document.getElementById('cvPromoProgram');
+        if (cvPromoSelect) {
+          cvPromoSelect.innerHTML = '<option value="">-- Không áp dụng --</option>' +
+            promoPrograms.map(p => `<option value="${p.id}" data-type="${p.discount_type}" data-value="${p.discount_value}">${p.name}</option>`).join('');
+        }
+      } catch (e) { promoPrograms = []; }
+    }
+
+    // Lead form package/promo functions
+    function onLeadPackageChange() {
+      const select = document.getElementById('leadPackageSelect');
+      const option = select.options[select.selectedIndex];
+      if (!option.value) {
+        leadSelectedPackage = null; leadDefaultScholarship = 0;
+        document.getElementById('leadFeeOriginal').value = '0đ';
+        document.getElementById('leadMainMonths').textContent = '0 tháng';
+        document.getElementById('leadDefaultScholarshipBadge').style.display = 'none';
+      } else {
+        leadSelectedPackage = { price: parseFloat(option.dataset.price) || 0, months: parseInt(option.dataset.months) || 0 };
+        leadDefaultScholarship = parseInt(option.dataset.scholarship) || 0;
+        document.getElementById('leadFeeOriginal').value = formatCurrency(leadSelectedPackage.price);
+        document.getElementById('leadMainMonths').textContent = leadSelectedPackage.months + ' tháng';
+        if (leadDefaultScholarship > 0) {
+          document.getElementById('leadDefaultScholarshipBadge').style.display = 'inline-block';
+          document.getElementById('leadDefaultScholarshipMonths').textContent = leadDefaultScholarship;
+        } else {
+          document.getElementById('leadDefaultScholarshipBadge').style.display = 'none';
+        }
+      }
+      calculateLeadTotals();
+    }
+
+    function onLeadPromoChange() { calculateLeadTotals(); }
+
+    function onLeadScholarshipChange() {
+      const form = document.getElementById('leadForm');
+      const months = parseInt(form.scholarshipMonths.value) || 0;
+      document.getElementById('leadScholarshipWarning').style.display = (months > leadDefaultScholarship && leadDefaultScholarship > 0) ? 'block' : 'none';
+      document.getElementById('leadBonusMonths').textContent = '+' + months + ' tháng';
+      calculateLeadTotals();
+    }
+
+    function calculateLeadTotals() {
+      if (!leadSelectedPackage) { document.getElementById('leadFeeTotal').textContent = '0đ'; return; }
+      let originalFee = leadSelectedPackage.price, discount = 0;
+      const promoSelect = document.getElementById('leadPromoSelect');
+      const promoOption = promoSelect.options[promoSelect.selectedIndex];
+      if (promoOption.value) {
+        const type = promoOption.dataset.type, val = parseFloat(promoOption.dataset.value) || 0;
+        discount = type === 'percent' ? originalFee * val / 100 : val;
+      }
+      document.getElementById('leadPromoDiscount').value = formatCurrency(discount);
+      document.getElementById('leadFeeTotal').textContent = formatCurrency(Math.max(0, originalFee - discount));
+    }
 
     async function loadStats() {
       try {
@@ -807,7 +997,9 @@
       } catch (e) { console.error(e); }
     }
 
-    async function loadData() {
+    let currentPage = 1;
+    async function loadData(page = 1) {
+      currentPage = page;
       const search = document.getElementById('searchInput').value;
       const source = document.getElementById('sourceFilter').value;
       try {
@@ -815,13 +1007,15 @@
         if (currentStatus) p.append('status', currentStatus);
         if (search) p.append('search', search);
         if (source) p.append('source', source);
+        p.append('page', page);
+        p.append('limit', 20);
         const res = await api.get('/leads?' + p);
         leads = res.data || [];
-        renderTable(); renderCards();
+        renderTable(res.pagination); renderCards();
       } catch (e) { console.error(e); document.getElementById('leadsTableBody').innerHTML = '<tr><td colspan="8" class="text-center text-danger">Lỗi</td></tr>'; }
     }
 
-    function filterStatus(s) { currentStatus = s; loadStats(); loadData(); }
+    function filterStatus(s) { currentStatus = s; loadStats(); loadData(1); }
     function setView(v) { currentView = v; document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active')); document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.add('active'); document.getElementById('tableView').style.display = v === 'table' ? 'block' : 'none'; document.getElementById('cardView').style.display = v === 'card' ? 'block' : 'none'; }
     function escapeHtml(str) { return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
@@ -867,10 +1061,12 @@
       return btns;
     }
 
-    function renderTable() {
+    function renderTable(pagination) {
       const tb = document.getElementById('leadsTableBody');
-      if (!leads.length) { tb.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có lead</td></tr>'; return; }
+      if (!leads.length) { tb.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có lead</td></tr>'; document.getElementById('leadsPagination').innerHTML = ''; return; }
       tb.innerHTML = leads.map(l => '<tr><td><code>' + (l.code || '-') + '</code></td><td><strong>' + escapeHtml(l.student_name) + '</strong></td><td>' + escapeHtml(l.customer_name) + '</td><td><a href="javascript:void(0)" class="phone-link" onclick="openCallModal(' + l.id + ',\'' + escapeHtml(l.customer_name) + '\',\'' + l.customer_phone + '\')"><i class="fas fa-phone"></i> ' + l.customer_phone + '</a></td><td>' + (l.source || '-') + '</td><td><span class="status-badge ' + l.status + '">' + (statusCfg[l.status]?.label || l.status) + '</span></td><td>' + formatDate(l.created_at) + '</td><td class="text-center">' + getActionButtons(l) + '</td></tr>').join('');
+      // Render pagination
+      document.getElementById('leadsPagination').innerHTML = pagination && pagination.totalPages > 1 ? ui.pagination(pagination, loadData) : '';
     }
 
     function renderCards() {
@@ -902,13 +1098,48 @@
     async function saveLead() {
       const f = document.getElementById('leadForm');
       const id = document.getElementById('leadId').value;
-      const data = { studentName: f.studentName.value, studentBirthYear: f.birthYear.value || null, customerName: f.customerName.value, customerPhone: f.customerPhone.value, customerEmail: f.customerEmail.value || null, source: f.source.value, note: f.note.value || null };
+      const data = {
+        studentName: f.studentName.value,
+        studentBirthYear: f.birthYear.value || null,
+        gender: f.gender?.value || null,
+        address: f.address?.value || null,
+        customerName: f.customerName.value,
+        customerPhone: f.customerPhone.value,
+        customerEmail: f.customerEmail.value || null,
+        source: f.source.value,
+        note: f.note.value || null,
+        // New fields
+        package_id: f.packageId?.value || null,
+        tuition_fee: parseCurrency(document.getElementById('leadFeeTotal')?.textContent),
+        discount_amount: parseCurrency(document.getElementById('leadPromoDiscount')?.value),
+        scholarship_months: parseInt(f.scholarshipMonths?.value) || 0,
+        gift_name: f.giftName?.value || null
+      };
       try {
         if (id) { await api.put('/leads/' + id, data); ui.success('Cập nhật thành công'); }
         else { await api.post('/leads', data); ui.success('Thêm thành công'); }
         closeFormModal(); loadStats(); loadData();
       } catch (e) { ui.error(e.message); }
     }
+
+    function openCreateModal() {
+      document.getElementById('leadId').value = '';
+      document.getElementById('leadForm').reset();
+      document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Thêm Lead';
+      // Reset package/promo fields
+      leadSelectedPackage = null; leadDefaultScholarship = 0;
+      document.getElementById('leadFeeOriginal').value = '0đ';
+      document.getElementById('leadPromoDiscount').value = '0đ';
+      document.getElementById('leadFeeTotal').textContent = '0đ';
+      document.getElementById('leadMainMonths').textContent = '0 tháng';
+      document.getElementById('leadBonusMonths').textContent = '+0 tháng';
+      document.getElementById('leadDefaultScholarshipBadge').style.display = 'none';
+      document.getElementById('leadScholarshipWarning').style.display = 'none';
+      document.getElementById('formModal').classList.add('show');
+    }
+
+    function closeFormModal() { document.getElementById('formModal').classList.remove('show'); }
+
     async function deleteLead(id) { if (!confirm('Xóa lead này?')) return; try { await api.delete('/leads/' + id); ui.success('Đã xóa'); loadStats(); loadData(); } catch (e) { ui.error(e.message); } }
 
     // Schedule Modal

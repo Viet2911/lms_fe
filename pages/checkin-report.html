@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo cáo Checkin - LMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .report-header {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .period-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-secondary);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .period-tab {
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .period-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .period-tab:hover:not(.active) {
+            background: var(--bg-card);
+        }
+
+        .date-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-nav button {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .date-nav button:hover {
+            background: var(--bg-secondary);
+        }
+
+        .date-label {
+            font-weight: 600;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-box .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .stat-box.warning .value {
+            color: #f59e0b;
+        }
+
+        .stat-box.danger .value {
+            color: #ef4444;
+        }
+
+        .stat-box.success .value {
+            color: #22c55e;
+        }
+
+        .checkin-table {
+            width: 100%;
+        }
+
+        .checkin-table th,
+        .checkin-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checkin-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .checkin-table tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-code {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .time-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .time-badge.on-time {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .time-badge.late {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .time-badge.absent {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .hours-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .hours-badge.full {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .hours-badge.partial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .hours-badge.low {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .role-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            background: var(--bg-secondary);
+        }
+
+        .export-btn {
+            margin-left: auto;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-title {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .filter-row select,
+        .filter-row input {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+        }
+
+        @media (max-width: 768px) {
+            .report-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .period-tabs {
+                justify-content: center;
+            }
+
+            .date-nav {
+                justify-content: center;
+            }
+
+            .export-btn {
+                margin: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')"><i
+                        class="fas fa-bars"></i></button>
+                <h1><i class="fas fa-clipboard-check"></i> Báo cáo Checkin</h1>
+            </div>
+            <div class="topbar-right">
+                <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-sync"></i></button>
+            </div>
+        </div>
+
+        <!-- Period Tabs & Date Navigation -->
+        <div class="report-header">
+            <div class="period-tabs">
+                <button class="period-tab active" data-period="day" onclick="setPeriod('day')">Ngày</button>
+                <button class="period-tab" data-period="week" onclick="setPeriod('week')">Tuần</button>
+                <button class="period-tab" data-period="month" onclick="setPeriod('month')">Tháng</button>
+                <button class="period-tab" data-period="year" onclick="setPeriod('year')">Năm</button>
+            </div>
+
+            <div class="date-nav">
+                <button onclick="navigateDate(-1)"><i class="fas fa-chevron-left"></i></button>
+                <div class="date-label" id="dateLabel">--</div>
+                <button onclick="navigateDate(1)"><i class="fas fa-chevron-right"></i></button>
+                <input type="date" id="datePicker" onchange="setDate(this.value)" style="display:none">
+                <button onclick="document.getElementById('datePicker').showPicker()" title="Chọn ngày"><i
+                        class="fas fa-calendar"></i></button>
+                <button onclick="goToToday()" title="Hôm nay"><i class="fas fa-home"></i></button>
+            </div>
+
+            <button class="btn btn-success export-btn" onclick="exportReport()"><i class="fas fa-file-excel"></i> Xuất
+                Excel</button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-row">
+            <select id="branchFilter" onchange="loadData()">
+                <option value="">Tất cả cơ sở</option>
+            </select>
+            <select id="roleFilter" onchange="loadData()">
+                <option value="">Tất cả vai trò</option>
+                <option value="EC">EC</option>
+                <option value="TEACHER">Giáo viên</option>
+                <option value="TA">Trợ giảng</option>
+                <option value="OM">OM</option>
+                <option value="CM">CM</option>
+            </select>
+            <div class="search-box" style="flex:1;min-width:200px">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Tìm theo tên, mã NV..."
+                    onkeyup="if(event.key==='Enter')loadData()">
+            </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="summary-card">
+            <div class="summary-title"><i class="fas fa-chart-pie"></i> TỔNG QUAN <span id="summaryPeriod"></span></div>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-value" id="sumTotal">0</div>
+                    <div class="summary-label">Tổng nhân sự</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="sumCheckedIn">0</div>
+                    <div class="summary-label">Đã checkin</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="sumOnTime">0</div>
+                    <div class="summary-label">Đúng giờ</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="sumLate">0</div>
+                    <div class="summary-label">Đi muộn</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="sumAbsent">0</div>
+                    <div class="summary-label">Vắng mặt</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-value" id="sumTotalHours">0h</div>
+                    <div class="summary-label">Tổng giờ làm</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-row" id="statsRow"></div>
+
+        <!-- Data Table -->
+        <div class="card">
+            <div class="card-body" style="overflow-x:auto">
+                <table class="checkin-table">
+                    <thead>
+                        <tr>
+                            <th>Nhân viên</th>
+                            <th>Vai trò</th>
+                            <th>Cơ sở</th>
+                            <th class="text-center">Ngày</th>
+                            <th class="text-center">Giờ vào</th>
+                            <th class="text-center">Giờ ra</th>
+                            <th class="text-center">Số giờ</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th>Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTable">
+                        <tr>
+                            <td colspan="9" class="text-center">Đang tải...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="pagination" style="margin-top:16px"></div>
+    </main>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script>
+        let currentPeriod = 'day';
+        let currentDate = new Date();
+        let checkinData = [];
+
+        async function init() {
+            await auth.requireAuth();
+            buildSidebar('sidebar');
+            await loadBranches();
+            updateDateLabel();
+            await loadData();
+        }
+
+        async function loadBranches() {
+            try {
+                const res = await api.get('/branches');
+                const branches = res.data || [];
+                document.getElementById('branchFilter').innerHTML = '<option value="">Tất cả cơ sở</option>' +
+                    branches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        function setPeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-period="${period}"]`).classList.add('active');
+            updateDateLabel();
+            loadData();
+        }
+
+        function navigateDate(direction) {
+            switch (currentPeriod) {
+                case 'day':
+                    currentDate.setDate(currentDate.getDate() + direction);
+                    break;
+                case 'week':
+                    currentDate.setDate(currentDate.getDate() + (direction * 7));
+                    break;
+                case 'month':
+                    currentDate.setMonth(currentDate.getMonth() + direction);
+                    break;
+                case 'year':
+                    currentDate.setFullYear(currentDate.getFullYear() + direction);
+                    break;
+            }
+            updateDateLabel();
+            loadData();
+        }
+
+        function setDate(dateStr) {
+            currentDate = new Date(dateStr);
+            updateDateLabel();
+            loadData();
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            updateDateLabel();
+            loadData();
+        }
+
+        function updateDateLabel() {
+            const label = document.getElementById('dateLabel');
+            const picker = document.getElementById('datePicker');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+            switch (currentPeriod) {
+                case 'day':
+                    label.textContent = currentDate.toLocaleDateString('vi-VN', options);
+                    picker.value = currentDate.toISOString().split('T')[0];
+                    break;
+                case 'week':
+                    const weekStart = new Date(currentDate);
+                    weekStart.setDate(currentDate.getDate() - currentDate.getDay() + 1);
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekStart.getDate() + 6);
+                    label.textContent = `${weekStart.toLocaleDateString('vi-VN')} - ${weekEnd.toLocaleDateString('vi-VN')}`;
+                    break;
+                case 'month':
+                    label.textContent = currentDate.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
+                    break;
+                case 'year':
+                    label.textContent = `Năm ${currentDate.getFullYear()}`;
+                    break;
+            }
+
+            document.getElementById('summaryPeriod').textContent = label.textContent;
+        }
+
+        function getDateRange() {
+            let startDate, endDate;
+
+            switch (currentPeriod) {
+                case 'day':
+                    startDate = new Date(currentDate);
+                    endDate = new Date(currentDate);
+                    break;
+                case 'week':
+                    startDate = new Date(currentDate);
+                    startDate.setDate(currentDate.getDate() - currentDate.getDay() + 1);
+                    endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + 6);
+                    break;
+                case 'month':
+                    startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                    endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+                    break;
+                case 'year':
+                    startDate = new Date(currentDate.getFullYear(), 0, 1);
+                    endDate = new Date(currentDate.getFullYear(), 11, 31);
+                    break;
+            }
+
+            return {
+                start: startDate.toISOString().split('T')[0],
+                end: endDate.toISOString().split('T')[0]
+            };
+        }
+
+        async function loadData(page = 1) {
+            try {
+                const range = getDateRange();
+                const params = new URLSearchParams({
+                    start_date: range.start,
+                    end_date: range.end,
+                    page: page,
+                    limit: 50
+                });
+
+                const branchId = document.getElementById('branchFilter').value;
+                const role = document.getElementById('roleFilter').value;
+                const search = document.getElementById('searchInput').value;
+
+                if (branchId) params.append('branch_id', branchId);
+                if (role) params.append('role', role);
+                if (search) params.append('search', search);
+
+                const res = await api.get('/checkin/report?' + params.toString());
+                checkinData = res.data || [];
+
+                updateSummary(res.summary || {});
+                renderTable(checkinData, res.pagination);
+            } catch (e) {
+                console.error(e);
+                document.getElementById('dataTable').innerHTML = '<tr><td colspan="9" class="text-center text-danger">Lỗi tải dữ liệu</td></tr>';
+            }
+        }
+
+        function updateSummary(summary) {
+            document.getElementById('sumTotal').textContent = summary.total_staff || 0;
+            document.getElementById('sumCheckedIn').textContent = summary.checked_in || 0;
+            document.getElementById('sumOnTime').textContent = summary.on_time || 0;
+            document.getElementById('sumLate').textContent = summary.late || 0;
+            document.getElementById('sumAbsent').textContent = summary.absent || 0;
+            document.getElementById('sumTotalHours').textContent = (summary.total_hours || 0).toFixed(1) + 'h';
+        }
+
+        function renderTable(items, pagination) {
+            const tbody = document.getElementById('dataTable');
+
+            if (!items.length) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Không có dữ liệu checkin</td></tr>';
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            tbody.innerHTML = items.map(item => {
+                const hours = item.total_hours || 0;
+                const hoursClass = hours >= 8 ? 'full' : hours >= 4 ? 'partial' : 'low';
+                const statusClass = item.status === 'on_time' ? 'on-time' : item.status === 'late' ? 'late' : 'absent';
+                const statusText = item.status === 'on_time' ? 'Đúng giờ' : item.status === 'late' ? 'Đi muộn' : 'Vắng';
+
+                return `
+          <tr>
+            <td>
+              <div class="user-cell">
+                <div class="user-avatar">${(item.full_name || '?')[0].toUpperCase()}</div>
+                <div class="user-info">
+                  <span class="user-name">${item.full_name || '-'}</span>
+                  <span class="user-code">${item.employee_code || ''}</span>
+                </div>
+              </div>
+            </td>
+            <td><span class="role-badge">${item.role_name || '-'}</span></td>
+            <td>${item.branch_name || '-'}</td>
+            <td class="text-center">${item.checkin_date ? new Date(item.checkin_date).toLocaleDateString('vi-VN') : '-'}</td>
+            <td class="text-center">${item.checkin_time || '-'}</td>
+            <td class="text-center">${item.checkout_time || '-'}</td>
+            <td class="text-center"><span class="hours-badge ${hoursClass}">${hours.toFixed(1)}h</span></td>
+            <td class="text-center"><span class="time-badge ${statusClass}">${statusText}</span></td>
+            <td>${item.note || ''}</td>
+          </tr>
+        `;
+            }).join('');
+
+            // Pagination
+            if (pagination && pagination.totalPages > 1) {
+                document.getElementById('pagination').innerHTML = ui.pagination(pagination, loadData);
+            } else {
+                document.getElementById('pagination').innerHTML = '';
+            }
+        }
+
+        async function exportReport() {
+            try {
+                const range = getDateRange();
+                const params = new URLSearchParams({
+                    start_date: range.start,
+                    end_date: range.end
+                });
+
+                const branchId = document.getElementById('branchFilter').value;
+                const role = document.getElementById('roleFilter').value;
+                if (branchId) params.append('branch_id', branchId);
+                if (role) params.append('role', role);
+
+                window.open(`${API_URL}/checkin/export?${params.toString()}&token=${auth.getToken()}`, '_blank');
+                ui.success('Đang xuất báo cáo...');
+            } catch (e) {
+                ui.error('Không thể xuất báo cáo');
+            }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
