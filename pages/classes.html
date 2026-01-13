@@ -779,7 +779,7 @@
     async function init() {
       if (!auth.checkAuth()) return;
       buildSidebar('sidebar');
-      if (!auth.hasRole('CM', 'ADMIN')) document.getElementById('btnCreate').style.display = 'none';
+      if (!auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN')) document.getElementById('btnCreate').style.display = 'none';
       setupBranchSelect();
       await loadOptions();
       await loadData();
@@ -981,7 +981,7 @@
           <div class="detail-item" style="background:#f9fafb;padding:12px;border-radius:8px"><label style="color:#6b7280;font-size:12px">Sĩ số</label><div style="font-weight:600">${currentStudents.length} / ${c.max_students || 15}</div></div>
         </div>
         
-        ${auth.hasRole('CM', 'ADMIN') ? `
+        ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `
           <div style="display:flex;gap:8px">
             <button class="btn btn-secondary" onclick="editClass(${c.id})"><i class="fas fa-edit"></i> Sửa</button>
             <button class="btn btn-primary" onclick="generateSessions()"><i class="fas fa-magic"></i> Tạo buổi học</button>
@@ -997,7 +997,7 @@
       document.getElementById('tab-students').innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
           <h4 style="margin:0"><i class="fas fa-users"></i> Danh sách học sinh (${currentStudents.length})</h4>
-          ${auth.hasRole('CM', 'ADMIN') ? `<button class="btn btn-primary" onclick="openAddStudentModal()"><i class="fas fa-user-plus"></i> Thêm học sinh</button>` : ''}
+          ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `<button class="btn btn-primary" onclick="openAddStudentModal()"><i class="fas fa-user-plus"></i> Thêm học sinh</button>` : ''}
         </div>
         
         ${currentStudents.length ? `
@@ -1018,7 +1018,7 @@
                   <td><span class="badge badge-warning">${s.late_count || 0}</span></td>
                   <td><span class="badge badge-danger">${s.absent_count || 0}</span></td>
                   <td>
-                    ${auth.hasRole('CM', 'ADMIN') ? `<button class="btn btn-sm btn-danger" onclick="removeStudent(${s.id})" title="Xóa khỏi lớp"><i class="fas fa-times"></i></button>` : ''}
+                    ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `<button class="btn btn-sm btn-danger" onclick="removeStudent(${s.id})" title="Xóa khỏi lớp"><i class="fas fa-times"></i></button>` : ''}
                   </td>
                 </tr>
               `;
@@ -1041,7 +1041,7 @@
           <div class="empty-state" style="padding:40px">
             <i class="fas fa-calendar-alt" style="font-size:48px;color:#d1d5db"></i>
             <p>Chưa có buổi học</p>
-            ${auth.hasRole('CM', 'ADMIN') ? `<button class="btn btn-primary" onclick="generateSessions()"><i class="fas fa-magic"></i> Tạo buổi học</button>` : ''}
+            ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `<button class="btn btn-primary" onclick="generateSessions()"><i class="fas fa-magic"></i> Tạo buổi học</button>` : ''}
           </div>
         `;
         return;
@@ -1171,8 +1171,8 @@
       } else {
         ui.warning('Buổi học chưa diễn ra hoặc bạn không có quyền điểm danh.');
       }
-
     }
+
 
     async function selectSession(sessionId) {
       selectedSessionId = sessionId;

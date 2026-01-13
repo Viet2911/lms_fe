@@ -5,11 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Người dùng - LMS</title>
-  <link rel="icon" type="image/x-icon" href="<svg xmlns=" http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-  <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
-  <path
-    d="M80 259.8L289.2 345.9C299 349.9 309.4 352 320 352C330.6 352 341 349.9 350.8 345.9L593.2 246.1C602.2 242.4 608 233.7 608 224C608 214.3 602.2 205.6 593.2 201.9L350.8 102.1C341 98.1 330.6 96 320 96C309.4 96 299 98.1 289.2 102.1L46.8 201.9C37.8 205.6 32 214.3 32 224L32 520C32 533.3 42.7 544 56 544C69.3 544 80 533.3 80 520L80 259.8zM128 331.5L128 448C128 501 214 544 320 544C426 544 512 501 512 448L512 331.4L369.1 390.3C353.5 396.7 336.9 400 320 400C303.1 400 286.5 396.7 270.9 390.3L128 331.4z" />
-  </svg>">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/style.css">
   <style>
@@ -114,6 +109,15 @@
           <div class="form-group"><label class="form-label">SĐT</label><input type="tel" name="phone"
               class="form-control"></div>
 
+          <!-- Quản lý trực tiếp -->
+          <div class="form-group" id="managerSection">
+            <label class="form-label"><i class="fas fa-user-tie"></i> Quản lý trực tiếp</label>
+            <select name="managerId" class="form-control" id="managerSelect">
+              <option value="">-- Không có --</option>
+            </select>
+            <small class="text-muted">Chọn người quản lý trực tiếp để phân cấp báo cáo</small>
+          </div>
+
           <!-- Branch Assignment -->
           <div class="form-group" id="branchSection">
             <label class="form-label">Cơ sở làm việc <small class="text-muted">(Click để chọn cơ sở
@@ -133,6 +137,7 @@
   <script>
     let roles = [];
     let branches = [];
+    let managers = [];
     let selectedBranches = [];
     let primaryBranchId = null;
 
@@ -141,6 +146,7 @@
       buildSidebar('sidebar');
       await loadRoles();
       await loadBranches();
+      await loadManagers();
       await loadData();
     }
 
@@ -152,6 +158,23 @@
         document.getElementById('roleSelect').innerHTML = options;
         document.getElementById('roleFilter').innerHTML = '<option value="">Tất cả</option>' + options;
       } catch (e) { console.error(e); }
+    }
+
+    async function loadManagers() {
+      try {
+        // Load users with manager roles (GDV, BM, QLCS, HOEC, OM, CM, HOCM)
+        const result = await api.get('/users/managers');
+        managers = result.data || [];
+        renderManagerSelect();
+      } catch (e) { console.error(e); }
+    }
+
+    function renderManagerSelect(currentUserId = null) {
+      const select = document.getElementById('managerSelect');
+      // Filter out current user to prevent self-reference
+      const availableManagers = managers.filter(m => m.id !== parseInt(currentUserId));
+      select.innerHTML = '<option value="">-- Không có --</option>' +
+        availableManagers.map(m => `<option value="${m.id}">${m.full_name} (${m.role_display || m.role_name})</option>`).join('');
     }
 
     async function loadBranches() {
@@ -243,8 +266,8 @@
       let html = `<table class="table"><thead><tr>
         <th>Họ tên</th>
         <th>Username</th>
-        <th>Email</th>
         <th>Role</th>
+        <th>Quản lý</th>
         <th>Cơ sở</th>
         <th>Trạng thái</th>
         <th></th>
@@ -252,10 +275,10 @@
 
       items.forEach(u => {
         html += `<tr>
-          <td><strong>${u.full_name}</strong></td>
-          <td>${u.username}</td>
-          <td>${u.email || '-'}</td>
+          <td><strong>${u.full_name}</strong>${u.email ? '<br><small class="text-muted">' + u.email + '</small>' : ''}</td>
+          <td><code>${u.username}</code></td>
           <td><span class="badge badge-info">${u.role_display || u.role_name}</span></td>
+          <td>${u.manager_name ? '<i class="fas fa-user-tie text-muted"></i> ' + u.manager_name : '<span class="text-muted">-</span>'}</td>
           <td>${u.is_system_wide ? '<span class="badge badge-warning">Tất cả</span>' : (u.branches || '-')}</td>
           <td>${u.is_active ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-inactive">Inactive</span>'}</td>
           <td><button class="btn btn-sm btn-secondary" onclick="editItem(${u.id})"><i class="fas fa-edit"></i></button></td>
@@ -278,6 +301,7 @@
       selectedBranches = [];
       primaryBranchId = null;
       renderBranchCheckboxes();
+      renderManagerSelect();
       toggleBranchSection();
       modal.show('formModal');
     }
@@ -291,12 +315,16 @@
         document.getElementById('usernameInput').disabled = true;
         document.getElementById('passwordInput').required = false;
 
+        // Render manager select excluding current user
+        renderManagerSelect(id);
+
         form.setData(document.getElementById('dataForm'), {
           fullName: u.full_name,
           username: u.username,
           email: u.email,
           phone: u.phone,
-          roleId: u.role_id
+          roleId: u.role_id,
+          managerId: u.manager_id || ''
         });
 
         // Set branches
@@ -316,6 +344,10 @@
 
       const data = form.getData(formEl);
       const id = document.getElementById('itemId').value;
+
+      // Add manager_id
+      data.manager_id = data.managerId || null;
+      delete data.managerId;
 
       // Add branch data
       const roleSelect = document.getElementById('roleSelect');
@@ -338,6 +370,7 @@
         else await api.post('/users', data);
         ui.success('Lưu thành công');
         modal.hide('formModal');
+        loadManagers(); // Refresh managers list
         loadData();
       } catch (e) { ui.error(e.message); }
     }

@@ -99,8 +99,8 @@ function buildSidebar(containerId, activePage = '') {
     if (auth.hasRole('HOEC', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'OM', 'CM', 'EC')) {
       html += `<a href="${prefix}trial-report.html" class="nav-item ${isActive('trial-report')}"><i class="fas fa-clipboard-check"></i><span>Báo cáo Trải nghiệm</span></a>`;
     }
-    // KPI cho HOEC, QLCS, Admin
-    if (auth.hasRole('HOEC', 'QLCS', 'CHU', 'GDV', 'ADMIN')) {
+    // KPI cho HOEC, QLCS, Admin, ACCOUNTANT
+    if (auth.hasRole('ACCOUNTANT', 'HOEC', 'QLCS', 'CHU', 'GDV', 'ADMIN')) {
       html += `<a href="${prefix}kpi.html" class="nav-item ${isActive('kpi')}"><i class="fas fa-bullseye"></i><span>KPI</span></a>`;
     }
     // EC xem KPI của mình
@@ -166,13 +166,18 @@ function getRoleDisplay(role) {
     'GDV': 'Giám đốc vùng',
     'CHU': 'Chủ cơ sở',
     'QLCS': 'Quản lý cơ sở',
+    'BM': 'Branch Manager',
     'HOEC': 'Trưởng EC',
     'OM': 'Trưởng vận hành',
     'CM': 'Quản lý lớp',
+    'HOCM': 'Trưởng CM',
     'EC': 'Tư vấn viên',
     'SALE': 'Tư vấn viên',
     'TEACHER': 'Giáo viên',
-    'TA': 'Trợ giảng'
+    'TA': 'Trợ giảng',
+    'ACCOUNTANT': 'Kế toán',
+    'MKT': 'Marketing',
+    'RIOM': 'Regional OM'
   };
   return roleNames[role?.toUpperCase()] || role;
 }

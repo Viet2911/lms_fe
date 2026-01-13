@@ -125,6 +125,11 @@
       color: #991b1b;
     }
 
+    .status-badge.expiring_soon {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
     .status-badge.quit_paid {
       background: #fecaca;
       color: #dc2626;
@@ -262,12 +267,58 @@
       color: #9d174d;
     }
 
+    .form-section.purple {
+      background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+    }
+
+    .form-section.purple h4 {
+      color: #6b21a8;
+    }
+
     .summary-box {
       background: #1f2937;
       color: white;
       padding: 16px;
       border-radius: 8px;
       margin-top: 12px;
+    }
+
+    .gift-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: #fdf2f8;
+      border: 1px solid #f9a8d4;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .gift-checkbox:hover {
+      background: #fce7f3;
+    }
+
+    .gift-checkbox.checked {
+      background: #db2777;
+      color: white;
+      border-color: #db2777;
+    }
+
+    .gift-checkbox.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+    }
+
+    .gift-checkbox input {
+      display: none;
+    }
+
+    .gift-qty {
+      font-size: 11px;
+      opacity: 0.7;
     }
 
     .summary-row {
@@ -313,6 +364,13 @@
           <select id="classFilter" class="form-control" style="width:180px" onchange="loadData()">
             <option value="">Tất cả lớp</option>
           </select>
+          <select id="feeMonthFilter" class="form-control" style="width:180px" onchange="loadData()">
+            <option value="">Hết phí tất cả</option>
+            <option value="0">Tháng này</option>
+            <option value="1">Tháng sau</option>
+            <option value="2">2 tháng tới</option>
+            <option value="3">3 tháng tới</option>
+          </select>
           <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i> Tìm</button>
         </div>
       </div>
@@ -326,13 +384,14 @@
               <th>Phụ huynh</th>
               <th>Lớp</th>
               <th class="text-center">Buổi còn</th>
+              <th class="text-center">Hết phí</th>
               <th class="text-center">Trạng thái</th>
               <th class="text-center">Thao tác</th>
             </tr>
           </thead>
           <tbody id="dataTable">
             <tr>
-              <td colspan="6" class="text-center">Đang tải...</td>
+              <td colspan="7" class="text-center">Đang tải...</td>
             </tr>
           </tbody>
         </table>
@@ -437,8 +496,9 @@
           <!-- Quà tặng -->
           <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
             <label style="color:#db2777;font-weight:600"><i class="fas fa-gift"></i> Quà tặng</label>
-            <input type="text" id="fGiftName" class="form-control" placeholder="VD: Balo, Áo thun..."
-              style="margin-top:8px">
+            <div id="giftCheckboxes" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px">
+              <span class="text-muted">Đang tải...</span>
+            </div>
           </div>
           <!-- Tổng kết -->
           <div class="summary-box">
@@ -502,9 +562,66 @@
       <div class="modal-body" id="detailContent"></div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeDetailModal()">Đóng</button>
+        <button class="btn btn-purple" onclick="openDocumentsModal(currentDetailId)"
+          style="background:#7c3aed;color:white"><i class="fas fa-file-invoice-dollar"></i> Giấy tờ học phí</button>
         <button class="btn btn-info" onclick="showPaymentQR(currentDetailId)"><i class="fas fa-qrcode"></i> QR Thanh
           toán</button>
         <button class="btn btn-primary" onclick="editStudent(currentDetailId)"><i class="fas fa-edit"></i> Sửa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Documents Modal - Giấy tờ học phí -->
+  <div class="modal" id="documentsModal">
+    <div class="modal-content" style="max-width:650px">
+      <div class="modal-header" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white">
+        <div class="modal-title"><i class="fas fa-file-invoice-dollar"></i> Giấy tờ học phí</div>
+        <button class="modal-close" onclick="closeDocumentsModal()" style="color:white">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:20px">
+        <input type="hidden" id="docStudentId">
+        <!-- Student Info -->
+        <div id="docStudentInfo"
+          style="display:flex;align-items:center;gap:12px;padding:12px;background:#f3f4f6;border-radius:8px;margin-bottom:16px">
+          <div
+            style="width:50px;height:50px;border-radius:50%;background:#7c3aed;color:white;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold">
+            ?</div>
+          <div>
+            <div style="font-weight:600;font-size:16px">Tên học viên</div>
+            <div style="color:#6b7280;font-size:13px">Mã học viên</div>
+          </div>
+        </div>
+
+        <!-- Upload Area -->
+        <div style="margin-bottom:20px">
+          <label style="font-weight:600;color:#374151;margin-bottom:8px;display:block"><i class="fas fa-upload"></i> Tải
+            lên giấy tờ mới</label>
+          <div class="upload-zone"
+            style="border:2px dashed #7c3aed;border-radius:12px;padding:24px;text-align:center;cursor:pointer;background:#faf5ff;transition:all 0.2s"
+            onclick="document.getElementById('docUploadInput').click()"
+            onmouseover="this.style.background='#ede9fe';this.style.borderColor='#6d28d9'"
+            onmouseout="this.style.background='#faf5ff';this.style.borderColor='#7c3aed'">
+            <i class="fas fa-cloud-upload-alt" style="font-size:40px;color:#7c3aed;margin-bottom:12px"></i>
+            <div style="color:#6d28d9;font-weight:600;font-size:15px">Click để chọn file</div>
+            <div style="color:#9ca3af;font-size:13px;margin-top:4px">Phiếu thu, Đơn đăng ký học, Hợp đồng, Biên lai...
+            </div>
+            <div style="color:#a78bfa;font-size:12px;margin-top:8px">PDF, JPG, PNG • Tối đa 5MB</div>
+            <input type="file" id="docUploadInput" style="display:none" accept=".pdf,.jpg,.jpeg,.png"
+              onchange="uploadDocumentFile(this.files[0])">
+          </div>
+        </div>
+
+        <!-- Documents List -->
+        <div>
+          <label style="font-weight:600;color:#374151;margin-bottom:8px;display:block"><i
+              class="fas fa-folder-open"></i> Danh sách giấy tờ</label>
+          <div id="documentsListContainer" style="max-height:300px;overflow-y:auto">
+            <div style="text-align:center;color:#9ca3af;padding:20px">Đang tải...</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeDocumentsModal()">Đóng</button>
       </div>
     </div>
   </div>
@@ -543,11 +660,194 @@
     </div>
   </div>
 
+  <!-- Renewal Modal -->
+  <div class="modal" id="renewalModal">
+    <div class="modal-content" style="max-width:900px">
+      <div class="modal-header" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white">
+        <div class="modal-title"><i class="fas fa-sync-alt"></i> Tái phí / Gia hạn</div>
+        <button class="modal-close" onclick="closeRenewalModal()" style="color:white">&times;</button>
+      </div>
+      <div class="modal-body" style="max-height:80vh;overflow-y:auto">
+        <!-- Student Info -->
+        <div
+          style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:20px">
+          <h4 style="margin:0 0 12px 0;color:#92400e"><i class="fas fa-user-graduate"></i> Thông tin Học viên</h4>
+          <div id="renewalStudentInfo"></div>
+        </div>
+
+        <!-- Loại gia hạn -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Loại gia hạn</label>
+            <select class="form-control" id="renewalType" onchange="toggleNewClassSelect()">
+              <option value="extend">Gia hạn thêm (thêm vào lộ trình hiện tại)</option>
+              <option value="new">Khóa mới (đăng ký lớp mới)</option>
+            </select>
+          </div>
+          <div class="form-group" id="newClassGroup" style="display:none">
+            <label class="form-label">Chọn lớp mới</label>
+            <select class="form-control" id="renewalNewClass"></select>
+          </div>
+        </div>
+
+        <!-- Khóa học -->
+        <div
+          style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:20px">
+          <h4 style="margin:0 0 12px 0;color:#166534"><i class="fas fa-book"></i> Thông tin Khóa học</h4>
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label class="form-label required">Gói học phí</label>
+              <select class="form-control" id="renewalPackage" onchange="onRenewalPackageChange()"></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Học phí gốc</label>
+              <input type="text" id="renewalFeeOriginal" class="form-control" value="0đ" readonly
+                style="background:#f3f4f6;font-weight:bold">
+            </div>
+          </div>
+
+          <!-- Giảm giá -->
+          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <label style="color:#16a34a;font-weight:600"><i class="fas fa-percent"></i> Giảm giá</label>
+            <div class="form-row" style="margin-top:8px">
+              <div class="form-group" style="flex:2;margin-bottom:0">
+                <select id="renewalPromotion" class="form-control" onchange="calculateRenewalFee()">
+                  <option value="">-- Không áp dụng --</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <input type="text" id="renewalPromoDiscount" class="form-control" value="0đ" readonly
+                  style="background:#dcfce7;color:#16a34a;font-weight:bold;text-align:right">
+              </div>
+            </div>
+          </div>
+
+          <!-- Học bổng -->
+          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng tặng
+                kèm</label>
+              <span id="renewalDefaultScholarshipBadge"
+                style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">Mặc
+                định: <strong id="renewalDefaultScholarshipMonths">0</strong> tháng</span>
+            </div>
+            <div class="form-row" style="align-items:center">
+              <div class="form-group" style="margin-bottom:0;flex:1">
+                <input type="number" id="renewalScholarship" class="form-control" value="0" min="0" max="12"
+                  onchange="calculateRenewalFee()" style="font-size:18px;font-weight:bold;text-align:center">
+              </div>
+              <span style="padding:0 12px;color:#6b7280">tháng (thêm miễn phí)</span>
+            </div>
+          </div>
+
+          <!-- Tổng kết -->
+          <div style="background:#1f2937;color:white;padding:16px;border-radius:8px;margin-top:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+              <span>Khóa học chính:</span><span id="renewalMainMonths">0 tháng</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+              <span>Học bổng tặng:</span><span id="renewalBonusMonths" style="color:#4ade80">+0 tháng</span>
+            </div>
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #374151">
+              <span style="font-size:16px"><strong>HỌC PHÍ THỰC ĐÓNG:</strong></span>
+              <span id="renewalFeeTotal" style="font-size:24px;font-weight:bold;color:#fbbf24">0đ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thanh toán -->
+        <div
+          style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);padding:16px;border-radius:12px;margin-bottom:20px">
+          <h4 style="margin:0 0 12px 0;color:#9d174d"><i class="fas fa-credit-card"></i> Thanh toán</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Trạng thái</label>
+              <select id="renewalPaymentStatus" class="form-control" onchange="updateRenewalPaymentFields()">
+                <option value="pending">Chưa đóng</option>
+                <option value="deposit">Đặt cọc</option>
+                <option value="partial">Đóng 1 phần</option>
+                <option value="paid">Đã đóng đủ</option>
+              </select>
+            </div>
+            <div class="form-group" id="renewalDepositGroup" style="display:none">
+              <label>Tiền cọc</label>
+              <input type="text" id="renewalDeposit" class="form-control" value="0đ"
+                oninput="formatRenewalCurrency(this);calculateRenewalFee()">
+            </div>
+            <div class="form-group" id="renewalPaidGroup" style="display:none">
+              <label>Đã thanh toán</label>
+              <input type="text" id="renewalPaidAmount" class="form-control" value="0đ"
+                oninput="formatRenewalCurrency(this);calculateRenewalFee()">
+            </div>
+          </div>
+          <div id="renewalRemainingRow"
+            style="display:none;background:white;padding:12px;border-radius:8px;margin-top:8px">
+            <div style="display:flex;justify-content:space-between">
+              <span>Còn phải đóng:</span>
+              <span id="renewalRemaining" style="font-size:18px;font-weight:bold;color:#dc2626">0đ</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group"><label>Ghi chú</label><textarea id="renewalNote" class="form-control"
+            rows="2"></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeRenewalModal()">Hủy</button>
+        <button class="btn btn-primary" onclick="submitRenewal()" style="background:#f59e0b;border-color:#f59e0b"><i
+            class="fas fa-check"></i> Xác nhận tái phí</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Renewal Success Modal with QR -->
+  <div class="modal" id="renewalSuccessModal">
+    <div class="modal-content" style="max-width:500px">
+      <div class="modal-header" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white">
+        <div class="modal-title"><i class="fas fa-check-circle"></i> Tái phí thành công!</div>
+        <button class="modal-close" onclick="closeRenewalSuccessModal()" style="color:white">&times;</button>
+      </div>
+      <div class="modal-body" style="text-align:center;padding:24px">
+        <div style="margin-bottom:20px">
+          <i class="fas fa-user-graduate" style="font-size:48px;color:#22c55e;margin-bottom:12px"></i>
+          <h3 style="margin:0;color:#166534" id="renewalSuccessName">Học viên</h3>
+          <p style="color:#6b7280;margin:4px 0" id="renewalSuccessCode">Mã: ---</p>
+        </div>
+
+        <div id="renewalQRSection" style="display:none">
+          <div style="background:#f9fafb;padding:16px;border-radius:12px;margin-bottom:16px">
+            <h4 style="margin:0 0 12px;color:#1f2937"><i class="fas fa-qrcode"></i> QR Thanh toán</h4>
+            <img id="renewalQRImage" src="" alt="QR Code" style="max-width:200px;border-radius:8px">
+          </div>
+          <div style="margin-bottom:16px">
+            <div style="background:#fee2e2;padding:12px;border-radius:8px">
+              <div style="color:#991b1b;font-size:13px" id="renewalQRLabel">Số tiền cần chuyển</div>
+              <div style="color:#dc2626;font-size:20px;font-weight:700" id="renewalSuccessRemaining">0đ</div>
+            </div>
+          </div>
+          <button class="btn btn-success" onclick="confirmRenewalPayment()"
+            style="width:100%;padding:12px;font-size:16px">
+            <i class="fas fa-check-double"></i> Xác nhận đã nhận thanh toán
+          </button>
+        </div>
+
+        <div id="renewalFullPaidSection" style="display:none;padding:20px">
+          <i class="fas fa-check-double" style="font-size:48px;color:#22c55e;margin-bottom:12px"></i>
+          <p style="color:#166534;font-weight:600">Đã thanh toán đầy đủ!</p>
+        </div>
+      </div>
+      <div class="modal-footer" style="justify-content:center">
+        <button class="btn btn-secondary" onclick="closeRenewalSuccessModal()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/config.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/sidebar.js"></script>
   <script>
-    let students = [], packages = [], promoPrograms = [];
+    let students = [], packages = [], promoPrograms = [], availableGifts = [];
     let currentFilter = null, currentDetailId = null;
     let selectedPackage = null, defaultScholarshipMonths = 0;
 
@@ -555,6 +855,7 @@
       pending: { label: 'Chờ xếp lớp', icon: 'warning' },
       waiting: { label: 'Đang đợi lớp', icon: 'info' },
       active: { label: 'Đang học', icon: 'success' },
+      expiring_soon: { label: 'Sắp hết phí', icon: 'warning' },
       paused: { label: 'Tạm dừng', icon: 'info' },
       expired: { label: 'Hết học phí', icon: 'danger' },
       quit_paid: { label: 'Nghỉ bỏ phí', icon: 'danger' },
@@ -580,9 +881,14 @@
         promoPrograms = promoRes.data || [];
       } catch (e) { promoPrograms = []; }
       try {
+        // Load quà tặng từ promotion_items
+        const giftRes = await api.get('/promotions/items');
+        availableGifts = (giftRes.data || []).filter(g => g.stock_quantity > 0);
+      } catch (e) { availableGifts = []; }
+      try {
         const classRes = await api.get('/classes' + params);
         document.getElementById('classFilter').innerHTML = '<option value="">Tất cả lớp</option>' +
-          (classRes.data || []).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+          (classRes.data || []).map(c => `<option value="${c.id}">${c.class_name || c.name || 'Lớp ' + c.id}</option>`).join('');
       } catch (e) { }
     }
 
@@ -591,6 +897,19 @@
         const params = branch.current?.id ? `?branch_id=${branch.current.id}` : '';
         const res = await api.get('/students/stats' + params);
         const stats = res.data || {};
+
+        // Update fee filter dropdown with counts
+        const feeFilter = document.getElementById('feeMonthFilter');
+        const currentValue = feeFilter.value;
+        feeFilter.innerHTML = `
+          <option value="">Hết phí tất cả</option>
+          <option value="0">Tháng này (${stats.expiring_this_month || 0})</option>
+          <option value="1">Tháng sau (${stats.expiring_next_month || 0})</option>
+          <option value="2">2 tháng tới (${stats.expiring_2_months || 0})</option>
+          <option value="3">3 tháng tới (${stats.expiring_3_months || 0})</option>
+        `;
+        feeFilter.value = currentValue;
+
         document.getElementById('statsGrid').innerHTML = `
           <div class="stat-card ${!currentFilter ? 'active' : ''}" onclick="filterByStatus(null)">
             <div class="stat-icon primary"><i class="fas fa-users"></i></div>
@@ -603,6 +922,10 @@
           <div class="stat-card ${currentFilter === 'waiting' ? 'active' : ''}" onclick="filterByStatus('waiting')">
             <div class="stat-icon info"><i class="fas fa-clock"></i></div>
             <div><div class="stat-value">${stats.waiting || 0}</div><div class="stat-label">Đợi lớp</div></div>
+          </div>
+          <div class="stat-card ${currentFilter === 'expiring_soon' ? 'active' : ''}" onclick="filterByStatus('expiring_soon')">
+            <div class="stat-icon warning"><i class="fas fa-hourglass-half"></i></div>
+            <div><div class="stat-value">${stats.expiring_soon || 0}</div><div class="stat-label">Sắp hết phí</div></div>
           </div>
           <div class="stat-card ${currentFilter === 'expired' ? 'active' : ''}" onclick="filterByStatus('expired')">
             <div class="stat-icon danger"><i class="fas fa-exclamation-circle"></i></div>
@@ -626,6 +949,7 @@
       try {
         const search = document.getElementById('searchInput').value;
         const classId = document.getElementById('classFilter').value;
+        const feeMonth = document.getElementById('feeMonthFilter').value;
         const params = new URLSearchParams();
 
         // Add branch if selected
@@ -633,6 +957,7 @@
         if (search) params.append('search', search);
         if (classId) params.append('class_id', classId);
         if (currentFilter) params.append('status', currentFilter);
+        if (feeMonth !== '') params.append('fee_end_month', feeMonth); // Lọc theo tháng hết phí
         params.append('page', page);
         params.append('limit', 20);
 
@@ -641,26 +966,47 @@
         students = res.data || [];
         renderTable(students, res.pagination);
       } catch (e) {
-        document.getElementById('dataTable').innerHTML = '<tr><td colspan="6" class="text-center text-danger">Lỗi tải dữ liệu</td></tr>';
+        document.getElementById('dataTable').innerHTML = '<tr><td colspan="7" class="text-center text-danger">Lỗi tải dữ liệu</td></tr>';
       }
     }
 
     function renderTable(items, pagination) {
       const tbody = document.getElementById('dataTable');
-      if (!items.length) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Không có dữ liệu</td></tr>'; return; }
+      if (!items.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Không có dữ liệu</td></tr>'; return; }
       tbody.innerHTML = items.map(s => {
         const status = statusConfig[s.status] || { label: s.status };
         const sessionsClass = (s.sessions_remaining || 0) <= 4 ? 'low' : 'normal';
+        const showRenewal = ['expired', 'expiring_soon'].includes(s.status) || ['expired', 'expiring_soon'].includes(s.fee_status) || (s.sessions_remaining || 0) <= 4;
+        // Tính còn nợ = học phí - đã đóng
+        const remaining = Math.max(0, (s.tuition_fee || 0) - (s.paid_amount || 0));
+        const showQR = remaining > 0; // Chỉ hiện QR khi còn nợ tiền
+
+        // Format ngày hết phí
+        let feeEndDisplay = '-';
+        let feeEndClass = '';
+        if (s.fee_end_date) {
+          const feeEnd = new Date(s.fee_end_date);
+          const today = new Date();
+          const diffDays = Math.ceil((feeEnd - today) / (1000 * 60 * 60 * 24));
+          feeEndDisplay = feeEnd.toLocaleDateString('vi-VN');
+          if (diffDays < 0) feeEndClass = 'text-danger font-weight-bold';
+          else if (diffDays <= 30) feeEndClass = 'text-warning font-weight-bold';
+        }
+
         return `<tr>
           <td><div class="student-info"><span class="student-name" onclick="viewDetail(${s.id})">${s.full_name}</span><span class="student-meta">${s.student_code || ''} • ${s.birth_year || ''}</span></div></td>
           <td><div>${s.parent_name || '-'}</div><div style="font-size:12px;color:var(--text-secondary)">${s.parent_phone || ''}</div></td>
           <td>${s.class_name || '<span class="text-muted">Chưa xếp</span>'}</td>
           <td class="text-center"><span class="sessions-badge ${sessionsClass}">${s.sessions_remaining || 0} buổi</span></td>
+          <td class="text-center"><span class="${feeEndClass}">${feeEndDisplay}</span></td>
           <td class="text-center"><span class="status-badge ${s.status}">${status.label}</span></td>
           <td class="text-center">
             <button class="btn btn-sm btn-info" onclick="viewDetail(${s.id})" title="Xem"><i class="fas fa-eye"></i></button>
             <button class="btn btn-sm btn-primary" onclick="editStudent(${s.id})" title="Sửa"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-success" onclick="showPaymentQR(${s.id})" title="QR"><i class="fas fa-qrcode"></i></button>
+            ${showQR ? `<button class="btn btn-sm btn-success" onclick="showPaymentQR(${s.id})" title="Còn nợ ${formatCurrency(remaining)}"><i class="fas fa-qrcode"></i></button>` : ''}
+            ${showRenewal && auth.hasRole('CM', 'OM', 'BM', 'HOEC', 'HOCM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ?
+            `<button class="btn btn-sm btn-warning" onclick="openRenewalModal(${s.id})" title="Tái phí" style="background:#f59e0b;border-color:#f59e0b"><i class="fas fa-sync-alt"></i></button>` : ''
+          }
           </td>
         </tr>`;
       }).join('');
@@ -690,7 +1036,8 @@
         document.getElementById('fParentPhone').value = s.parent_phone || '';
         document.getElementById('fParentEmail').value = s.parent_email || '';
         document.getElementById('fNote').value = s.note || '';
-        document.getElementById('fGiftName').value = s.gift_name || '';
+        // Set gift checkbox
+        renderGiftCheckboxes(s.gift_id);
         document.getElementById('fScholarshipMonths').value = s.scholarship_months || 0;
         populateDropdowns(s.package_id);
         const paidAmount = s.paid_amount || 0, totalFee = s.tuition_fee || 0;
@@ -705,11 +1052,12 @@
     }
 
     function resetForm() {
-      ['fStudentName', 'fBirthYear', 'fAddress', 'fParentName', 'fParentPhone', 'fParentEmail', 'fNote', 'fGiftName'].forEach(id => document.getElementById(id).value = '');
+      ['fStudentName', 'fBirthYear', 'fAddress', 'fParentName', 'fParentPhone', 'fParentEmail', 'fNote'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('fGender').value = '';
       document.getElementById('fPackage').value = '';
       document.getElementById('fPromoProgram').value = '';
       document.getElementById('fScholarshipMonths').value = '0';
+      renderGiftCheckboxes(); // Reset gift checkboxes
       document.getElementById('fPaymentStatus').value = 'pending';
       document.getElementById('fDepositAmount').value = '0đ';
       document.getElementById('fPaidAmount').value = '0đ';
@@ -735,6 +1083,37 @@
         `<option value="${p.id}" data-type="${p.discount_type}" data-value="${p.discount_value}">${p.name}</option>`
       ).join('');
       if (pkgId) onPackageChange();
+    }
+
+    function renderGiftCheckboxes(selectedGiftId = null) {
+      const container = document.getElementById('giftCheckboxes');
+      if (!availableGifts.length) {
+        container.innerHTML = '<span class="text-muted">Không có quà tặng</span>';
+        return;
+      }
+      container.innerHTML = availableGifts.map(g => `
+        <label class="gift-checkbox ${g.stock_quantity <= 0 ? 'disabled' : ''} ${selectedGiftId == g.id ? 'checked' : ''}" onclick="toggleGift(this, ${g.id}, ${g.stock_quantity})">
+          <input type="checkbox" name="gift" value="${g.id}" data-name="${g.name}" ${selectedGiftId == g.id ? 'checked' : ''} ${g.stock_quantity <= 0 ? 'disabled' : ''}>
+          🎁 ${g.name} <span class="gift-qty">(${g.stock_quantity})</span>
+        </label>
+      `).join('');
+    }
+
+    function toggleGift(el, giftId, stockQty) {
+      if (stockQty <= 0) return;
+      // Chỉ cho chọn 1 quà
+      document.querySelectorAll('.gift-checkbox').forEach(cb => {
+        cb.classList.remove('checked');
+        cb.querySelector('input').checked = false;
+      });
+      el.classList.add('checked');
+      el.querySelector('input').checked = true;
+    }
+
+    function getSelectedGift() {
+      const checked = document.querySelector('.gift-checkbox.checked input');
+      if (!checked) return { gift_id: null, gift_name: null };
+      return { gift_id: checked.value, gift_name: checked.dataset.name };
     }
 
     function onPackageChange() {
@@ -799,7 +1178,148 @@
       document.getElementById('fRemaining').textContent = formatCurrency(Math.max(0, total - paid));
     }
 
-    function closeFormModal() { document.getElementById('formModal').classList.remove('show'); }
+    function closeFormModal() {
+      document.getElementById('formModal').classList.remove('show');
+    }
+
+    // ==================== DOCUMENTS MODAL ====================
+    let currentDocStudentId = null;
+
+    async function openDocumentsModal(studentId) {
+      currentDocStudentId = studentId;
+      document.getElementById('docStudentId').value = studentId;
+
+      // Load student info
+      try {
+        const res = await api.get('/students/' + studentId);
+        const s = res.data;
+        document.getElementById('docStudentInfo').innerHTML = `
+          <div style="width:50px;height:50px;border-radius:50%;background:#7c3aed;color:white;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold">${(s.full_name || '?')[0].toUpperCase()}</div>
+          <div>
+            <div style="font-weight:600;font-size:16px">${s.full_name}</div>
+            <div style="color:#6b7280;font-size:13px">${s.student_code} • Học phí: ${formatCurrency(s.fee_total || s.tuition_fee || 0)}</div>
+          </div>
+        `;
+      } catch (e) { }
+
+      // Load documents
+      await loadDocumentsList(studentId);
+
+      document.getElementById('documentsModal').classList.add('show');
+    }
+
+    function closeDocumentsModal() {
+      document.getElementById('documentsModal').classList.remove('show');
+      currentDocStudentId = null;
+    }
+
+    async function loadDocumentsList(studentId) {
+      const container = document.getElementById('documentsListContainer');
+      container.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:20px"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>';
+
+      try {
+        const res = await api.get('/students/' + studentId + '/documents');
+        const docs = res.data || [];
+
+        if (docs.length === 0) {
+          container.innerHTML = `
+            <div style="text-align:center;padding:30px;color:#9ca3af">
+              <i class="fas fa-folder-open" style="font-size:40px;margin-bottom:12px;opacity:0.5"></i>
+              <div>Chưa có giấy tờ nào</div>
+            </div>
+          `;
+        } else {
+          container.innerHTML = docs.map(d => `
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f9fafb;border-radius:10px;margin-bottom:10px;border:1px solid #e5e7eb">
+              <div style="width:45px;height:45px;border-radius:8px;background:${d.file_type?.includes('pdf') ? '#fef2f2' : '#eff6ff'};display:flex;align-items:center;justify-content:center">
+                <i class="fas ${d.file_type?.includes('pdf') ? 'fa-file-pdf' : 'fa-file-image'}" style="font-size:20px;color:${d.file_type?.includes('pdf') ? '#dc2626' : '#3b82f6'}"></i>
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#374151">${d.file_name}</div>
+                <div style="font-size:12px;color:#6b7280;margin-top:2px">
+                  <span style="background:#ede9fe;color:#7c3aed;padding:2px 8px;border-radius:10px;font-weight:500">${d.doc_type_display || getDocTypeLabel(d.doc_type)}</span>
+                  <span style="margin-left:8px">${new Date(d.created_at).toLocaleDateString('vi-VN')}</span>
+                  ${d.uploaded_by_name ? '<span style="margin-left:8px">• ' + d.uploaded_by_name + '</span>' : ''}
+                </div>
+              </div>
+              <a href="${d.file_url}" target="_blank" class="btn" style="padding:8px 12px;background:#3b82f6;color:white;border-radius:6px;text-decoration:none" title="Xem file">
+                <i class="fas fa-eye"></i>
+              </a>
+              ${auth.hasRole('ACCOUNTANT', 'ADMIN', 'GDV', 'QLCS', 'CHU') ? `
+              <button onclick="deleteDocument(${d.id})" class="btn" style="padding:8px 12px;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;cursor:pointer" title="Xóa">
+                <i class="fas fa-trash"></i>
+              </button>` : ''}
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        container.innerHTML = '<div style="text-align:center;color:#dc2626;padding:20px"><i class="fas fa-exclamation-triangle"></i> Lỗi tải dữ liệu</div>';
+      }
+    }
+
+    function getDocTypeLabel(type) {
+      const labels = { 'receipt': 'Phiếu thu', 'registration_form': 'Đơn đăng ký', 'contract': 'Hợp đồng', 'other': 'Khác' };
+      return labels[type] || type;
+    }
+
+    async function uploadDocumentFile(file) {
+      if (!file || !currentDocStudentId) return;
+
+      // Validate
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+      if (!allowedTypes.includes(file.type)) {
+        ui.error('Chỉ hỗ trợ file PDF, JPG, PNG');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        ui.error('File không được vượt quá 5MB');
+        return;
+      }
+
+      // Ask for document type
+      const docTypeChoice = prompt(
+        'Chọn loại giấy tờ cho file: ' + file.name + '\n\n' +
+        '1. Phiếu thu\n' +
+        '2. Đơn đăng ký học\n' +
+        '3. Hợp đồng\n' +
+        '4. Khác\n\n' +
+        'Nhập số (1-4):',
+        '1'
+      );
+
+      if (!docTypeChoice) {
+        document.getElementById('docUploadInput').value = '';
+        return;
+      }
+
+      const docTypes = { '1': 'receipt', '2': 'registration_form', '3': 'contract', '4': 'other' };
+      const docType = docTypes[docTypeChoice] || 'other';
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('doc_type', docType);
+
+      try {
+        await api.upload('/students/' + currentDocStudentId + '/documents', formData);
+        ui.success('Tải lên thành công!');
+        loadDocumentsList(currentDocStudentId);
+      } catch (e) {
+        ui.error('Lỗi tải lên: ' + (e.message || 'Không xác định'));
+      } finally {
+        document.getElementById('docUploadInput').value = '';
+      }
+    }
+
+    async function deleteDocument(docId) {
+      if (!confirm('Xóa giấy tờ này?')) return;
+      try {
+        await api.delete('/students/documents/' + docId);
+        ui.success('Đã xóa');
+        loadDocumentsList(currentDocStudentId);
+      } catch (e) {
+        ui.error('Lỗi xóa: ' + (e.message || 'Không xác định'));
+      }
+    }
 
     async function saveStudent() {
       const id = document.getElementById('formId').value;
@@ -819,12 +1339,34 @@
         tuition_fee: parseCurrency(document.getElementById('fFeeTotal').textContent),
         discount_amount: parseCurrency(document.getElementById('fPromoDiscount').value),
         scholarship_months: parseInt(document.getElementById('fScholarshipMonths').value) || 0,
-        gift_name: document.getElementById('fGiftName').value || null, paid_amount: paidAmount, payment_status: paymentStatus
+        gift_id: getSelectedGift().gift_id, gift_name: getSelectedGift().gift_name, paid_amount: paidAmount, payment_status: paymentStatus
       };
       try {
-        if (id) { await api.put('/students/' + id, data); ui.success('Cập nhật thành công'); }
-        else { await api.post('/students', data); ui.success('Thêm học viên thành công'); }
-        closeFormModal(); loadData(); loadStats();
+        let studentId = id;
+        const selectedGift = getSelectedGift();
+
+        if (id) {
+          await api.put('/students/' + id, data);
+          ui.success('Cập nhật thành công');
+        } else {
+          const res = await api.post('/students', data);
+          studentId = res.data?.id;
+          ui.success('Thêm học viên thành công');
+        }
+
+        // Nếu có chọn quà tặng và là tạo mới → trừ stock
+        if (selectedGift.gift_id && studentId && !id) {
+          try {
+            await api.post('/promotions/items/' + selectedGift.gift_id + '/give', {
+              student_id: studentId,
+              note: 'Tặng cho học viên ' + data.full_name
+            });
+          } catch (giftErr) {
+            ui.warning('Lưu học viên OK nhưng trừ quà thất bại: ' + giftErr.message);
+          }
+        }
+
+        closeFormModal(); loadData(); loadStats(); loadOptions(); // Reload gifts
       } catch (e) { ui.error(e.message || 'Có lỗi xảy ra'); }
     }
 
@@ -854,31 +1396,124 @@
           <div class="detail-section"><h4><i class="fas fa-book"></i> Thông tin học tập</h4>
             <div class="detail-row"><span class="detail-label">Lớp</span><span class="detail-value">${s.class_name || 'Chưa xếp lớp'}</span></div>
             <div class="detail-row"><span class="detail-label">Gói học</span><span class="detail-value">${s.package_name || '-'}</span></div>
-            <div class="detail-row"><span class="detail-label">Buổi còn lại</span><span class="detail-value"><strong>${s.sessions_remaining || 0}</strong> buổi</span></div>
+            <div class="detail-row"><span class="detail-label">Học bổng</span><span class="detail-value" style="color:#16a34a">${s.scholarship_months ? s.scholarship_months + ' tháng' : '-'}</span></div>
+            <div class="detail-row"><span class="detail-label">Tổng khóa học</span><span class="detail-value">${s.package_months && s.scholarship_months ? (s.package_months + s.scholarship_months) + ' tháng' : (s.package_months ? s.package_months + ' tháng' : '-')}</span></div>
+            <div class="detail-row"><span class="detail-label">Tổng buổi</span><span class="detail-value">${s.total_sessions || 0} buổi</span></div>
+            <div class="detail-row"><span class="detail-label">Buổi còn lại</span><span class="detail-value"><strong>${s.remaining_sessions || 0}</strong> buổi</span></div>
           </div>
           <div class="detail-section"><h4><i class="fas fa-credit-card"></i> Thanh toán</h4>
             <div class="detail-row"><span class="detail-label">Học phí</span><span class="detail-value">${formatCurrency(s.tuition_fee)}</span></div>
             <div class="detail-row"><span class="detail-label">Đã đóng</span><span class="detail-value" style="color:#16a34a;font-weight:600">${formatCurrency(s.paid_amount)}</span></div>
             <div class="detail-row"><span class="detail-label">Còn lại</span><span class="detail-value" style="color:#dc2626;font-weight:600">${formatCurrency(Math.max(0, (s.tuition_fee || 0) - (s.paid_amount || 0)))}</span></div>
+          </div>
+          <div class="detail-section"><h4><i class="fas fa-file-alt"></i> Tài liệu</h4>
+            <div id="studentDocuments" style="margin-bottom:12px">Đang tải...</div>
+            ${auth.hasRole('ACCOUNTANT', 'EC', 'HOEC', 'CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `
+            <div class="upload-zone" style="border:2px dashed #d1d5db;border-radius:8px;padding:16px;text-align:center;cursor:pointer" onclick="document.getElementById('docFileInput').click()">
+              <i class="fas fa-cloud-upload-alt" style="font-size:24px;color:#9ca3af;margin-bottom:8px"></i>
+              <div style="color:#6b7280;font-size:14px">Tải lên phiếu thu, đơn đăng ký...</div>
+              <input type="file" id="docFileInput" style="display:none" accept=".pdf,.jpg,.jpeg,.png" onchange="uploadStudentDoc(this.files[0])">
+            </div>` : ''}
           </div>`;
+        loadStudentDocuments(s.id);
         document.getElementById('detailModal').classList.add('show');
       } catch (e) { ui.error('Không thể tải thông tin'); }
     }
 
     function closeDetailModal() { document.getElementById('detailModal').classList.remove('show'); }
 
+    // Load student documents
+    async function loadStudentDocuments(studentId) {
+      const container = document.getElementById('studentDocuments');
+      if (!container) return;
+      try {
+        const res = await api.get('/students/' + studentId + '/documents');
+        const docs = res.data || [];
+        if (docs.length === 0) {
+          container.innerHTML = '<div style="color:#9ca3af;font-size:14px">Chưa có tài liệu</div>';
+        } else {
+          container.innerHTML = docs.map(d => `
+            <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#f9fafb;border-radius:6px;margin-bottom:8px">
+              <i class="fas ${d.file_type === 'pdf' ? 'fa-file-pdf text-danger' : 'fa-file-image text-primary'}"></i>
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.file_name}</div>
+                <div style="font-size:12px;color:#6b7280">${d.doc_type_display || d.doc_type} • ${new Date(d.created_at).toLocaleDateString('vi-VN')}</div>
+              </div>
+              <a href="${d.file_url}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a>
+              ${auth.hasRole('ACCOUNTANT', 'ADMIN', 'GDV') ? `<button class="btn btn-sm btn-outline-danger" onclick="deleteStudentDoc(${d.id})"><i class="fas fa-trash"></i></button>` : ''}
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        container.innerHTML = '<div style="color:#dc2626;font-size:14px">Lỗi tải tài liệu</div>';
+      }
+    }
+
+    // Upload student document
+    async function uploadStudentDoc(file) {
+      if (!file || !currentDetailId) return;
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+      if (!allowedTypes.includes(file.type)) {
+        ui.error('Chỉ hỗ trợ file PDF, JPG, PNG');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        ui.error('File không được vượt quá 5MB');
+        return;
+      }
+
+      // Hỏi loại tài liệu
+      const docType = prompt('Loại tài liệu:\n1. Phiếu thu\n2. Đơn đăng ký học\n3. Hợp đồng\n4. Khác\n\nNhập số (1-4):', '1');
+      const docTypes = { '1': 'receipt', '2': 'registration_form', '3': 'contract', '4': 'other' };
+      const selectedType = docTypes[docType] || 'other';
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('doc_type', selectedType);
+
+      try {
+        await api.upload('/students/' + currentDetailId + '/documents', formData);
+        ui.success('Tải lên thành công');
+        loadStudentDocuments(currentDetailId);
+      } catch (e) {
+        ui.error('Lỗi tải lên: ' + (e.message || 'Không xác định'));
+      } finally {
+        document.getElementById('docFileInput').value = '';
+      }
+    }
+
+    // Delete student document
+    async function deleteStudentDoc(docId) {
+      if (!confirm('Xóa tài liệu này?')) return;
+      try {
+        await api.delete('/students/documents/' + docId);
+        ui.success('Đã xóa');
+        loadStudentDocuments(currentDetailId);
+      } catch (e) {
+        ui.error('Lỗi xóa: ' + (e.message || 'Không xác định'));
+      }
+    }
+
     async function showPaymentQR(id) {
       try {
         const res = await api.get('/students/' + id);
         const s = res.data;
-        const remaining = Math.max(0, (s.tuition_fee || 0) - (s.paid_amount || 0));
+        const tuitionFee = s.tuition_fee || 0;
+        const paidAmount = s.paid_amount || 0;
+        const remaining = Math.max(0, tuitionFee - paidAmount);
+
+        // Nếu payment_status = paid nhưng chưa thực sự nhận tiền (paid_amount < tuition_fee)
+        // thì hiện QR với số tiền = học phí
+        const qrAmount = remaining > 0 ? remaining : tuitionFee;
+        const qrLabel = remaining > 0 ? 'Còn phải đóng' : 'Học phí đã xác nhận';
+
         document.getElementById('qrStudentId').value = id;
-        document.getElementById('qrRemainingRaw').value = remaining;
+        document.getElementById('qrRemainingRaw').value = qrAmount;
         document.getElementById('qrStudentInfo').innerHTML = `<h3 style="margin:0">${s.full_name}</h3><div style="color:var(--text-secondary)">${s.student_code}</div>`;
-        const qrUrl = `https://img.vietqr.io/image/970422-0866766189-compact2.png?amount=${remaining}&addInfo=${encodeURIComponent('HP ' + s.student_code)}`;
+        const qrUrl = `https://img.vietqr.io/image/970422-0866766189-compact2.png?amount=${qrAmount}&addInfo=${encodeURIComponent('HP ' + s.student_code)}`;
         document.getElementById('qrImage').src = qrUrl;
-        document.getElementById('qrPaidAmount').textContent = formatCurrency(s.paid_amount);
-        document.getElementById('qrRemainingAmount').textContent = formatCurrency(remaining);
+        document.getElementById('qrPaidAmount').textContent = formatCurrency(paidAmount);
+        document.getElementById('qrRemainingAmount').textContent = formatCurrency(qrAmount);
         closeDetailModal();
         document.getElementById('qrModal').classList.add('show');
       } catch (e) { ui.error('Không thể tải thông tin'); }
@@ -908,6 +1543,281 @@
     function formatCurrency(val) { return val ? new Intl.NumberFormat('vi-VN').format(val) + 'đ' : '0đ'; }
     function parseCurrency(str) { return parseInt(String(str).replace(/[^\d]/g, '')) || 0; }
     function formatCurrencyField(input) { const val = parseCurrency(input.value); if (val > 0) input.value = formatCurrency(val); }
+
+    // === Renewal Functions ===
+    let currentRenewalStudent = null;
+    let renewalDefaultScholarship = 0;
+
+    async function openRenewalModal(studentId) {
+      const student = students.find(s => s.id === studentId);
+      if (!student) {
+        try {
+          const res = await api.get('/students/' + studentId);
+          currentRenewalStudent = res.data;
+        } catch (e) { ui.error('Không thể tải thông tin'); return; }
+      } else {
+        currentRenewalStudent = student;
+      }
+
+      // Fill student info
+      document.getElementById('renewalStudentInfo').innerHTML = `
+        <div class="form-row">
+          <div class="form-group"><label>Họ tên</label><div style="font-weight:600;font-size:16px">${currentRenewalStudent.full_name}</div></div>
+          <div class="form-group"><label>Mã HV</label><div>${currentRenewalStudent.student_code || '-'}</div></div>
+          <div class="form-group"><label>Lớp hiện tại</label><div>${currentRenewalStudent.class_name || 'Chưa xếp lớp'}</div></div>
+          <div class="form-group"><label>Buổi còn</label><div><span class="sessions-badge ${(currentRenewalStudent.sessions_remaining || 0) <= 4 ? 'low' : 'normal'}">${currentRenewalStudent.sessions_remaining || 0} buổi</span></div></div>
+        </div>
+      `;
+
+      // Load packages for renewal
+      const pkgSelect = document.getElementById('renewalPackage');
+      pkgSelect.innerHTML = '<option value="">-- Chọn gói --</option>' + packages.map(p => {
+        const months = p.months || 0;
+        const sessions = p.sessions_count || p.sessions || 0;
+        return `<option value="${p.id}" data-price="${p.price}" data-months="${months}" data-sessions="${sessions}" data-scholarship="${p.default_scholarship_months || 0}">${p.name} - ${formatCurrency(p.price)}</option>`;
+      }).join('');
+
+      // Load promotion programs
+      const promoSelect = document.getElementById('renewalPromotion');
+      promoSelect.innerHTML = '<option value="">-- Không áp dụng --</option>';
+      try {
+        const promoRes = await api.get('/promotions/programs?is_active=1');
+        (promoRes.data || []).forEach(p => {
+          const desc = p.discount_type === 'percent' ? `${p.discount_value}%` : formatCurrency(p.discount_value);
+          promoSelect.innerHTML += `<option value="${p.id}" data-type="${p.discount_type}" data-value="${p.discount_value}">${p.name} (-${desc})</option>`;
+        });
+      } catch (e) { }
+
+      // Load classes for "new course" option
+      const classSelect = document.getElementById('renewalNewClass');
+      classSelect.innerHTML = '<option value="">-- Chọn lớp --</option>';
+      try {
+        const branchQuery = branch.buildQuery({});
+        const classRes = await api.get('/classes?status=active' + branchQuery.replace('?', '&'));
+        (classRes.data || []).forEach(c => {
+          classSelect.innerHTML += `<option value="${c.id}">${c.class_name || c.name} (${c.student_count || 0}/${c.max_students || 15})</option>`;
+        });
+      } catch (e) { }
+
+      // Reset form
+      document.getElementById('renewalType').value = 'extend';
+      document.getElementById('renewalScholarship').value = '0';
+      document.getElementById('renewalPaymentStatus').value = 'pending';
+      document.getElementById('renewalDeposit').value = '0đ';
+      document.getElementById('renewalPaidAmount').value = '0đ';
+      document.getElementById('renewalNote').value = '';
+      document.getElementById('newClassGroup').style.display = 'none';
+      renewalDefaultScholarship = 0;
+      updateRenewalPaymentFields();
+      calculateRenewalFee();
+
+      document.getElementById('renewalModal').classList.add('show');
+    }
+
+    function closeRenewalModal() {
+      document.getElementById('renewalModal').classList.remove('show');
+      currentRenewalStudent = null;
+    }
+
+    function toggleNewClassSelect() {
+      const type = document.getElementById('renewalType').value;
+      document.getElementById('newClassGroup').style.display = type === 'new' ? 'block' : 'none';
+    }
+
+    function onRenewalPackageChange() {
+      const pkgSelect = document.getElementById('renewalPackage');
+      const option = pkgSelect.options[pkgSelect.selectedIndex];
+      const price = parseFloat(option?.dataset?.price) || 0;
+      const months = parseInt(option?.dataset?.months) || 0;
+      renewalDefaultScholarship = parseInt(option?.dataset?.scholarship) || 0;
+
+      document.getElementById('renewalFeeOriginal').value = formatCurrency(price);
+      document.getElementById('renewalScholarship').value = renewalDefaultScholarship;
+
+      if (renewalDefaultScholarship > 0) {
+        document.getElementById('renewalDefaultScholarshipBadge').style.display = 'inline';
+        document.getElementById('renewalDefaultScholarshipMonths').textContent = renewalDefaultScholarship;
+      } else {
+        document.getElementById('renewalDefaultScholarshipBadge').style.display = 'none';
+      }
+
+      calculateRenewalFee();
+    }
+
+    function updateRenewalPaymentFields() {
+      const status = document.getElementById('renewalPaymentStatus').value;
+      document.getElementById('renewalDepositGroup').style.display = status === 'deposit' ? 'block' : 'none';
+      document.getElementById('renewalPaidGroup').style.display = ['partial', 'paid'].includes(status) ? 'block' : 'none';
+      document.getElementById('renewalRemainingRow').style.display = status !== 'pending' ? 'block' : 'none';
+      calculateRenewalFee();
+    }
+
+    function formatRenewalCurrency(input) {
+      let val = input.value.replace(/[^\d]/g, '');
+      if (val) input.value = parseInt(val).toLocaleString('vi-VN') + 'đ';
+      else input.value = '0đ';
+    }
+
+    function calculateRenewalFee() {
+      const pkgSelect = document.getElementById('renewalPackage');
+      const option = pkgSelect.options[pkgSelect.selectedIndex];
+      const originalPrice = parseFloat(option?.dataset?.price) || 0;
+      const pkgMonths = parseInt(option?.dataset?.months) || 0;
+
+      // Promotion discount
+      const promoSelect = document.getElementById('renewalPromotion');
+      const promoOption = promoSelect.options[promoSelect.selectedIndex];
+      let promoDiscount = 0;
+      if (promoOption?.value) {
+        const discType = promoOption.dataset.type;
+        const discValue = parseFloat(promoOption.dataset.value) || 0;
+        promoDiscount = discType === 'percent' ? Math.round(originalPrice * discValue / 100) : discValue;
+      }
+
+      // Học bổng = thêm tháng miễn phí, KHÔNG trừ tiền
+      const scholarshipMonths = parseInt(document.getElementById('renewalScholarship').value) || 0;
+      const totalMonths = pkgMonths + scholarshipMonths;
+
+      const finalPrice = Math.max(0, originalPrice - promoDiscount);
+
+      // Payment
+      const status = document.getElementById('renewalPaymentStatus').value;
+      let paidAmount = 0;
+      if (status === 'deposit') {
+        paidAmount = parseInt(document.getElementById('renewalDeposit').value.replace(/[^\d]/g, '')) || 0;
+      } else if (status === 'partial') {
+        paidAmount = parseInt(document.getElementById('renewalPaidAmount').value.replace(/[^\d]/g, '')) || 0;
+      } else if (status === 'paid') {
+        paidAmount = finalPrice;
+        document.getElementById('renewalPaidAmount').value = formatCurrency(finalPrice);
+      }
+      const remaining = Math.max(0, finalPrice - paidAmount);
+
+      document.getElementById('renewalPromoDiscount').value = formatCurrency(promoDiscount);
+      document.getElementById('renewalMainMonths').textContent = pkgMonths + ' tháng';
+      document.getElementById('renewalBonusMonths').textContent = '+' + scholarshipMonths + ' tháng';
+      document.getElementById('renewalFeeTotal').textContent = formatCurrency(finalPrice);
+      document.getElementById('renewalRemaining').textContent = formatCurrency(remaining);
+    }
+
+    function getRenewalQRUrl(amount, description) {
+      // TODO: Get bank info from branch settings
+      const bankId = 'MB';
+      const accountNo = '0389718154';
+      const template = 'compact2';
+      return `https://img.vietqr.io/image/${bankId}-${accountNo}-${template}.png?amount=${amount}&addInfo=${encodeURIComponent(description)}`;
+    }
+
+    async function submitRenewal() {
+      if (!currentRenewalStudent) return;
+
+      const pkgSelect = document.getElementById('renewalPackage');
+      if (!pkgSelect.value) { ui.error('Vui lòng chọn gói học'); return; }
+
+      const renewalType = document.getElementById('renewalType').value;
+      if (renewalType === 'new' && !document.getElementById('renewalNewClass').value) {
+        ui.error('Vui lòng chọn lớp mới');
+        return;
+      }
+
+      const paymentStatus = document.getElementById('renewalPaymentStatus').value;
+      const depositAmount = parseInt(document.getElementById('renewalDeposit').value.replace(/[^\d]/g, '')) || 0;
+      const paidAmount = parseInt(document.getElementById('renewalPaidAmount').value.replace(/[^\d]/g, '')) || 0;
+
+      const pkgOption = pkgSelect.options[pkgSelect.selectedIndex];
+      const originalPrice = parseFloat(pkgOption?.dataset?.price) || 0;
+      const promoSelect = document.getElementById('renewalPromotion');
+      const promoOption = promoSelect.options[promoSelect.selectedIndex];
+      let promoDiscount = 0;
+      if (promoOption?.value) {
+        const discType = promoOption.dataset.type;
+        const discValue = parseFloat(promoOption.dataset.value) || 0;
+        promoDiscount = discType === 'percent' ? Math.round(originalPrice * discValue / 100) : discValue;
+      }
+      const finalPrice = Math.max(0, originalPrice - promoDiscount);
+      const actualPaid = paymentStatus === 'deposit' ? depositAmount : (paymentStatus === 'paid' ? finalPrice : paidAmount);
+      const remaining = Math.max(0, finalPrice - actualPaid);
+
+      const data = {
+        student_id: currentRenewalStudent.id,
+        package_id: parseInt(pkgSelect.value),
+        renewal_type: renewalType,
+        new_class_id: renewalType === 'new' ? parseInt(document.getElementById('renewalNewClass').value) : null,
+        promotion_id: document.getElementById('renewalPromotion').value || null,
+        scholarship_months: parseInt(document.getElementById('renewalScholarship').value) || 0,
+        deposit_amount: depositAmount,
+        paid_amount: actualPaid,
+        payment_status: paymentStatus,
+        note: document.getElementById('renewalNote').value
+      };
+
+      try {
+        // Lưu thông tin student trước khi close modal
+        const studentName = currentRenewalStudent.full_name;
+        const studentCode = currentRenewalStudent.student_code || '---';
+        const studentId = currentRenewalStudent.id;
+
+        await api.post('/renewals', data);
+
+        // Close modal (this sets currentRenewalStudent to null)
+        document.getElementById('renewalModal').classList.remove('show');
+
+        // Tính số tiền cần thu
+        const qrAmount = paymentStatus === 'paid' ? finalPrice : (remaining > 0 ? remaining : finalPrice);
+        const qrLabel = paymentStatus === 'paid' ? 'Học phí cần chuyển' : 'Còn phải đóng';
+
+        // Lưu để xác nhận thanh toán sau
+        lastRenewalStudentId = studentId;
+        lastRenewalAmount = qrAmount;
+
+        // Show success modal with QR
+        document.getElementById('renewalSuccessName').textContent = studentName;
+        document.getElementById('renewalSuccessCode').textContent = 'Mã: ' + studentCode;
+        document.getElementById('renewalQRSection').style.display = 'block';
+        document.getElementById('renewalFullPaidSection').style.display = 'none';
+        document.getElementById('renewalSuccessRemaining').textContent = formatCurrency(qrAmount);
+        document.getElementById('renewalQRLabel').textContent = qrLabel;
+        const desc = studentCode + ' ' + studentName.substring(0, 15) + ' Tai phi';
+        document.getElementById('renewalQRImage').src = getRenewalQRUrl(qrAmount, desc);
+
+        document.getElementById('renewalSuccessModal').classList.add('show');
+        currentRenewalStudent = null;
+        loadData();
+        loadStats();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    function closeRenewalSuccessModal() {
+      document.getElementById('renewalSuccessModal').classList.remove('show');
+    }
+
+    let lastRenewalStudentId = null;
+    let lastRenewalAmount = 0;
+
+    async function confirmRenewalPayment() {
+      if (!lastRenewalStudentId || lastRenewalAmount <= 0) {
+        ui.error('Không có thông tin thanh toán');
+        return;
+      }
+
+      if (!confirm(`Xác nhận đã nhận ${formatCurrency(lastRenewalAmount)} từ phụ huynh?`)) return;
+
+      try {
+        await api.post('/students/' + lastRenewalStudentId + '/confirm-payment', {
+          amount: lastRenewalAmount,
+          paymentMethod: 'bank_transfer',
+          note: 'Thanh toán tái phí qua QR'
+        });
+        ui.success('Đã xác nhận thanh toán thành công!');
+        closeRenewalSuccessModal();
+        lastRenewalStudentId = null;
+        lastRenewalAmount = 0;
+        loadData();
+        loadStats();
+      } catch (e) {
+        ui.error(e.message || 'Lỗi xác nhận thanh toán');
+      }
+    }
 
     init();
   </script>

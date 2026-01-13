@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tái phí - ARMY Tech LMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card.active {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .stat-card.warning .stat-icon {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #d97706;
+        }
+
+        .stat-card.danger .stat-icon {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #dc2626;
+        }
+
+        .stat-card.success .stat-icon {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #16a34a;
+        }
+
+        .stat-card.info .stat-icon {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #2563eb;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-bar .form-control {
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: #f9fafb;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #6b7280;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+        }
+
+        .table tr:hover {
+            background: #f9fafb;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .student-code {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .progress-fill.high {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+        }
+
+        .progress-fill.medium {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .progress-fill.low {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow: auto;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #9ca3af;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            border-color: #22c55e;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .student-detail-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .student-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .student-detail-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .student-detail-info h4 {
+            margin: 0 0 4px;
+            font-size: 18px;
+        }
+
+        .student-detail-info p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .student-detail-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .detail-stat {
+            text-align: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .detail-stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .detail-stat-label {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
+        .package-option {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .package-option:hover {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.02);
+        }
+
+        .package-option.selected {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .package-option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .package-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .package-price {
+            font-weight: 700;
+            color: #16a34a;
+            font-size: 16px;
+        }
+
+        .package-desc {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 6px;
+        }
+
+        .fee-summary {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #bbf7d0;
+        }
+
+        .fee-row:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 16px;
+            color: #16a34a;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="sidebar" id="sidebar"></nav>
+
+    <main class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1><i class="fas fa-sync-alt"></i> Tái phí</h1>
+            </div>
+            <div class="topbar-right">
+                <span id="userName"></span>
+            </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="filter-bar">
+            <input type="month" id="filterMonth" class="form-control" style="width:160px">
+            <select id="filterBranch" class="form-control" style="width:180px">
+                <option value="">Tất cả cơ sở</option>
+            </select>
+            <select id="filterClass" class="form-control" style="width:200px">
+                <option value="">Tất cả lớp</option>
+            </select>
+            <button class="btn btn-primary" onclick="loadData()">
+                <i class="fas fa-search"></i> Tìm kiếm
+            </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card warning" onclick="filterByStatus('expiring')" id="cardExpiring">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div>
+                    <div class="stat-value" id="countExpiring">0</div>
+                    <div class="stat-label">Sắp hết phí (30 ngày)</div>
+                </div>
+            </div>
+            <div class="stat-card danger" onclick="filterByStatus('expired')" id="cardExpired">
+                <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div>
+                    <div class="stat-value" id="countExpired">0</div>
+                    <div class="stat-label">Đã hết phí</div>
+                </div>
+            </div>
+            <div class="stat-card success" onclick="filterByStatus('renewed')" id="cardRenewed">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div>
+                    <div class="stat-value" id="countRenewed">0</div>
+                    <div class="stat-label">Đã tái phí tháng này</div>
+                </div>
+            </div>
+            <div class="stat-card info" onclick="filterByStatus('all')" id="cardAll">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div>
+                    <div class="stat-value" id="countTotal">0</div>
+                    <div class="stat-label">Tổng học sinh</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students List -->
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-list"></i> Danh sách học sinh <span id="listTitle"></span></h3>
+                <div>
+                    <button class="btn btn-info btn-sm" onclick="exportExcel()">
+                        <i class="fas fa-file-excel"></i> Xuất Excel
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Học sinh</th>
+                            <th>Lớp</th>
+                            <th>CM</th>
+                            <th>Gói hiện tại</th>
+                            <th>Tiến độ</th>
+                            <th>Ngày hết phí</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTable">
+                        <tr>
+                            <td colspan="8" class="text-center">Đang tải...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Renewal Modal -->
+    <div class="modal" id="renewalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-sync-alt text-success"></i> Tái phí / Gia hạn</div>
+                <button class="modal-close" onclick="closeRenewalModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Student Info -->
+                <div class="student-detail-card" id="studentDetailCard">
+                    <!-- Filled by JS -->
+                </div>
+
+                <!-- Renewal Type -->
+                <div class="form-group">
+                    <label class="form-label">Loại gia hạn</label>
+                    <div class="form-row">
+                        <label class="package-option" onclick="selectRenewalType('extend')">
+                            <input type="radio" name="renewalType" value="extend" style="display:none">
+                            <div class="package-option-header">
+                                <span class="package-name"><i class="fas fa-plus-circle"></i> Gia hạn thêm</span>
+                            </div>
+                            <div class="package-desc">Thêm gói học vào lộ trình hiện tại (học sinh đang học, muốn đăng
+                                ký thêm)</div>
+                        </label>
+                        <label class="package-option" onclick="selectRenewalType('new')">
+                            <input type="radio" name="renewalType" value="new" style="display:none">
+                            <div class="package-option-header">
+                                <span class="package-name"><i class="fas fa-redo"></i> Khóa mới</span>
+                            </div>
+                            <div class="package-desc">Đăng ký khóa học mới (học sinh hết phí, đăng ký tiếp)</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Package Selection -->
+                <div class="form-group">
+                    <label class="form-label">Chọn gói học</label>
+                    <div id="packageOptions">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <!-- Class Selection (for new course) -->
+                <div class="form-group" id="classSelectGroup" style="display:none">
+                    <label class="form-label">Chọn lớp mới</label>
+                    <select class="form-control" id="newClassSelect">
+                        <option value="">-- Chọn lớp --</option>
+                    </select>
+                </div>
+
+                <!-- Payment Info -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Khuyến mãi</label>
+                        <select class="form-control" id="promotionSelect" onchange="calculateFee()">
+                            <option value="">Không áp dụng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Đặt cọc</label>
+                        <input type="number" class="form-control" id="depositAmount" value="0"
+                            onchange="calculateFee()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ghi chú</label>
+                    <textarea class="form-control" id="renewalNote" rows="2" placeholder="Ghi chú thêm..."></textarea>
+                </div>
+
+                <!-- Fee Summary -->
+                <div class="fee-summary" id="feeSummary">
+                    <div class="fee-row">
+                        <span>Học phí gốc:</span>
+                        <span id="originalFee">0đ</span>
+                    </div>
+                    <div class="fee-row">
+                        <span>Giảm giá:</span>
+                        <span id="discountAmount">-0đ</span>
+                    </div>
+                    <div class="fee-row">
+                        <span>Đặt cọc:</span>
+                        <span id="depositDisplay">-0đ</span>
+                    </div>
+                    <div class="fee-row">
+                        <span>Còn phải đóng:</span>
+                        <span id="remainingFee">0đ</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeRenewalModal()">Hủy</button>
+                <button class="btn btn-primary" onclick="submitRenewal()">
+                    <i class="fas fa-check"></i> Xác nhận tái phí
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script>
+        let students = [];
+        let packages = [];
+        let promotions = [];
+        let classes = [];
+        let currentStudent = null;
+        let selectedPackage = null;
+        let selectedRenewalType = 'extend';
+        let currentFilter = 'all';
+
+        // Set default month to current
+        document.getElementById('filterMonth').value = new Date().toISOString().slice(0, 7);
+
+        async function init() {
+            await auth.requireAuth();
+            buildSidebar('sidebar');
+            document.getElementById('userName').textContent = auth.user?.full_name || '';
+
+            await Promise.all([
+                loadBranches(),
+                loadClasses(),
+                loadPackages(),
+                loadPromotions()
+            ]);
+            await loadData();
+        }
+
+        async function loadBranches() {
+            try {
+                const res = await api.get('/branches');
+                const select = document.getElementById('filterBranch');
+                (res.data || []).forEach(b => {
+                    select.innerHTML += `<option value="${b.id}">${b.code} - ${b.name}</option>`;
+                });
+            } catch (e) { }
+        }
+
+        async function loadClasses() {
+            try {
+                const branchQuery = branch.buildQuery({});
+                const res = await api.get('/classes?status=active' + branchQuery.replace('?', '&'));
+                classes = res.data || [];
+                const select = document.getElementById('filterClass');
+                classes.forEach(c => {
+                    select.innerHTML += `<option value="${c.id}">${c.class_name}</option>`;
+                });
+            } catch (e) { }
+        }
+
+        async function loadPackages() {
+            try {
+                const res = await api.get('/packages?is_active=1');
+                packages = res.data || [];
+            } catch (e) { }
+        }
+
+        async function loadPromotions() {
+            try {
+                const res = await api.get('/promotions?is_active=1');
+                promotions = res.data || [];
+                const select = document.getElementById('promotionSelect');
+                promotions.forEach(p => {
+                    const desc = p.discount_type === 'percent' ? `${p.discount_value}%` : formatCurrency(p.discount_value);
+                    select.innerHTML += `<option value="${p.id}" data-type="${p.discount_type}" data-value="${p.discount_value}">${p.name} (-${desc})</option>`;
+                });
+            } catch (e) { }
+        }
+
+        async function loadData() {
+            const month = document.getElementById('filterMonth').value;
+            const branchId = document.getElementById('filterBranch').value;
+            const classId = document.getElementById('filterClass').value;
+
+            const tbody = document.getElementById('studentTable');
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center"><i class="fas fa-spinner fa-spin"></i> Đang tải...</td></tr>';
+
+            try {
+                const params = new URLSearchParams({ month });
+                if (branchId) params.append('branch_id', branchId);
+                if (classId) params.append('class_id', classId);
+
+                const res = await api.get('/renewals/students?' + params);
+                students = res.data?.students || [];
+                const stats = res.data?.stats || {};
+
+                // Update stats
+                document.getElementById('countExpiring').textContent = stats.expiring || 0;
+                document.getElementById('countExpired').textContent = stats.expired || 0;
+                document.getElementById('countRenewed').textContent = stats.renewed || 0;
+                document.getElementById('countTotal').textContent = stats.total || 0;
+
+                renderStudents();
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Lỗi: ${e.message}</td></tr>`;
+            }
+        }
+
+        function filterByStatus(status) {
+            currentFilter = status;
+            // Update card active states
+            document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('card' + status.charAt(0).toUpperCase() + status.slice(1))?.classList.add('active');
+            renderStudents();
+        }
+
+        function renderStudents() {
+            const tbody = document.getElementById('studentTable');
+            let filtered = students;
+
+            if (currentFilter === 'expiring') {
+                filtered = students.filter(s => s.status === 'expiring');
+                document.getElementById('listTitle').textContent = '- Sắp hết phí';
+            } else if (currentFilter === 'expired') {
+                filtered = students.filter(s => s.status === 'expired');
+                document.getElementById('listTitle').textContent = '- Đã hết phí';
+            } else if (currentFilter === 'renewed') {
+                filtered = students.filter(s => s.status === 'renewed');
+                document.getElementById('listTitle').textContent = '- Đã tái phí';
+            } else {
+                document.getElementById('listTitle').textContent = '';
+            }
+
+            if (!filtered.length) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Không có dữ liệu</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(s => {
+                const initials = (s.full_name || 'HS').split(' ').map(w => w[0]).join('').slice(-2);
+                const progress = s.total_sessions > 0 ? Math.round((s.completed_sessions / s.total_sessions) * 100) : 0;
+                const progressClass = progress >= 80 ? 'low' : progress >= 50 ? 'medium' : 'high';
+
+                let statusBadge = '';
+                if (s.status === 'expiring') {
+                    statusBadge = '<span class="badge badge-warning"><i class="fas fa-clock"></i> Sắp hết</span>';
+                } else if (s.status === 'expired') {
+                    statusBadge = '<span class="badge badge-danger"><i class="fas fa-exclamation-circle"></i> Hết phí</span>';
+                } else if (s.status === 'renewed') {
+                    statusBadge = '<span class="badge badge-success"><i class="fas fa-check"></i> Đã tái phí</span>';
+                } else {
+                    statusBadge = '<span class="badge badge-info">Đang học</span>';
+                }
+
+                return `
+          <tr>
+            <td>
+              <div class="student-info">
+                <div class="student-avatar">${initials}</div>
+                <div>
+                  <div class="student-name">${s.full_name}</div>
+                  <div class="student-code">${s.student_code || ''} • ${s.parent_phone || ''}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-info">${s.class_name || '-'}</span></td>
+            <td>${s.cm_name || '-'}</td>
+            <td>${s.package_name || '-'}</td>
+            <td style="min-width:120px">
+              <div style="font-size:12px;color:#6b7280;margin-bottom:4px">${s.completed_sessions || 0}/${s.total_sessions || 0} buổi (${progress}%)</div>
+              <div class="progress-bar">
+                <div class="progress-fill ${progressClass}" style="width:${progress}%"></div>
+              </div>
+            </td>
+            <td>
+              <div style="font-weight:600;${s.status === 'expired' ? 'color:#dc2626' : s.status === 'expiring' ? 'color:#d97706' : ''}">${s.fee_end_date ? formatDate(s.fee_end_date) : '-'}</div>
+              ${s.days_remaining !== null ? `<div style="font-size:12px;color:#6b7280">${s.days_remaining > 0 ? 'Còn ' + s.days_remaining + ' ngày' : 'Quá hạn ' + Math.abs(s.days_remaining) + ' ngày'}</div>` : ''}
+            </td>
+            <td>${statusBadge}</td>
+            <td>
+              ${s.status !== 'renewed' ? `
+                <button class="btn btn-primary btn-sm" onclick="openRenewalModal(${s.id})">
+                  <i class="fas fa-sync-alt"></i> Tái phí
+                </button>
+              ` : `
+                <button class="btn btn-info btn-sm" onclick="viewRenewalHistory(${s.id})">
+                  <i class="fas fa-history"></i>
+                </button>
+              `}
+            </td>
+          </tr>
+        `;
+            }).join('');
+        }
+
+        async function openRenewalModal(studentId) {
+            currentStudent = students.find(s => s.id === studentId);
+            if (!currentStudent) return;
+
+            selectedPackage = null;
+            selectedRenewalType = 'extend';
+
+            // Fill student info
+            const initials = (currentStudent.full_name || 'HS').split(' ').map(w => w[0]).join('').slice(-2);
+            document.getElementById('studentDetailCard').innerHTML = `
+        <div class="student-detail-header">
+          <div class="student-detail-avatar">${initials}</div>
+          <div class="student-detail-info">
+            <h4>${currentStudent.full_name}</h4>
+            <p>${currentStudent.student_code || ''} • ${currentStudent.parent_phone || ''}</p>
+          </div>
+        </div>
+        <div class="student-detail-stats">
+          <div class="detail-stat">
+            <div class="detail-stat-value">${currentStudent.class_name || '-'}</div>
+            <div class="detail-stat-label">Lớp hiện tại</div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-value">${currentStudent.completed_sessions || 0}/${currentStudent.total_sessions || 0}</div>
+            <div class="detail-stat-label">Buổi đã học</div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-value" style="color:${currentStudent.status === 'expired' ? '#dc2626' : '#d97706'}">${currentStudent.fee_end_date ? formatDate(currentStudent.fee_end_date) : '-'}</div>
+            <div class="detail-stat-label">Ngày hết phí</div>
+          </div>
+        </div>
+      `;
+
+            // Render package options
+            renderPackageOptions();
+
+            // Load available classes for new course
+            await loadAvailableClasses();
+
+            // Reset form
+            document.getElementById('depositAmount').value = 0;
+            document.getElementById('renewalNote').value = '';
+            document.getElementById('promotionSelect').value = '';
+            document.querySelectorAll('.package-option').forEach(p => p.classList.remove('selected'));
+
+            calculateFee();
+            document.getElementById('renewalModal').classList.add('show');
+        }
+
+        function selectRenewalType(type) {
+            selectedRenewalType = type;
+            document.querySelectorAll('[name="renewalType"]').forEach(r => {
+                r.closest('.package-option').classList.toggle('selected', r.value === type);
+            });
+            document.getElementById('classSelectGroup').style.display = type === 'new' ? 'block' : 'none';
+        }
+
+        function renderPackageOptions() {
+            const container = document.getElementById('packageOptions');
+            // Filter packages by subject of current class
+            const relevantPackages = packages.filter(p =>
+                !currentStudent.subject_id || p.subject_id === currentStudent.subject_id || !p.subject_id
+            );
+
+            container.innerHTML = relevantPackages.map(p => `
+        <div class="package-option" onclick="selectPackage(${p.id})">
+          <div class="package-option-header">
+            <span class="package-name">${p.name}</span>
+            <span class="package-price">${formatCurrency(p.price)}</span>
+          </div>
+          <div class="package-desc">${p.sessions} buổi • ${p.description || ''}</div>
+        </div>
+      `).join('');
+        }
+
+        function selectPackage(packageId) {
+            selectedPackage = packages.find(p => p.id === packageId);
+            document.querySelectorAll('#packageOptions .package-option').forEach(p => p.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            calculateFee();
+        }
+
+        async function loadAvailableClasses() {
+            const select = document.getElementById('newClassSelect');
+            select.innerHTML = '<option value="">-- Chọn lớp --</option>';
+
+            // Filter classes by same subject
+            const relevantClasses = classes.filter(c =>
+                !currentStudent.subject_id || c.subject_id === currentStudent.subject_id
+            );
+
+            relevantClasses.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.class_name} (${c.student_count || 0}/${c.max_students || 15})</option>`;
+            });
+        }
+
+        function calculateFee() {
+            if (!selectedPackage) {
+                document.getElementById('originalFee').textContent = '0đ';
+                document.getElementById('discountAmount').textContent = '-0đ';
+                document.getElementById('depositDisplay').textContent = '-0đ';
+                document.getElementById('remainingFee').textContent = '0đ';
+                return;
+            }
+
+            const originalFee = selectedPackage.price || 0;
+            let discount = 0;
+
+            // Calculate promotion discount
+            const promoSelect = document.getElementById('promotionSelect');
+            const selectedOption = promoSelect.options[promoSelect.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                const discountType = selectedOption.dataset.type;
+                const discountValue = parseFloat(selectedOption.dataset.value) || 0;
+                if (discountType === 'percent') {
+                    discount = Math.round(originalFee * discountValue / 100);
+                } else {
+                    discount = discountValue;
+                }
+            }
+
+            const deposit = parseFloat(document.getElementById('depositAmount').value) || 0;
+            const remaining = Math.max(0, originalFee - discount - deposit);
+
+            document.getElementById('originalFee').textContent = formatCurrency(originalFee);
+            document.getElementById('discountAmount').textContent = '-' + formatCurrency(discount);
+            document.getElementById('depositDisplay').textContent = '-' + formatCurrency(deposit);
+            document.getElementById('remainingFee').textContent = formatCurrency(remaining);
+        }
+
+        async function submitRenewal() {
+            if (!currentStudent || !selectedPackage) {
+                ui.error('Vui lòng chọn gói học');
+                return;
+            }
+
+            if (selectedRenewalType === 'new' && !document.getElementById('newClassSelect').value) {
+                ui.error('Vui lòng chọn lớp mới');
+                return;
+            }
+
+            const data = {
+                student_id: currentStudent.id,
+                package_id: selectedPackage.id,
+                renewal_type: selectedRenewalType,
+                new_class_id: selectedRenewalType === 'new' ? document.getElementById('newClassSelect').value : null,
+                promotion_id: document.getElementById('promotionSelect').value || null,
+                deposit_amount: parseFloat(document.getElementById('depositAmount').value) || 0,
+                note: document.getElementById('renewalNote').value
+            };
+
+            try {
+                await api.post('/renewals', data);
+                ui.success('Tái phí thành công!');
+                closeRenewalModal();
+                loadData();
+            } catch (e) {
+                ui.error(e.message);
+            }
+        }
+
+        function closeRenewalModal() {
+            document.getElementById('renewalModal').classList.remove('show');
+        }
+
+        function viewRenewalHistory(studentId) {
+            // TODO: Show renewal history
+            ui.info('Tính năng đang phát triển');
+        }
+
+        function exportExcel() {
+            ui.info('Tính năng xuất Excel đang phát triển');
+        }
+
+        function formatCurrency(val) {
+            if (!val) return '0đ';
+            return new Intl.NumberFormat('vi-VN').format(val) + 'đ';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('vi-VN');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>

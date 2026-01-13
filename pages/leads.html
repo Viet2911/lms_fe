@@ -1380,40 +1380,39 @@
           document.getElementById('successPaymentDesc').innerHTML = studentCode + ' ' + studentName.substring(0, 15) + '<br><small style="color:#6b7280">(' + branchInfo.branch_name + ')</small>';
         }
 
-        // LOGIC HIỂN THỊ QR THEO TRẠNG THÁI THANH TOÁN
+        // LOGIC HIỂN THỊ QR THEO TRẠNG THÁI THANH TOÁN - LUÔN HIỆN QR
+        document.getElementById('successQRSection').style.display = 'block';
+        document.getElementById('successFullPaidSection').style.display = 'none';
+
+        let qrAmount = feeTotal;
+        let qrLabel = 'Số tiền cần chuyển';
+
         if (paymentStatus === 'pending') {
-          // Chưa đóng: Không hiện QR, chỉ thông báo
-          document.getElementById('successQRSection').style.display = 'none';
-          document.getElementById('successFullPaidSection').style.display = 'none';
+          // Chưa đóng: QR hiện toàn bộ học phí
+          qrAmount = feeTotal;
+          qrLabel = 'Tổng học phí cần đóng';
           document.getElementById('successPaidAmount').textContent = '0đ';
-          document.getElementById('successRemainingAmount').textContent = formatCurrency(feeTotal);
-          document.getElementById('successRemainingRaw').value = feeTotal;
         } else if (paymentStatus === 'deposit') {
           // Đặt cọc: QR hiện SỐ TIỀN CỌC để PH chuyển khoản
-          document.getElementById('successQRSection').style.display = 'block';
-          document.getElementById('successFullPaidSection').style.display = 'none';
+          qrAmount = depositAmount;
+          qrLabel = 'Tiền cọc cần chuyển';
           document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
-          document.getElementById('successRemainingAmount').textContent = formatCurrency(depositAmount);
-          document.getElementById('successRemainingRaw').value = depositAmount;
-          document.getElementById('successQRImage').src = getQRUrl(depositAmount, studentCode + ' ' + studentName.substring(0, 15), leadBranchId);
         } else if (paymentStatus === 'partial') {
           // Đóng 1 phần: QR hiện số tiền đã đóng (cọc + paid)
-          const amountToPay = depositAmount + paidAmount;
-          document.getElementById('successQRSection').style.display = 'block';
-          document.getElementById('successFullPaidSection').style.display = 'none';
+          qrAmount = depositAmount + paidAmount;
+          qrLabel = 'Số tiền cần chuyển';
           document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
-          document.getElementById('successRemainingAmount').textContent = formatCurrency(amountToPay);
-          document.getElementById('successRemainingRaw').value = amountToPay;
-          document.getElementById('successQRImage').src = getQRUrl(amountToPay, studentCode + ' ' + studentName.substring(0, 15), leadBranchId);
         } else if (paymentStatus === 'paid') {
           // Đóng đủ: QR hiện TOÀN BỘ học phí
-          document.getElementById('successQRSection').style.display = 'block';
-          document.getElementById('successFullPaidSection').style.display = 'none';
+          qrAmount = feeTotal;
+          qrLabel = 'Tổng học phí';
           document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
-          document.getElementById('successRemainingAmount').textContent = formatCurrency(feeTotal);
-          document.getElementById('successRemainingRaw').value = feeTotal;
-          document.getElementById('successQRImage').src = getQRUrl(feeTotal, studentCode + ' ' + studentName.substring(0, 15), leadBranchId);
         }
+
+        document.getElementById('successRemainingAmount').textContent = formatCurrency(qrAmount);
+        document.getElementById('successRemainingRaw').value = qrAmount;
+        document.getElementById('successRemainingLabel').textContent = qrLabel;
+        document.getElementById('successQRImage').src = getQRUrl(qrAmount, studentCode + ' ' + studentName.substring(0, 15), leadBranchId);
 
         document.getElementById('convertSuccessModal').classList.add('show');
         ui.success('Chuyển đổi thành công!');

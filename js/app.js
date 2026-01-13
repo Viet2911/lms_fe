@@ -1,4 +1,8 @@
 // LMS Frontend - API & Utilities (Production Ready)
+
+// ===========================================
+// AUTO INJECT FAVICON
+// ===========================================
 (function () {
   if (!document.querySelector('link[rel="icon"]')) {
     const favicon = document.createElement('link');
@@ -10,6 +14,7 @@
     document.head.appendChild(favicon);
   }
 })();
+
 // ===========================================
 // CONFIG
 // ===========================================
@@ -121,7 +126,42 @@ const api = {
   get(endpoint) { return this.request('GET', endpoint); },
   post(endpoint, data) { return this.request('POST', endpoint, data); },
   put(endpoint, data) { return this.request('PUT', endpoint, data); },
-  delete(endpoint) { return this.request('DELETE', endpoint); }
+  delete(endpoint) { return this.request('DELETE', endpoint); },
+
+  // Upload file với FormData
+  async upload(endpoint, formData) {
+    const options = {
+      method: 'POST',
+      headers: {}
+    };
+
+    const token = this.getToken();
+    if (token) {
+      options.headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    options.body = formData; // Không set Content-Type, để browser tự set với boundary
+
+    try {
+      const response = await fetch(`${API_BASE}${endpoint}`, options);
+      const result = await response.json();
+
+      if (response.status === 401) {
+        this.removeToken();
+        ui.error('Phiên đăng nhập hết hạn');
+        setTimeout(() => { window.location.href = '/login.html'; }, 1500);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Upload thất bại');
+      }
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 };
 
 // ===========================================
