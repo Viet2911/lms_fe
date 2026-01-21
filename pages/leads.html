@@ -1322,6 +1322,9 @@
 
     function closeConvertModal() { document.getElementById('convertModal').classList.remove('show'); }
 
+    // Lưu data tạm để xác nhận thanh toán sau
+    let pendingConvertData = null;
+
     async function convertLead() {
       const id = document.getElementById('convertLeadId').value;
       const studentName = document.getElementById('cvStudentName').value.trim();
@@ -1335,6 +1338,7 @@
       const depositAmount = parseCurrency(document.getElementById('cvDepositAmount').value);
       const paidAmount = parseCurrency(document.getElementById('cvPaidAmount').value);
       const programId = document.getElementById('cvPromoProgram').value || null;
+      const paymentStatus = document.getElementById('cvPaymentStatus').value;
 
       if (!studentName) { ui.warning('Vui lòng nhập họ tên học sinh'); return; }
       if (!parentName || !parentPhone) { ui.warning('Vui lòng nhập thông tin phụ huynh'); return; }
@@ -1343,105 +1347,106 @@
       const selectedGifts = [];
       document.querySelectorAll('.gift-checkbox:checked').forEach(cb => selectedGifts.push({ id: cb.dataset.id, name: cb.dataset.name }));
 
-      // TÍNH TỔNG TIỀN ĐÃ ĐÓNG
-      const totalPaid = depositAmount + paidAmount;
+      // LƯU DATA TẠM - CHƯA GỌI API
+      pendingConvertData = {
+        leadId: id,
+        studentName,
+        birthYear: document.getElementById('cvStudentBirthYear').value,
+        address: document.getElementById('cvStudentAddress').value,
+        school: document.getElementById('cvStudentSchool').value,
+        customerName: parentName,
+        customerPhone: parentPhone,
+        parentJob: document.getElementById('cvParentJob').value,
+        packageId, feeOriginal, feeDiscount: promoDiscount, feeTotal, scholarshipMonths,
+        defaultScholarshipMonths, scholarshipNeedsApproval: scholarshipMonths > defaultScholarshipMonths,
+        depositAmount, paidAmount, paymentStatus,
+        programId, gifts: selectedGifts,
+        note: document.getElementById('cvNote').value,
+        branchId: currentConvertLead?.branch_id || null
+      };
+
+      // Đóng modal convert
+      closeConvertModal();
+
+      // Hiện modal QR - CHƯA TẠO HỌC VIÊN
+      document.getElementById('newStudentId').value = ''; // Chưa có ID
+      document.getElementById('successStudentName').textContent = studentName;
+      document.getElementById('successStudentCode').textContent = 'Mã: (Chờ xác nhận)';
+
+      // Tính số tiền cần thu theo trạng thái
+      let qrAmount = feeTotal;
+      let qrLabel = 'Số tiền cần chuyển';
+
+      if (paymentStatus === 'pending') {
+        qrAmount = feeTotal;
+        qrLabel = 'Tổng học phí cần đóng';
+      } else if (paymentStatus === 'deposit') {
+        qrAmount = depositAmount;
+        qrLabel = 'Tiền cọc cần chuyển';
+      } else if (paymentStatus === 'partial') {
+        qrAmount = depositAmount + paidAmount;
+        qrLabel = 'Số tiền cần chuyển';
+      } else if (paymentStatus === 'paid') {
+        qrAmount = feeTotal;
+        qrLabel = 'Tổng học phí';
+      }
+
+      // Lưu số tiền để xác nhận sau
+      pendingConvertData.qrAmount = qrAmount;
+
+      document.getElementById('successQRSection').style.display = 'block';
+      document.getElementById('successFullPaidSection').style.display = 'none';
+      document.getElementById('successRemainingAmount').textContent = formatCurrency(qrAmount);
+      document.getElementById('successRemainingRaw').value = qrAmount;
+      document.getElementById('successRemainingLabel').textContent = qrLabel;
+      document.getElementById('successPaidAmount').textContent = '0đ (chờ xác nhận)';
+
+      // Tạo mô tả tạm cho QR (dùng tên thay vì mã vì chưa có mã)
+      const tempDesc = parentPhone.slice(-4) + ' ' + studentName.substring(0, 15);
+      document.getElementById('successPaymentDesc').textContent = tempDesc;
+      document.getElementById('successQRImage').src = getQRUrl(qrAmount, tempDesc, pendingConvertData.branchId);
+
+      document.getElementById('convertSuccessModal').classList.add('show');
+      ui.info('Vui lòng xác nhận thanh toán để hoàn tất chuyển đổi');
+    }
+
+    function closeConvertSuccessModal() {
+      document.getElementById('convertSuccessModal').classList.remove('show');
+      pendingConvertData = null; // Hủy data tạm nếu đóng modal
+    }
+
+    async function confirmPaymentReceived() {
+      // Kiểm tra có data chờ convert không
+      if (!pendingConvertData) {
+        ui.error('Không có dữ liệu chuyển đổi');
+        return;
+      }
+
+      const qrAmount = pendingConvertData.qrAmount || 0;
+      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(qrAmount) + ' và chuyển đổi thành học viên?')) return;
 
       try {
-        const result = await api.post('/leads/' + id + '/convert', {
-          studentName, birthYear: document.getElementById('cvStudentBirthYear').value,
-          address: document.getElementById('cvStudentAddress').value, school: document.getElementById('cvStudentSchool').value,
-          customerName: parentName, customerPhone: parentPhone, parentJob: document.getElementById('cvParentJob').value,
-          packageId, feeOriginal, feeDiscount: promoDiscount, feeTotal, scholarshipMonths,
-          defaultScholarshipMonths, scholarshipNeedsApproval: scholarshipMonths > defaultScholarshipMonths,
-          depositAmount, paidAmount, paymentStatus: document.getElementById('cvPaymentStatus').value,
-          programId, gifts: selectedGifts, note: document.getElementById('cvNote').value
+        // GỌI API CONVERT - TẠO HỌC VIÊN + GHI NHẬN TIỀN
+        const result = await api.post('/leads/' + pendingConvertData.leadId + '/convert', {
+          ...pendingConvertData,
+          confirmedAmount: qrAmount // Số tiền đã xác nhận
         });
-
-        closeConvertModal();
 
         const student = result.data || {};
         const studentId = student.id || student.studentId;
         const studentCode = student.student_code || student.studentCode || '';
-        const paymentStatus = document.getElementById('cvPaymentStatus').value;
-
-        document.getElementById('newStudentId').value = studentId;
-        document.getElementById('successStudentName').textContent = studentName;
-        document.getElementById('successStudentCode').textContent = 'Mã: ' + studentCode;
-
-        // Lấy branch_id từ lead để tạo QR theo chi nhánh
-        const leadBranchId = currentConvertLead?.branch_id || null;
-        const branchInfo = getBranchBankInfo(leadBranchId);
-
-        const desc = encodeURIComponent(studentCode + ' ' + studentName.substring(0, 15));
-        document.getElementById('successPaymentDesc').textContent = studentCode + ' ' + studentName.substring(0, 15);
-
-        // Hiển thị thông tin ngân hàng của chi nhánh nếu có
-        if (branchInfo) {
-          document.getElementById('successPaymentDesc').innerHTML = studentCode + ' ' + studentName.substring(0, 15) + '<br><small style="color:#6b7280">(' + branchInfo.branch_name + ')</small>';
-        }
-
-        // LOGIC HIỂN THỊ QR THEO TRẠNG THÁI THANH TOÁN - LUÔN HIỆN QR
-        document.getElementById('successQRSection').style.display = 'block';
-        document.getElementById('successFullPaidSection').style.display = 'none';
-
-        let qrAmount = feeTotal;
-        let qrLabel = 'Số tiền cần chuyển';
-
-        if (paymentStatus === 'pending') {
-          // Chưa đóng: QR hiện toàn bộ học phí
-          qrAmount = feeTotal;
-          qrLabel = 'Tổng học phí cần đóng';
-          document.getElementById('successPaidAmount').textContent = '0đ';
-        } else if (paymentStatus === 'deposit') {
-          // Đặt cọc: QR hiện SỐ TIỀN CỌC để PH chuyển khoản
-          qrAmount = depositAmount;
-          qrLabel = 'Tiền cọc cần chuyển';
-          document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
-        } else if (paymentStatus === 'partial') {
-          // Đóng 1 phần: QR hiện số tiền đã đóng (cọc + paid)
-          qrAmount = depositAmount + paidAmount;
-          qrLabel = 'Số tiền cần chuyển';
-          document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
-        } else if (paymentStatus === 'paid') {
-          // Đóng đủ: QR hiện TOÀN BỘ học phí
-          qrAmount = feeTotal;
-          qrLabel = 'Tổng học phí';
-          document.getElementById('successPaidAmount').textContent = '0đ (chờ CK)';
-        }
-
-        document.getElementById('successRemainingAmount').textContent = formatCurrency(qrAmount);
-        document.getElementById('successRemainingRaw').value = qrAmount;
-        document.getElementById('successRemainingLabel').textContent = qrLabel;
-        document.getElementById('successQRImage').src = getQRUrl(qrAmount, studentCode + ' ' + studentName.substring(0, 15), leadBranchId);
-
-        document.getElementById('convertSuccessModal').classList.add('show');
-        ui.success('Chuyển đổi thành công!');
-        loadStats(); loadData();
-      } catch (e) { ui.error(e.message); }
-    }
-
-    function closeConvertSuccessModal() { document.getElementById('convertSuccessModal').classList.remove('show'); }
-
-    async function confirmPaymentReceived() {
-      const studentId = document.getElementById('newStudentId').value;
-      const amountToConfirm = parseFloat(document.getElementById('successRemainingRaw').value) || 0;
-      if (!studentId || amountToConfirm <= 0) return;
-      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(amountToConfirm) + '?')) return;
-      try {
-        await api.post('/students/' + studentId + '/confirm-payment', { amount: amountToConfirm, paymentMethod: 'bank_transfer', note: 'Thanh toán qua QR' });
-        ui.success('Đã ghi nhận thanh toán ' + formatCurrency(amountToConfirm));
 
         // Cập nhật hiển thị
-        const currentPaid = parseCurrency(document.getElementById('successPaidAmount').textContent);
-        const newPaid = currentPaid + amountToConfirm;
-        document.getElementById('successPaidAmount').textContent = formatCurrency(newPaid);
+        document.getElementById('newStudentId').value = studentId;
+        document.getElementById('successStudentCode').textContent = 'Mã: ' + studentCode;
+        document.getElementById('successPaidAmount').textContent = formatCurrency(qrAmount);
 
-        // Lấy tổng học phí để tính còn nợ
-        // Ẩn QR section, hiện thông báo đã thanh toán
+        // Ẩn QR, hiện thông báo thành công
         document.getElementById('successQRSection').style.display = 'none';
         document.getElementById('successFullPaidSection').style.display = 'block';
-        document.getElementById('successRemainingRaw').value = 0;
 
+        ui.success('Chuyển đổi thành công! Mã học viên: ' + studentCode);
+        pendingConvertData = null;
         loadStats(); loadData();
       } catch (e) { ui.error(e.message); }
     }
