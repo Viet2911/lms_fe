@@ -236,6 +236,30 @@
       color: white;
     }
 
+    .session-box.rescheduled {
+      position: relative;
+    }
+
+    .session-box.rescheduled::after {
+      content: '⟳';
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      font-size: 12px;
+      color: #f59e0b;
+    }
+
+    .session-box.cancelled {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      border-color: #ef4444;
+      opacity: 0.7;
+    }
+
+    .session-box.cancelled .session-status {
+      background: #ef4444;
+      color: white;
+    }
+
     /* Attendance table */
     .attendance-table {
       width: 100%;
@@ -922,6 +946,57 @@
     </div>
   </div>
 
+  <!-- Reschedule Session Modal -->
+  <div class="modal-overlay" id="rescheduleModal">
+    <div class="modal-content" style="max-width:450px">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-calendar-alt"></i> Dời buổi học</h3>
+        <button class="modal-close" onclick="modal.hide('rescheduleModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="rescheduleSessionId">
+        <div class="alert alert-info" style="margin-bottom:16px">
+          <i class="fas fa-info-circle"></i>
+          <span id="rescheduleInfo">Buổi 1 - Ngày 01/02/2025</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label required"><i class="fas fa-calendar"></i> Ngày mới</label>
+          <input type="date" id="rescheduleNewDate" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label"><i class="fas fa-comment"></i> Lý do dời</label>
+          <select id="rescheduleReason" class="form-control">
+            <option value="">Chọn lý do...</option>
+            <option value="Nghỉ lễ">Nghỉ lễ</option>
+            <option value="Sự kiện">Sự kiện của trung tâm</option>
+            <option value="GV bận">Giáo viên bận</option>
+            <option value="HS nghỉ nhiều">Học sinh nghỉ nhiều</option>
+            <option value="Thời tiết">Thời tiết xấu</option>
+            <option value="Khác">Lý do khác</option>
+          </select>
+        </div>
+        <div class="form-group" id="customReasonGroup" style="display:none">
+          <label class="form-label">Lý do khác</label>
+          <input type="text" id="rescheduleCustomReason" class="form-control" placeholder="Nhập lý do...">
+        </div>
+        <div class="form-group">
+          <label class="form-check">
+            <input type="checkbox" id="rescheduleShiftFollowing" checked>
+            <span class="checkmark"></span>
+            Dời tất cả các buổi sau theo
+          </label>
+          <small style="color:#6b7280;display:block;margin-top:4px">
+            <i class="fas fa-info-circle"></i> Nếu chọn, các buổi sau sẽ tự động dời theo cùng số ngày
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="modal.hide('rescheduleModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="submitReschedule()"><i class="fas fa-check"></i> Xác nhận dời</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/config.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/sidebar.js"></script>
@@ -1325,11 +1400,12 @@
         <div class="sessions-scroll" id="sessionsScroll">
           ${currentSessions.map(s => {
         const sessionStatus = getSessionStatus(s);
+        const rescheduledClass = s.original_date ? 'rescheduled' : '';
         return `
-              <div class="session-box ${sessionStatus.statusClass} ${sessionStatus.canAttend ? '' : 'disabled'}" 
+              <div class="session-box ${sessionStatus.statusClass} ${rescheduledClass} ${sessionStatus.canAttend ? '' : 'disabled'}" 
                    onclick="${sessionStatus.canAttend ? `selectSession(${s.id})` : 'showAttendanceRestriction()'}" 
                    id="session-${s.id}"
-                   title="${sessionStatus.tooltip}">
+                   title="${sessionStatus.tooltip}${s.original_date ? '\n(Đã dời từ ' + formatDate(s.original_date) + ')' : ''}">
                 <div class="session-num">B${s.session_number}</div>
                 <div class="session-date">${formatDateShort(s.session_date)}</div>
                 <div class="session-status">${sessionStatus.statusText}</div>
@@ -1439,6 +1515,7 @@
       }
     }
 
+
     async function selectSession(sessionId) {
       selectedSessionId = sessionId;
 
@@ -1479,14 +1556,18 @@
       const session = currentSessions.find(s => s.id === selectedSessionId);
       if (!session) return;
 
+      const canManage = auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN');
+      const originalInfo = session.original_date ? `<span style="color:#f59e0b;font-size:12px;margin-left:8px" title="Ngày gốc: ${formatDate(session.original_date)}"><i class="fas fa-history"></i> Đã dời</span>` : '';
+
       document.getElementById('attendanceContent').innerHTML = `
         <div style="background:#f9fafb;padding:16px;border-radius:12px;margin-bottom:16px">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div>
-              <h4 style="margin:0">Buổi ${session.session_number} - ${formatDate(session.session_date)}</h4>
+              <h4 style="margin:0">Buổi ${session.session_number} - ${formatDate(session.session_date)} ${originalInfo}</h4>
               <p style="margin:4px 0 0;color:#6b7280;font-size:13px">${session.start_time?.substring(0, 5) || ''} - ${session.end_time?.substring(0, 5) || ''}</p>
             </div>
             <div style="display:flex;gap:8px">
+              ${canManage ? `<button class="btn btn-sm btn-warning" onclick="openRescheduleModal(${session.id})" title="Dời buổi học"><i class="fas fa-calendar-alt"></i> Dời buổi</button>` : ''}
               <button class="btn btn-sm btn-secondary" onclick="quickMarkAll('on_time')"><i class="fas fa-check-double"></i> Tất cả đúng giờ</button>
             </div>
           </div>
@@ -2073,6 +2154,70 @@
       if (!dateStr) return '-';
       const d = new Date(dateStr);
       return d.toLocaleString('vi-VN');
+    }
+
+    // ==================== RESCHEDULE SESSION ====================
+
+    function openRescheduleModal(sessionId) {
+      const session = currentSessions.find(s => s.id === sessionId);
+      if (!session) return;
+
+      document.getElementById('rescheduleSessionId').value = sessionId;
+      document.getElementById('rescheduleInfo').textContent = `Buổi ${session.session_number} - Ngày ${formatDate(session.session_date)}`;
+
+      // Set min date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('rescheduleNewDate').min = today;
+      document.getElementById('rescheduleNewDate').value = '';
+      document.getElementById('rescheduleReason').value = '';
+      document.getElementById('rescheduleCustomReason').value = '';
+      document.getElementById('customReasonGroup').style.display = 'none';
+      document.getElementById('rescheduleShiftFollowing').checked = true;
+
+      modal.show('rescheduleModal');
+    }
+
+    // Show/hide custom reason input
+    document.getElementById('rescheduleReason')?.addEventListener('change', function () {
+      document.getElementById('customReasonGroup').style.display = this.value === 'Khác' ? 'block' : 'none';
+    });
+
+    async function submitReschedule() {
+      const sessionId = document.getElementById('rescheduleSessionId').value;
+      const newDate = document.getElementById('rescheduleNewDate').value;
+      let reason = document.getElementById('rescheduleReason').value;
+      const shiftFollowing = document.getElementById('rescheduleShiftFollowing').checked;
+
+      if (!newDate) {
+        ui.warning('Vui lòng chọn ngày mới');
+        return;
+      }
+
+      if (reason === 'Khác') {
+        reason = document.getElementById('rescheduleCustomReason').value || 'Lý do khác';
+      }
+
+      const confirmMsg = shiftFollowing
+        ? 'Xác nhận dời buổi này và TẤT CẢ các buổi sau?'
+        : 'Xác nhận dời CHỈ buổi này?';
+
+      if (!confirm(confirmMsg)) return;
+
+      try {
+        const result = await api.post(`/sessions/${sessionId}/reschedule`, {
+          newDate,
+          reason,
+          shiftFollowing
+        });
+
+        ui.success(result.message || `Đã dời ${result.affectedSessions || 1} buổi học`);
+        modal.hide('rescheduleModal');
+
+        // Reload class detail to refresh sessions
+        viewClass(currentClass.id);
+      } catch (e) {
+        ui.error(e.message);
+      }
     }
 
     document.addEventListener('DOMContentLoaded', init);
