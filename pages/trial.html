@@ -165,12 +165,12 @@
               <div class="form-group">
                 <label class="form-label">Học phí gốc</label>
                 <input type="text" id="trialFeeOriginal" class="form-control" value="0đ" readonly
-                  style="background:#f3f4f6;font-weight:bold">
+                  style="background:var(--bg-secondary);font-weight:bold">
               </div>
             </div>
 
             <!-- Giảm giá -->
-            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
               <label style="color:#16a34a;font-weight:600"><i class="fas fa-percent"></i> Giảm giá</label>
               <div class="form-row" style="margin-top:8px">
                 <div class="form-group" style="flex:2;margin-bottom:0">
@@ -186,7 +186,7 @@
             </div>
 
             <!-- Học bổng -->
-            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
                 <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng
                   tặng kèm</label>
@@ -208,24 +208,19 @@
             </div>
 
             <!-- Quà tặng -->
-            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
               <label style="color:#db2777;font-weight:600"><i class="fas fa-gift"></i> Quà tặng</label>
               <input type="text" name="giftName" class="form-control" placeholder="VD: Balo, Áo thun..."
                 style="margin-top:8px">
             </div>
 
             <!-- Tổng kết -->
-            <div style="background:#1f2937;color:white;padding:16px;border-radius:8px;margin-top:12px">
-              <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-                <span>Khóa học chính:</span><span id="trialMainMonths">0 tháng</span>
-              </div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-                <span>Học bổng tặng:</span><span id="trialBonusMonths" style="color:#4ade80">+0 tháng</span>
-              </div>
-              <div
-                style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #374151">
-                <span style="font-size:16px"><strong>HỌC PHÍ THỰC ĐÓNG:</strong></span>
-                <span id="trialFeeTotal" style="font-size:24px;font-weight:bold;color:#fbbf24">0đ</span>
+            <div class="summary-box">
+              <div class="summary-row"><span>Khóa học chính:</span><span id="trialMainMonths">0 tháng</span></div>
+              <div class="summary-row"><span>Học bổng tặng:</span><span id="trialBonusMonths" style="color:var(--success)">+0 tháng</span></div>
+              <div class="summary-row total">
+                <span>HỌC PHÍ THỰC ĐÓNG:</span>
+                <span id="trialFeeTotal" class="value">0đ</span>
               </div>
             </div>
           </div>
@@ -256,7 +251,7 @@
               </div>
             </div>
             <div id="trialRemainingRow"
-              style="display:none;background:white;padding:12px;border-radius:8px;margin-top:8px">
+              style="display:none;background:var(--bg-secondary);padding:12px;border-radius:8px;margin-top:8px">
               <div style="display:flex;justify-content:space-between">
                 <span>Còn phải đóng:</span>
                 <span id="trialRemaining" style="font-size:18px;font-weight:bold;color:#dc2626">0đ</span>
@@ -277,6 +272,8 @@
   <script src="../js/config.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/sidebar.js"></script>
+  <script src="../js/reactive.js"></script>
+  <script src="../js/crud-mixin.js"></script>
   <script>
     let packages = [], promoPrograms = [], trialSelectedPackage = null, trialDefaultScholarship = 0;
 

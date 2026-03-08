@@ -71,7 +71,7 @@
         .stat-value {
             font-size: 24px;
             font-weight: 700;
-            color: #1f2937;
+            color: var(--text-primary);
         }
 
         .stat-label {
@@ -163,7 +163,7 @@
 
         .student-name {
             font-weight: 600;
-            color: #1f2937;
+            color: var(--text-primary);
         }
 
         .student-code {
@@ -257,6 +257,30 @@
             font-size: 13px;
         }
 
+        .pagination-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .pagination-container button {
+            border-radius: 6px;
+            padding: 6px 10px;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .pagination-container button:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -327,7 +351,7 @@
             display: block;
             font-weight: 500;
             margin-bottom: 6px;
-            color: #374151;
+            color: var(--text-primary);
         }
 
         .form-control {
@@ -404,7 +428,7 @@
         .detail-stat-value {
             font-size: 18px;
             font-weight: 700;
-            color: #1f2937;
+            color: var(--text-primary);
         }
 
         .detail-stat-label {
@@ -590,6 +614,7 @@
                         </tr>
                     </tbody>
                 </table>
+                <div id="renewalPagination" class="pagination-container"></div>
             </div>
         </div>
     </main>
@@ -696,6 +721,8 @@
 
     <script src="../js/config.js"></script>
     <script src="../js/app.js"></script>
+    <script src="../js/reactive.js"></script>
+    <script src="../js/crud-mixin.js"></script>
     <script src="../js/sidebar.js"></script>
     <script>
         let students = [];
@@ -706,6 +733,9 @@
         let selectedPackage = null;
         let selectedRenewalType = 'extend';
         let currentFilter = 'all';
+        let currentPage = 1;
+        let pageSize = 20;
+        let totalPages = 1;
 
         // Set default month to current
         document.getElementById('filterMonth').value = new Date().toISOString().slice(0, 7);
@@ -774,13 +804,14 @@
             tbody.innerHTML = '<tr><td colspan="8" class="text-center"><i class="fas fa-spinner fa-spin"></i> Đang tải...</td></tr>';
 
             try {
-                const params = new URLSearchParams({ month });
-                if (branchId) params.append('branch_id', branchId);
+                const params = new URLSearchParams({ month, page: currentPage, limit: pageSize });
+                if (branchId) params.append('branchId', branchId);
                 if (classId) params.append('class_id', classId);
 
                 const res = await api.get('/renewals/students?' + params);
                 students = res.data?.students || [];
                 const stats = res.data?.stats || {};
+                const pagination = res.data?.pagination || {};
 
                 // Update stats
                 document.getElementById('countExpiring').textContent = stats.expiring || 0;
@@ -788,14 +819,23 @@
                 document.getElementById('countRenewed').textContent = stats.renewed || 0;
                 document.getElementById('countTotal').textContent = stats.total || 0;
 
+                // Update pagination
+                currentPage = pagination.page || 1;
+                pageSize = pagination.limit || pageSize;
+                totalPages = pagination.totalPages || 1;
+
                 renderStudents();
+                renderPagination();
             } catch (e) {
                 tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Lỗi: ${e.message}</td></tr>`;
+                document.getElementById('renewalPagination').innerHTML = '';
             }
         }
 
         function filterByStatus(status) {
             currentFilter = status;
+            // Khi đổi filter, luôn quay về trang 1 để tránh lệch
+            currentPage = 1;
             // Update card active states
             document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active'));
             document.getElementById('card' + status.charAt(0).toUpperCase() + status.slice(1))?.classList.add('active');
@@ -879,6 +919,28 @@
           </tr>
         `;
             }).join('');
+        }
+
+        function renderPagination() {
+            const container = document.getElementById('renewalPagination');
+            if (!container) return;
+
+            if (!students.length || totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = `
+                <button onclick="changePage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''}>Trước</button>
+                <span>Trang ${currentPage} / ${totalPages}</span>
+                <button onclick="changePage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''}>Sau</button>
+            `;
+        }
+
+        function changePage(page) {
+            if (page < 1 || page > totalPages || page === currentPage) return;
+            currentPage = page;
+            loadData();
         }
 
         async function openRenewalModal(studentId) {
@@ -1012,13 +1074,15 @@
         }
 
         async function submitRenewal() {
+            const submitBtn = document.querySelector('#renewalModal .btn-primary');
+
             if (!currentStudent || !selectedPackage) {
-                ui.error('Vui lòng chọn gói học');
+                notify.warning('Vui lòng chọn gói học');
                 return;
             }
 
             if (selectedRenewalType === 'new' && !document.getElementById('newClassSelect').value) {
-                ui.error('Vui lòng chọn lớp mới');
+                notify.warning('Vui lòng chọn lớp mới');
                 return;
             }
 
@@ -1032,13 +1096,17 @@
                 note: document.getElementById('renewalNote').value
             };
 
+            loading.buttonStart(submitBtn, 'Đang xử lý...');
+
             try {
                 await api.post('/renewals', data);
-                ui.success('Tái phí thành công!');
+                notify.success('Tái phí thành công!');
                 closeRenewalModal();
                 loadData();
             } catch (e) {
-                ui.error(e.message);
+                notify.error(e.message);
+            } finally {
+                loading.buttonEnd(submitBtn);
             }
         }
 
@@ -1048,11 +1116,11 @@
 
         function viewRenewalHistory(studentId) {
             // TODO: Show renewal history
-            ui.info('Tính năng đang phát triển');
+            notify.info('Tính năng đang phát triển');
         }
 
         function exportExcel() {
-            ui.info('Tính năng xuất Excel đang phát triển');
+            notify.info('Tính năng xuất Excel đang phát triển');
         }
 
         function formatCurrency(val) {
@@ -1066,6 +1134,11 @@
             return d.toLocaleDateString('vi-VN');
         }
 
+        window.addEventListener('branchchange', (e) => {
+            const sel = document.getElementById('filterBranch');
+            if (sel) sel.value = e.detail?.branch?.id || '';
+            loadData();
+        });
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>

@@ -43,7 +43,7 @@
         .stat-box .value {
             font-size: 32px;
             font-weight: 700;
-            color: #1f2937;
+            color: var(--text-primary);
             margin-bottom: 4px;
         }
 
@@ -99,7 +99,7 @@
         }
 
         .tab-btn:hover {
-            color: #1f2937;
+            color: var(--text-primary);
             background: rgba(255, 255, 255, 0.5);
         }
 
@@ -147,7 +147,7 @@
             margin: 0;
             font-size: 16px;
             font-weight: 600;
-            color: #1f2937;
+            color: var(--text-primary);
         }
 
         .card-body {
@@ -178,7 +178,7 @@
         .promo-card .promo-name {
             font-weight: 700;
             font-size: 17px;
-            color: #1f2937;
+            color: var(--text-primary);
             margin-bottom: 4px;
         }
 
@@ -239,7 +239,7 @@
 
         .item-card .item-name {
             font-weight: 700;
-            color: #1f2937;
+            color: var(--text-primary);
             font-size: 15px;
         }
 
@@ -320,7 +320,7 @@
         .approval-card .student-info {
             font-weight: 700;
             font-size: 16px;
-            color: #1f2937;
+            color: var(--text-primary);
         }
 
         .approval-card .discount-info {
@@ -717,6 +717,8 @@
 
     <script src="../js/config.js"></script>
     <script src="../js/app.js"></script>
+    <script src="../js/reactive.js"></script>
+    <script src="../js/crud-mixin.js"></script>
     <script src="../js/sidebar.js"></script>
     <script>
         let programs = [], items = [], scholarships = [], pending = [];
@@ -796,21 +798,45 @@
         function closeProgramModal() { document.getElementById('programModal').classList.remove('show'); }
 
         async function saveProgram() {
+            const submitBtn = document.querySelector('#programModal .btn-primary');
+
+            // Validation
+            const codeInput = document.getElementById('programCode');
+            const nameInput = document.getElementById('programName');
+
+            let hasError = false;
+            if (!codeInput.value.trim()) { validate.showError(codeInput, 'Vui lòng nhập mã'); hasError = true; }
+            else { validate.clearError(codeInput); }
+            if (!nameInput.value.trim()) { validate.showError(nameInput, 'Vui lòng nhập tên'); hasError = true; }
+            else { validate.clearError(nameInput); }
+
+            if (hasError) {
+                notify.warning('Vui lòng kiểm tra lại thông tin');
+                return;
+            }
+
             const data = {
-                code: document.getElementById('programCode').value,
-                name: document.getElementById('programName').value,
+                code: codeInput.value,
+                name: nameInput.value,
                 discount_type: document.getElementById('programDiscountType').value,
                 discount_value: document.getElementById('programDiscountValue').value || 0,
                 start_date: document.getElementById('programStartDate').value || null,
                 end_date: document.getElementById('programEndDate').value || null,
                 description: document.getElementById('programDescription').value
             };
+
+            loading.buttonStart(submitBtn, 'Đang tạo...');
+
             try {
                 await api.post('/promotions/programs', data);
-                ui.success('Tạo CTKM thành công');
+                notify.success('Tạo CTKM thành công');
                 closeProgramModal();
                 loadPrograms();
-            } catch (e) { ui.error(e.message); }
+            } catch (e) {
+                notify.error(e.message);
+            } finally {
+                loading.buttonEnd(submitBtn);
+            }
         }
 
         // ==================== ITEMS ====================
@@ -863,10 +889,10 @@
             };
             try {
                 await api.post('/promotions/items', data);
-                ui.success('Tạo vật phẩm thành công');
+                notify.success('Tạo vật phẩm thành công');
                 closeItemModal();
                 loadItems();
-            } catch (e) { ui.error(e.message); }
+            } catch (e) { notify.error(e.message); }
         }
 
         function openStockModal() {
@@ -886,10 +912,10 @@
             };
             try {
                 await api.post('/promotions/stock', data);
-                ui.success(data.type === 'in' ? 'Nhập kho thành công' : 'Xuất kho thành công');
+                notify.success(data.type === 'in' ? 'Nhập kho thành công' : 'Xuất kho thành công');
                 closeStockModal();
                 loadItems();
-            } catch (e) { ui.error(e.message); }
+            } catch (e) { notify.error(e.message); }
         }
 
         // ==================== SCHOLARSHIPS ====================
@@ -930,10 +956,10 @@
             };
             try {
                 await api.post('/promotions/scholarships', data);
-                ui.success('Tạo học bổng thành công');
+                notify.success('Tạo học bổng thành công');
                 closeScholarshipModal();
                 loadScholarships();
-            } catch (e) { ui.error(e.message); }
+            } catch (e) { notify.error(e.message); }
         }
 
         // ==================== PENDING APPROVALS ====================
@@ -982,9 +1008,9 @@
             if (!confirm(approved ? 'Duyệt giảm giá này?' : 'Từ chối giảm giá này?')) return;
             try {
                 await api.post('/promotions/lead/' + leadId + '/approve', { approved });
-                ui.success(approved ? 'Đã duyệt giảm giá' : 'Đã từ chối');
+                notify.success(approved ? 'Đã duyệt giảm giá' : 'Đã từ chối');
                 loadPending();
-            } catch (e) { ui.error(e.message); }
+            } catch (e) { notify.error(e.message); }
         }
 
         // ==================== HELPERS ====================

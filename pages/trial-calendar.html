@@ -511,12 +511,12 @@
             <div class="form-group">
               <label class="form-label">Học phí gốc</label>
               <input type="text" id="cvFeeOriginal" class="form-control" value="0đ" readonly
-                style="background:#f3f4f6;font-weight:bold">
+                style="background:var(--bg-secondary);font-weight:bold">
             </div>
           </div>
 
           <!-- Chương trình giảm giá -->
-          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+          <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
             <label style="color:#16a34a;font-weight:600"><i class="fas fa-percent"></i> Chương trình giảm giá</label>
             <div class="form-row" style="margin-top:8px">
               <div class="form-group" style="flex:2;margin-bottom:0">
@@ -533,7 +533,7 @@
           </div>
 
           <!-- Học bổng tặng kèm -->
-          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+          <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
               <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng tặng
                 kèm</label>
@@ -561,30 +561,19 @@
           </div>
 
           <!-- Quà tặng -->
-          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+          <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
             <label style="color:#db2777;font-weight:600"><i class="fas fa-gift"></i> Quà tặng kèm</label>
             <div id="giftItemsContainer" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px"></div>
           </div>
 
           <!-- Tổng kết -->
-          <div style="background:#1f2937;color:white;padding:16px;border-radius:8px;margin-top:12px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-              <span>Khóa học chính:</span>
-              <span id="cvMainCourseMonths">0 tháng</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-              <span>Học bổng tặng:</span>
-              <span id="cvBonusMonths" style="color:#4ade80">+0 tháng</span>
-            </div>
-            <div
-              style="display:flex;justify-content:space-between;margin-bottom:12px;padding-top:8px;border-top:1px solid #374151">
-              <span><strong>Tổng thời gian học:</strong></span>
-              <span id="cvTotalMonths" style="font-size:18px;font-weight:bold;color:#4ade80">0 tháng</span>
-            </div>
-            <div
-              style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #374151">
-              <span style="font-size:16px"><strong>HỌC PHÍ THỰC ĐÓNG:</strong></span>
-              <span id="cvFeeTotal" style="font-size:24px;font-weight:bold;color:#fbbf24" data-raw-value="0">0đ</span>
+          <div class="summary-box">
+            <div class="summary-row"><span>Khóa học chính:</span><span id="cvMainCourseMonths">0 tháng</span></div>
+            <div class="summary-row"><span>Học bổng tặng:</span><span id="cvBonusMonths" style="color:var(--success)">+0 tháng</span></div>
+            <div class="summary-row"><span><strong>Tổng thời gian học:</strong></span><span id="cvTotalMonths" style="font-size:18px;font-weight:bold;color:var(--success)">0 tháng</span></div>
+            <div class="summary-row total">
+              <span>HỌC PHÍ THỰC ĐÓNG:</span>
+              <span id="cvFeeTotal" class="value" data-raw-value="0">0đ</span>
             </div>
           </div>
         </div>
@@ -614,7 +603,7 @@
                 oninput="formatCurrencyField(this);updateRemaining()">
             </div>
           </div>
-          <div id="remainingRow" style="display:none;background:white;padding:12px;border-radius:8px;margin-top:8px">
+          <div id="remainingRow" style="display:none;background:var(--bg-secondary);padding:12px;border-radius:8px;margin-top:8px">
             <div style="display:flex;justify-content:space-between">
               <span>Còn phải đóng:</span>
               <span id="cvRemaining" style="font-size:18px;font-weight:bold;color:#dc2626">0đ</span>
@@ -690,7 +679,7 @@
 
           <!-- QR Code Section (for bank_transfer) -->
           <div id="qrCodeSection" style="text-align:center;margin-bottom:16px">
-            <div style="background:#f9fafb;padding:16px;border-radius:12px">
+            <div style="background:var(--bg-secondary);padding:16px;border-radius:12px">
               <img id="successQRImage" src="" alt="QR Code" style="max-width:200px;border-radius:8px">
               <div style="margin-top:12px;background:#e0e7ff;padding:8px;border-radius:8px">
                 <div style="font-size:11px;color:#4338ca">Nội dung CK:</div>
@@ -842,6 +831,8 @@
   <script src="../js/config.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/sidebar.js"></script>
+  <script src="../js/reactive.js"></script>
+  <script src="../js/crud-mixin.js"></script>
   <script>
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth() + 1;

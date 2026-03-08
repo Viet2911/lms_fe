@@ -1,1387 +1,1276 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cài đặt hệ thống - LMS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css">
-    <style>
-        .settings-nav {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hệ thống - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .main-content { display: flex; flex-direction: column; }
 
-        .settings-nav button {
-            padding: 10px 20px;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-        }
+    /* ── Split layout ── */
+    .sys-layout {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 64px);
+      overflow: hidden;
+    }
 
-        .settings-nav button.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
+    /* ── Left nav ── */
+    .sys-nav {
+      width: 220px;
+      min-width: 220px;
+      border-right: 1px solid var(--border);
+      background: var(--bg-card);
+      overflow-y: auto;
+      padding: 8px 0 16px;
+    }
+    .sys-nav::-webkit-scrollbar { width: 4px; }
+    .sys-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-        .settings-section {
-            display: none;
-        }
+    .sys-nav-section {
+      font-size: 10px;
+      color: var(--text-muted);
+      padding: 14px 16px 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 700;
+    }
+    .sys-nav-section:first-child { padding-top: 8px; }
 
-        .settings-section.active {
-            display: block;
-        }
+    .sys-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+    }
+    .sys-nav-item i { width: 16px; text-align: center; font-size: 13px; color: var(--text-muted); }
+    .sys-nav-item:hover { background: var(--bg-secondary); color: var(--primary); }
+    .sys-nav-item:hover i { color: var(--primary); }
+    .sys-nav-item.active {
+      color: var(--primary);
+      background: rgba(52,168,83,0.08);
+      border-left-color: var(--primary);
+      font-weight: 600;
+    }
+    .sys-nav-item.active i { color: var(--primary); }
 
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    .sys-nav-divider { height: 1px; background: var(--border); margin: 6px 12px; }
 
-        .data-table th,
-        .data-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
+    /* ── Right content ── */
+    .sys-content {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg-secondary);
+      padding: 24px;
+    }
 
-        .data-table th {
-            background: var(--bg-secondary);
-            font-weight: 600;
-        }
+    /* ── Section ── */
+    .settings-section { display: none; }
+    .settings-section.active { display: block; }
 
-        .data-table tr:hover {
-            background: var(--bg-secondary);
-        }
+    /* ── Tables ── */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th, .data-table td { padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .data-table th { background: var(--bg-secondary); font-weight: 600; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+    .data-table tr:hover td { background: var(--bg-secondary); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
 
-        .badge-active {
-            background: #dcfce7;
-            color: #15803d;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-        }
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .section-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-card-header h3 { margin: 0; font-size: 15px; font-weight: 600; color: var(--text-primary); }
+    .section-card-body { padding: 0; }
 
-        .badge-inactive {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-        }
+    .badge-active { background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .badge-inactive { background: #fee2e2; color: #dc2626; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .action-btns { display: flex; gap: 6px; }
 
-        .action-btns {
-            display: flex;
-            gap: 6px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .section-header h3 {
-            margin: 0;
-        }
-    </style>
+    /* ── Config sections (payment, email) ── */
+    .config-block {
+      max-width: 680px;
+    }
+    .config-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .config-panel h4 { margin: 0 0 14px; font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+  </style>
 </head>
 
 <body>
-    <nav class="sidebar" id="sidebar"></nav>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
     <main class="main-content">
-        <div class="topbar">
-            <div class="topbar-left">
-                <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')"><i
-                        class="fas fa-bars"></i></button>
-                <h1><i class="fas fa-cog"></i> Cài đặt hệ thống</h1>
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div>
+            <h1 class="page-title">Hệ thống</h1>
+          </div>
+        </div>
+      </header>
+
+      <div class="sys-layout">
+
+        <!-- ── Left nav ── -->
+        <nav class="sys-nav">
+          <div class="sys-nav-section">Học thuật</div>
+          <div class="sys-nav-item active" data-section="subjects" onclick="showSection('subjects')">
+            <i class="fas fa-book"></i><span>Môn học</span>
+          </div>
+          <div class="sys-nav-item" data-section="levels" onclick="showSection('levels')">
+            <i class="fas fa-layer-group"></i><span>Cấp độ</span>
+          </div>
+
+          <div class="sys-nav-section">Học phí</div>
+          <div class="sys-nav-item" data-section="packages" onclick="showSection('packages')">
+            <i class="fas fa-box"></i><span>Gói học phí</span>
+          </div>
+          <div class="sys-nav-item" data-section="promotions" onclick="showSection('promotions')">
+            <i class="fas fa-gift"></i><span>Khuyến mãi</span>
+          </div>
+          <div class="sys-nav-item" data-section="gifts" onclick="showSection('gifts')">
+            <i class="fas fa-gifts"></i><span>Quà tặng</span>
+          </div>
+
+          <div class="sys-nav-section">Tổ chức</div>
+          <div class="sys-nav-item" data-section="branches" onclick="showSection('branches')">
+            <i class="fas fa-building"></i><span>Cơ sở</span>
+          </div>
+          <div class="sys-nav-item" data-section="users" onclick="showSection('users')">
+            <i class="fas fa-users-cog"></i><span>Người dùng</span>
+          </div>
+
+          <div class="sys-nav-section">Cấu hình</div>
+          <div class="sys-nav-item" data-section="payment" onclick="showSection('payment')">
+            <i class="fas fa-qrcode"></i><span>Thanh toán QR</span>
+          </div>
+          <div class="sys-nav-item" data-section="email" onclick="showSection('email')">
+            <i class="fas fa-envelope"></i><span>Email SMTP</span>
+          </div>
+        </nav>
+
+        <!-- ── Right content ── -->
+        <div class="sys-content">
+
+          <!-- SUBJECTS -->
+          <div id="section-subjects" class="settings-section active">
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3><i class="fas fa-book" style="color:var(--primary)"></i> Môn học</h3>
+                <button class="btn btn-primary btn-sm" onclick="openSubjectModal()"><i class="fas fa-plus"></i> Thêm</button>
+              </div>
+              <div class="section-card-body">
+                <table class="data-table">
+                  <thead><tr><th>Mã</th><th>Tên môn học</th><th>Mô tả</th><th>Trạng thái</th><th></th></tr></thead>
+                  <tbody id="subjectsTable"></tbody>
+                </table>
+              </div>
             </div>
-        </div>
+          </div>
 
-        <div class="settings-nav">
-            <button class="active" onclick="showSection('subjects', this)"><i class="fas fa-book"></i> Môn học</button>
-            <button onclick="showSection('levels', this)"><i class="fas fa-layer-group"></i> Cấp độ</button>
-            <button onclick="showSection('packages', this)"><i class="fas fa-box"></i> Gói học phí</button>
-            <button onclick="showSection('branches', this)"><i class="fas fa-building"></i> Chi nhánh</button>
-            <button onclick="showSection('users', this)"><i class="fas fa-users"></i> Người dùng</button>
-            <button onclick="showSection('promotions', this)"><i class="fas fa-gift"></i> Khuyến mãi</button>
-            <button onclick="showSection('gifts', this)"><i class="fas fa-gifts"></i> Quà tặng</button>
-            <button onclick="showSection('payment', this)"><i class="fas fa-qrcode"></i> Thanh toán QR</button>
-            <button onclick="showSection('email', this)"><i class="fas fa-envelope"></i> Email SMTP</button>
-        </div>
-
-        <!-- SUBJECTS -->
-        <div id="section-subjects" class="settings-section active">
-            <div class="card">
-                <div class="card-body">
-                    <div class="section-header">
-                        <h3><i class="fas fa-book"></i> Quản lý Môn học</h3>
-                        <button class="btn btn-primary" onclick="openSubjectModal()"><i class="fas fa-plus"></i>
-                            Thêm</button>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Mã</th>
-                                <th>Tên môn học</th>
-                                <th>Mô tả</th>
-                                <th>Trạng thái</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="subjectsTable"></tbody>
-                    </table>
+          <!-- LEVELS -->
+          <div id="section-levels" class="settings-section">
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3><i class="fas fa-layer-group" style="color:var(--primary)"></i> Cấp độ</h3>
+                <div style="display:flex;gap:10px;align-items:center">
+                  <select id="levelSubjectFilter" class="form-control" style="width:160px;font-size:13px" onchange="loadLevels()">
+                    <option value="">Tất cả môn</option>
+                  </select>
+                  <button class="btn btn-primary btn-sm" onclick="openLevelModal()"><i class="fas fa-plus"></i> Thêm</button>
                 </div>
+              </div>
+              <div class="section-card-body">
+                <table class="data-table">
+                  <thead><tr><th>Mã</th><th>Tên cấp độ</th><th>Môn học</th><th>Thứ tự</th><th>Số buổi</th><th></th></tr></thead>
+                  <tbody id="levelsTable"></tbody>
+                </table>
+              </div>
             </div>
-        </div>
+          </div>
 
-        <!-- LEVELS -->
-        <div id="section-levels" class="settings-section">
-            <div class="card">
-                <div class="card-body">
-                    <div class="section-header">
-                        <h3><i class="fas fa-layer-group"></i> Quản lý Cấp độ</h3>
-                        <div style="display:flex;gap:12px">
-                            <select id="levelSubjectFilter" class="form-control" style="width:180px"
-                                onchange="loadLevels()">
-                                <option value="">Tất cả môn</option>
-                            </select>
-                            <button class="btn btn-primary" onclick="openLevelModal()"><i class="fas fa-plus"></i>
-                                Thêm</button>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Mã</th>
-                                <th>Tên cấp độ</th>
-                                <th>Môn học</th>
-                                <th>Thứ tự</th>
-                                <th>Số buổi</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="levelsTable"></tbody>
-                    </table>
+          <!-- PACKAGES -->
+          <div id="section-packages" class="settings-section">
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3><i class="fas fa-box" style="color:var(--primary)"></i> Gói học phí</h3>
+                <button class="btn btn-primary btn-sm" onclick="openPackageModal()"><i class="fas fa-plus"></i> Thêm</button>
+              </div>
+              <div class="section-card-body">
+                <table class="data-table">
+                  <thead><tr><th>Mã</th><th>Tên gói</th><th>Tháng</th><th>Buổi/tuần</th><th>Tổng buổi</th><th style="text-align:right">Giá</th><th>HB mặc định</th><th>TT</th><th></th></tr></thead>
+                  <tbody id="packagesTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROMOTIONS -->
+          <div id="section-promotions" class="settings-section">
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3><i class="fas fa-gift" style="color:var(--primary)"></i> Chương trình Khuyến mãi</h3>
+                <button class="btn btn-primary btn-sm" onclick="openPromoModal()"><i class="fas fa-plus"></i> Thêm</button>
+              </div>
+              <div class="section-card-body">
+                <table class="data-table">
+                  <thead><tr><th>Mã</th><th>Tên CT</th><th>Loại</th><th>Giá trị</th><th>Thời gian</th><th>TT</th><th></th></tr></thead>
+                  <tbody id="promotionsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- GIFTS -->
+          <div id="section-gifts" class="settings-section">
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3><i class="fas fa-gifts" style="color:var(--primary)"></i> Quà tặng</h3>
+                <button class="btn btn-primary btn-sm" onclick="openGiftModal()"><i class="fas fa-plus"></i> Thêm</button>
+              </div>
+              <div class="section-card-body">
+                <table class="data-table">
+                  <thead><tr><th>Mã</th><th>Tên quà</th><th>Danh mục</th><th>Tồn kho</th><th>Đã phát</th><th>TT</th><th></th></tr></thead>
+                  <tbody id="giftsTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- BRANCHES -->
+          <div id="section-branches" class="settings-section">
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3><i class="fas fa-building" style="color:var(--primary)"></i> Cơ sở</h3>
+                <button class="btn btn-primary btn-sm" onclick="openBranchModal()"><i class="fas fa-plus"></i> Thêm</button>
+              </div>
+              <div class="section-card-body">
+                <table class="data-table">
+                  <thead><tr><th>Mã</th><th>Tên cơ sở</th><th>Địa chỉ</th><th>SĐT</th><th>Ngân hàng / STK</th><th>TT</th><th></th></tr></thead>
+                  <tbody id="branchesTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- USERS -->
+          <div id="section-users" class="settings-section">
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3><i class="fas fa-users-cog" style="color:var(--primary)"></i> Người dùng</h3>
+                <div style="display:flex;gap:10px;align-items:center">
+                  <select id="userRoleFilter" class="form-control" style="width:140px;font-size:13px" onchange="loadUsers()">
+                    <option value="">Tất cả role</option>
+                  </select>
+                  <div style="display:flex;align-items:center;gap:6px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:6px 10px">
+                    <i class="fas fa-search" style="color:var(--text-muted);font-size:12px"></i>
+                    <input type="text" id="userSearchInput" placeholder="Tìm..." style="border:none;background:transparent;outline:none;font-size:13px;width:120px;color:var(--text-primary)" onkeyup="if(event.key==='Enter')loadUsers()">
+                  </div>
+                  <button class="btn btn-primary btn-sm" onclick="openUserModal()"><i class="fas fa-plus"></i> Thêm</button>
                 </div>
+              </div>
+              <div class="section-card-body">
+                <table class="data-table">
+                  <thead><tr><th>Họ tên</th><th>Username</th><th>Vai trò</th><th>Cơ sở</th><th>TT</th><th></th></tr></thead>
+                  <tbody id="usersTable"></tbody>
+                </table>
+              </div>
             </div>
-        </div>
+          </div>
 
-        <!-- PACKAGES -->
-        <div id="section-packages" class="settings-section">
-            <div class="card">
-                <div class="card-body">
-                    <div class="section-header">
-                        <h3><i class="fas fa-box"></i> Quản lý Gói học phí</h3>
-                        <button class="btn btn-primary" onclick="openPackageModal()"><i class="fas fa-plus"></i>
-                            Thêm</button>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Mã</th>
-                                <th>Tên gói</th>
-                                <th>Tháng</th>
-                                <th>Buổi/tuần</th>
-                                <th>Tổng buổi</th>
-                                <th>Giá</th>
-                                <th>HB mặc định</th>
-                                <th>TT</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="packagesTable"></tbody>
-                    </table>
+          <!-- PAYMENT CONFIG -->
+          <div id="section-payment" class="settings-section">
+            <div class="config-block">
+              <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#92400e">
+                <i class="fas fa-info-circle"></i> <strong>Lưu ý:</strong> Cấu hình bên dưới là QR <b>mặc định</b>.
+                Để cấu hình QR riêng từng cơ sở, vào tab <b>Cơ sở</b> → Sửa → Nhập thông tin ngân hàng.
+              </div>
+
+              <!-- QR theo chi nhánh -->
+              <div class="section-card" style="margin-bottom:16px">
+                <div class="section-card-header">
+                  <h3><i class="fas fa-building" style="color:var(--primary)"></i> QR theo Cơ sở</h3>
                 </div>
-            </div>
-        </div>
-
-        <!-- BRANCHES -->
-        <div id="section-branches" class="settings-section">
-            <div class="card">
-                <div class="card-body">
-                    <div class="section-header">
-                        <h3><i class="fas fa-building"></i> Quản lý Chi nhánh</h3>
-                        <button class="btn btn-primary" onclick="openBranchModal()"><i class="fas fa-plus"></i>
-                            Thêm</button>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Mã</th>
-                                <th>Tên chi nhánh</th>
-                                <th>Địa chỉ</th>
-                                <th>SĐT</th>
-                                <th>Ngân hàng / STK</th>
-                                <th>TT</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="branchesTable"></tbody>
-                    </table>
+                <div class="section-card-body">
+                  <table class="data-table">
+                    <thead><tr><th>Cơ sở</th><th>Ngân hàng</th><th>Số TK</th><th>Chủ TK</th><th></th></tr></thead>
+                    <tbody id="branchQRTable"></tbody>
+                  </table>
                 </div>
-            </div>
-        </div>
+              </div>
 
-        <!-- USERS -->
-        <div id="section-users" class="settings-section">
-            <div class="card">
-                <div class="card-body">
-                    <div class="section-header">
-                        <h3><i class="fas fa-users"></i> Quản lý Người dùng</h3>
-                        <button class="btn btn-primary" onclick="openUserModal()"><i class="fas fa-plus"></i>
-                            Thêm</button>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>Họ tên</th>
-                                <th>Email</th>
-                                <th>SĐT</th>
-                                <th>Vai trò</th>
-                                <th>TT</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="usersTable"></tbody>
-                    </table>
+              <div class="config-panel" style="background:linear-gradient(135deg,#dbeafe,#e0e7ff)">
+                <h4 style="color:#1e40af"><i class="fas fa-university"></i> QR Mặc định (Fallback)</h4>
+                <div class="form-group">
+                  <label class="form-label required">Ngân hàng</label>
+                  <select id="paymentBankCode" class="form-control">
+                    <option value="970422">MB Bank (970422)</option>
+                    <option value="970415">VietinBank (970415)</option>
+                    <option value="970436">Vietcombank (970436)</option>
+                    <option value="970418">BIDV (970418)</option>
+                    <option value="970407">Techcombank (970407)</option>
+                    <option value="970416">ACB (970416)</option>
+                    <option value="970432">VPBank (970432)</option>
+                    <option value="970423">TPBank (970423)</option>
+                    <option value="970405">Agribank (970405)</option>
+                    <option value="970448">OCB (970448)</option>
+                    <option value="970403">Sacombank (970403)</option>
+                    <option value="970437">HDBank (970437)</option>
+                  </select>
                 </div>
-            </div>
-        </div>
-
-        <!-- PROMOTIONS -->
-        <div id="section-promotions" class="settings-section">
-            <div class="card">
-                <div class="card-body">
-                    <div class="section-header">
-                        <h3><i class="fas fa-gift"></i> Chương trình Khuyến mãi</h3>
-                        <button class="btn btn-primary" onclick="openPromoModal()"><i class="fas fa-plus"></i>
-                            Thêm</button>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Mã</th>
-                                <th>Tên CT</th>
-                                <th>Loại</th>
-                                <th>Giá trị</th>
-                                <th>Thời gian</th>
-                                <th>TT</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="promotionsTable"></tbody>
-                    </table>
+                <div class="form-row">
+                  <div class="form-group"><label class="form-label required">Số tài khoản</label><input type="text" id="paymentAccountNo" class="form-control" placeholder="0866766189"></div>
+                  <div class="form-group"><label class="form-label required">Tên chủ TK</label><input type="text" id="paymentAccountName" class="form-control" placeholder="NGUYEN VAN A"></div>
                 </div>
-            </div>
-        </div>
+              </div>
 
-        <!-- GIFTS -->
-        <div id="section-gifts" class="settings-section">
-            <div class="card">
-                <div class="card-body">
-                    <div class="section-header">
-                        <h3><i class="fas fa-gifts"></i> Quản lý Quà tặng</h3>
-                        <button class="btn btn-primary" onclick="openGiftModal()"><i class="fas fa-plus"></i>
-                            Thêm</button>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Mã</th>
-                                <th>Tên quà</th>
-                                <th>Danh mục</th>
-                                <th>Tồn kho</th>
-                                <th>Đã phát</th>
-                                <th>TT</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="giftsTable"></tbody>
-                    </table>
+              <div class="config-panel" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0)">
+                <h4 style="color:#166534"><i class="fas fa-cog"></i> Cấu hình VietQR</h4>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Template QR</label>
+                    <select id="paymentQRTemplate" class="form-control">
+                      <option value="compact2">Compact 2 (Có logo)</option>
+                      <option value="compact">Compact (Không logo)</option>
+                      <option value="qr_only">QR Only</option>
+                      <option value="print">Print</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Prefix nội dung CK</label>
+                    <input type="text" id="paymentDescPrefix" class="form-control" placeholder="Mặc định: [Mã HS] [Tên HS]">
+                  </div>
                 </div>
-            </div>
-        </div>
+              </div>
 
-        <!-- PAYMENT CONFIG -->
-        <div id="section-payment" class="settings-section">
-            <div class="card">
-                <div class="card-body">
-                    <div class="section-header">
-                        <h3><i class="fas fa-qrcode"></i> Cấu hình Thanh toán QR</h3>
-                    </div>
-
-                    <div style="max-width:700px">
-                        <!-- Hướng dẫn -->
-                        <div
-                            style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:20px">
-                            <p style="margin:0;color:#92400e;font-size:13px">
-                                <i class="fas fa-info-circle"></i> <strong>Lưu ý:</strong> Cấu hình bên dưới là QR
-                                <b>mặc định</b> cho hệ thống.<br>
-                                Để cấu hình QR riêng cho từng chi nhánh, vào tab <b>Chi nhánh</b> → Sửa chi nhánh → Nhập
-                                thông tin ngân hàng.
-                            </p>
-                        </div>
-
-                        <!-- Bảng QR theo chi nhánh -->
-                        <div
-                            style="background:#fff;padding:20px;border-radius:12px;margin-bottom:20px;border:1px solid #e5e7eb">
-                            <h4 style="margin:0 0 16px;color:#374151"><i class="fas fa-building"></i> QR theo Chi nhánh
-                            </h4>
-                            <table class="data-table" style="margin:0">
-                                <thead>
-                                    <tr>
-                                        <th>Chi nhánh</th>
-                                        <th>Ngân hàng</th>
-                                        <th>Số TK</th>
-                                        <th>Chủ TK</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="branchQRTable"></tbody>
-                            </table>
-                        </div>
-
-                        <div
-                            style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:20px;border-radius:12px;margin-bottom:20px">
-                            <h4 style="margin:0 0 16px;color:#1e40af"><i class="fas fa-university"></i> QR Mặc định
-                                (Fallback)</h4>
-                            <div class="form-group">
-                                <label class="required">Ngân hàng</label>
-                                <select id="paymentBankCode" class="form-control">
-                                    <option value="970422">MB Bank (970422)</option>
-                                    <option value="970415">VietinBank (970415)</option>
-                                    <option value="970436">Vietcombank (970436)</option>
-                                    <option value="970418">BIDV (970418)</option>
-                                    <option value="970407">Techcombank (970407)</option>
-                                    <option value="970416">ACB (970416)</option>
-                                    <option value="970432">VPBank (970432)</option>
-                                    <option value="970423">TPBank (970423)</option>
-                                    <option value="970405">Agribank (970405)</option>
-                                    <option value="970448">OCB (970448)</option>
-                                    <option value="970403">Sacombank (970403)</option>
-                                    <option value="970437">HDBank (970437)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="required">Số tài khoản</label>
-                                <input type="text" id="paymentAccountNo" class="form-control" placeholder="0866766189">
-                            </div>
-                            <div class="form-group">
-                                <label class="required">Tên chủ tài khoản</label>
-                                <input type="text" id="paymentAccountName" class="form-control"
-                                    placeholder="NGUYEN VAN A">
-                            </div>
-                        </div>
-
-                        <div
-                            style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:20px;border-radius:12px;margin-bottom:20px">
-                            <h4 style="margin:0 0 16px;color:#166534"><i class="fas fa-cog"></i> Cấu hình VietQR</h4>
-                            <div class="form-group">
-                                <label>Template QR</label>
-                                <select id="paymentQRTemplate" class="form-control">
-                                    <option value="compact2">Compact 2 (Có logo)</option>
-                                    <option value="compact">Compact (Không logo)</option>
-                                    <option value="qr_only">QR Only</option>
-                                    <option value="print">Print</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Prefix nội dung CK</label>
-                                <input type="text" id="paymentDescPrefix" class="form-control"
-                                    placeholder="Để trống = Mã học sinh + Tên">
-                                <small style="color:#6b7280">Mặc định: [Mã HS] [Tên HS]</small>
-                            </div>
-                        </div>
-
-                        <div style="background:#f3f4f6;padding:20px;border-radius:12px;margin-bottom:20px">
-                            <h4 style="margin:0 0 16px;color:#374151"><i class="fas fa-eye"></i> Xem trước QR</h4>
-                            <div style="text-align:center">
-                                <img id="previewQR" src="" alt="QR Preview"
-                                    style="max-width:250px;border-radius:8px;border:1px solid #e5e7eb">
-                                <p id="previewInfo" style="margin-top:12px;color:#6b7280;font-size:13px"></p>
-                            </div>
-                            <button class="btn btn-secondary btn-block" onclick="previewQR()" style="margin-top:12px"><i
-                                    class="fas fa-refresh"></i> Xem trước</button>
-                        </div>
-
-                        <button class="btn btn-primary btn-block" onclick="savePaymentConfig()"
-                            style="padding:14px;font-size:16px">
-                            <i class="fas fa-save"></i> Lưu cấu hình mặc định
-                        </button>
-                    </div>
+              <div class="config-panel">
+                <h4><i class="fas fa-eye" style="color:var(--primary)"></i> Xem trước QR</h4>
+                <div style="text-align:center">
+                  <img id="previewQR" src="" alt="QR Preview" style="max-width:220px;border-radius:8px;border:1px solid var(--border)">
+                  <p id="previewInfo" style="margin-top:10px;color:var(--text-muted);font-size:13px"></p>
                 </div>
+                <button class="btn btn-secondary btn-block" onclick="previewQR()" style="margin-top:12px"><i class="fas fa-sync"></i> Xem trước</button>
+              </div>
+
+              <button class="btn btn-primary btn-block" onclick="savePaymentConfig()" style="padding:14px;font-size:15px">
+                <i class="fas fa-save"></i> Lưu cấu hình thanh toán
+              </button>
             </div>
-        </div>
+          </div>
 
-        <!-- EMAIL SMTP CONFIG -->
-        <div id="section-email" class="settings-section">
-            <div class="card">
-                <div class="card-body">
-                    <div class="section-header">
-                        <h3><i class="fas fa-envelope"></i> Cấu hình Email SMTP</h3>
-                    </div>
+          <!-- EMAIL SMTP -->
+          <div id="section-email" class="settings-section">
+            <div class="config-block">
+              <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#92400e">
+                <i class="fas fa-info-circle"></i> Cấu hình SMTP để hệ thống tự động gửi email thông tin tài khoản khi tạo user mới.
+              </div>
 
-                    <div style="max-width:600px">
-                        <div
-                            style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:20px">
-                            <p style="margin:0;color:#92400e;font-size:13px">
-                                <i class="fas fa-info-circle"></i> <strong>Hướng dẫn:</strong> Cấu hình SMTP để hệ thống
-                                tự động gửi email thông tin tài khoản khi tạo user mới.
-                                Bạn có thể sử dụng Gmail, Outlook, hoặc các dịch vụ SMTP khác.
-                            </p>
-                        </div>
-
-                        <div
-                            style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);padding:20px;border-radius:12px;margin-bottom:20px">
-                            <h4 style="margin:0 0 16px;color:#1e40af"><i class="fas fa-server"></i> Thông tin SMTP
-                                Server</h4>
-                            <div class="form-group">
-                                <label class="required">SMTP Host</label>
-                                <input type="text" id="smtpHost" class="form-control" placeholder="smtp.gmail.com">
-                                <small style="color:#6b7280">Gmail: smtp.gmail.com | Outlook: smtp.office365.com</small>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="required">Port</label>
-                                    <select id="smtpPort" class="form-control">
-                                        <option value="587">587 (TLS)</option>
-                                        <option value="465">465 (SSL)</option>
-                                        <option value="25">25 (Không mã hóa)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>SSL/TLS</label>
-                                    <select id="smtpSecure" class="form-control">
-                                        <option value="false">STARTTLS (Port 587)</option>
-                                        <option value="true">SSL (Port 465)</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div
-                            style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:20px;border-radius:12px;margin-bottom:20px">
-                            <h4 style="margin:0 0 16px;color:#166534"><i class="fas fa-user-lock"></i> Thông tin đăng
-                                nhập</h4>
-                            <div class="form-group">
-                                <label class="required">Email đăng nhập</label>
-                                <input type="email" id="smtpUser" class="form-control"
-                                    placeholder="your-email@gmail.com">
-                            </div>
-                            <div class="form-group">
-                                <label class="required">Mật khẩu / App Password</label>
-                                <input type="password" id="smtpPass" class="form-control" placeholder="••••••••">
-                                <small style="color:#6b7280">
-                                    <a href="https://myaccount.google.com/apppasswords" target="_blank">Tạo App Password
-                                        cho Gmail</a>
-                                </small>
-                            </div>
-                            <div class="form-group">
-                                <label>Tên hiển thị</label>
-                                <input type="text" id="smtpFromName" class="form-control" placeholder="ARMY Technology"
-                                    value="ARMY Technology">
-                            </div>
-                        </div>
-
-                        <div style="background:#f3f4f6;padding:20px;border-radius:12px;margin-bottom:20px">
-                            <h4 style="margin:0 0 16px;color:#374151"><i class="fas fa-flask"></i> Test kết nối</h4>
-                            <div class="form-group">
-                                <label>Email nhận test</label>
-                                <input type="email" id="smtpTestEmail" class="form-control"
-                                    placeholder="test@example.com">
-                            </div>
-                            <button class="btn btn-secondary btn-block" onclick="testSmtpConnection()" id="btnTestSmtp">
-                                <i class="fas fa-paper-plane"></i> Gửi email test
-                            </button>
-                            <div id="smtpTestResult" style="margin-top:12px;display:none"></div>
-                        </div>
-
-                        <button class="btn btn-primary btn-block" onclick="saveSmtpConfig()"
-                            style="padding:14px;font-size:16px">
-                            <i class="fas fa-save"></i> Lưu cấu hình Email
-                        </button>
-                    </div>
+              <div class="config-panel" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe)">
+                <h4 style="color:#1e40af"><i class="fas fa-server"></i> Thông tin SMTP Server</h4>
+                <div class="form-group"><label class="form-label required">SMTP Host</label><input type="text" id="smtpHost" class="form-control" placeholder="smtp.gmail.com"><small style="color:var(--text-muted)">Gmail: smtp.gmail.com | Outlook: smtp.office365.com</small></div>
+                <div class="form-row">
+                  <div class="form-group"><label class="form-label required">Port</label><select id="smtpPort" class="form-control"><option value="587">587 (TLS)</option><option value="465">465 (SSL)</option><option value="25">25</option></select></div>
+                  <div class="form-group"><label class="form-label">SSL/TLS</label><select id="smtpSecure" class="form-control"><option value="false">STARTTLS (Port 587)</option><option value="true">SSL (Port 465)</option></select></div>
                 </div>
+              </div>
+
+              <div class="config-panel" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0)">
+                <h4 style="color:#166534"><i class="fas fa-user-lock"></i> Thông tin đăng nhập</h4>
+                <div class="form-group"><label class="form-label required">Email đăng nhập</label><input type="email" id="smtpUser" class="form-control" placeholder="your-email@gmail.com"></div>
+                <div class="form-group"><label class="form-label required">Mật khẩu / App Password</label><input type="password" id="smtpPass" class="form-control" placeholder="••••••••"><small><a href="https://myaccount.google.com/apppasswords" target="_blank">Tạo App Password cho Gmail</a></small></div>
+                <div class="form-group"><label class="form-label">Tên hiển thị</label><input type="text" id="smtpFromName" class="form-control" value="ARMY Technology"></div>
+              </div>
+
+              <div class="config-panel">
+                <h4><i class="fas fa-flask" style="color:var(--primary)"></i> Test kết nối</h4>
+                <div class="form-group"><label class="form-label">Email nhận test</label><input type="email" id="smtpTestEmail" class="form-control" placeholder="test@example.com"></div>
+                <button class="btn btn-secondary btn-block" onclick="testSmtpConnection()" id="btnTestSmtp"><i class="fas fa-paper-plane"></i> Gửi email test</button>
+                <div id="smtpTestResult" style="margin-top:12px;display:none"></div>
+              </div>
+
+              <button class="btn btn-primary btn-block" onclick="saveSmtpConfig()" style="padding:14px;font-size:15px">
+                <i class="fas fa-save"></i> Lưu cấu hình Email
+              </button>
             </div>
-        </div>
+          </div>
+
+        </div><!-- end sys-content -->
+      </div><!-- end sys-layout -->
     </main>
+  </div>
 
-    <!-- Subject Modal -->
-    <div class="modal" id="subjectModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="subjectModalTitle"><i class="fas fa-book"></i> Thêm môn học</div><button
-                    class="modal-close" onclick="closeModal('subjectModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="subjectId">
-                <div class="form-group"><label class="required">Mã môn học</label><input type="text" id="subjectCode"
-                        class="form-control" placeholder="STEM"></div>
-                <div class="form-group"><label class="required">Tên môn học</label><input type="text" id="subjectName"
-                        class="form-control"></div>
-                <div class="form-group"><label>Mô tả</label><textarea id="subjectDesc" class="form-control"
-                        rows="2"></textarea></div>
-                <div class="form-group"><label>Trạng thái</label><select id="subjectActive" class="form-control">
-                        <option value="1">Hoạt động</option>
-                        <option value="0">Ẩn</option>
-                    </select></div>
-            </div>
-            <div class="modal-footer"><button class="btn btn-secondary"
-                    onclick="closeModal('subjectModal')">Hủy</button><button class="btn btn-primary"
-                    onclick="saveSubject()"><i class="fas fa-save"></i> Lưu</button></div>
-        </div>
+  <!-- ===== MODALS ===== -->
+
+  <!-- Subject Modal -->
+  <div class="modal" id="subjectModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="subjectModalTitle"><i class="fas fa-book"></i> Thêm môn học</div>
+        <button class="modal-close" onclick="closeModal('subjectModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="subjectId">
+        <div class="form-group"><label class="form-label required">Mã môn học</label><input type="text" id="subjectCode" class="form-control" placeholder="STEM"></div>
+        <div class="form-group"><label class="form-label required">Tên môn học</label><input type="text" id="subjectName" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Mô tả</label><textarea id="subjectDesc" class="form-control" rows="2"></textarea></div>
+        <div class="form-group"><label class="form-label">Trạng thái</label><select id="subjectActive" class="form-control"><option value="1">Hoạt động</option><option value="0">Ẩn</option></select></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('subjectModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveSubject()"><i class="fas fa-save"></i> Lưu</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Level Modal -->
-    <div class="modal" id="levelModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="levelModalTitle"><i class="fas fa-layer-group"></i> Thêm cấp độ</div>
-                <button class="modal-close" onclick="closeModal('levelModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="levelId">
-                <div class="form-group"><label>Môn học</label><select id="levelSubject" class="form-control">
-                        <option value="">-- Không chọn --</option>
-                    </select></div>
-                <div class="form-group"><label>Mã</label><input type="text" id="levelCode" class="form-control"
-                        placeholder="L1"></div>
-                <div class="form-group"><label class="required">Tên cấp độ</label><input type="text" id="levelName"
-                        class="form-control"></div>
-                <div class="form-row">
-                    <div class="form-group"><label>Thứ tự</label><input type="number" id="levelOrder"
-                            class="form-control" value="0"></div>
-                    <div class="form-group"><label>Số buổi</label><input type="number" id="levelSessions"
-                            class="form-control" value="15"></div>
-                </div>
-            </div>
-            <div class="modal-footer"><button class="btn btn-secondary"
-                    onclick="closeModal('levelModal')">Hủy</button><button class="btn btn-primary"
-                    onclick="saveLevel()"><i class="fas fa-save"></i> Lưu</button></div>
+  <!-- Level Modal -->
+  <div class="modal" id="levelModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="levelModalTitle"><i class="fas fa-layer-group"></i> Thêm cấp độ</div>
+        <button class="modal-close" onclick="closeModal('levelModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="levelId">
+        <div class="form-group"><label class="form-label">Môn học</label><select id="levelSubject" class="form-control"><option value="">-- Không chọn --</option></select></div>
+        <div class="form-group"><label class="form-label">Mã</label><input type="text" id="levelCode" class="form-control" placeholder="L1"></div>
+        <div class="form-group"><label class="form-label required">Tên cấp độ</label><input type="text" id="levelName" class="form-control"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Thứ tự</label><input type="number" id="levelOrder" class="form-control" value="0"></div>
+          <div class="form-group"><label class="form-label">Số buổi</label><input type="number" id="levelSessions" class="form-control" value="15"></div>
         </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('levelModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveLevel()"><i class="fas fa-save"></i> Lưu</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Package Modal -->
-    <div class="modal" id="packageModal">
-        <div class="modal-content modal-lg">
-            <div class="modal-header">
-                <div class="modal-title" id="packageModalTitle"><i class="fas fa-box"></i> Thêm gói học phí</div><button
-                    class="modal-close" onclick="closeModal('packageModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="packageId">
-                <div class="form-row">
-                    <div class="form-group"><label class="required">Mã</label><input type="text" id="packageCode"
-                            class="form-control" placeholder="3M-2B"></div>
-                    <div class="form-group" style="flex:2"><label class="required">Tên gói</label><input type="text"
-                            id="packageName" class="form-control"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Số tháng</label><input type="number" id="packageMonths"
-                            class="form-control" value="3"></div>
-                    <div class="form-group"><label>Buổi/tuần</label><input type="number" id="packagePerWeek"
-                            class="form-control" value="2"></div>
-                    <div class="form-group"><label>Tổng buổi</label><input type="number" id="packageSessions"
-                            class="form-control" value="24"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label class="required">Giá (VNĐ)</label><input type="text"
-                            id="packagePrice" class="form-control" oninput="formatCurrencyField(this)"></div>
-                    <div class="form-group"><label>HB mặc định (tháng)</label><input type="number"
-                            id="packageScholarship" class="form-control" value="0"></div>
-                </div>
-                <div class="form-group"><label>Trạng thái</label><select id="packageActive" class="form-control">
-                        <option value="1">Hoạt động</option>
-                        <option value="0">Ẩn</option>
-                    </select></div>
-            </div>
-            <div class="modal-footer"><button class="btn btn-secondary"
-                    onclick="closeModal('packageModal')">Hủy</button><button class="btn btn-primary"
-                    onclick="savePackage()"><i class="fas fa-save"></i> Lưu</button></div>
+  <!-- Package Modal -->
+  <div class="modal" id="packageModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <div class="modal-title" id="packageModalTitle"><i class="fas fa-box"></i> Thêm gói học phí</div>
+        <button class="modal-close" onclick="closeModal('packageModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="packageId">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label required">Mã</label><input type="text" id="packageCode" class="form-control" placeholder="3M-2B"></div>
+          <div class="form-group" style="flex:2"><label class="form-label required">Tên gói</label><input type="text" id="packageName" class="form-control"></div>
         </div>
-    </div>
-
-    <!-- Branch Modal -->
-    <div class="modal" id="branchModal">
-        <div class="modal-content modal-lg">
-            <div class="modal-header">
-                <div class="modal-title" id="branchModalTitle"><i class="fas fa-building"></i> Thêm chi nhánh</div>
-                <button class="modal-close" onclick="closeModal('branchModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="branchId">
-                <div class="form-row">
-                    <div class="form-group"><label class="required">Mã</label><input type="text" id="branchCode"
-                            class="form-control" placeholder="TH-LLQ"></div>
-                    <div class="form-group" style="flex:2"><label class="required">Tên</label><input type="text"
-                            id="branchName" class="form-control"></div>
-                </div>
-                <div class="form-group"><label>Địa chỉ</label><input type="text" id="branchAddress"
-                        class="form-control"></div>
-                <div class="form-row">
-                    <div class="form-group"><label>SĐT</label><input type="tel" id="branchPhone" class="form-control">
-                    </div>
-                    <div class="form-group"><label>Email</label><input type="email" id="branchEmail"
-                            class="form-control"></div>
-                </div>
-
-                <div
-                    style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:12px;margin:16px 0">
-                    <h4 style="margin:0 0 12px;color:#1e40af"><i class="fas fa-qrcode"></i> Thông tin thanh toán QR</h4>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Ngân hàng</label>
-                            <select id="branchBankCode" class="form-control">
-                                <option value="">-- Chọn ngân hàng --</option>
-                                <option value="970422">MB Bank</option>
-                                <option value="970415">VietinBank</option>
-                                <option value="970436">Vietcombank</option>
-                                <option value="970418">BIDV</option>
-                                <option value="970407">Techcombank</option>
-                                <option value="970416">ACB</option>
-                                <option value="970432">VPBank</option>
-                                <option value="970423">TPBank</option>
-                                <option value="970405">Agribank</option>
-                                <option value="970448">OCB</option>
-                                <option value="970403">Sacombank</option>
-                                <option value="970437">HDBank</option>
-                            </select>
-                        </div>
-                        <div class="form-group"><label>Số tài khoản</label><input type="text" id="branchBankAccount"
-                                class="form-control" placeholder="0866766189"></div>
-                    </div>
-                    <div class="form-group"><label>Tên chủ tài khoản</label><input type="text" id="branchBankName"
-                            class="form-control" placeholder="NGUYEN VAN A"></div>
-                </div>
-
-                <div class="form-group"><label>Trạng thái</label><select id="branchActive" class="form-control">
-                        <option value="1">Hoạt động</option>
-                        <option value="0">Ẩn</option>
-                    </select></div>
-            </div>
-            <div class="modal-footer"><button class="btn btn-secondary"
-                    onclick="closeModal('branchModal')">Hủy</button><button class="btn btn-primary"
-                    onclick="saveBranch()"><i class="fas fa-save"></i> Lưu</button></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Số tháng</label><input type="number" id="packageMonths" class="form-control" value="3"></div>
+          <div class="form-group"><label class="form-label">Buổi/tuần</label><input type="number" id="packagePerWeek" class="form-control" value="2"></div>
+          <div class="form-group"><label class="form-label">Tổng buổi</label><input type="number" id="packageSessions" class="form-control" value="24"></div>
         </div>
-    </div>
-
-    <!-- User Modal -->
-    <div class="modal" id="userModal">
-        <div class="modal-content modal-lg">
-            <div class="modal-header">
-                <div class="modal-title" id="userModalTitle"><i class="fas fa-user"></i> Thêm người dùng</div><button
-                    class="modal-close" onclick="closeModal('userModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="userId">
-                <div class="form-row">
-                    <div class="form-group"><label class="required">Username</label><input type="text" id="userUsername"
-                            class="form-control"></div>
-                    <div class="form-group"><label id="pwdLabel" class="required">Mật khẩu</label><input type="password"
-                            id="userPassword" class="form-control"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group" style="flex:2"><label class="required">Họ tên</label><input type="text"
-                            id="userFullname" class="form-control"></div>
-                    <div class="form-group"><label class="required">Vai trò</label><select id="userRole"
-                            class="form-control"></select></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Email</label><input type="email" id="userEmail" class="form-control">
-                    </div>
-                    <div class="form-group"><label>SĐT</label><input type="tel" id="userPhone" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group"><label>Chi nhánh</label>
-                    <div id="userBranchesBox" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px"></div>
-                </div>
-                <div class="form-group"><label>Trạng thái</label><select id="userActive" class="form-control">
-                        <option value="1">Hoạt động</option>
-                        <option value="0">Khóa</option>
-                    </select></div>
-                <div class="form-group" id="sendEmailGroup">
-                    <label
-                        style="display:flex;align-items:center;gap:8px;cursor:pointer;background:#dbeafe;padding:12px;border-radius:8px">
-                        <input type="checkbox" id="userSendEmail" checked>
-                        <span><i class="fas fa-envelope"></i> Gửi email thông tin tài khoản đến email trên</span>
-                    </label>
-                </div>
-            </div>
-            <div class="modal-footer"><button class="btn btn-secondary"
-                    onclick="closeModal('userModal')">Hủy</button><button class="btn btn-primary"
-                    onclick="saveUser()"><i class="fas fa-save"></i> Lưu</button></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label required">Giá (VNĐ)</label><input type="text" id="packagePrice" class="form-control" oninput="formatCurrencyField(this)"></div>
+          <div class="form-group"><label class="form-label">HB mặc định (tháng)</label><input type="number" id="packageScholarship" class="form-control" value="0"></div>
         </div>
+        <div class="form-group"><label class="form-label">Trạng thái</label><select id="packageActive" class="form-control"><option value="1">Hoạt động</option><option value="0">Ẩn</option></select></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('packageModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="savePackage()"><i class="fas fa-save"></i> Lưu</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Promo Modal -->
-    <div class="modal" id="promoModal">
-        <div class="modal-content modal-lg">
-            <div class="modal-header">
-                <div class="modal-title" id="promoModalTitle"><i class="fas fa-gift"></i> Thêm CT Khuyến mãi</div>
-                <button class="modal-close" onclick="closeModal('promoModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="promoId">
-                <div class="form-row">
-                    <div class="form-group"><label class="required">Mã</label><input type="text" id="promoCode"
-                            class="form-control" placeholder="TET2025"></div>
-                    <div class="form-group" style="flex:2"><label class="required">Tên CT</label><input type="text"
-                            id="promoName" class="form-control"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Loại giảm</label><select id="promoType" class="form-control">
-                            <option value="percent">Phần trăm</option>
-                            <option value="amount">Số tiền</option>
-                        </select></div>
-                    <div class="form-group"><label>Giá trị</label><input type="number" id="promoValue"
-                            class="form-control" value="10"></div>
-                    <div class="form-group"><label>Giảm tối đa</label><input type="text" id="promoMax"
-                            class="form-control" oninput="formatCurrencyField(this)"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Từ ngày</label><input type="date" id="promoStart"
-                            class="form-control"></div>
-                    <div class="form-group"><label>Đến ngày</label><input type="date" id="promoEnd"
-                            class="form-control"></div>
-                </div>
-                <div class="form-group"><label>Trạng thái</label><select id="promoActive" class="form-control">
-                        <option value="1">Hoạt động</option>
-                        <option value="0">Ẩn</option>
-                    </select></div>
-            </div>
-            <div class="modal-footer"><button class="btn btn-secondary"
-                    onclick="closeModal('promoModal')">Hủy</button><button class="btn btn-primary"
-                    onclick="savePromo()"><i class="fas fa-save"></i> Lưu</button></div>
+  <!-- Branch Modal -->
+  <div class="modal" id="branchModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <div class="modal-title" id="branchModalTitle"><i class="fas fa-building"></i> Thêm cơ sở</div>
+        <button class="modal-close" onclick="closeModal('branchModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="branchId">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label required">Mã</label><input type="text" id="branchCode" class="form-control" placeholder="TH-LLQ"></div>
+          <div class="form-group" style="flex:2"><label class="form-label required">Tên cơ sở</label><input type="text" id="branchName" class="form-control"></div>
         </div>
-    </div>
-
-    <!-- Gift Modal -->
-    <div class="modal" id="giftModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="giftModalTitle"><i class="fas fa-gifts"></i> Thêm quà tặng</div><button
-                    class="modal-close" onclick="closeModal('giftModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="giftId">
-                <div class="form-row">
-                    <div class="form-group"><label>Mã</label><input type="text" id="giftCode" class="form-control">
-                    </div>
-                    <div class="form-group" style="flex:2"><label class="required">Tên quà</label><input type="text"
-                            id="giftName" class="form-control"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Danh mục</label><select id="giftCategory" class="form-control">
-                            <option value="gift">Quà tặng</option>
-                            <option value="book">Sách</option>
-                            <option value="material">Vật liệu</option>
-                        </select></div>
-                    <div class="form-group"><label>Số lượng tồn</label><input type="number" id="giftStock"
-                            class="form-control" value="0"></div>
-                </div>
-                <div class="form-group"><label>Trạng thái</label><select id="giftActive" class="form-control">
-                        <option value="1">Hoạt động</option>
-                        <option value="0">Ẩn</option>
-                    </select></div>
-            </div>
-            <div class="modal-footer"><button class="btn btn-secondary"
-                    onclick="closeModal('giftModal')">Hủy</button><button class="btn btn-primary"
-                    onclick="saveGift()"><i class="fas fa-save"></i> Lưu</button></div>
+        <div class="form-group"><label class="form-label">Địa chỉ</label><input type="text" id="branchAddress" class="form-control"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">SĐT</label><input type="tel" id="branchPhone" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" id="branchEmail" class="form-control"></div>
         </div>
+        <div style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:10px;margin:14px 0">
+          <h4 style="margin:0 0 12px;color:#1e40af;font-size:14px"><i class="fas fa-qrcode"></i> Thông tin thanh toán QR</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Ngân hàng</label>
+              <select id="branchBankCode" class="form-control">
+                <option value="">-- Chọn --</option>
+                <option value="970422">MB Bank</option><option value="970415">VietinBank</option>
+                <option value="970436">Vietcombank</option><option value="970418">BIDV</option>
+                <option value="970407">Techcombank</option><option value="970416">ACB</option>
+                <option value="970432">VPBank</option><option value="970423">TPBank</option>
+                <option value="970405">Agribank</option><option value="970448">OCB</option>
+                <option value="970403">Sacombank</option><option value="970437">HDBank</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-label">Số tài khoản</label><input type="text" id="branchBankAccount" class="form-control" placeholder="0866766189"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Tên chủ TK</label><input type="text" id="branchBankName" class="form-control" placeholder="NGUYEN VAN A"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Trạng thái</label><select id="branchActive" class="form-control"><option value="1">Hoạt động</option><option value="0">Ẩn</option></select></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('branchModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveBranch()"><i class="fas fa-save"></i> Lưu</button>
+      </div>
     </div>
+  </div>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/app.js"></script>
-    <script src="../js/sidebar.js"></script>
-    <script>
-        let subjects = [], levels = [], packages = [], branches = [], users = [], roles = [], promotions = [], gifts = [], allBranches = [];
+  <!-- User Modal -->
+  <div class="modal" id="userModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <div class="modal-title" id="userModalTitle"><i class="fas fa-user"></i> Thêm người dùng</div>
+        <button class="modal-close" onclick="closeModal('userModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="userId">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label required">Username</label><input type="text" id="userUsername" class="form-control"></div>
+          <div class="form-group"><label id="pwdLabel" class="form-label required">Mật khẩu</label><input type="password" id="userPassword" class="form-control"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="flex:2"><label class="form-label required">Họ tên</label><input type="text" id="userFullname" class="form-control"></div>
+          <div class="form-group"><label class="form-label required">Vai trò</label><select id="userRole" class="form-control"></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Email</label><input type="email" id="userEmail" class="form-control"></div>
+          <div class="form-group"><label class="form-label">SĐT</label><input type="tel" id="userPhone" class="form-control"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cơ sở làm việc</label>
+          <div id="userBranchesBox" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Trạng thái</label><select id="userActive" class="form-control"><option value="1">Hoạt động</option><option value="0">Khóa</option></select></div>
+        <div class="form-group" id="sendEmailGroup">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;background:#dbeafe;padding:12px;border-radius:8px">
+            <input type="checkbox" id="userSendEmail" checked>
+            <span><i class="fas fa-envelope"></i> Gửi email thông tin tài khoản</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('userModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveUser()"><i class="fas fa-save"></i> Lưu</button>
+      </div>
+    </div>
+  </div>
 
-        async function init() {
-            if (!auth.checkAuth()) return;
-            if (!['ADMIN', 'GDV'].includes(auth.user?.role_name?.toUpperCase())) { window.location.href = 'dashboard.html'; return; }
-            buildSidebar('sidebar');
-            await loadRoles(); await loadAllBranches(); loadSubjects();
+  <!-- Promo Modal -->
+  <div class="modal" id="promoModal">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <div class="modal-title" id="promoModalTitle"><i class="fas fa-gift"></i> Thêm CT Khuyến mãi</div>
+        <button class="modal-close" onclick="closeModal('promoModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="promoId">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label required">Mã</label><input type="text" id="promoCode" class="form-control" placeholder="TET2025"></div>
+          <div class="form-group" style="flex:2"><label class="form-label required">Tên CT</label><input type="text" id="promoName" class="form-control"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Loại giảm</label><select id="promoType" class="form-control"><option value="percent">Phần trăm</option><option value="amount">Số tiền</option></select></div>
+          <div class="form-group"><label class="form-label">Giá trị</label><input type="number" id="promoValue" class="form-control" value="10"></div>
+          <div class="form-group"><label class="form-label">Giảm tối đa</label><input type="text" id="promoMax" class="form-control" oninput="formatCurrencyField(this)"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Từ ngày</label><input type="date" id="promoStart" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Đến ngày</label><input type="date" id="promoEnd" class="form-control"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Trạng thái</label><select id="promoActive" class="form-control"><option value="1">Hoạt động</option><option value="0">Ẩn</option></select></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('promoModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="savePromo()"><i class="fas fa-save"></i> Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gift Modal -->
+  <div class="modal" id="giftModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="giftModalTitle"><i class="fas fa-gifts"></i> Thêm quà tặng</div>
+        <button class="modal-close" onclick="closeModal('giftModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="giftId">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Mã</label><input type="text" id="giftCode" class="form-control"></div>
+          <div class="form-group" style="flex:2"><label class="form-label required">Tên quà</label><input type="text" id="giftName" class="form-control"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Danh mục</label><select id="giftCategory" class="form-control"><option value="gift">Quà tặng</option><option value="book">Sách</option><option value="material">Vật liệu</option></select></div>
+          <div class="form-group"><label class="form-label">Số lượng tồn</label><input type="number" id="giftStock" class="form-control" value="0"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Trạng thái</label><select id="giftActive" class="form-control"><option value="1">Hoạt động</option><option value="0">Ẩn</option></select></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('giftModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveGift()"><i class="fas fa-save"></i> Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="../js/reactive.js"></script>
+  <script src="../js/crud-mixin.js"></script>
+  <script>
+    let subjects = [], levels = [], packages = [], branches = [], users = [], roles = [], promotions = [], gifts = [], allBranches = [];
+
+    async function init() {
+      if (!auth.checkAuth()) return;
+      if (!['ADMIN', 'GDV'].includes(auth.user?.role_name?.toUpperCase())) {
+        window.location.href = '../index.html'; return;
+      }
+      buildSidebar('sidebar');
+      await loadRoles();
+      await loadAllBranches();
+      loadSubjects();
+
+      // Hash-based section switching
+      const hash = window.location.hash.replace('#', '');
+      if (hash) showSection(hash);
+    }
+
+    function showSection(section) {
+      document.querySelectorAll('.sys-nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.settings-section').forEach(el => el.classList.remove('active'));
+      const navItem = document.querySelector(`.sys-nav-item[data-section="${section}"]`);
+      if (navItem) navItem.classList.add('active');
+      const sectionEl = document.getElementById('section-' + section);
+      if (sectionEl) sectionEl.classList.add('active');
+      window.location.hash = section;
+
+      if (section === 'subjects') loadSubjects();
+      else if (section === 'levels') loadLevels();
+      else if (section === 'packages') loadPackages();
+      else if (section === 'branches') loadBranches();
+      else if (section === 'users') loadUsers();
+      else if (section === 'promotions') loadPromotions();
+      else if (section === 'gifts') loadGifts();
+      else if (section === 'payment') loadPaymentConfig();
+      else if (section === 'email') loadSmtpConfig();
+    }
+
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+    function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function fmt(v) { return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ'; }
+    function parse(s) { return parseInt(String(s).replace(/[^\d]/g, '')) || 0; }
+    function formatCurrencyField(i) { const v = parse(i.value); i.value = v > 0 ? new Intl.NumberFormat('vi-VN').format(v) : ''; }
+    function fmtDate(d) { return d ? new Date(d).toLocaleDateString('vi-VN') : '-'; }
+
+    // ===== SUBJECTS =====
+    async function loadSubjects() {
+      try {
+        const res = await api.get('/common/subjects');
+        subjects = res.data || [];
+        document.getElementById('subjectsTable').innerHTML = subjects.length
+          ? subjects.map(s => `<tr>
+              <td><code>${esc(s.code)}</code></td>
+              <td><strong>${esc(s.name)}</strong></td>
+              <td style="color:var(--text-muted)">${s.description || '-'}</td>
+              <td><span class="${s.is_active ? 'badge-active' : 'badge-inactive'}">${s.is_active ? 'Hoạt động' : 'Ẩn'}</span></td>
+              <td><div class="action-btns">
+                <button class="btn btn-sm btn-secondary" onclick="editSubject(${s.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteSubject(${s.id})"><i class="fas fa-trash"></i></button>
+              </div></td>
+            </tr>`).join('')
+          : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px">Chưa có dữ liệu</td></tr>';
+        // Sync to level selects
+        const opts = '<option value="">-- Không chọn --</option>' + subjects.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+        document.getElementById('levelSubject').innerHTML = opts;
+        document.getElementById('levelSubjectFilter').innerHTML = '<option value="">Tất cả môn</option>' + subjects.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+      } catch (e) { notify.error(e.message); }
+    }
+
+    function openSubjectModal() {
+      document.getElementById('subjectId').value = '';
+      ['subjectCode','subjectName','subjectDesc'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('subjectActive').value = '1';
+      document.getElementById('subjectModalTitle').innerHTML = '<i class="fas fa-book"></i> Thêm môn học';
+      document.getElementById('subjectModal').classList.add('show');
+    }
+
+    function editSubject(id) {
+      const s = subjects.find(x => x.id === id); if (!s) return;
+      document.getElementById('subjectId').value = s.id;
+      document.getElementById('subjectCode').value = s.code || '';
+      document.getElementById('subjectName').value = s.name || '';
+      document.getElementById('subjectDesc').value = s.description || '';
+      document.getElementById('subjectActive').value = s.is_active ? '1' : '0';
+      document.getElementById('subjectModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa môn học';
+      document.getElementById('subjectModal').classList.add('show');
+    }
+
+    async function saveSubject() {
+      const id = document.getElementById('subjectId').value;
+      const data = { code: document.getElementById('subjectCode').value.trim(), name: document.getElementById('subjectName').value.trim(), description: document.getElementById('subjectDesc').value.trim(), is_active: parseInt(document.getElementById('subjectActive').value) };
+      if (!data.code || !data.name) { notify.warning('Nhập mã và tên'); return; }
+      try {
+        if (id) await api.put('/common/subjects/' + id, data); else await api.post('/common/subjects', data);
+        notify.success('Đã lưu'); closeModal('subjectModal'); loadSubjects();
+      } catch (e) { notify.error(e.message); }
+    }
+
+    async function deleteSubject(id) {
+      if (!confirm('Xóa môn học này?')) return;
+      try { await api.delete('/common/subjects/' + id); notify.success('Đã xóa'); loadSubjects(); } catch (e) { notify.error(e.message); }
+    }
+
+    // ===== LEVELS =====
+    async function loadLevels() {
+      try {
+        const subjectId = document.getElementById('levelSubjectFilter').value;
+        const res = await api.get('/common/levels' + (subjectId ? '?subjectId=' + subjectId : ''));
+        levels = res.data || [];
+        document.getElementById('levelsTable').innerHTML = levels.length
+          ? levels.map(l => `<tr>
+              <td><code>${esc(l.code || '-')}</code></td>
+              <td><strong>${esc(l.name)}</strong></td>
+              <td style="color:var(--text-muted)">${l.subject_name || '-'}</td>
+              <td>${l.order_index || 0}</td>
+              <td>${l.sessions_required || 15}</td>
+              <td><div class="action-btns">
+                <button class="btn btn-sm btn-secondary" onclick="editLevel(${l.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteLevel(${l.id})"><i class="fas fa-trash"></i></button>
+              </div></td>
+            </tr>`).join('')
+          : '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px">Chưa có dữ liệu</td></tr>';
+      } catch (e) { notify.error(e.message); }
+    }
+
+    function openLevelModal() {
+      document.getElementById('levelId').value = '';
+      document.getElementById('levelSubject').value = '';
+      document.getElementById('levelCode').value = '';
+      document.getElementById('levelName').value = '';
+      document.getElementById('levelOrder').value = '0';
+      document.getElementById('levelSessions').value = '15';
+      document.getElementById('levelModalTitle').innerHTML = '<i class="fas fa-layer-group"></i> Thêm cấp độ';
+      document.getElementById('levelModal').classList.add('show');
+    }
+
+    function editLevel(id) {
+      const l = levels.find(x => x.id === id); if (!l) return;
+      document.getElementById('levelId').value = l.id;
+      document.getElementById('levelSubject').value = l.subject_id || '';
+      document.getElementById('levelCode').value = l.code || '';
+      document.getElementById('levelName').value = l.name || '';
+      document.getElementById('levelOrder').value = l.order_index || 0;
+      document.getElementById('levelSessions').value = l.sessions_required || 15;
+      document.getElementById('levelModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa cấp độ';
+      document.getElementById('levelModal').classList.add('show');
+    }
+
+    async function saveLevel() {
+      const id = document.getElementById('levelId').value;
+      const data = { subjectId: document.getElementById('levelSubject').value || null, code: document.getElementById('levelCode').value.trim(), name: document.getElementById('levelName').value.trim(), orderIndex: parseInt(document.getElementById('levelOrder').value) || 0, sessionsRequired: parseInt(document.getElementById('levelSessions').value) || 15 };
+      if (!data.name) { notify.warning('Nhập tên cấp độ'); return; }
+      try {
+        if (id) await api.put('/common/levels/' + id, data); else await api.post('/common/levels', data);
+        notify.success('Đã lưu'); closeModal('levelModal'); loadLevels();
+      } catch (e) { notify.error(e.message); }
+    }
+
+    async function deleteLevel(id) {
+      if (!confirm('Xóa cấp độ này?')) return;
+      try { await api.delete('/common/levels/' + id); notify.success('Đã xóa'); loadLevels(); } catch (e) { notify.error(e.message); }
+    }
+
+    // ===== PACKAGES =====
+    async function loadPackages() {
+      try {
+        const res = await api.get('/packages');
+        packages = res.data || [];
+        document.getElementById('packagesTable').innerHTML = packages.length
+          ? packages.map(p => `<tr>
+              <td><code>${esc(p.code)}</code></td>
+              <td><strong>${esc(p.name)}</strong></td>
+              <td>${p.months}</td><td>${p.sessions_per_week}</td><td>${p.sessions_count}</td>
+              <td style="text-align:right;font-weight:600">${fmt(p.price || p.base_price)}</td>
+              <td>${p.default_scholarship_months || 0} tháng</td>
+              <td><span class="${p.is_active ? 'badge-active' : 'badge-inactive'}">${p.is_active ? 'HĐ' : 'Ẩn'}</span></td>
+              <td><div class="action-btns">
+                <button class="btn btn-sm btn-secondary" onclick="editPackage(${p.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deletePackage(${p.id})"><i class="fas fa-trash"></i></button>
+              </div></td>
+            </tr>`).join('')
+          : '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:24px">Chưa có dữ liệu</td></tr>';
+      } catch (e) { notify.error(e.message); }
+    }
+
+    function openPackageModal() {
+      document.getElementById('packageId').value = '';
+      document.getElementById('packageCode').value = '';
+      document.getElementById('packageName').value = '';
+      document.getElementById('packageMonths').value = '3';
+      document.getElementById('packagePerWeek').value = '2';
+      document.getElementById('packageSessions').value = '24';
+      document.getElementById('packagePrice').value = '';
+      document.getElementById('packageScholarship').value = '0';
+      document.getElementById('packageActive').value = '1';
+      document.getElementById('packageModalTitle').innerHTML = '<i class="fas fa-box"></i> Thêm gói học phí';
+      document.getElementById('packageModal').classList.add('show');
+    }
+
+    function editPackage(id) {
+      const p = packages.find(x => x.id === id); if (!p) return;
+      document.getElementById('packageId').value = p.id;
+      document.getElementById('packageCode').value = p.code || '';
+      document.getElementById('packageName').value = p.name || '';
+      document.getElementById('packageMonths').value = p.months || 3;
+      document.getElementById('packagePerWeek').value = p.sessions_per_week || 2;
+      document.getElementById('packageSessions').value = p.sessions_count || 24;
+      document.getElementById('packagePrice').value = (p.price || p.base_price) ? new Intl.NumberFormat('vi-VN').format(p.price || p.base_price) : '';
+      document.getElementById('packageScholarship').value = p.default_scholarship_months || 0;
+      document.getElementById('packageActive').value = p.is_active ? '1' : '0';
+      document.getElementById('packageModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa gói học phí';
+      document.getElementById('packageModal').classList.add('show');
+    }
+
+    async function savePackage() {
+      const id = document.getElementById('packageId').value;
+      const data = { code: document.getElementById('packageCode').value.trim(), name: document.getElementById('packageName').value.trim(), months: parseInt(document.getElementById('packageMonths').value) || 3, sessions_per_week: parseInt(document.getElementById('packagePerWeek').value) || 2, sessions_count: parseInt(document.getElementById('packageSessions').value) || 24, base_price: parse(document.getElementById('packagePrice').value), default_scholarship_months: parseInt(document.getElementById('packageScholarship').value) || 0, is_active: parseInt(document.getElementById('packageActive').value) };
+      if (!data.code || !data.name) { notify.warning('Nhập mã và tên gói'); return; }
+      try {
+        if (id) await api.put('/packages/' + id, data); else await api.post('/packages', data);
+        notify.success('Đã lưu'); closeModal('packageModal'); loadPackages();
+      } catch (e) { notify.error(e.message); }
+    }
+
+    async function deletePackage(id) {
+      if (!confirm('Xóa gói này?')) return;
+      try { await api.delete('/packages/' + id); notify.success('Đã xóa'); loadPackages(); } catch (e) { notify.error(e.message); }
+    }
+
+    // ===== BRANCHES =====
+    async function loadAllBranches() {
+      try { const res = await api.get('/branches'); allBranches = res.data || []; } catch (e) {}
+    }
+
+    async function loadBranches() {
+      try {
+        const res = await api.get('/branches');
+        branches = res.data || [];
+        const bankNames = { '970422':'MB','970415':'Vietin','970436':'VCB','970418':'BIDV','970407':'TCB','970416':'ACB','970432':'VPB','970423':'TPB','970405':'Agri','970448':'OCB','970403':'Saco','970437':'HD' };
+        document.getElementById('branchesTable').innerHTML = branches.length
+          ? branches.map(b => `<tr>
+              <td><code>${esc(b.code)}</code></td>
+              <td><strong>${esc(b.name)}</strong></td>
+              <td style="color:var(--text-muted)">${b.address || '-'}</td>
+              <td>${b.phone || '-'}</td>
+              <td>${b.bank_account ? `<small style="color:var(--text-muted)">${bankNames[b.bank_code]||b.bank_code}</small><br><code>${b.bank_account}</code>` : '<span style="color:var(--text-muted)">Chưa cấu hình</span>'}</td>
+              <td><span class="${b.is_active ? 'badge-active' : 'badge-inactive'}">${b.is_active ? 'HĐ' : 'Ẩn'}</span></td>
+              <td><div class="action-btns">
+                <button class="btn btn-sm btn-secondary" onclick="editBranch(${b.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteBranch(${b.id})"><i class="fas fa-trash"></i></button>
+              </div></td>
+            </tr>`).join('')
+          : '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px">Chưa có dữ liệu</td></tr>';
+      } catch (e) { notify.error(e.message); }
+    }
+
+    function openBranchModal() {
+      document.getElementById('branchId').value = '';
+      ['branchCode','branchName','branchAddress','branchPhone','branchEmail','branchBankAccount','branchBankName'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('branchBankCode').value = '';
+      document.getElementById('branchActive').value = '1';
+      document.getElementById('branchModalTitle').innerHTML = '<i class="fas fa-building"></i> Thêm cơ sở';
+      document.getElementById('branchModal').classList.add('show');
+    }
+
+    function editBranch(id) {
+      const b = branches.find(x => x.id === id); if (!b) return;
+      document.getElementById('branchId').value = b.id;
+      document.getElementById('branchCode').value = b.code || '';
+      document.getElementById('branchName').value = b.name || '';
+      document.getElementById('branchAddress').value = b.address || '';
+      document.getElementById('branchPhone').value = b.phone || '';
+      document.getElementById('branchEmail').value = b.email || '';
+      document.getElementById('branchBankCode').value = b.bank_code || '';
+      document.getElementById('branchBankAccount').value = b.bank_account || '';
+      document.getElementById('branchBankName').value = b.bank_name || '';
+      document.getElementById('branchActive').value = b.is_active ? '1' : '0';
+      document.getElementById('branchModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa cơ sở';
+      document.getElementById('branchModal').classList.add('show');
+    }
+
+    async function saveBranch() {
+      const id = document.getElementById('branchId').value;
+      const data = { code: document.getElementById('branchCode').value.trim(), name: document.getElementById('branchName').value.trim(), address: document.getElementById('branchAddress').value.trim(), phone: document.getElementById('branchPhone').value.trim(), email: document.getElementById('branchEmail').value.trim(), bank_code: document.getElementById('branchBankCode').value, bank_account: document.getElementById('branchBankAccount').value.trim(), bank_name: document.getElementById('branchBankName').value.trim(), is_active: parseInt(document.getElementById('branchActive').value) };
+      if (!data.code || !data.name) { notify.warning('Nhập mã và tên cơ sở'); return; }
+      try {
+        if (id) await api.put('/branches/' + id, data); else await api.post('/branches', data);
+        notify.success('Đã lưu'); closeModal('branchModal'); loadBranches(); loadAllBranches();
+      } catch (e) { notify.error(e.message); }
+    }
+
+    async function deleteBranch(id) {
+      if (!confirm('Xóa cơ sở này?')) return;
+      try { await api.delete('/branches/' + id); notify.success('Đã xóa'); loadBranches(); } catch (e) { notify.error(e.message); }
+    }
+
+    // ===== USERS =====
+    async function loadRoles() {
+      try { const res = await api.get('/users/roles'); roles = res.data || []; } catch (e) {}
+    }
+
+    async function loadUsers() {
+      try {
+        const search = document.getElementById('userSearchInput').value;
+        const roleId = document.getElementById('userRoleFilter').value;
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (roleId) params.append('roleId', roleId);
+        const res = await api.get('/users?' + params);
+        users = res.data || [];
+
+        // Populate role filter once
+        if (!document.getElementById('userRoleFilter').options.length > 1) {
+          document.getElementById('userRoleFilter').innerHTML = '<option value="">Tất cả role</option>' + roles.map(r => `<option value="${r.id}">${r.display_name || r.name}</option>`).join('');
         }
 
-        function showSection(section, btn) {
-            document.querySelectorAll('.settings-nav button').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('section-' + section).classList.add('active');
-            if (section === 'subjects') loadSubjects();
-            else if (section === 'levels') loadLevels();
-            else if (section === 'packages') loadPackages();
-            else if (section === 'branches') loadBranches();
-            else if (section === 'users') loadUsers();
-            else if (section === 'promotions') loadPromotions();
-            else if (section === 'gifts') loadGifts();
-            else if (section === 'payment') loadPaymentConfig();
-            else if (section === 'email') loadSmtpConfig();
-        }
-
-        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-        function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-        function fmt(v) { return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ'; }
-        function parse(s) { return parseInt(String(s).replace(/[^\d]/g, '')) || 0; }
-        function formatCurrencyField(i) { const v = parse(i.value); i.value = v > 0 ? new Intl.NumberFormat('vi-VN').format(v) : ''; }
-        function fmtDate(d) { return d ? new Date(d).toLocaleDateString('vi-VN') : '-'; }
-
-        // ===== SUBJECTS =====
-        async function loadSubjects() {
-            try {
-                const res = await api.get('/common/subjects');
-                subjects = res.data || [];
-                document.getElementById('subjectsTable').innerHTML = subjects.length ? subjects.map(s => '<tr><td><code>' + esc(s.code) + '</code></td><td><strong>' + esc(s.name) + '</strong></td><td>' + (s.description || '-') + '</td><td><span class="' + (s.is_active ? 'badge-active' : 'badge-inactive') + '">' + (s.is_active ? 'Hoạt động' : 'Ẩn') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editSubject(' + s.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="deleteSubject(' + s.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="5" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
-                document.getElementById('levelSubjectFilter').innerHTML = '<option value="">Tất cả môn</option>' + subjects.map(s => '<option value="' + s.id + '">' + esc(s.name) + '</option>').join('');
-                document.getElementById('levelSubject').innerHTML = '<option value="">-- Không chọn --</option>' + subjects.map(s => '<option value="' + s.id + '">' + esc(s.name) + '</option>').join('');
-            } catch (e) { ui.error(e.message); }
-        }
-
-        function openSubjectModal() {
-            document.getElementById('subjectId').value = '';
-            document.getElementById('subjectCode').value = '';
-            document.getElementById('subjectName').value = '';
-            document.getElementById('subjectDesc').value = '';
-            document.getElementById('subjectActive').value = '1';
-            document.getElementById('subjectModalTitle').innerHTML = '<i class="fas fa-book"></i> Thêm môn học';
-            document.getElementById('subjectModal').classList.add('show');
-        }
-
-        function editSubject(id) {
-            const s = subjects.find(x => x.id === id); if (!s) return;
-            document.getElementById('subjectId').value = s.id;
-            document.getElementById('subjectCode').value = s.code || '';
-            document.getElementById('subjectName').value = s.name || '';
-            document.getElementById('subjectDesc').value = s.description || '';
-            document.getElementById('subjectActive').value = s.is_active ? '1' : '0';
-            document.getElementById('subjectModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa môn học';
-            document.getElementById('subjectModal').classList.add('show');
-        }
-
-        async function saveSubject() {
-            const id = document.getElementById('subjectId').value;
-            const data = { code: document.getElementById('subjectCode').value.trim(), name: document.getElementById('subjectName').value.trim(), description: document.getElementById('subjectDesc').value.trim(), is_active: parseInt(document.getElementById('subjectActive').value) };
-            if (!data.code || !data.name) { ui.warning('Nhập mã và tên'); return; }
-            try {
-                if (id) await api.put('/common/subjects/' + id, data); else await api.post('/common/subjects', data);
-                ui.success('Đã lưu'); closeModal('subjectModal'); loadSubjects();
-            } catch (e) { ui.error(e.message); }
-        }
-
-        async function deleteSubject(id) { if (!confirm('Xóa môn học này?')) return; try { await api.delete('/common/subjects/' + id); ui.success('Đã xóa'); loadSubjects(); } catch (e) { ui.error(e.message); } }
-
-        // ===== LEVELS =====
-        async function loadLevels() {
-            try {
-                const subjectId = document.getElementById('levelSubjectFilter').value;
-                const res = await api.get('/common/levels' + (subjectId ? '?subjectId=' + subjectId : ''));
-                levels = res.data || [];
-                document.getElementById('levelsTable').innerHTML = levels.length ? levels.map(l => '<tr><td><code>' + esc(l.code || '-') + '</code></td><td><strong>' + esc(l.name) + '</strong></td><td>' + (l.subject_name || '-') + '</td><td>' + (l.order_index || 0) + '</td><td>' + (l.sessions_required || 15) + '</td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editLevel(' + l.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="deleteLevel(' + l.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="6" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
-            } catch (e) { ui.error(e.message); }
-        }
-
-        function openLevelModal() {
-            document.getElementById('levelId').value = '';
-            document.getElementById('levelSubject').value = '';
-            document.getElementById('levelCode').value = '';
-            document.getElementById('levelName').value = '';
-            document.getElementById('levelOrder').value = '0';
-            document.getElementById('levelSessions').value = '15';
-            document.getElementById('levelModalTitle').innerHTML = '<i class="fas fa-layer-group"></i> Thêm cấp độ';
-            document.getElementById('levelModal').classList.add('show');
-        }
-
-        function editLevel(id) {
-            const l = levels.find(x => x.id === id); if (!l) return;
-            document.getElementById('levelId').value = l.id;
-            document.getElementById('levelSubject').value = l.subject_id || '';
-            document.getElementById('levelCode').value = l.code || '';
-            document.getElementById('levelName').value = l.name || '';
-            document.getElementById('levelOrder').value = l.order_index || 0;
-            document.getElementById('levelSessions').value = l.sessions_required || 15;
-            document.getElementById('levelModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa cấp độ';
-            document.getElementById('levelModal').classList.add('show');
-        }
-
-        async function saveLevel() {
-            const id = document.getElementById('levelId').value;
-            const data = { subjectId: document.getElementById('levelSubject').value || null, code: document.getElementById('levelCode').value.trim(), name: document.getElementById('levelName').value.trim(), orderIndex: parseInt(document.getElementById('levelOrder').value) || 0, sessionsRequired: parseInt(document.getElementById('levelSessions').value) || 15 };
-            if (!data.name) { ui.warning('Nhập tên cấp độ'); return; }
-            try {
-                if (id) await api.put('/common/levels/' + id, data); else await api.post('/common/levels', data);
-                ui.success('Đã lưu'); closeModal('levelModal'); loadLevels();
-            } catch (e) { ui.error(e.message); }
-        }
-
-        async function deleteLevel(id) { if (!confirm('Xóa cấp độ này?')) return; try { await api.delete('/common/levels/' + id); ui.success('Đã xóa'); loadLevels(); } catch (e) { ui.error(e.message); } }
-
-        // ===== PACKAGES =====
-        async function loadPackages() {
-            try {
-                const res = await api.get('/packages');
-                packages = res.data || [];
-                document.getElementById('packagesTable').innerHTML = packages.length ? packages.map(p => '<tr><td><code>' + esc(p.code) + '</code></td><td><strong>' + esc(p.name) + '</strong></td><td>' + p.months + '</td><td>' + p.sessions_per_week + '</td><td>' + p.sessions_count + '</td><td style="text-align:right">' + fmt(p.price || p.base_price) + '</td><td>' + (p.default_scholarship_months || 0) + ' tháng</td><td><span class="' + (p.is_active ? 'badge-active' : 'badge-inactive') + '">' + (p.is_active ? 'HĐ' : 'Ẩn') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editPackage(' + p.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="deletePackage(' + p.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="9" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
-            } catch (e) { ui.error(e.message); }
-        }
-
-        function openPackageModal() {
-            document.getElementById('packageId').value = '';
-            document.getElementById('packageCode').value = '';
-            document.getElementById('packageName').value = '';
-            document.getElementById('packageMonths').value = '3';
-            document.getElementById('packagePerWeek').value = '2';
-            document.getElementById('packageSessions').value = '24';
-            document.getElementById('packagePrice').value = '';
-            document.getElementById('packageScholarship').value = '0';
-            document.getElementById('packageActive').value = '1';
-            document.getElementById('packageModalTitle').innerHTML = '<i class="fas fa-box"></i> Thêm gói học phí';
-            document.getElementById('packageModal').classList.add('show');
-        }
-
-        function editPackage(id) {
-            const p = packages.find(x => x.id === id); if (!p) return;
-            document.getElementById('packageId').value = p.id;
-            document.getElementById('packageCode').value = p.code || '';
-            document.getElementById('packageName').value = p.name || '';
-            document.getElementById('packageMonths').value = p.months || 3;
-            document.getElementById('packagePerWeek').value = p.sessions_per_week || 2;
-            document.getElementById('packageSessions').value = p.sessions_count || 24;
-            document.getElementById('packagePrice').value = (p.price || p.base_price) ? new Intl.NumberFormat('vi-VN').format(p.price || p.base_price) : '';
-            document.getElementById('packageScholarship').value = p.default_scholarship_months || 0;
-            document.getElementById('packageActive').value = p.is_active ? '1' : '0';
-            document.getElementById('packageModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa gói học phí';
-            document.getElementById('packageModal').classList.add('show');
-        }
-
-        async function savePackage() {
-            const id = document.getElementById('packageId').value;
-            const data = { code: document.getElementById('packageCode').value.trim(), name: document.getElementById('packageName').value.trim(), months: parseInt(document.getElementById('packageMonths').value) || 3, sessions_per_week: parseInt(document.getElementById('packagePerWeek').value) || 2, sessions_count: parseInt(document.getElementById('packageSessions').value) || 24, base_price: parse(document.getElementById('packagePrice').value), default_scholarship_months: parseInt(document.getElementById('packageScholarship').value) || 0, is_active: parseInt(document.getElementById('packageActive').value) };
-            if (!data.code || !data.name) { ui.warning('Nhập mã và tên gói'); return; }
-            try {
-                if (id) await api.put('/packages/' + id, data); else await api.post('/packages', data);
-                ui.success('Đã lưu'); closeModal('packageModal'); loadPackages();
-            } catch (e) { ui.error(e.message); }
-        }
-
-        async function deletePackage(id) { if (!confirm('Xóa gói này?')) return; try { await api.delete('/packages/' + id); ui.success('Đã xóa'); loadPackages(); } catch (e) { ui.error(e.message); } }
-
-        // ===== BRANCHES =====
-        async function loadAllBranches() { try { const res = await api.get('/branches'); allBranches = res.data || []; } catch (e) { } }
-        async function loadBranches() {
-            try {
-                const res = await api.get('/branches');
-                branches = res.data || [];
-                const bankNames = { '970422': 'MB', '970415': 'Vietin', '970436': 'VCB', '970418': 'BIDV', '970407': 'TCB', '970416': 'ACB', '970432': 'VPB', '970423': 'TPB', '970405': 'Agri', '970448': 'OCB', '970403': 'Saco', '970437': 'HD' };
-                document.getElementById('branchesTable').innerHTML = branches.length ? branches.map(b => '<tr><td><code>' + esc(b.code) + '</code></td><td><strong>' + esc(b.name) + '</strong></td><td>' + (b.address || '-') + '</td><td>' + (b.phone || '-') + '</td><td>' + (b.bank_account ? '<small>' + (bankNames[b.bank_code] || b.bank_code) + '</small><br><code>' + b.bank_account + '</code>' : '<span class="text-muted">Chưa cấu hình</span>') + '</td><td><span class="' + (b.is_active ? 'badge-active' : 'badge-inactive') + '">' + (b.is_active ? 'HĐ' : 'Ẩn') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editBranch(' + b.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="deleteBranch(' + b.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="7" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
-            } catch (e) { ui.error(e.message); }
-        }
-
-        function openBranchModal() {
-            document.getElementById('branchId').value = '';
-            document.getElementById('branchCode').value = '';
-            document.getElementById('branchName').value = '';
-            document.getElementById('branchAddress').value = '';
-            document.getElementById('branchPhone').value = '';
-            document.getElementById('branchEmail').value = '';
-            document.getElementById('branchBankCode').value = '';
-            document.getElementById('branchBankAccount').value = '';
-            document.getElementById('branchBankName').value = '';
-            document.getElementById('branchActive').value = '1';
-            document.getElementById('branchModalTitle').innerHTML = '<i class="fas fa-building"></i> Thêm chi nhánh';
-            document.getElementById('branchModal').classList.add('show');
-        }
-
-        function editBranch(id) {
-            const b = branches.find(x => x.id === id); if (!b) return;
-            document.getElementById('branchId').value = b.id;
-            document.getElementById('branchCode').value = b.code || '';
-            document.getElementById('branchName').value = b.name || '';
-            document.getElementById('branchAddress').value = b.address || '';
-            document.getElementById('branchPhone').value = b.phone || '';
-            document.getElementById('branchEmail').value = b.email || '';
-            document.getElementById('branchBankCode').value = b.bank_code || '';
-            document.getElementById('branchBankAccount').value = b.bank_account || '';
-            document.getElementById('branchBankName').value = b.bank_name || '';
-            document.getElementById('branchActive').value = b.is_active ? '1' : '0';
-            document.getElementById('branchModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa chi nhánh';
-            document.getElementById('branchModal').classList.add('show');
-        }
-
-        async function saveBranch() {
-            const id = document.getElementById('branchId').value;
-            const data = {
-                code: document.getElementById('branchCode').value.trim(),
-                name: document.getElementById('branchName').value.trim(),
-                address: document.getElementById('branchAddress').value.trim(),
-                phone: document.getElementById('branchPhone').value.trim(),
-                email: document.getElementById('branchEmail').value.trim(),
-                bank_code: document.getElementById('branchBankCode').value,
-                bank_account: document.getElementById('branchBankAccount').value.trim(),
-                bank_name: document.getElementById('branchBankName').value.trim(),
-                is_active: parseInt(document.getElementById('branchActive').value)
-            };
-            if (!data.code || !data.name) { ui.warning('Nhập mã và tên'); return; }
-            try {
-                if (id) await api.put('/branches/' + id, data); else await api.post('/branches', data);
-                ui.success('Đã lưu'); closeModal('branchModal'); loadBranches(); loadAllBranches();
-            } catch (e) { ui.error(e.message); }
-        }
-
-        async function deleteBranch(id) { if (!confirm('Xóa chi nhánh này?')) return; try { await api.delete('/branches/' + id); ui.success('Đã xóa'); loadBranches(); } catch (e) { ui.error(e.message); } }
-
-        // ===== USERS =====
-        async function loadRoles() { try { const res = await api.get('/users/roles'); roles = res.data || []; } catch (e) { } }
-        async function loadUsers() {
-            try {
-                const res = await api.get('/users');
-                users = res.data || [];
-                document.getElementById('usersTable').innerHTML = users.length ? users.map(u => '<tr><td><code>' + esc(u.username) + '</code></td><td><strong>' + esc(u.full_name) + '</strong></td><td>' + (u.email || '-') + '</td><td>' + (u.phone || '-') + '</td><td>' + (u.role_name || '-') + '</td><td><span class="' + (u.is_active ? 'badge-active' : 'badge-inactive') + '">' + (u.is_active ? 'HĐ' : 'Khóa') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editUser(' + u.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-warning" onclick="resetPwd(' + u.id + ')"><i class="fas fa-key"></i></button><button class="btn btn-sm btn-danger" onclick="deleteUser(' + u.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="7" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
-            } catch (e) { ui.error(e.message); }
-        }
-
-        function openUserModal() {
-            document.getElementById('userId').value = '';
-            document.getElementById('userUsername').value = '';
-            document.getElementById('userPassword').value = '';
-            document.getElementById('userFullname').value = '';
-            document.getElementById('userEmail').value = '';
-            document.getElementById('userPhone').value = '';
-            document.getElementById('userActive').value = '1';
-            document.getElementById('pwdLabel').classList.add('required');
-            document.getElementById('userSendEmail').checked = true;
-            document.getElementById('sendEmailGroup').style.display = 'block';
-            document.getElementById('userRole').innerHTML = roles.map(r => '<option value="' + r.id + '">' + (r.display_name || r.name) + '</option>').join('');
-            document.getElementById('userBranchesBox').innerHTML = allBranches.map(b => '<label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg-secondary);border-radius:8px;cursor:pointer"><input type="checkbox" class="branch-cb" value="' + b.id + '"> ' + esc(b.name) + '</label>').join('');
-            document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-user"></i> Thêm người dùng';
-            document.getElementById('userModal').classList.add('show');
-        }
-
-        async function editUser(id) {
-            try {
-                const res = await api.get('/users/' + id);
-                const u = res.data;
-                document.getElementById('userId').value = u.id;
-                document.getElementById('userUsername').value = u.username || '';
-                document.getElementById('userPassword').value = '';
-                document.getElementById('userFullname').value = u.full_name || '';
-                document.getElementById('userEmail').value = u.email || '';
-                document.getElementById('userPhone').value = u.phone || '';
-                document.getElementById('userActive').value = u.is_active ? '1' : '0';
-                document.getElementById('pwdLabel').classList.remove('required');
-                document.getElementById('sendEmailGroup').style.display = 'none'; // Ẩn khi edit
-                document.getElementById('userRole').innerHTML = roles.map(r => '<option value="' + r.id + '" ' + (r.id === u.role_id ? 'selected' : '') + '>' + (r.display_name || r.name) + '</option>').join('');
-                const ubs = u.branches || [];
-                document.getElementById('userBranchesBox').innerHTML = allBranches.map(b => '<label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg-secondary);border-radius:8px;cursor:pointer"><input type="checkbox" class="branch-cb" value="' + b.id + '" ' + (ubs.some(x => x.id === b.id || x.branch_id === b.id) ? 'checked' : '') + '>' + esc(b.name) + '</label>').join('');
-                document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa người dùng';
-                document.getElementById('userModal').classList.add('show');
-            } catch (e) { ui.error(e.message); }
-        }
-
-        async function saveUser() {
-            const id = document.getElementById('userId').value;
-            const branchIds = Array.from(document.querySelectorAll('.branch-cb:checked')).map(c => parseInt(c.value));
-            const data = {
-                username: document.getElementById('userUsername').value.trim(),
-                full_name: document.getElementById('userFullname').value.trim(),
-                email: document.getElementById('userEmail').value.trim(),
-                phone: document.getElementById('userPhone').value.trim(),
-                role_id: parseInt(document.getElementById('userRole').value),
-                is_active: parseInt(document.getElementById('userActive').value),
-                branch_ids: branchIds
-            };
-            const pwd = document.getElementById('userPassword').value;
-            if (pwd) data.password = pwd;
-
-            // Chỉ gửi email khi tạo mới
-            if (!id) {
-                data.sendEmail = document.getElementById('userSendEmail').checked;
-            }
-
-            if (!data.username || !data.full_name) { ui.warning('Nhập username và họ tên'); return; }
-            if (!id && !pwd) { ui.warning('Nhập mật khẩu'); return; }
-
-            try {
-                let res;
-                if (id) {
-                    res = await api.put('/users/' + id, data);
-                } else {
-                    res = await api.post('/users', data);
-                }
-                ui.success(res.message || 'Đã lưu');
-                closeModal('userModal');
-                loadUsers();
-            } catch (e) { ui.error(e.message); }
-        }
-
-        async function resetPwd(id) { const p = prompt('Mật khẩu mới:'); if (!p) return; try { await api.put('/users/' + id + '/reset-password', { password: p }); ui.success('Đã đổi mật khẩu'); } catch (e) { ui.error(e.message); } }
-        async function deleteUser(id) { if (!confirm('Xóa người dùng này?')) return; try { await api.delete('/users/' + id); ui.success('Đã xóa'); loadUsers(); } catch (e) { ui.error(e.message); } }
-
-        // ===== PROMOTIONS =====
-        async function loadPromotions() {
-            try {
-                const res = await api.get('/promotions/programs/all');
-                promotions = res.data || [];
-                document.getElementById('promotionsTable').innerHTML = promotions.length ? promotions.map(p => '<tr><td><code>' + esc(p.code) + '</code></td><td><strong>' + esc(p.name) + '</strong></td><td>' + (p.discount_type === 'percent' ? '%' : 'Tiền') + '</td><td>' + (p.discount_type === 'percent' ? p.discount_value + '%' : fmt(p.discount_value)) + '</td><td>' + fmtDate(p.start_date) + ' - ' + fmtDate(p.end_date) + '</td><td><span class="' + (p.is_active ? 'badge-active' : 'badge-inactive') + '">' + (p.is_active ? 'HĐ' : 'Ẩn') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editPromo(' + p.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="deletePromo(' + p.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="7" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
-            } catch (e) { ui.error(e.message); }
-        }
-
-        function openPromoModal() {
-            document.getElementById('promoId').value = '';
-            document.getElementById('promoCode').value = '';
-            document.getElementById('promoName').value = '';
-            document.getElementById('promoType').value = 'percent';
-            document.getElementById('promoValue').value = '10';
-            document.getElementById('promoMax').value = '';
-            document.getElementById('promoStart').value = '';
-            document.getElementById('promoEnd').value = '';
-            document.getElementById('promoActive').value = '1';
-            document.getElementById('promoModalTitle').innerHTML = '<i class="fas fa-gift"></i> Thêm CT Khuyến mãi';
-            document.getElementById('promoModal').classList.add('show');
-        }
-
-        function editPromo(id) {
-            const p = promotions.find(x => x.id === id); if (!p) return;
-            document.getElementById('promoId').value = p.id;
-            document.getElementById('promoCode').value = p.code || '';
-            document.getElementById('promoName').value = p.name || '';
-            document.getElementById('promoType').value = p.discount_type || 'percent';
-            document.getElementById('promoValue').value = p.discount_value || 10;
-            document.getElementById('promoMax').value = p.max_discount ? new Intl.NumberFormat('vi-VN').format(p.max_discount) : '';
-            document.getElementById('promoStart').value = p.start_date ? p.start_date.split('T')[0] : '';
-            document.getElementById('promoEnd').value = p.end_date ? p.end_date.split('T')[0] : '';
-            document.getElementById('promoActive').value = p.is_active ? '1' : '0';
-            document.getElementById('promoModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa CT Khuyến mãi';
-            document.getElementById('promoModal').classList.add('show');
-        }
-
-        async function savePromo() {
-            const id = document.getElementById('promoId').value;
-            const data = { code: document.getElementById('promoCode').value.trim(), name: document.getElementById('promoName').value.trim(), discount_type: document.getElementById('promoType').value, discount_value: parseFloat(document.getElementById('promoValue').value) || 0, max_discount: parse(document.getElementById('promoMax').value) || null, start_date: document.getElementById('promoStart').value || null, end_date: document.getElementById('promoEnd').value || null, is_active: parseInt(document.getElementById('promoActive').value) };
-            if (!data.code || !data.name) { ui.warning('Nhập mã và tên'); return; }
-            try {
-                if (id) await api.put('/promotions/programs/' + id, data); else await api.post('/promotions/programs', data);
-                ui.success('Đã lưu'); closeModal('promoModal'); loadPromotions();
-            } catch (e) { ui.error(e.message); }
-        }
-
-        async function deletePromo(id) { if (!confirm('Xóa chương trình này?')) return; try { await api.delete('/promotions/programs/' + id); ui.success('Đã xóa'); loadPromotions(); } catch (e) { ui.error(e.message); } }
-
-        // ===== GIFTS =====
-        async function loadGifts() {
-            try {
-                const res = await api.get('/promotions/items');
-                gifts = res.data || [];
-                const cat = { gift: 'Quà', book: 'Sách', material: 'VL' };
-                document.getElementById('giftsTable').innerHTML = gifts.length ? gifts.map(g => '<tr><td><code>' + esc(g.code || '-') + '</code></td><td><strong>' + esc(g.name) + '</strong></td><td>' + (cat[g.category] || g.category) + '</td><td>' + (g.stock_quantity || 0) + '</td><td>' + (g.given_quantity || 0) + '</td><td><span class="' + (g.is_active ? 'badge-active' : 'badge-inactive') + '">' + (g.is_active ? 'HĐ' : 'Ẩn') + '</span></td><td class="action-btns"><button class="btn btn-sm btn-info" onclick="editGift(' + g.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-success" onclick="addStock(' + g.id + ')"><i class="fas fa-plus"></i></button><button class="btn btn-sm btn-danger" onclick="deleteGift(' + g.id + ')"><i class="fas fa-trash"></i></button></td></tr>').join('') : '<tr><td colspan="7" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
-            } catch (e) { ui.error(e.message); }
-        }
-
-        function openGiftModal() {
-            document.getElementById('giftId').value = '';
-            document.getElementById('giftCode').value = '';
-            document.getElementById('giftName').value = '';
-            document.getElementById('giftCategory').value = 'gift';
-            document.getElementById('giftStock').value = '0';
-            document.getElementById('giftActive').value = '1';
-            document.getElementById('giftModalTitle').innerHTML = '<i class="fas fa-gifts"></i> Thêm quà tặng';
-            document.getElementById('giftModal').classList.add('show');
-        }
-
-        function editGift(id) {
-            const g = gifts.find(x => x.id === id); if (!g) return;
-            document.getElementById('giftId').value = g.id;
-            document.getElementById('giftCode').value = g.code || '';
-            document.getElementById('giftName').value = g.name || '';
-            document.getElementById('giftCategory').value = g.category || 'gift';
-            document.getElementById('giftStock').value = g.stock_quantity || 0;
-            document.getElementById('giftActive').value = g.is_active ? '1' : '0';
-            document.getElementById('giftModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa quà tặng';
-            document.getElementById('giftModal').classList.add('show');
-        }
-
-        async function saveGift() {
-            const id = document.getElementById('giftId').value;
-            const data = { code: document.getElementById('giftCode').value.trim(), name: document.getElementById('giftName').value.trim(), category: document.getElementById('giftCategory').value, stock_quantity: parseInt(document.getElementById('giftStock').value) || 0, is_active: parseInt(document.getElementById('giftActive').value) };
-            if (!data.name) { ui.warning('Nhập tên quà'); return; }
-            try {
-                if (id) await api.put('/promotions/items/' + id, data); else await api.post('/promotions/items', data);
-                ui.success('Đã lưu'); closeModal('giftModal'); loadGifts();
-            } catch (e) { ui.error(e.message); }
-        }
-
-        async function addStock(id) {
-            const qty = prompt('Số lượng thêm:');
-            if (!qty || isNaN(parseInt(qty))) return;
-            try { await api.post('/promotions/items/' + id + '/stock', { quantity: parseInt(qty), note: 'Nhập kho' }); ui.success('Đã thêm ' + qty); loadGifts(); } catch (e) { ui.error(e.message); }
-        }
-
-        async function deleteGift(id) { if (!confirm('Xóa quà tặng này?')) return; try { await api.delete('/promotions/items/' + id); ui.success('Đã xóa'); loadGifts(); } catch (e) { ui.error(e.message); } }
-
-        // ===== PAYMENT CONFIG =====
-        async function loadPaymentConfig() {
-            try {
-                const res = await api.get('/settings/payment');
-                const cfg = res.data || {};
-                document.getElementById('paymentBankCode').value = cfg.bank_code || '970422';
-                document.getElementById('paymentAccountNo').value = cfg.account_no || '';
-                document.getElementById('paymentAccountName').value = cfg.account_name || '';
-                document.getElementById('paymentQRTemplate').value = cfg.qr_template || 'compact2';
-                document.getElementById('paymentDescPrefix').value = cfg.desc_prefix || '';
-                previewQR();
-
-                // Load branch QR table
-                loadBranchQRTable();
-            } catch (e) { console.log('No payment config yet'); }
-        }
-
-        async function loadBranchQRTable() {
-            const bankNames = {
-                '970422': 'MB Bank', '970415': 'VietinBank', '970436': 'Vietcombank',
-                '970418': 'BIDV', '970407': 'Techcombank', '970416': 'ACB',
-                '970432': 'VPBank', '970423': 'TPBank', '970405': 'Agribank',
-                '970448': 'OCB', '970403': 'Sacombank', '970437': 'HDBank'
-            };
-
-            try {
-                const res = await api.get('/branches');
-                const branchList = res.data || [];
-                const tbody = document.getElementById('branchQRTable');
-
-                if (!branchList.length) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Chưa có chi nhánh</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = branchList.map(b => {
-                    const hasBank = b.bank_account && b.bank_code;
-                    return '<tr>' +
-                        '<td><strong>' + esc(b.name) + '</strong></td>' +
-                        '<td>' + (hasBank ? (bankNames[b.bank_code] || b.bank_code) : '<span class="text-muted">-</span>') + '</td>' +
-                        '<td>' + (b.bank_account || '<span class="text-muted">-</span>') + '</td>' +
-                        '<td>' + (b.bank_name || '<span class="text-muted">-</span>') + '</td>' +
-                        '<td>' + (hasBank ? '<span class="badge-active">✓ OK</span>' : '<button class="btn btn-sm btn-warning" onclick="showSection(\'branches\', document.querySelector(\'.settings-nav button:nth-child(4)\'));editBranch(' + b.id + ')"><i class="fas fa-edit"></i> Cấu hình</button>') + '</td>' +
-                        '</tr>';
-                }).join('');
-            } catch (e) { console.error(e); }
-        }
-
-        function previewQR() {
-            const bankCode = document.getElementById('paymentBankCode').value;
-            const accountNo = document.getElementById('paymentAccountNo').value || '0866766189';
-            const template = document.getElementById('paymentQRTemplate').value;
-            const accountName = document.getElementById('paymentAccountName').value || 'ARMY TECHNOLOGY';
-
-            const bankNames = {
-                '970422': 'MB Bank', '970415': 'VietinBank', '970436': 'Vietcombank',
-                '970418': 'BIDV', '970407': 'Techcombank', '970416': 'ACB',
-                '970432': 'VPBank', '970423': 'TPBank', '970405': 'Agribank',
-                '970448': 'OCB', '970403': 'Sacombank', '970437': 'HDBank'
-            };
-
-            const qrUrl = 'https://img.vietqr.io/image/' + bankCode + '-' + accountNo + '-' + template + '.png?amount=1000000&addInfo=TEST%20QR';
-            document.getElementById('previewQR').src = qrUrl;
-            document.getElementById('previewInfo').innerHTML = '<strong>' + (bankNames[bankCode] || bankCode) + '</strong><br>' + accountNo + '<br>' + accountName;
-        }
-
-        async function savePaymentConfig() {
-            const data = {
-                bank_code: document.getElementById('paymentBankCode').value,
-                account_no: document.getElementById('paymentAccountNo').value.trim(),
-                account_name: document.getElementById('paymentAccountName').value.trim(),
-                qr_template: document.getElementById('paymentQRTemplate').value,
-                desc_prefix: document.getElementById('paymentDescPrefix').value.trim()
-            };
-
-            if (!data.account_no || !data.account_name) {
-                ui.warning('Vui lòng nhập số tài khoản và tên chủ TK');
-                return;
-            }
-
-            try {
-                await api.post('/settings/payment', data);
-                ui.success('Đã lưu cấu hình thanh toán');
-
-                // Update localStorage for frontend use
-                localStorage.setItem('paymentConfig', JSON.stringify(data));
-            } catch (e) { ui.error(e.message); }
-        }
-
-        // ===== EMAIL SMTP CONFIG =====
-        async function loadSmtpConfig() {
-            try {
-                const res = await api.get('/settings/smtp');
-                const cfg = res.data || {};
-                document.getElementById('smtpHost').value = cfg.host || '';
-                document.getElementById('smtpPort').value = cfg.port || '587';
-                document.getElementById('smtpSecure').value = cfg.secure || 'false';
-                document.getElementById('smtpUser').value = cfg.user || '';
-                document.getElementById('smtpPass').value = cfg.pass === '********' ? '********' : '';
-                document.getElementById('smtpFromName').value = cfg.from_name || 'ARMY Technology';
-            } catch (e) { console.log('No SMTP config yet'); }
-        }
-
-        async function saveSmtpConfig() {
-            const data = {
-                host: document.getElementById('smtpHost').value.trim(),
-                port: document.getElementById('smtpPort').value,
-                secure: document.getElementById('smtpSecure').value === 'true',
-                user: document.getElementById('smtpUser').value.trim(),
-                pass: document.getElementById('smtpPass').value,
-                from_name: document.getElementById('smtpFromName').value.trim()
-            };
-
-            if (!data.host || !data.user) {
-                ui.warning('Vui lòng nhập SMTP host và email đăng nhập');
-                return;
-            }
-
-            try {
-                await api.post('/settings/smtp', data);
-                ui.success('Đã lưu cấu hình SMTP');
-            } catch (e) { ui.error(e.message); }
-        }
-
-        async function testSmtpConnection() {
-            const testEmail = document.getElementById('smtpTestEmail').value.trim();
-            const btn = document.getElementById('btnTestSmtp');
-            const resultDiv = document.getElementById('smtpTestResult');
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang test...';
-            resultDiv.style.display = 'none';
-
-            try {
-                // Save config first
-                await saveSmtpConfig();
-
-                // Test connection
-                const res = await api.post('/settings/smtp/test', { testEmail });
-
-                resultDiv.style.display = 'block';
-                if (res.success) {
-                    resultDiv.innerHTML = '<div style="color:#16a34a;background:#dcfce7;padding:12px;border-radius:8px"><i class="fas fa-check-circle"></i> ' + res.message + '</div>';
-                } else {
-                    resultDiv.innerHTML = '<div style="color:#dc2626;background:#fee2e2;padding:12px;border-radius:8px"><i class="fas fa-times-circle"></i> ' + res.message + '</div>';
-                }
-            } catch (e) {
-                resultDiv.style.display = 'block';
-                resultDiv.innerHTML = '<div style="color:#dc2626;background:#fee2e2;padding:12px;border-radius:8px"><i class="fas fa-times-circle"></i> Lỗi: ' + e.message + '</div>';
-            }
-
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi email test';
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+        document.getElementById('usersTable').innerHTML = users.length
+          ? users.map(u => `<tr>
+              <td>
+                <strong>${esc(u.full_name)}</strong>
+                ${u.email ? `<br><small style="color:var(--text-muted)">${esc(u.email)}</small>` : ''}
+              </td>
+              <td><code>${esc(u.username)}</code></td>
+              <td><span class="badge-active" style="background:#dbeafe;color:#1e40af">${u.role_display || u.role_name}</span></td>
+              <td style="color:var(--text-muted);font-size:12px">${u.is_system_wide ? '<span class="badge-active" style="background:#fef3c7;color:#92400e">Tất cả</span>' : (u.branches || '-')}</td>
+              <td><span class="${u.is_active ? 'badge-active' : 'badge-inactive'}">${u.is_active ? 'HĐ' : 'Khóa'}</span></td>
+              <td><div class="action-btns">
+                <button class="btn btn-sm btn-secondary" onclick="editUser(${u.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-warning" onclick="resetPwd(${u.id})" title="Reset mật khẩu"><i class="fas fa-key"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})"><i class="fas fa-trash"></i></button>
+              </div></td>
+            </tr>`).join('')
+          : '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px">Chưa có dữ liệu</td></tr>';
+
+        // Populate role filter
+        document.getElementById('userRoleFilter').innerHTML = '<option value="">Tất cả role</option>' + roles.map(r => `<option value="${r.id}" ${r.id == roleId ? 'selected' : ''}>${r.display_name || r.name}</option>`).join('');
+      } catch (e) { notify.error(e.message); }
+    }
+
+    function openUserModal() {
+      document.getElementById('userId').value = '';
+      ['userUsername','userPassword','userFullname','userEmail','userPhone'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('userActive').value = '1';
+      document.getElementById('pwdLabel').classList.add('required');
+      document.getElementById('userSendEmail').checked = true;
+      document.getElementById('sendEmailGroup').style.display = 'block';
+      document.getElementById('userRole').innerHTML = roles.map(r => `<option value="${r.id}">${r.display_name || r.name}</option>`).join('');
+      document.getElementById('userBranchesBox').innerHTML = allBranches.map(b => `<label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg-secondary);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" class="branch-cb" value="${b.id}"> ${esc(b.name)}</label>`).join('');
+      document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-user"></i> Thêm người dùng';
+      document.getElementById('userModal').classList.add('show');
+    }
+
+    async function editUser(id) {
+      try {
+        const res = await api.get('/users/' + id);
+        const u = res.data;
+        document.getElementById('userId').value = u.id;
+        document.getElementById('userUsername').value = u.username || '';
+        document.getElementById('userPassword').value = '';
+        document.getElementById('userFullname').value = u.full_name || '';
+        document.getElementById('userEmail').value = u.email || '';
+        document.getElementById('userPhone').value = u.phone || '';
+        document.getElementById('userActive').value = u.is_active ? '1' : '0';
+        document.getElementById('pwdLabel').classList.remove('required');
+        document.getElementById('sendEmailGroup').style.display = 'none';
+        document.getElementById('userRole').innerHTML = roles.map(r => `<option value="${r.id}" ${r.id === u.role_id ? 'selected' : ''}>${r.display_name || r.name}</option>`).join('');
+        const ubs = u.branches || [];
+        document.getElementById('userBranchesBox').innerHTML = allBranches.map(b => `<label style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg-secondary);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" class="branch-cb" value="${b.id}" ${ubs.some(x => x.id === b.id || x.branch_id === b.id) ? 'checked' : ''}> ${esc(b.name)}</label>`).join('');
+        document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa người dùng';
+        document.getElementById('userModal').classList.add('show');
+      } catch (e) { notify.error(e.message); }
+    }
+
+    async function saveUser() {
+      const id = document.getElementById('userId').value;
+      const branchIds = Array.from(document.querySelectorAll('.branch-cb:checked')).map(c => parseInt(c.value));
+      const data = { username: document.getElementById('userUsername').value.trim(), full_name: document.getElementById('userFullname').value.trim(), email: document.getElementById('userEmail').value.trim(), phone: document.getElementById('userPhone').value.trim(), role_id: parseInt(document.getElementById('userRole').value), is_active: parseInt(document.getElementById('userActive').value), branch_ids: branchIds };
+      const pwd = document.getElementById('userPassword').value;
+      if (pwd) data.password = pwd;
+      if (!id) data.sendEmail = document.getElementById('userSendEmail').checked;
+      if (!data.username || !data.full_name) { notify.warning('Nhập username và họ tên'); return; }
+      if (!id && !pwd) { notify.warning('Nhập mật khẩu'); return; }
+      try {
+        const res = id ? await api.put('/users/' + id, data) : await api.post('/users', data);
+        notify.success(res.message || 'Đã lưu'); closeModal('userModal'); loadUsers();
+      } catch (e) { notify.error(e.message); }
+    }
+
+    async function resetPwd(id) {
+      const p = prompt('Mật khẩu mới:'); if (!p) return;
+      try { await api.put('/users/' + id + '/reset-password', { password: p }); notify.success('Đã đổi mật khẩu'); } catch (e) { notify.error(e.message); }
+    }
+
+    async function deleteUser(id) {
+      if (!confirm('Xóa người dùng này?')) return;
+      try { await api.delete('/users/' + id); notify.success('Đã xóa'); loadUsers(); } catch (e) { notify.error(e.message); }
+    }
+
+    // ===== PROMOTIONS =====
+    async function loadPromotions() {
+      try {
+        const res = await api.get('/promotions/programs/all');
+        promotions = res.data || [];
+        document.getElementById('promotionsTable').innerHTML = promotions.length
+          ? promotions.map(p => `<tr>
+              <td><code>${esc(p.code)}</code></td>
+              <td><strong>${esc(p.name)}</strong></td>
+              <td>${p.discount_type === 'percent' ? 'Phần trăm' : 'Số tiền'}</td>
+              <td><strong>${p.discount_type === 'percent' ? p.discount_value + '%' : fmt(p.discount_value)}</strong></td>
+              <td style="color:var(--text-muted);font-size:12px">${fmtDate(p.start_date)} — ${fmtDate(p.end_date)}</td>
+              <td><span class="${p.is_active ? 'badge-active' : 'badge-inactive'}">${p.is_active ? 'HĐ' : 'Ẩn'}</span></td>
+              <td><div class="action-btns">
+                <button class="btn btn-sm btn-secondary" onclick="editPromo(${p.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deletePromo(${p.id})"><i class="fas fa-trash"></i></button>
+              </div></td>
+            </tr>`).join('')
+          : '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px">Chưa có dữ liệu</td></tr>';
+      } catch (e) { notify.error(e.message); }
+    }
+
+    function openPromoModal() {
+      document.getElementById('promoId').value = '';
+      ['promoCode','promoName','promoMax','promoStart','promoEnd'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('promoType').value = 'percent';
+      document.getElementById('promoValue').value = '10';
+      document.getElementById('promoActive').value = '1';
+      document.getElementById('promoModalTitle').innerHTML = '<i class="fas fa-gift"></i> Thêm CT Khuyến mãi';
+      document.getElementById('promoModal').classList.add('show');
+    }
+
+    function editPromo(id) {
+      const p = promotions.find(x => x.id === id); if (!p) return;
+      document.getElementById('promoId').value = p.id;
+      document.getElementById('promoCode').value = p.code || '';
+      document.getElementById('promoName').value = p.name || '';
+      document.getElementById('promoType').value = p.discount_type || 'percent';
+      document.getElementById('promoValue').value = p.discount_value || 10;
+      document.getElementById('promoMax').value = p.max_discount ? new Intl.NumberFormat('vi-VN').format(p.max_discount) : '';
+      document.getElementById('promoStart').value = p.start_date ? p.start_date.split('T')[0] : '';
+      document.getElementById('promoEnd').value = p.end_date ? p.end_date.split('T')[0] : '';
+      document.getElementById('promoActive').value = p.is_active ? '1' : '0';
+      document.getElementById('promoModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa CT Khuyến mãi';
+      document.getElementById('promoModal').classList.add('show');
+    }
+
+    async function savePromo() {
+      const id = document.getElementById('promoId').value;
+      const data = { code: document.getElementById('promoCode').value.trim(), name: document.getElementById('promoName').value.trim(), discount_type: document.getElementById('promoType').value, discount_value: parseFloat(document.getElementById('promoValue').value) || 0, max_discount: parse(document.getElementById('promoMax').value) || null, start_date: document.getElementById('promoStart').value || null, end_date: document.getElementById('promoEnd').value || null, is_active: parseInt(document.getElementById('promoActive').value) };
+      if (!data.code || !data.name) { notify.warning('Nhập mã và tên'); return; }
+      try {
+        if (id) await api.put('/promotions/programs/' + id, data); else await api.post('/promotions/programs', data);
+        notify.success('Đã lưu'); closeModal('promoModal'); loadPromotions();
+      } catch (e) { notify.error(e.message); }
+    }
+
+    async function deletePromo(id) {
+      if (!confirm('Xóa chương trình này?')) return;
+      try { await api.delete('/promotions/programs/' + id); notify.success('Đã xóa'); loadPromotions(); } catch (e) { notify.error(e.message); }
+    }
+
+    // ===== GIFTS =====
+    async function loadGifts() {
+      try {
+        const res = await api.get('/promotions/items');
+        gifts = res.data || [];
+        const cat = { gift: 'Quà', book: 'Sách', material: 'VL' };
+        document.getElementById('giftsTable').innerHTML = gifts.length
+          ? gifts.map(g => `<tr>
+              <td><code>${esc(g.code || '-')}</code></td>
+              <td><strong>${esc(g.name)}</strong></td>
+              <td>${cat[g.category] || g.category}</td>
+              <td>${g.stock_quantity || 0}</td>
+              <td>${g.given_quantity || 0}</td>
+              <td><span class="${g.is_active ? 'badge-active' : 'badge-inactive'}">${g.is_active ? 'HĐ' : 'Ẩn'}</span></td>
+              <td><div class="action-btns">
+                <button class="btn btn-sm btn-secondary" onclick="editGift(${g.id})"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-success" onclick="addStock(${g.id})" title="Nhập kho"><i class="fas fa-plus"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteGift(${g.id})"><i class="fas fa-trash"></i></button>
+              </div></td>
+            </tr>`).join('')
+          : '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px">Chưa có dữ liệu</td></tr>';
+      } catch (e) { notify.error(e.message); }
+    }
+
+    function openGiftModal() {
+      document.getElementById('giftId').value = '';
+      document.getElementById('giftCode').value = '';
+      document.getElementById('giftName').value = '';
+      document.getElementById('giftCategory').value = 'gift';
+      document.getElementById('giftStock').value = '0';
+      document.getElementById('giftActive').value = '1';
+      document.getElementById('giftModalTitle').innerHTML = '<i class="fas fa-gifts"></i> Thêm quà tặng';
+      document.getElementById('giftModal').classList.add('show');
+    }
+
+    function editGift(id) {
+      const g = gifts.find(x => x.id === id); if (!g) return;
+      document.getElementById('giftId').value = g.id;
+      document.getElementById('giftCode').value = g.code || '';
+      document.getElementById('giftName').value = g.name || '';
+      document.getElementById('giftCategory').value = g.category || 'gift';
+      document.getElementById('giftStock').value = g.stock_quantity || 0;
+      document.getElementById('giftActive').value = g.is_active ? '1' : '0';
+      document.getElementById('giftModalTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa quà tặng';
+      document.getElementById('giftModal').classList.add('show');
+    }
+
+    async function saveGift() {
+      const id = document.getElementById('giftId').value;
+      const data = { code: document.getElementById('giftCode').value.trim(), name: document.getElementById('giftName').value.trim(), category: document.getElementById('giftCategory').value, stock_quantity: parseInt(document.getElementById('giftStock').value) || 0, is_active: parseInt(document.getElementById('giftActive').value) };
+      if (!data.name) { notify.warning('Nhập tên quà'); return; }
+      try {
+        if (id) await api.put('/promotions/items/' + id, data); else await api.post('/promotions/items', data);
+        notify.success('Đã lưu'); closeModal('giftModal'); loadGifts();
+      } catch (e) { notify.error(e.message); }
+    }
+
+    async function addStock(id) {
+      const qty = prompt('Số lượng thêm:');
+      if (!qty || isNaN(parseInt(qty))) return;
+      try { await api.post('/promotions/items/' + id + '/stock', { quantity: parseInt(qty), note: 'Nhập kho' }); notify.success('Đã thêm ' + qty); loadGifts(); } catch (e) { notify.error(e.message); }
+    }
+
+    async function deleteGift(id) {
+      if (!confirm('Xóa quà tặng này?')) return;
+      try { await api.delete('/promotions/items/' + id); notify.success('Đã xóa'); loadGifts(); } catch (e) { notify.error(e.message); }
+    }
+
+    // ===== PAYMENT CONFIG =====
+    async function loadPaymentConfig() {
+      try {
+        const res = await api.get('/settings/payment');
+        const cfg = res.data || {};
+        document.getElementById('paymentBankCode').value = cfg.bank_code || '970422';
+        document.getElementById('paymentAccountNo').value = cfg.account_no || '';
+        document.getElementById('paymentAccountName').value = cfg.account_name || '';
+        document.getElementById('paymentQRTemplate').value = cfg.qr_template || 'compact2';
+        document.getElementById('paymentDescPrefix').value = cfg.desc_prefix || '';
+        previewQR();
+        loadBranchQRTable();
+      } catch (e) { console.log('No payment config yet'); }
+    }
+
+    async function loadBranchQRTable() {
+      const bankNames = { '970422':'MB Bank','970415':'VietinBank','970436':'Vietcombank','970418':'BIDV','970407':'Techcombank','970416':'ACB','970432':'VPBank','970423':'TPBank','970405':'Agribank','970448':'OCB','970403':'Sacombank','970437':'HDBank' };
+      try {
+        const res = await api.get('/branches');
+        const list = res.data || [];
+        document.getElementById('branchQRTable').innerHTML = list.length
+          ? list.map(b => {
+              const hasBank = b.bank_account && b.bank_code;
+              return `<tr>
+                <td><strong>${esc(b.name)}</strong></td>
+                <td>${hasBank ? (bankNames[b.bank_code] || b.bank_code) : '<span style="color:var(--text-muted)">-</span>'}</td>
+                <td>${b.bank_account || '<span style="color:var(--text-muted)">-</span>'}</td>
+                <td>${b.bank_name || '<span style="color:var(--text-muted)">-</span>'}</td>
+                <td>${hasBank ? '<span class="badge-active">✓ OK</span>' : `<button class="btn btn-sm btn-warning" onclick="showSection('branches');editBranch(${b.id})"><i class="fas fa-edit"></i> Cấu hình</button>`}</td>
+              </tr>`;
+            }).join('')
+          : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">Chưa có cơ sở</td></tr>';
+      } catch (e) { console.error(e); }
+    }
+
+    function previewQR() {
+      const bankCode = document.getElementById('paymentBankCode').value;
+      const accountNo = document.getElementById('paymentAccountNo').value || '0866766189';
+      const template = document.getElementById('paymentQRTemplate').value;
+      const accountName = document.getElementById('paymentAccountName').value || 'ARMY TECHNOLOGY';
+      const bankNames = { '970422':'MB Bank','970415':'VietinBank','970436':'Vietcombank','970418':'BIDV','970407':'Techcombank','970416':'ACB','970432':'VPBank','970423':'TPBank','970405':'Agribank','970448':'OCB','970403':'Sacombank','970437':'HDBank' };
+      document.getElementById('previewQR').src = `https://img.vietqr.io/image/${bankCode}-${accountNo}-${template}.png?amount=1000000&addInfo=TEST%20QR`;
+      document.getElementById('previewInfo').innerHTML = `<strong>${bankNames[bankCode]||bankCode}</strong><br>${accountNo}<br>${accountName}`;
+    }
+
+    async function savePaymentConfig() {
+      const data = { bank_code: document.getElementById('paymentBankCode').value, account_no: document.getElementById('paymentAccountNo').value.trim(), account_name: document.getElementById('paymentAccountName').value.trim(), qr_template: document.getElementById('paymentQRTemplate').value, desc_prefix: document.getElementById('paymentDescPrefix').value.trim() };
+      if (!data.account_no || !data.account_name) { notify.warning('Nhập số tài khoản và tên chủ TK'); return; }
+      try { await api.post('/settings/payment', data); notify.success('Đã lưu cấu hình thanh toán'); localStorage.setItem('paymentConfig', JSON.stringify(data)); } catch (e) { notify.error(e.message); }
+    }
+
+    // ===== EMAIL SMTP =====
+    async function loadSmtpConfig() {
+      try {
+        const res = await api.get('/settings/smtp');
+        const cfg = res.data || {};
+        document.getElementById('smtpHost').value = cfg.host || '';
+        document.getElementById('smtpPort').value = cfg.port || '587';
+        document.getElementById('smtpSecure').value = cfg.secure || 'false';
+        document.getElementById('smtpUser').value = cfg.user || '';
+        document.getElementById('smtpPass').value = '';
+        document.getElementById('smtpFromName').value = cfg.from_name || 'ARMY Technology';
+      } catch (e) { console.log('No SMTP config yet'); }
+    }
+
+    async function saveSmtpConfig() {
+      const data = { host: document.getElementById('smtpHost').value.trim(), port: document.getElementById('smtpPort').value, secure: document.getElementById('smtpSecure').value === 'true', user: document.getElementById('smtpUser').value.trim(), pass: document.getElementById('smtpPass').value, from_name: document.getElementById('smtpFromName').value.trim() };
+      if (!data.host || !data.user) { notify.warning('Nhập SMTP host và email đăng nhập'); return; }
+      try { await api.post('/settings/smtp', data); notify.success('Đã lưu cấu hình Email'); } catch (e) { notify.error(e.message); }
+    }
+
+    async function testSmtpConnection() {
+      const testEmail = document.getElementById('smtpTestEmail').value.trim();
+      const btn = document.getElementById('btnTestSmtp');
+      const resultDiv = document.getElementById('smtpTestResult');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang test...';
+      resultDiv.style.display = 'none';
+      try {
+        await saveSmtpConfig();
+        const res = await api.post('/settings/smtp/test', { testEmail });
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = res.success
+          ? `<div style="color:#16a34a;background:#dcfce7;padding:12px;border-radius:8px"><i class="fas fa-check-circle"></i> ${res.message}</div>`
+          : `<div style="color:#dc2626;background:#fee2e2;padding:12px;border-radius:8px"><i class="fas fa-times-circle"></i> ${res.message}</div>`;
+      } catch (e) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `<div style="color:#dc2626;background:#fee2e2;padding:12px;border-radius:8px"><i class="fas fa-times-circle"></i> Lỗi: ${e.message}</div>`;
+      }
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi email test';
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
-
 </html>

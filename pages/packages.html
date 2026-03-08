@@ -172,6 +172,8 @@
 
   <script src="../js/config.js"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/reactive.js"></script>
+  <script src="../js/crud-mixin.js"></script>
   <script src="../js/sidebar.js"></script>
   <script>
     let packages = [];
@@ -297,10 +299,10 @@
 
       try {
         await api.post('/packages/branch-prices/bulk', { branch_id: branchId, prices });
-        ui.success('Lưu giá thành công');
+        notify.success('Lưu giá thành công');
         loadBranchPrices();
       } catch (e) {
-        ui.error('Lỗi: ' + (e.message || 'Không thể lưu'));
+        notify.error('Lỗi: ' + (e.message || 'Không thể lưu'));
       }
     }
 
@@ -341,29 +343,63 @@
 
     async function savePackage() {
       const id = document.getElementById('packageId').value;
+      const formEl = document.querySelector('#packageModal form') || document.getElementById('packageModal');
+      const submitBtn = document.querySelector('#packageModal .btn-primary');
+
+      // Validation
+      const nameInput = document.getElementById('name');
+      const codeInput = document.getElementById('code');
+      const monthsInput = document.getElementById('months');
+      const sessionsInput = document.getElementById('sessionsCount');
+      const priceInput = document.getElementById('basePrice');
+
+      let hasError = false;
+      if (!nameInput.value.trim()) { validate.showError(nameInput, 'Vui lòng nhập tên gói'); hasError = true; }
+      else { validate.clearError(nameInput); }
+      if (!codeInput.value.trim()) { validate.showError(codeInput, 'Vui lòng nhập mã gói'); hasError = true; }
+      else { validate.clearError(codeInput); }
+      if (!monthsInput.value || monthsInput.value < 1) { validate.showError(monthsInput, 'Số tháng phải >= 1'); hasError = true; }
+      else { validate.clearError(monthsInput); }
+      if (!sessionsInput.value || sessionsInput.value < 1) { validate.showError(sessionsInput, 'Số buổi phải >= 1'); hasError = true; }
+      else { validate.clearError(sessionsInput); }
+      if (!priceInput.value || priceInput.value < 0) { validate.showError(priceInput, 'Giá không hợp lệ'); hasError = true; }
+      else { validate.clearError(priceInput); }
+
+      if (hasError) {
+        notify.warning('Vui lòng kiểm tra lại thông tin');
+        return;
+      }
+
       const data = {
-        code: document.getElementById('code').value,
-        name: document.getElementById('name').value,
-        months: parseInt(document.getElementById('months').value),
-        sessions_count: parseInt(document.getElementById('sessionsCount').value),
-        base_price: parseFloat(document.getElementById('basePrice').value),
+        code: codeInput.value,
+        name: nameInput.value,
+        months: parseInt(monthsInput.value),
+        sessions_count: parseInt(sessionsInput.value),
+        base_price: parseFloat(priceInput.value),
         default_scholarship_months: parseInt(document.getElementById('defaultScholarship').value) || 0,
         description: document.getElementById('description').value,
         is_active: document.getElementById('isActive').checked ? 1 : 0
       };
 
+      loading.buttonStart(submitBtn, id ? 'Đang cập nhật...' : 'Đang tạo...');
+
       try {
         if (id) {
           await api.put('/packages/' + id, data);
-          ui.success('Cập nhật gói thành công');
+          const row = document.querySelector(`tr[data-id="${id}"]`);
+          if (row) await animate.highlight(row, '#dcfce7', 800);
+          notify.success('Cập nhật gói thành công');
         } else {
           await api.post('/packages', data);
-          ui.success('Thêm gói thành công');
+          notify.success('Thêm gói thành công');
         }
         closeModal();
         loadPackages();
       } catch (e) {
-        ui.error('Lỗi: ' + (e.message || 'Không thể lưu'));
+        notify.error('Lỗi: ' + (e.message || 'Không thể lưu'));
+        animate.shake(formEl);
+      } finally {
+        loading.buttonEnd(submitBtn);
       }
     }
 
@@ -372,10 +408,10 @@
 
       try {
         await api.delete('/packages/' + id);
-        ui.success('Đã xóa gói');
+        notify.success('Đã xóa gói');
         loadPackages();
       } catch (e) {
-        ui.error('Lỗi: ' + (e.message || 'Không thể xóa'));
+        notify.error('Lỗi: ' + (e.message || 'Không thể xóa'));
       }
     }
 

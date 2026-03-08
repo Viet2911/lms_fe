@@ -8,323 +8,417 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .status-badge {
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: 600;
-    }
+    /* ===== SPLIT PANEL ===== */
+    body { overflow: hidden; }
 
-    .status-badge.new {
-      background: #f3f4f6;
-      color: #6b7280;
-    }
-
-    .status-badge.scheduled {
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
-
-    .status-badge.attended {
-      background: #fef3c7;
-      color: #b45309;
-    }
-
-    .status-badge.waiting {
-      background: #e0e7ff;
-      color: #4f46e5;
-    }
-
-    .status-badge.converted {
-      background: #dcfce7;
-      color: #15803d;
-    }
-
-    .status-badge.cancelled {
-      background: #fee2e2;
-      color: #dc2626;
-    }
-
-    .status-tabs {
+    .leads-split {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      height: calc(100vh - 0px);
+      overflow: hidden;
     }
 
-    .status-tab {
-      padding: 8px 16px;
+    /* ===== LEFT PANEL ===== */
+    .ll-panel {
+      width: 310px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-card);
+      overflow: hidden;
+    }
+
+    .ll-hd {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .ll-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ll-search {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .ll-search i { color: var(--text-muted); font-size: 12px; }
+
+    .ll-search input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .ll-search input::placeholder { color: var(--text-muted); }
+
+    .ll-source {
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .ll-source select {
+      width: 100%;
+      font-size: 12px;
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .ll-pills {
+      padding: 8px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .ll-pills .status-tab {
+      padding: 3px 9px;
       border-radius: 20px;
       border: 1px solid var(--border);
-      background: var(--bg-card);
+      background: var(--bg-secondary);
       cursor: pointer;
-      font-size: 13px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      transition: all 0.15s;
     }
 
-    .status-tab.active {
+    .ll-pills .status-tab.active {
       background: var(--primary);
       color: white;
       border-color: var(--primary);
     }
 
-    .status-tab .count {
-      background: rgba(0, 0, 0, 0.1);
-      padding: 2px 8px;
+    .ll-pills .status-tab .count {
+      background: rgba(0,0,0,0.1);
+      padding: 1px 5px;
+      border-radius: 8px;
+      margin-left: 3px;
+      font-size: 10px;
+    }
+
+    .ll-pills .status-tab.active .count {
+      background: rgba(255,255,255,0.25);
+    }
+
+    .ll-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .ll-empty {
+      padding: 32px 16px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .ll-pagination {
+      padding: 8px 12px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    /* ===== LIST ITEM ===== */
+    .lli {
+      display: flex;
+      align-items: stretch;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    .lli:hover { background: var(--bg-hover); }
+
+    .lli.active {
+      background: rgba(52, 168, 83, 0.07);
+    }
+
+    .lli-bar {
+      width: 3px;
+      flex-shrink: 0;
+    }
+
+    .lli-body {
+      flex: 1;
+      padding: 9px 12px;
+      min-width: 0;
+    }
+
+    .lli-name {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .lli-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .lli-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 3px;
+    }
+
+    .lli-source {
+      font-size: 10px;
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+      padding: 1px 6px;
+      border-radius: 8px;
+    }
+
+    .lli-time { font-size: 10px; color: var(--text-muted); }
+
+    .lli-badge {
+      padding: 3px 8px;
       border-radius: 10px;
-      margin-left: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      margin: 8px 10px 8px 0;
+      flex-shrink: 0;
+      align-self: center;
+      white-space: nowrap;
     }
 
-    .status-tab.active .count {
-      background: rgba(255, 255, 255, 0.3);
+    /* ===== RIGHT PANEL ===== */
+    .ld-panel {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg-secondary);
     }
 
+    .ld-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-muted);
+      gap: 12px;
+    }
+
+    .ld-empty i { font-size: 48px; opacity: 0.15; }
+    .ld-empty p { font-size: 14px; }
+
+    .ld-hero {
+      background: var(--bg-card);
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .ld-hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .ld-hero-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .ld-hero-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .ld-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .ld-body {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .ld-section {
+      background: var(--bg-card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .ld-section-hd {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ld-section-bd { padding: 16px; }
+
+    .ld-info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .ld-info-item { display: flex; flex-direction: column; gap: 2px; }
+
+    .ld-info-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .ld-info-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* ===== STATUS BADGES ===== */
+    .status-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-badge.new { background: #f3f4f6; color: #6b7280; }
+    .status-badge.scheduled { background: #dbeafe; color: #1d4ed8; }
+    .status-badge.attended { background: #fef3c7; color: #b45309; }
+    .status-badge.waiting { background: #e0e7ff; color: #4f46e5; }
+    .status-badge.trial { background: #f5f3ff; color: #7c3aed; }
+    .status-badge.converted { background: #dcfce7; color: #15803d; }
+    .status-badge.cancelled { background: #fee2e2; color: #dc2626; }
+
+    /* ===== MISC ===== */
     .phone-link {
       color: var(--primary);
       text-decoration: none;
       cursor: pointer;
     }
-
-    .phone-link:hover {
-      text-decoration: underline;
-    }
-
-    .view-toggle {
-      display: flex;
-      gap: 4px;
-      background: var(--bg-secondary);
-      padding: 4px;
-      border-radius: 8px;
-    }
-
-    .view-toggle button {
-      padding: 8px 12px;
-      border: none;
-      background: none;
-      cursor: pointer;
-      border-radius: 6px;
-    }
-
-    .view-toggle button.active {
-      background: var(--bg-card);
-      color: var(--primary);
-    }
+    .phone-link:hover { text-decoration: underline; }
 
     .btn-purple {
       background: linear-gradient(135deg, #8b5cf6, #7c3aed);
       color: white;
     }
+    .btn-purple:hover { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
 
-    .btn-purple:hover {
-      background: linear-gradient(135deg, #7c3aed, #6d28d9);
-    }
+    input[type="number"] { text-align: right; }
 
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
-    }
-
-    .lead-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .lead-card:hover {
-      box-shadow: var(--shadow-lg);
-    }
-
+    /* ===== CALL MODAL ===== */
     .call-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      margin: 0 auto 16px;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--primary); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; margin: 0 auto 16px;
     }
-
-    .call-name {
-      font-size: 20px;
-      font-weight: 600;
-      text-align: center;
-    }
-
-    .call-phone {
-      font-size: 16px;
-      color: var(--text-secondary);
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .call-status {
-      text-align: center;
-      padding: 8px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-
-    .call-status.connecting {
-      color: var(--warning);
-      background: rgba(245, 158, 11, 0.1);
-    }
-
-    .call-status.connected {
-      color: var(--success);
-      background: rgba(34, 197, 94, 0.1);
-    }
-
-    .call-status.ended {
-      color: var(--danger);
-      background: rgba(239, 68, 68, 0.1);
-    }
-
-    .call-timer {
-      font-size: 32px;
-      font-weight: bold;
-      text-align: center;
-      margin: 15px 0;
-      font-family: monospace;
-    }
-
-    .call-actions {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin: 20px 0;
-    }
-
-    .call-btn {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      font-size: 20px;
-    }
-
-    .call-btn.call {
-      background: var(--success);
-      color: white;
-    }
-
-    .call-btn.hangup {
-      background: var(--danger);
-      color: white;
-    }
-
-    .call-btn.mute {
-      background: var(--bg-secondary);
-    }
-
-    .call-history {
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
+    .call-name { font-size: 20px; font-weight: 600; text-align: center; }
+    .call-phone { font-size: 16px; color: var(--text-secondary); text-align: center; margin-bottom: 20px; }
+    .call-status { text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 10px; }
+    .call-status.connecting { color: var(--warning); background: rgba(245,158,11,0.1); }
+    .call-status.connected { color: var(--success); background: rgba(34,197,94,0.1); }
+    .call-status.ended { color: var(--danger); background: rgba(239,68,68,0.1); }
+    .call-timer { font-size: 32px; font-weight: bold; text-align: center; margin: 15px 0; font-family: monospace; }
+    .call-actions { display: flex; justify-content: center; gap: 16px; margin: 20px 0; }
+    .call-btn { width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer; font-size: 20px; }
+    .call-btn.call { background: var(--success); color: white; }
+    .call-btn.hangup { background: var(--danger); color: white; }
+    .call-btn.mute { background: var(--bg-secondary); }
+    .call-history { max-height: 200px; overflow-y: auto; }
     .call-history-item {
-      padding: 10px;
-      background: var(--bg-secondary);
-      border-radius: 8px;
-      margin-bottom: 8px;
-      font-size: 13px;
-    }
-
-    input[type="number"] {
-      text-align: right;
+      padding: 10px; background: var(--bg-secondary);
+      border-radius: 8px; margin-bottom: 8px; font-size: 13px;
     }
   </style>
 </head>
 
 <body>
   <nav class="sidebar" id="sidebar"></nav>
-  <main class="main-content">
-    <div class="topbar">
-      <div class="topbar-left">
-        <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')"><i
-            class="fas fa-bars"></i></button>
-        <h1><i class="fas fa-users"></i> Khách hàng tiềm năng</h1>
-      </div>
-      <div class="topbar-right">
-        <div class="view-toggle">
-          <button class="active" onclick="setView('table')" id="viewTable"><i class="fas fa-list"></i></button>
-          <button onclick="setView('card')" id="viewCard"><i class="fas fa-th-large"></i></button>
+  <main class="main-content" style="padding:0">
+    <div class="leads-split">
+      <!-- LEFT PANEL -->
+      <div class="ll-panel">
+        <div class="ll-hd">
+          <span class="ll-title"><i class="fas fa-users"></i> Leads</span>
+          <button class="btn btn-sm btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Thêm</button>
         </div>
-        <button class="btn btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Thêm</button>
-      </div>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card primary">
-        <div class="stat-icon"><i class="fas fa-users"></i></div>
-        <div class="stat-info"><span class="stat-value" id="statTotal">0</span><span class="stat-label">Tổng</span>
+        <div class="ll-search">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Tìm tên, SĐT..." onkeyup="if(event.key==='Enter')loadData()">
         </div>
-      </div>
-      <div class="stat-card info">
-        <div class="stat-icon"><i class="fas fa-calendar"></i></div>
-        <div class="stat-info"><span class="stat-value" id="statScheduled">0</span><span class="stat-label">Đã
-            hẹn</span></div>
-      </div>
-      <div class="stat-card warning">
-        <div class="stat-icon"><i class="fas fa-user-check"></i></div>
-        <div class="stat-info"><span class="stat-value" id="statAttended">0</span><span class="stat-label">Đã TN</span>
-        </div>
-      </div>
-      <div class="stat-card success">
-        <div class="stat-icon"><i class="fas fa-check"></i></div>
-        <div class="stat-info"><span class="stat-value" id="statConverted">0</span><span class="stat-label">Chuyển
-            đổi</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-body" style="padding:16px">
-        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
-          <div class="search-box" style="flex:1;min-width:200px"><i class="fas fa-search"></i><input type="text"
-              id="searchInput" placeholder="Tìm tên, SĐT..." onkeyup="if(event.key==='Enter')loadData()"></div>
-          <select id="sourceFilter" class="form-control" style="width:140px" onchange="loadData()">
+        <div class="ll-source">
+          <select id="sourceFilter" onchange="loadData()">
             <option value="">Tất cả nguồn</option>
             <option value="facebook">Facebook</option>
             <option value="zalo">Zalo</option>
             <option value="walk-in">Walk-in</option>
             <option value="referral">Giới thiệu</option>
           </select>
-          <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-sync"></i></button>
         </div>
-        <div class="status-tabs" id="statusTabs"></div>
+        <div id="statusTabs" class="ll-pills"></div>
+        <div id="leadsList" class="ll-list">
+          <div class="ll-empty"><div class="spinner"></div></div>
+        </div>
+        <div id="leadsPagination" class="ll-pagination"></div>
       </div>
-    </div>
 
-    <div class="card" id="tableView">
-      <div class="card-body">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Mã</th>
-              <th>Học sinh</th>
-              <th>Phụ huynh</th>
-              <th>SĐT</th>
-              <th>Nguồn</th>
-              <th>Trạng thái</th>
-              <th>Ngày tạo</th>
-              <th class="text-center">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody id="leadsTableBody">
-            <tr>
-              <td colspan="8" class="text-center">Đang tải...</td>
-            </tr>
-          </tbody>
-        </table>
-        <div id="leadsPagination"></div>
+      <!-- RIGHT PANEL -->
+      <div class="ld-panel" id="leadDetailPanel">
+        <div class="ld-empty">
+          <i class="fas fa-users"></i>
+          <p>Chọn một lead để xem chi tiết</p>
+        </div>
       </div>
-    </div>
-
-    <div id="cardView" style="display:none">
-      <div class="cards-grid" id="leadsGrid"></div>
     </div>
   </main>
 
@@ -339,15 +433,11 @@
         <form id="leadForm">
           <input type="hidden" id="leadId">
 
-          <!-- Thông tin học sinh -->
-          <div
-            style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:12px;margin-bottom:16px">
+          <div style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:12px;margin-bottom:16px">
             <h4 style="margin:0 0 12px;color:#1e40af"><i class="fas fa-child"></i> Thông tin Học sinh</h4>
             <div class="form-row">
-              <div class="form-group" style="flex:2"><label class="required">Tên học sinh</label><input type="text"
-                  name="studentName" class="form-control" required></div>
-              <div class="form-group"><label>Năm sinh</label><input type="number" name="birthYear" class="form-control"
-                  placeholder="2015"></div>
+              <div class="form-group" style="flex:2"><label class="required">Tên học sinh</label><input type="text" name="studentName" class="form-control" required></div>
+              <div class="form-group"><label>Năm sinh</label><input type="number" name="birthYear" class="form-control" placeholder="2015"></div>
             </div>
             <div class="form-row">
               <div class="form-group"><label>Giới tính</label>
@@ -357,24 +447,18 @@
                   <option value="female">Nữ</option>
                 </select>
               </div>
-              <div class="form-group" style="flex:2"><label>Địa chỉ</label><input type="text" name="address"
-                  class="form-control"></div>
+              <div class="form-group" style="flex:2"><label>Địa chỉ</label><input type="text" name="address" class="form-control"></div>
             </div>
           </div>
 
-          <!-- Thông tin phụ huynh -->
-          <div
-            style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:16px">
+          <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:16px">
             <h4 style="margin:0 0 12px;color:#92400e"><i class="fas fa-users"></i> Thông tin Phụ huynh</h4>
             <div class="form-row">
-              <div class="form-group" style="flex:2"><label class="required">Tên phụ huynh</label><input type="text"
-                  name="customerName" class="form-control" required></div>
-              <div class="form-group"><label class="required">SĐT</label><input type="tel" name="customerPhone"
-                  class="form-control" required></div>
+              <div class="form-group" style="flex:2"><label class="required">Tên phụ huynh</label><input type="text" name="customerName" class="form-control" required></div>
+              <div class="form-group"><label class="required">SĐT</label><input type="tel" name="customerPhone" class="form-control" required></div>
             </div>
             <div class="form-row">
-              <div class="form-group"><label>Email</label><input type="email" name="customerEmail" class="form-control">
-              </div>
+              <div class="form-group"><label>Email</label><input type="email" name="customerEmail" class="form-control"></div>
               <div class="form-group"><label>Nguồn</label>
                 <select name="source" class="form-control">
                   <option value="facebook">Facebook</option>
@@ -388,9 +472,7 @@
             </div>
           </div>
 
-          <!-- Thông tin khóa học -->
-          <div
-            style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:16px">
+          <div style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:16px">
             <h4 style="margin:0 0 12px;color:#166534"><i class="fas fa-book"></i> Thông tin Khóa học (nếu có)</h4>
             <div class="form-row">
               <div class="form-group" style="flex:2">
@@ -401,13 +483,11 @@
               </div>
               <div class="form-group">
                 <label>Học phí gốc</label>
-                <input type="text" id="leadFeeOriginal" class="form-control" value="0đ" readonly
-                  style="background:#f3f4f6;font-weight:bold">
+                <input type="text" id="leadFeeOriginal" class="form-control" value="0đ" readonly style="background:var(--bg-secondary);font-weight:bold">
               </div>
             </div>
 
-            <!-- Giảm giá -->
-            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
               <label style="color:#16a34a;font-weight:600"><i class="fas fa-percent"></i> Giảm giá</label>
               <div class="form-row" style="margin-top:8px">
                 <div class="form-group" style="flex:2;margin-bottom:0">
@@ -416,59 +496,43 @@
                   </select>
                 </div>
                 <div class="form-group" style="margin-bottom:0">
-                  <input type="text" id="leadPromoDiscount" class="form-control" value="0đ" readonly
-                    style="background:#dcfce7;color:#16a34a;font-weight:bold;text-align:right">
+                  <input type="text" id="leadPromoDiscount" class="form-control" value="0đ" readonly style="background:#dcfce7;color:#16a34a;font-weight:bold;text-align:right">
                 </div>
               </div>
             </div>
 
-            <!-- Học bổng -->
-            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-                <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng
-                  tặng kèm</label>
-                <span id="leadDefaultScholarshipBadge"
-                  style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">Mặc
-                  định: <strong id="leadDefaultScholarshipMonths">0</strong> tháng</span>
+                <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng tặng kèm</label>
+                <span id="leadDefaultScholarshipBadge" style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">Mặc định: <strong id="leadDefaultScholarshipMonths">0</strong> tháng</span>
               </div>
               <div class="form-row" style="align-items:center">
                 <div class="form-group" style="margin-bottom:0;flex:1">
-                  <input type="number" name="scholarshipMonths" class="form-control" value="0" min="0" max="12"
-                    onchange="onLeadScholarshipChange()" style="font-size:18px;font-weight:bold;text-align:center">
+                  <input type="number" name="scholarshipMonths" class="form-control" value="0" min="0" max="12" onchange="onLeadScholarshipChange()" style="font-size:18px;font-weight:bold;text-align:center">
                 </div>
                 <span style="padding:0 12px;color:#6b7280">tháng</span>
               </div>
-              <div id="leadScholarshipWarning"
-                style="display:none;background:#fef3c7;color:#92400e;padding:8px 12px;border-radius:6px;margin-top:8px;font-size:12px">
+              <div id="leadScholarshipWarning" style="display:none;background:#fef3c7;color:#92400e;padding:8px 12px;border-radius:6px;margin-top:8px;font-size:12px">
                 <i class="fas fa-exclamation-triangle"></i> Vượt mức mặc định, cần GDV duyệt
               </div>
             </div>
 
-            <!-- Quà tặng -->
-            <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+            <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
               <label style="color:#db2777;font-weight:600"><i class="fas fa-gift"></i> Quà tặng</label>
-              <input type="text" name="giftName" class="form-control" placeholder="VD: Balo, Áo thun..."
-                style="margin-top:8px">
+              <input type="text" name="giftName" class="form-control" placeholder="VD: Balo, Áo thun..." style="margin-top:8px">
             </div>
 
-            <!-- Tổng kết -->
-            <div style="background:#1f2937;color:white;padding:16px;border-radius:8px;margin-top:12px">
-              <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-                <span>Khóa học chính:</span><span id="leadMainMonths">0 tháng</span>
-              </div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-                <span>Học bổng tặng:</span><span id="leadBonusMonths" style="color:#4ade80">+0 tháng</span>
-              </div>
-              <div
-                style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #374151">
-                <span style="font-size:16px"><strong>HỌC PHÍ DỰ KIẾN:</strong></span>
-                <span id="leadFeeTotal" style="font-size:24px;font-weight:bold;color:#fbbf24">0đ</span>
+            <div class="summary-box">
+              <div class="summary-row"><span>Khóa học chính:</span><span id="leadMainMonths">0 tháng</span></div>
+              <div class="summary-row"><span>Học bổng tặng:</span><span id="leadBonusMonths" style="color:var(--success)">+0 tháng</span></div>
+              <div class="summary-row total">
+                <span>HỌC PHÍ DỰ KIẾN:</span>
+                <span id="leadFeeTotal" class="value">0đ</span>
               </div>
             </div>
           </div>
 
-          <div class="form-group"><label>Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea>
-          </div>
+          <div class="form-group"><label>Ghi chú</label><textarea name="note" class="form-control" rows="2"></textarea></div>
         </form>
       </div>
       <div class="modal-footer">
@@ -487,19 +551,13 @@
       </div>
       <div class="modal-body">
         <input type="hidden" id="scheduleLeadId">
-        <div id="scheduleLeadInfo"
-          style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px"></div>
+        <div id="scheduleLeadInfo" style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px"></div>
         <div class="form-row">
-          <div class="form-group"><label class="required">Ngày</label><input type="date" id="scheduleDate"
-              class="form-control" required></div>
-          <div class="form-group"><label class="required">Giờ</label><input type="time" id="scheduleTime"
-              class="form-control" required></div>
+          <div class="form-group"><label class="required">Ngày</label><input type="date" id="scheduleDate" class="form-control" required></div>
+          <div class="form-group"><label class="required">Giờ</label><input type="time" id="scheduleTime" class="form-control" required></div>
         </div>
-        <div class="form-group"><label>Bộ môn</label><select id="scheduleSubject" class="form-control">
-            <option value="">-- Chọn bộ môn --</option>
-          </select></div>
-        <div class="form-group"><label>Ghi chú</label><textarea id="scheduleNote" class="form-control"
-            rows="2"></textarea></div>
+        <div class="form-group"><label>Bộ môn</label><select id="scheduleSubject" class="form-control"><option value="">-- Chọn bộ môn --</option></select></div>
+        <div class="form-group"><label>Ghi chú</label><textarea id="scheduleNote" class="form-control" rows="2"></textarea></div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeScheduleModal()">Hủy</button>
@@ -518,41 +576,28 @@
       <div class="modal-body" style="max-height:80vh;overflow-y:auto">
         <input type="hidden" id="convertLeadId">
 
-        <!-- Thông tin học sinh -->
-        <div
-          style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:12px;margin-bottom:20px">
+        <div style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:12px;margin-bottom:20px">
           <h4 style="margin:0 0 12px 0;color:#1e40af"><i class="fas fa-child"></i> Thông tin Học sinh</h4>
           <div class="form-row">
-            <div class="form-group" style="flex:2"><label class="required">Họ tên học sinh</label><input type="text"
-                id="cvStudentName" class="form-control"></div>
-            <div class="form-group"><label>Năm sinh</label><input type="number" id="cvStudentBirthYear"
-                class="form-control" placeholder="2015"></div>
+            <div class="form-group" style="flex:2"><label class="required">Họ tên học sinh</label><input type="text" id="cvStudentName" class="form-control"></div>
+            <div class="form-group"><label>Năm sinh</label><input type="number" id="cvStudentBirthYear" class="form-control" placeholder="2015"></div>
           </div>
           <div class="form-row">
-            <div class="form-group" style="flex:2"><label>Địa chỉ</label><input type="text" id="cvStudentAddress"
-                class="form-control"></div>
-            <div class="form-group"><label>Trường học</label><input type="text" id="cvStudentSchool"
-                class="form-control"></div>
+            <div class="form-group" style="flex:2"><label>Địa chỉ</label><input type="text" id="cvStudentAddress" class="form-control"></div>
+            <div class="form-group"><label>Trường học</label><input type="text" id="cvStudentSchool" class="form-control"></div>
           </div>
         </div>
 
-        <!-- Thông tin phụ huynh -->
-        <div
-          style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:20px">
+        <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:20px">
           <h4 style="margin:0 0 12px 0;color:#92400e"><i class="fas fa-users"></i> Thông tin Phụ huynh</h4>
           <div class="form-row">
-            <div class="form-group" style="flex:2"><label class="required">Họ tên PH</label><input type="text"
-                id="cvParentName" class="form-control"></div>
-            <div class="form-group"><label class="required">SĐT</label><input type="tel" id="cvParentPhone"
-                class="form-control"></div>
+            <div class="form-group" style="flex:2"><label class="required">Họ tên PH</label><input type="text" id="cvParentName" class="form-control"></div>
+            <div class="form-group"><label class="required">SĐT</label><input type="tel" id="cvParentPhone" class="form-control"></div>
           </div>
-          <div class="form-group"><label>Nghề nghiệp</label><input type="text" id="cvParentJob" class="form-control">
-          </div>
+          <div class="form-group"><label>Nghề nghiệp</label><input type="text" id="cvParentJob" class="form-control"></div>
         </div>
 
-        <!-- Khóa học -->
-        <div
-          style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:20px">
+        <div style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:20px">
           <h4 style="margin:0 0 12px 0;color:#166534"><i class="fas fa-book"></i> Thông tin Khóa học</h4>
           <div class="form-row">
             <div class="form-group" style="flex:2">
@@ -563,13 +608,11 @@
             </div>
             <div class="form-group">
               <label>Học phí gốc</label>
-              <input type="text" id="cvFeeOriginal" class="form-control" value="0đ" readonly
-                style="background:#f3f4f6;font-weight:bold">
+              <input type="text" id="cvFeeOriginal" class="form-control" value="0đ" readonly style="background:var(--bg-secondary);font-weight:bold">
             </div>
           </div>
 
-          <!-- Giảm giá -->
-          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+          <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
             <label style="color:#16a34a;font-weight:600"><i class="fas fa-percent"></i> Giảm giá</label>
             <div class="form-row" style="margin-top:8px">
               <div class="form-group" style="flex:2;margin-bottom:0">
@@ -578,55 +621,40 @@
                 </select>
               </div>
               <div class="form-group" style="margin-bottom:0">
-                <input type="text" id="cvPromoDiscount" class="form-control" value="0đ" readonly
-                  style="background:#dcfce7;color:#16a34a;font-weight:bold;text-align:right">
+                <input type="text" id="cvPromoDiscount" class="form-control" value="0đ" readonly style="background:#dcfce7;color:#16a34a;font-weight:bold;text-align:right">
               </div>
             </div>
           </div>
 
-          <!-- Học bổng -->
-          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+          <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-              <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng tặng
-                kèm</label>
-              <span id="cvDefaultScholarshipBadge"
-                style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">Mặc
-                định: <strong id="cvDefaultScholarshipMonths">0</strong> tháng</span>
+              <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng tặng kèm</label>
+              <span id="cvDefaultScholarshipBadge" style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">Mặc định: <strong id="cvDefaultScholarshipMonths">0</strong> tháng</span>
             </div>
             <div class="form-row" style="align-items:center">
               <div class="form-group" style="margin-bottom:0;flex:1">
-                <input type="number" id="cvScholarshipMonths" class="form-control" value="0" min="0" max="12"
-                  onchange="onScholarshipChange()" style="font-size:18px;font-weight:bold;text-align:center">
+                <input type="number" id="cvScholarshipMonths" class="form-control" value="0" min="0" max="12" onchange="onScholarshipChange()" style="font-size:18px;font-weight:bold;text-align:center">
               </div>
               <span style="padding:0 12px;color:#6b7280">tháng</span>
             </div>
           </div>
 
-          <!-- Quà tặng -->
-          <div style="background:white;padding:12px;border-radius:8px;margin:12px 0">
+          <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
             <label style="color:#db2777;font-weight:600"><i class="fas fa-gift"></i> Quà tặng</label>
             <div id="giftItemsContainer" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px"></div>
           </div>
 
-          <!-- Tổng kết -->
-          <div style="background:#1f2937;color:white;padding:16px;border-radius:8px;margin-top:12px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-              <span>Khóa học chính:</span><span id="cvMainCourseMonths">0 tháng</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-              <span>Học bổng tặng:</span><span id="cvBonusMonths" style="color:#4ade80">+0 tháng</span>
-            </div>
-            <div
-              style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid #374151">
-              <span style="font-size:16px"><strong>HỌC PHÍ THỰC ĐÓNG:</strong></span>
-              <span id="cvFeeTotal" style="font-size:24px;font-weight:bold;color:#fbbf24">0đ</span>
+          <div class="summary-box">
+            <div class="summary-row"><span>Khóa học chính:</span><span id="cvMainCourseMonths">0 tháng</span></div>
+            <div class="summary-row"><span>Học bổng tặng:</span><span id="cvBonusMonths" style="color:var(--success)">+0 tháng</span></div>
+            <div class="summary-row total">
+              <span>HỌC PHÍ THỰC ĐÓNG:</span>
+              <span id="cvFeeTotal" class="value">0đ</span>
             </div>
           </div>
         </div>
 
-        <!-- Thanh toán -->
-        <div
-          style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);padding:16px;border-radius:12px;margin-bottom:20px">
+        <div style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);padding:16px;border-radius:12px;margin-bottom:20px">
           <h4 style="margin:0 0 12px 0;color:#9d174d"><i class="fas fa-credit-card"></i> Thanh toán</h4>
           <div class="form-row">
             <div class="form-group">
@@ -640,16 +668,14 @@
             </div>
             <div class="form-group" id="depositGroup" style="display:none">
               <label>Tiền cọc</label>
-              <input type="text" id="cvDepositAmount" class="form-control" value="0đ"
-                oninput="formatCurrencyField(this);updateRemaining()">
+              <input type="text" id="cvDepositAmount" class="form-control" value="0đ" oninput="formatCurrencyField(this);updateRemaining()">
             </div>
             <div class="form-group" id="paidGroup" style="display:none">
               <label>Đã thanh toán</label>
-              <input type="text" id="cvPaidAmount" class="form-control" value="0đ"
-                oninput="formatCurrencyField(this);updateRemaining()">
+              <input type="text" id="cvPaidAmount" class="form-control" value="0đ" oninput="formatCurrencyField(this);updateRemaining()">
             </div>
           </div>
-          <div id="remainingRow" style="display:none;background:white;padding:12px;border-radius:8px;margin-top:8px">
+          <div id="remainingRow" style="display:none;background:var(--bg-secondary);padding:12px;border-radius:8px;margin-top:8px">
             <div style="display:flex;justify-content:space-between">
               <span>Còn phải đóng:</span>
               <span id="cvRemaining" style="font-size:18px;font-weight:bold;color:#dc2626">0đ</span>
@@ -657,8 +683,7 @@
           </div>
         </div>
 
-        <div class="form-group"><label>Ghi chú</label><textarea id="cvNote" class="form-control" rows="2"></textarea>
-        </div>
+        <div class="form-group"><label>Ghi chú</label><textarea id="cvNote" class="form-control" rows="2"></textarea></div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeConvertModal()">Hủy</button>
@@ -669,57 +694,81 @@
 
   <!-- Success Modal -->
   <div class="modal" id="convertSuccessModal">
-    <div class="modal-content" style="max-width:500px">
-      <div class="modal-header" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white">
-        <div class="modal-title"><i class="fas fa-check-circle"></i> Chuyển đổi thành công!</div>
-        <button class="modal-close" onclick="closeConvertSuccessModal()" style="color:white">&times;</button>
+    <div class="modal-content" style="max-width:520px">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-check-circle" style="color:#22c55e"></i> Chuyển đổi thành công!</div>
+        <button class="modal-close" onclick="closeConvertSuccessModal()">&times;</button>
       </div>
-      <div class="modal-body" style="text-align:center;padding:24px">
+      <div class="modal-body" style="padding:0">
         <input type="hidden" id="newStudentId">
         <input type="hidden" id="successRemainingRaw" value="0">
 
-        <div style="margin-bottom:20px">
-          <i class="fas fa-user-graduate" style="font-size:48px;color:#22c55e;margin-bottom:12px"></i>
-          <h3 style="margin:0;color:#166534" id="successStudentName">Học sinh mới</h3>
-          <p style="color:#6b7280;margin:4px 0" id="successStudentCode">Mã: ---</p>
+        <!-- Student info -->
+        <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border)">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0">
+            <i class="fas fa-user-graduate" style="font-size:18px"></i>
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:16px;color:var(--text-primary)" id="successStudentName">Học sinh mới</div>
+            <div style="font-size:12px;color:var(--text-muted)" id="successStudentCode">Mã: ---</div>
+          </div>
         </div>
 
+        <!-- QR payment section -->
         <div id="successQRSection" style="display:none">
-          <div style="background:#f9fafb;padding:16px;border-radius:12px;margin-bottom:16px">
-            <h4 style="margin:0 0 12px;color:#1f2937"><i class="fas fa-qrcode"></i> QR Thanh toán</h4>
-            <img id="successQRImage" src="" alt="QR Code" style="max-width:200px;border-radius:8px">
-          </div>
-
-          <div style="margin-bottom:16px">
-            <div style="background:#dcfce7;padding:12px;border-radius:8px;margin-bottom:8px">
-              <div style="color:#166534;font-size:13px">Đã đóng</div>
-              <div style="color:#15803d;font-size:20px;font-weight:700" id="successPaidAmount">0đ</div>
+          <!-- Fee summary -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-bottom:1px solid var(--border)">
+            <div style="padding:14px 12px;text-align:center;border-right:1px solid var(--border)">
+              <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Học phí</div>
+              <div style="font-size:15px;font-weight:700;color:var(--text-primary)" id="successFeeTotalDisp">0đ</div>
             </div>
-            <div style="background:#fee2e2;padding:12px;border-radius:8px">
-              <div style="color:#991b1b;font-size:13px" id="successRemainingLabel">PH cần chuyển khoản</div>
-              <div style="color:#dc2626;font-size:20px;font-weight:700" id="successRemainingAmount">0đ</div>
+            <div style="padding:14px 12px;text-align:center;border-right:1px solid var(--border)">
+              <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Đã đóng</div>
+              <div style="font-size:15px;font-weight:700;color:#16a34a" id="successPaidAmount">0đ</div>
+            </div>
+            <div style="padding:14px 12px;text-align:center">
+              <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px" id="successRemainingLabel">Cần đóng</div>
+              <div style="font-size:15px;font-weight:700;color:#dc2626" id="successRemainingAmount">0đ</div>
             </div>
           </div>
 
-          <div style="background:#f3f4f6;padding:12px;border-radius:8px;margin-bottom:16px">
-            <div style="font-size:12px;color:#6b7280">Nội dung chuyển khoản:</div>
-            <div style="font-weight:600;color:#1f2937" id="successPaymentDesc">---</div>
+          <!-- QR + bank -->
+          <div style="padding:20px;display:flex;gap:16px;align-items:flex-start;border-bottom:1px solid var(--border)">
+            <div style="flex-shrink:0;background:#f9fafb;border:1px solid var(--border);border-radius:10px;padding:10px">
+              <img id="successQRImage" src="" alt="QR Code" style="width:160px;height:160px;display:block;border-radius:6px">
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Ngân hàng</div>
+              <div style="font-weight:600;font-size:13px;color:var(--text-primary);margin-bottom:12px" id="successBankInfo">---</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Nội dung chuyển khoản</div>
+              <div style="font-weight:600;font-size:13px;color:var(--text-primary);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:8px 10px;word-break:break-all" id="successPaymentDesc">---</div>
+            </div>
           </div>
 
-          <button class="btn btn-success" onclick="confirmPaymentReceived()"
-            style="width:100%;padding:12px;font-size:16px">
-            <i class="fas fa-check-double"></i> Xác nhận đã nhận thanh toán
-          </button>
+          <!-- Amount + confirm -->
+          <div style="padding:16px 20px">
+            <label style="font-size:13px;font-weight:600;color:var(--text-primary);display:block;margin-bottom:6px">Số tiền xác nhận nhận được</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="number" id="successConfirmAmount" class="form-control" placeholder="Nhập số tiền..." style="flex:1;font-size:14px" step="100000">
+              <button class="btn btn-secondary" onclick="setSuccessFullAmount()" style="white-space:nowrap;font-size:13px">Đủ nợ</button>
+            </div>
+            <button class="btn btn-primary" onclick="confirmPaymentReceived()" style="width:100%;margin-top:12px;padding:11px">
+              <i class="fas fa-check-double"></i> Xác nhận đã nhận thanh toán
+            </button>
+          </div>
         </div>
 
-        <div id="successFullPaidSection" style="display:none;padding:20px">
-          <i class="fas fa-check-double" style="font-size:48px;color:#22c55e;margin-bottom:12px"></i>
-          <p style="color:#166534;font-weight:600">Đã thanh toán đầy đủ!</p>
+        <!-- After payment confirmed -->
+        <div id="successFullPaidSection" style="display:none;padding:32px 20px;text-align:center">
+          <div style="width:64px;height:64px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+            <i class="fas fa-check-double" style="font-size:28px;color:#16a34a"></i>
+          </div>
+          <div style="font-size:16px;font-weight:700;color:#166534;margin-bottom:4px">Đã xác nhận thanh toán!</div>
+          <div style="font-size:13px;color:var(--text-muted)" id="successPaidAmountFinal"></div>
         </div>
       </div>
-      <div class="modal-footer" style="justify-content:center;gap:12px">
-        <button class="btn btn-primary" onclick="downloadEnrollmentForm()"><i class="fas fa-file-word"></i> Xuất đơn
-          nhập học</button>
+      <div class="modal-footer" style="gap:10px">
+        <button class="btn btn-primary" onclick="downloadEnrollmentForm()"><i class="fas fa-file-word"></i> Xuất đơn nhập học</button>
         <button class="btn btn-secondary" onclick="closeConvertSuccessModal()">Đóng</button>
       </div>
     </div>
@@ -727,51 +776,65 @@
 
   <!-- Payment Modal -->
   <div class="modal" id="paymentModal">
-    <div class="modal-content" style="max-width:500px">
-      <div class="modal-header" style="background:linear-gradient(135deg,#3b82f6,#2563eb);color:white">
-        <div class="modal-title"><i class="fas fa-qrcode"></i> Thanh toán học phí</div>
-        <button class="modal-close" onclick="closePaymentModal()" style="color:white">&times;</button>
+    <div class="modal-content" style="max-width:520px">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-credit-card" style="color:var(--primary)"></i> Thanh toán học phí</div>
+        <button class="modal-close" onclick="closePaymentModal()">&times;</button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="padding:0">
         <input type="hidden" id="paymentLeadId">
         <input type="hidden" id="paymentStudentId">
         <input type="hidden" id="paymentRemainingRaw" value="0">
 
-        <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin-bottom:16px;text-align:center">
-          <div style="font-weight:600;font-size:16px" id="paymentStudentName">---</div>
-          <div style="color:#6b7280;font-size:13px" id="paymentStudentCode">Mã: ---</div>
-        </div>
-
-        <div style="text-align:center;margin-bottom:16px">
-          <div style="background:#f9fafb;padding:16px;border-radius:12px">
-            <img id="paymentQRImage" src="" alt="QR Code" style="max-width:220px;border-radius:8px">
+        <!-- Student info bar -->
+        <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border)">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#059669);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:700;flex-shrink:0" id="paymentAvatar">?</div>
+          <div>
+            <div style="font-weight:600;font-size:15px;color:var(--text-primary)" id="paymentStudentName">---</div>
+            <div style="font-size:12px;color:var(--text-muted)" id="paymentStudentCode">Mã: ---</div>
           </div>
         </div>
 
-        <div class="form-row" style="margin-bottom:12px">
-          <div class="form-group" style="flex:1">
-            <div style="background:#dcfce7;padding:12px;border-radius:8px;text-align:center">
-              <div style="color:#166534;font-size:12px">Học phí</div>
-              <div style="color:#15803d;font-size:18px;font-weight:700" id="paymentFeeTotal">0đ</div>
-            </div>
+        <!-- Fee summary -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-bottom:1px solid var(--border)">
+          <div style="padding:14px 12px;text-align:center;border-right:1px solid var(--border)">
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Học phí</div>
+            <div style="font-size:15px;font-weight:700;color:var(--text-primary)" id="paymentFeeTotal">0đ</div>
           </div>
-          <div class="form-group" style="flex:1">
-            <div style="background:#fee2e2;padding:12px;border-radius:8px;text-align:center">
-              <div style="color:#991b1b;font-size:12px">Cần thanh toán</div>
-              <div style="color:#dc2626;font-size:18px;font-weight:700" id="paymentRemaining">0đ</div>
-            </div>
+          <div style="padding:14px 12px;text-align:center;border-right:1px solid var(--border)">
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Đã đóng</div>
+            <div style="font-size:15px;font-weight:700;color:#16a34a" id="paymentPaid">0đ</div>
+          </div>
+          <div style="padding:14px 12px;text-align:center">
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Còn nợ</div>
+            <div style="font-size:15px;font-weight:700;color:#dc2626" id="paymentRemaining">0đ</div>
           </div>
         </div>
 
-        <div style="background:#f3f4f6;padding:12px;border-radius:8px;text-align:center;margin-bottom:16px">
-          <div style="font-size:12px;color:#6b7280">Nội dung chuyển khoản:</div>
-          <div style="font-weight:600;color:#1f2937" id="paymentTransferDesc">---</div>
+        <!-- QR + bank info -->
+        <div style="padding:20px;display:flex;gap:16px;align-items:flex-start;border-bottom:1px solid var(--border)">
+          <div style="flex-shrink:0;background:#f9fafb;border:1px solid var(--border);border-radius:10px;padding:10px">
+            <img id="paymentQRImage" src="" alt="QR Code" style="width:160px;height:160px;display:block;border-radius:6px">
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Ngân hàng</div>
+            <div style="font-weight:600;font-size:13px;color:var(--text-primary);margin-bottom:12px" id="paymentBankInfo">---</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Nội dung chuyển khoản</div>
+            <div style="font-weight:600;font-size:13px;color:var(--text-primary);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:8px 10px;word-break:break-all" id="paymentTransferDesc">---</div>
+          </div>
         </div>
 
-        <button class="btn btn-success" onclick="confirmLeadPayment()" style="width:100%;padding:12px;font-size:16px"
-          id="btnConfirmLeadPayment">
-          <i class="fas fa-check-double"></i> Xác nhận đã nhận thanh toán
-        </button>
+        <!-- Amount input + confirm -->
+        <div style="padding:16px 20px" id="paymentConfirmSection">
+          <label style="font-size:13px;font-weight:600;color:var(--text-primary);display:block;margin-bottom:6px">Số tiền xác nhận nhận được</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="number" id="paymentConfirmAmount" class="form-control" placeholder="Nhập số tiền..." style="flex:1;font-size:14px" step="100000">
+            <button class="btn btn-secondary" onclick="setFullAmount()" style="white-space:nowrap;font-size:13px">Đủ nợ</button>
+          </div>
+          <button class="btn btn-primary" onclick="confirmLeadPayment()" style="width:100%;margin-top:12px;padding:11px" id="btnConfirmLeadPayment">
+            <i class="fas fa-check-double"></i> Xác nhận đã nhận thanh toán
+          </button>
+        </div>
       </div>
       <div class="modal-footer"><button class="btn btn-secondary" onclick="closePaymentModal()">Đóng</button></div>
     </div>
@@ -793,12 +856,10 @@
         <div class="call-timer" id="callTimer" style="display:none">00:00</div>
         <div class="call-actions">
           <button class="call-btn call" id="startCallBtn" onclick="startCall()"><i class="fas fa-phone"></i></button>
-          <button class="call-btn hangup" id="hangupBtn" onclick="endCall()" style="display:none"><i
-              class="fas fa-phone-slash"></i></button>
+          <button class="call-btn hangup" id="hangupBtn" onclick="endCall()" style="display:none"><i class="fas fa-phone-slash"></i></button>
         </div>
         <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:20px">
-          <div class="form-group"><label>Ghi chú</label><textarea id="callNote" class="form-control"
-              rows="2"></textarea></div>
+          <div class="form-group"><label>Ghi chú</label><textarea id="callNote" class="form-control" rows="2"></textarea></div>
           <div class="form-group"><label>Kết quả</label>
             <select id="callResult" class="form-control">
               <option value="">--Chọn--</option>
@@ -811,9 +872,7 @@
           </div>
           <button class="btn btn-primary btn-block" onclick="saveCallNote()"><i class="fas fa-save"></i> Lưu</button>
           <div style="margin-top:15px"><label><i class="fas fa-history"></i> Lịch sử</label>
-            <div class="call-history" id="callHistory">
-              <p class="text-muted text-center">Chưa có</p>
-            </div>
+            <div class="call-history" id="callHistory"><p class="text-muted text-center">Chưa có</p></div>
           </div>
         </div>
       </div>
@@ -822,31 +881,34 @@
 
   <script src="../js/config.js"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/reactive.js"></script>
+  <script src="../js/crud-mixin.js"></script>
   <script src="../js/sidebar.js"></script>
   <script>
-    let leads = [], currentStatus = '', currentView = 'table', canDelete = false;
+    let leads = [], currentStatus = '', canDelete = false;
+    let currentLeadId = null;
     let packages = [], promoPrograms = [], leadSelectedPackage = null, leadDefaultScholarship = 0;
-    const statusCfg = { new: { label: 'Mới' }, scheduled: { label: 'Đã hẹn' }, attended: { label: 'Đã TN' }, waiting: { label: 'Chờ xử lý' }, converted: { label: 'Chuyển đổi' }, cancelled: { label: 'Lỗi' } };
 
-    // Payment config - mặc định, sẽ được override theo chi nhánh
+    const statusCfg = {
+      new:       { label: 'Mới',        bar: '#6b7280', bg: '#f3f4f6', col: '#6b7280' },
+      scheduled: { label: 'Đã hẹn',     bar: '#1d4ed8', bg: '#dbeafe', col: '#1d4ed8' },
+      attended:  { label: 'Đã TN',      bar: '#d97706', bg: '#fef3c7', col: '#b45309' },
+      waiting:   { label: 'Chờ',        bar: '#4f46e5', bg: '#e0e7ff', col: '#4f46e5' },
+      converted: { label: '✓ Converted', bar: '#15803d', bg: '#dcfce7', col: '#15803d' },
+      cancelled: { label: 'Lỗi',        bar: '#dc2626', bg: '#fee2e2', col: '#dc2626' },
+    };
+
     let paymentCfg = { bank_code: '970422', account_no: '0866766189', qr_template: 'compact2' };
-    let branchesData = []; // Cache branches data
+    let branchesData = [];
 
     function getQRUrl(amount, description, branchId = null) {
       let cfg = paymentCfg;
-
-      // Nếu có branchId, tìm config của branch đó
       if (branchId && branchesData.length) {
         const branch = branchesData.find(b => b.id == branchId);
         if (branch && branch.bank_account) {
-          cfg = {
-            bank_code: branch.bank_code || '970422',
-            account_no: branch.bank_account,
-            qr_template: 'compact2'
-          };
+          cfg = { bank_code: branch.bank_code || '970422', account_no: branch.bank_account, qr_template: 'compact2' };
         }
       }
-
       const desc = encodeURIComponent(description || 'Thanh toan');
       return 'https://img.vietqr.io/image/' + cfg.bank_code + '-' + cfg.account_no + '-' + cfg.qr_template + '.png?amount=' + amount + '&addInfo=' + desc;
     }
@@ -855,12 +917,7 @@
       if (branchId && branchesData.length) {
         const branch = branchesData.find(b => b.id == branchId);
         if (branch && branch.bank_account) {
-          return {
-            bank_code: branch.bank_code,
-            bank_account: branch.bank_account,
-            bank_name: branch.bank_name,
-            branch_name: branch.name
-          };
+          return { bank_code: branch.bank_code, bank_account: branch.bank_account, bank_name: branch.bank_name, branch_name: branch.name };
         }
       }
       return null;
@@ -868,17 +925,10 @@
 
     async function loadPaymentConfig() {
       try {
-        // Load default payment config
         const res = await api.get('/settings/payment');
         if (res.data && res.data.account_no) {
-          paymentCfg = {
-            bank_code: res.data.bank_code || '970422',
-            account_no: res.data.account_no,
-            qr_template: res.data.qr_template || 'compact2'
-          };
+          paymentCfg = { bank_code: res.data.bank_code || '970422', account_no: res.data.account_no, qr_template: res.data.qr_template || 'compact2' };
         }
-
-        // Load branches data with bank info
         const branchRes = await api.get('/branches');
         branchesData = branchRes.data || [];
       } catch (e) { console.log('Using default payment config'); }
@@ -889,6 +939,7 @@
       buildSidebar('sidebar');
       const user = auth.user;
       canDelete = ['ADMIN', 'HOEC', 'OM'].includes(user?.role_name?.toUpperCase());
+      setupLeadDelegation();
       await loadPaymentConfig();
       await Promise.all([loadSubjects(), loadPackagesAndPromos()]);
       await loadStats();
@@ -902,13 +953,11 @@
       try {
         const pkgRes = await api.get('/packages' + branch.buildQuery());
         packages = pkgRes.data || [];
-        // Populate lead form package select
         const leadPkgSelect = document.getElementById('leadPackageSelect');
         if (leadPkgSelect) {
           leadPkgSelect.innerHTML = '<option value="">-- Chưa chọn --</option>' +
             packages.map(p => `<option value="${p.id}" data-price="${p.price || p.base_price}" data-months="${p.months}" data-scholarship="${p.default_scholarship_months || 0}">${p.name} - ${formatCurrency(p.price || p.base_price)}</option>`).join('');
         }
-        // Populate convert form
         const cvPkgSelect = document.getElementById('cvTuitionPackage');
         if (cvPkgSelect) {
           cvPkgSelect.innerHTML = '<option value="">-- Chọn gói --</option>' +
@@ -983,17 +1032,13 @@
       try {
         const res = await api.get('/leads/stats');
         const s = res.data || {};
-        document.getElementById('statTotal').textContent = s.total || 0;
-        document.getElementById('statScheduled').textContent = s.scheduled || 0;
-        document.getElementById('statAttended').textContent = (s.attended || 0) + (s.waiting || 0);
-        document.getElementById('statConverted').textContent = s.converted || 0;
         document.getElementById('statusTabs').innerHTML =
-          '<div class="status-tab ' + (!currentStatus ? 'active' : '') + '" onclick="filterStatus(\'\')">Tất cả<span class="count">' + (s.total || 0) + '</span></div>' +
-          '<div class="status-tab ' + (currentStatus === 'new' ? 'active' : '') + '" onclick="filterStatus(\'new\')">Mới<span class="count">' + (s.new || 0) + '</span></div>' +
-          '<div class="status-tab ' + (currentStatus === 'scheduled' ? 'active' : '') + '" onclick="filterStatus(\'scheduled\')">Đã hẹn<span class="count">' + (s.scheduled || 0) + '</span></div>' +
-          '<div class="status-tab ' + (currentStatus === 'waiting' ? 'active' : '') + '" onclick="filterStatus(\'waiting\')">Chờ xử lý<span class="count">' + (s.waiting || 0) + '</span></div>' +
-          '<div class="status-tab ' + (currentStatus === 'converted' ? 'active' : '') + '" onclick="filterStatus(\'converted\')">Chuyển đổi<span class="count">' + (s.converted || 0) + '</span></div>' +
-          '<div class="status-tab ' + (currentStatus === 'cancelled' ? 'active' : '') + '" onclick="filterStatus(\'cancelled\')">Lỗi<span class="count">' + (s.cancelled || 0) + '</span></div>';
+          `<div class="status-tab ${!currentStatus ? 'active' : ''}" onclick="filterStatus('')">Tất cả<span class="count">${s.total || 0}</span></div>` +
+          `<div class="status-tab ${currentStatus === 'new' ? 'active' : ''}" onclick="filterStatus('new')">Mới<span class="count">${s.new || 0}</span></div>` +
+          `<div class="status-tab ${currentStatus === 'scheduled' ? 'active' : ''}" onclick="filterStatus('scheduled')">Đã hẹn<span class="count">${s.scheduled || 0}</span></div>` +
+          `<div class="status-tab ${currentStatus === 'waiting' ? 'active' : ''}" onclick="filterStatus('waiting')">Chờ<span class="count">${(s.waiting || 0) + (s.attended || 0)}</span></div>` +
+          `<div class="status-tab ${currentStatus === 'converted' ? 'active' : ''}" onclick="filterStatus('converted')">Converted<span class="count">${s.converted || 0}</span></div>` +
+          `<div class="status-tab ${currentStatus === 'cancelled' ? 'active' : ''}" onclick="filterStatus('cancelled')">Lỗi<span class="count">${s.cancelled || 0}</span></div>`;
       } catch (e) { console.error(e); }
     }
 
@@ -1008,76 +1053,245 @@
         if (search) p.append('search', search);
         if (source) p.append('source', source);
         p.append('page', page);
-        p.append('limit', 20);
+        p.append('limit', 30);
         const res = await api.get('/leads?' + p);
         leads = res.data || [];
-        renderTable(res.pagination); renderCards();
-      } catch (e) { console.error(e); document.getElementById('leadsTableBody').innerHTML = '<tr><td colspan="8" class="text-center text-danger">Lỗi</td></tr>'; }
+        renderLeadList(res.pagination);
+
+        // Refresh detail panel if current lead is still in list
+        if (currentLeadId) {
+          const stillExists = leads.find(l => l.id == currentLeadId);
+          if (stillExists) {
+            renderLeadDetail(stillExists);
+            document.querySelector(`.lli[data-id="${currentLeadId}"]`)?.classList.add('active');
+          } else {
+            currentLeadId = null;
+            document.getElementById('leadDetailPanel').innerHTML = '<div class="ld-empty"><i class="fas fa-users"></i><p>Chọn một lead để xem chi tiết</p></div>';
+          }
+        }
+      } catch (e) {
+        console.error(e);
+        document.getElementById('leadsList').innerHTML = '<div class="ll-empty">Lỗi tải dữ liệu</div>';
+      }
     }
 
     function filterStatus(s) { currentStatus = s; loadStats(); loadData(1); }
-    function setView(v) { currentView = v; document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active')); document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.add('active'); document.getElementById('tableView').style.display = v === 'table' ? 'block' : 'none'; document.getElementById('cardView').style.display = v === 'card' ? 'block' : 'none'; }
-    function escapeHtml(str) { return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
-    function getActionButtons(l) {
-      let btns = '';
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    /* ===== RENDER LEAD LIST ===== */
+    function renderLeadList(pagination) {
+      const container = document.getElementById('leadsList');
+      if (!leads.length) {
+        container.innerHTML = '<div class="ll-empty">Không có leads</div>';
+        document.getElementById('leadsPagination').innerHTML = '';
+        return;
+      }
+
+      container.innerHTML = leads.map(l => {
+        const cfg = statusCfg[l.status] || statusCfg.new;
+        const sessions = (parseInt(l.trial_sessions_attended) || 0) > 0
+          ? ` · B${l.trial_sessions_attended}/${l.trial_sessions_max || 3}`
+          : '';
+        const dateStr = l.scheduled_date
+          ? new Date(l.scheduled_date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })
+          : '';
+        const isActive = l.id == currentLeadId ? ' active' : '';
+        return `<div class="lli${isActive}" data-id="${l.id}" onclick="viewLead(${l.id})">
+          <div class="lli-bar" style="background:${cfg.bar}"></div>
+          <div class="lli-body">
+            <div class="lli-name">${escapeHtml(l.student_name)}</div>
+            <div class="lli-meta">${escapeHtml(l.customer_phone)}${sessions}</div>
+            <div class="lli-foot">
+              <span class="lli-source">${escapeHtml(l.source || 'N/A')}</span>
+              ${dateStr ? `<span class="lli-time">${dateStr}</span>` : ''}
+            </div>
+          </div>
+          <span class="lli-badge" style="background:${cfg.bg};color:${cfg.col}">${cfg.label}</span>
+        </div>`;
+      }).join('');
+
+      document.getElementById('leadsPagination').innerHTML = pagination && pagination.totalPages > 1
+        ? ui.pagination(pagination, loadData) : '';
+    }
+
+    /* ===== VIEW LEAD DETAIL ===== */
+    async function viewLead(id) {
+      document.querySelectorAll('.lli').forEach(el => el.classList.remove('active'));
+      document.querySelector(`.lli[data-id="${id}"]`)?.classList.add('active');
+      currentLeadId = id;
+
+      let lead = leads.find(l => l.id == id);
+      if (!lead) {
+        try {
+          const res = await api.get('/leads/' + id);
+          lead = res.data;
+        } catch (e) { notify.error(e.message); return; }
+      }
+      renderLeadDetail(lead);
+    }
+
+    function renderLeadDetail(l) {
+      const panel = document.getElementById('leadDetailPanel');
+      const cfg = statusCfg[l.status] || statusCfg.new;
       const sessionsAttended = parseInt(l.trial_sessions_attended) || 0;
       const sessionsMax = parseInt(l.trial_sessions_max) || 3;
+
+      // Action buttons
+      let actionHtml = `<button class="btn btn-secondary" onclick="openCallModal(${l.id},'${escapeHtml(l.customer_name)}','${escapeHtml(l.customer_phone)}')"><i class="fas fa-phone"></i> Gọi</button>`;
+      actionHtml += `<button class="btn btn-info" onclick="editLead(${l.id})"><i class="fas fa-edit"></i> Sửa</button>`;
+
       switch (l.status) {
         case 'new':
-          btns = '<button class="btn btn-sm btn-success" onclick="openScheduleModal(' + l.id + ')" title="Đặt lịch TN"><i class="fas fa-calendar-plus"></i></button> ';
-          btns += '<button class="btn btn-sm btn-secondary" onclick="markCancelled(' + l.id + ')" title="Đánh dấu lỗi"><i class="fas fa-ban"></i></button> ';
+          actionHtml += `<button class="btn btn-success" onclick="openScheduleModal(${l.id})"><i class="fas fa-calendar-plus"></i> Đặt lịch TN</button>`;
+          actionHtml += `<button class="btn btn-secondary" onclick="markCancelled(${l.id})"><i class="fas fa-ban"></i> Đánh lỗi</button>`;
           break;
         case 'scheduled':
-          btns = '<button class="btn btn-sm btn-success" onclick="markAttended(' + l.id + ')" title="Đã đến"><i class="fas fa-check"></i></button> ';
-          btns += '<button class="btn btn-sm btn-warning" onclick="markNoShow(' + l.id + ')" title="Không đến"><i class="fas fa-times"></i></button> ';
+          actionHtml += `<button class="btn btn-success" onclick="markAttended(${l.id})"><i class="fas fa-check"></i> Đã đến</button>`;
+          actionHtml += `<button class="btn btn-warning" onclick="markNoShow(${l.id})"><i class="fas fa-times"></i> Không đến</button>`;
           break;
         case 'attended':
         case 'waiting':
-          btns = '<span class="badge" style="background:#8b5cf6;color:#fff;margin-right:6px">B' + sessionsAttended + '/' + sessionsMax + '</span> ';
-          if (sessionsAttended < sessionsMax) btns += '<button class="btn btn-sm btn-purple" onclick="openScheduleModal(' + l.id + ')" title="Đặt buổi tiếp"><i class="fas fa-calendar-plus"></i></button> ';
-          btns += '<button class="btn btn-sm btn-success" onclick="openConvertModal(' + l.id + ')" title="Chuyển đổi"><i class="fas fa-user-graduate"></i></button> ';
+          if (sessionsAttended < sessionsMax) {
+            actionHtml += `<button class="btn btn-purple" onclick="openScheduleModal(${l.id})"><i class="fas fa-calendar-plus"></i> Buổi tiếp theo</button>`;
+          }
+          actionHtml += `<button class="btn btn-success" onclick="openConvertModal(${l.id})"><i class="fas fa-user-graduate"></i> Chuyển đổi</button>`;
           break;
-        case 'converted':
+        case 'converted': {
           const feeTotal = parseFloat(l.fee_total) || 0;
           const actualRevenue = parseFloat(l.actual_revenue) || 0;
-          const remaining = feeTotal - actualRevenue;
-          if (remaining <= 0) {
-            btns = '<span class="badge" style="background:#22c55e;color:#fff"><i class="fas fa-check-double"></i> Đã TT đủ</span> ';
-          } else if (actualRevenue > 0) {
-            btns = '<span class="badge" style="background:#f59e0b;color:#fff"><i class="fas fa-clock"></i> Còn nợ</span> ';
-            btns += '<button class="btn btn-sm btn-warning" onclick="openPaymentModal(' + l.id + ')" title="Thu nợ"><i class="fas fa-dollar-sign"></i></button> ';
-          } else {
-            btns = '<span class="badge" style="background:#ef4444;color:#fff"><i class="fas fa-exclamation"></i> Chưa TT</span> ';
-            btns += '<button class="btn btn-sm btn-danger" onclick="openPaymentModal(' + l.id + ')" title="Thu tiền"><i class="fas fa-dollar-sign"></i></button> ';
+          if (feeTotal - actualRevenue > 0) {
+            actionHtml += `<button class="btn btn-warning" onclick="openPaymentModal(${l.id})"><i class="fas fa-dollar-sign"></i> Thu nợ</button>`;
           }
           break;
-        case 'cancelled':
-          btns = '<span class="text-danger"><i class="fas fa-ban"></i> Lỗi</span> ';
-          break;
+        }
       }
-      btns += '<button class="btn btn-sm btn-info" onclick="editLead(' + l.id + ')" title="Sửa"><i class="fas fa-edit"></i></button> ';
-      if (canDelete) btns += '<button class="btn btn-sm btn-danger" onclick="deleteLead(' + l.id + ')" title="Xóa"><i class="fas fa-trash"></i></button>';
-      return btns;
+      if (canDelete) {
+        actionHtml += `<button class="btn btn-sm btn-danger" onclick="deleteLead(${l.id})" style="margin-left:auto" title="Xóa lead"><i class="fas fa-trash"></i></button>`;
+      }
+
+      // Trial progress section
+      let trialHtml = '';
+      if (l.status === 'attended' || l.status === 'waiting') {
+        const pct = Math.round((sessionsAttended / sessionsMax) * 100);
+        trialHtml = `<div class="ld-section">
+          <div class="ld-section-hd"><i class="fas fa-graduation-cap" style="color:#7c3aed"></i> Tiến trình học thử</div>
+          <div class="ld-section-bd">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+              <span style="font-size:13px;color:var(--text-secondary)">Đã học thử</span>
+              <span style="font-size:15px;font-weight:700;color:#7c3aed">${sessionsAttended}/${sessionsMax} buổi</span>
+            </div>
+            <div style="height:8px;background:var(--border);border-radius:99px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#8b5cf6,#7c3aed);border-radius:99px;transition:width 0.4s"></div>
+            </div>
+            ${l.scheduled_date ? `<div style="margin-top:8px;font-size:12px;color:var(--text-muted)">Lịch hẹn: <strong style="color:var(--text-primary)">${new Date(l.scheduled_date).toLocaleDateString('vi-VN')}${l.scheduled_time ? ' lúc ' + l.scheduled_time.substring(0,5) : ''}</strong></div>` : ''}
+          </div>
+        </div>`;
+      }
+
+      // Fee section (converted)
+      let feeHtml = '';
+      if (l.status === 'converted') {
+        const feeTotal = parseFloat(l.fee_total) || 0;
+        const actual = parseFloat(l.actual_revenue) || 0;
+        const remaining = Math.max(0, feeTotal - actual);
+        feeHtml = `<div class="ld-section">
+          <div class="ld-section-hd"><i class="fas fa-money-bill-wave" style="color:#15803d"></i> Thông tin học phí</div>
+          <div class="ld-section-bd">
+            <div style="display:flex;gap:10px;margin-bottom:${l.gift_name ? '10px' : '0'}">
+              <div style="flex:1;background:#f0fdf4;border-radius:8px;padding:12px;text-align:center">
+                <div style="font-size:10px;color:#15803d;margin-bottom:4px;text-transform:uppercase">Học phí</div>
+                <div style="font-size:16px;font-weight:700;color:#15803d">${formatCurrency(feeTotal)}</div>
+              </div>
+              <div style="flex:1;background:${remaining > 0 ? '#fef2f2' : '#f0fdf4'};border-radius:8px;padding:12px;text-align:center">
+                <div style="font-size:10px;color:${remaining > 0 ? '#dc2626' : '#15803d'};margin-bottom:4px;text-transform:uppercase">${remaining > 0 ? 'Còn nợ' : 'Đã đóng đủ'}</div>
+                <div style="font-size:16px;font-weight:700;color:${remaining > 0 ? '#dc2626' : '#15803d'}">${remaining > 0 ? formatCurrency(remaining) : '<i class="fas fa-check-double"></i>'}</div>
+              </div>
+            </div>
+            ${l.gift_name ? `<div style="background:#fdf4ff;padding:8px 12px;border-radius:8px;font-size:12px;color:#7c3aed"><i class="fas fa-gift"></i> Quà tặng: <strong>${escapeHtml(l.gift_name)}</strong></div>` : ''}
+          </div>
+        </div>`;
+      }
+
+      // Notes
+      let noteHtml = l.note ? `<div class="ld-section">
+        <div class="ld-section-hd"><i class="fas fa-sticky-note" style="color:#f59e0b"></i> Ghi chú</div>
+        <div class="ld-section-bd" style="font-size:13px;color:var(--text-secondary);line-height:1.6">${escapeHtml(l.note)}</div>
+      </div>` : '';
+
+      panel.innerHTML = `
+        <div class="ld-hero">
+          <div class="ld-hero-top">
+            <div>
+              <div class="ld-hero-name">
+                ${escapeHtml(l.student_name)}
+                <span class="status-badge ${l.status}">${cfg.label}</span>
+                ${l.branch_code ? `<span style="background:#dcfce7;color:#15803d;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600">${escapeHtml(l.branch_code)}</span>` : ''}
+              </div>
+              <div class="ld-hero-sub">PH: ${escapeHtml(l.customer_name)} · ${escapeHtml(l.customer_phone)}${l.subject_name ? ' · ' + escapeHtml(l.subject_name) : ''}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase">Mã lead</div>
+              <div style="font-weight:700;color:var(--text-primary);font-size:15px">${escapeHtml(l.code || '-')}</div>
+            </div>
+          </div>
+          <div class="ld-actions">${actionHtml}</div>
+        </div>
+
+        <div class="ld-body">
+          <div class="ld-section">
+            <div class="ld-section-hd"><i class="fas fa-info-circle" style="color:#2563eb"></i> Thông tin</div>
+            <div class="ld-section-bd">
+              <div class="ld-info-grid">
+                <div class="ld-info-item">
+                  <div class="ld-info-label">SĐT phụ huynh</div>
+                  <div class="ld-info-value"><a href="tel:${escapeHtml(l.customer_phone)}" class="phone-link"><i class="fas fa-phone" style="font-size:11px"></i> ${escapeHtml(l.customer_phone)}</a></div>
+                </div>
+                <div class="ld-info-item">
+                  <div class="ld-info-label">Nguồn</div>
+                  <div class="ld-info-value">${escapeHtml(l.source || '-')}</div>
+                </div>
+                ${l.customer_email ? `<div class="ld-info-item"><div class="ld-info-label">Email</div><div class="ld-info-value">${escapeHtml(l.customer_email)}</div></div>` : ''}
+                ${l.birth_year ? `<div class="ld-info-item"><div class="ld-info-label">Năm sinh (HS)</div><div class="ld-info-value">${l.birth_year}</div></div>` : ''}
+                ${l.subject_name ? `<div class="ld-info-item"><div class="ld-info-label">Bộ môn</div><div class="ld-info-value">${escapeHtml(l.subject_name)}</div></div>` : ''}
+                ${l.scheduled_date ? `<div class="ld-info-item"><div class="ld-info-label">Lịch hẹn</div><div class="ld-info-value">${new Date(l.scheduled_date).toLocaleDateString('vi-VN')}${l.scheduled_time ? ' · ' + l.scheduled_time.substring(0,5) : ''}</div></div>` : ''}
+                ${l.sale_name ? `<div class="ld-info-item"><div class="ld-info-label">EC phụ trách</div><div class="ld-info-value">${escapeHtml(l.sale_name)}</div></div>` : ''}
+                <div class="ld-info-item"><div class="ld-info-label">Ngày tạo</div><div class="ld-info-value">${formatDate(l.created_at)}</div></div>
+              </div>
+            </div>
+          </div>
+          ${trialHtml}
+          ${feeHtml}
+          ${noteHtml}
+        </div>
+      `;
     }
 
-    function renderTable(pagination) {
-      const tb = document.getElementById('leadsTableBody');
-      if (!leads.length) { tb.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Chưa có lead</td></tr>'; document.getElementById('leadsPagination').innerHTML = ''; return; }
-      tb.innerHTML = leads.map(l => '<tr><td><code>' + (l.code || '-') + '</code></td><td><strong>' + escapeHtml(l.student_name) + '</strong></td><td>' + escapeHtml(l.customer_name) + '</td><td><a href="javascript:void(0)" class="phone-link" onclick="openCallModal(' + l.id + ',\'' + escapeHtml(l.customer_name) + '\',\'' + l.customer_phone + '\')"><i class="fas fa-phone"></i> ' + l.customer_phone + '</a></td><td>' + (l.source || '-') + '</td><td><span class="status-badge ' + l.status + '">' + (statusCfg[l.status]?.label || l.status) + '</span></td><td>' + formatDate(l.created_at) + '</td><td class="text-center">' + getActionButtons(l) + '</td></tr>').join('');
-      // Render pagination
-      document.getElementById('leadsPagination').innerHTML = pagination && pagination.totalPages > 1 ? ui.pagination(pagination, loadData) : '';
+    /* ===== DELEGATION (left list click handled via onclick, modals handled via direct onclick) ===== */
+    function setupLeadDelegation() {
+      // No table delegation needed — list uses onclick="viewLead()", detail uses onclick="action()"
     }
 
-    function renderCards() {
-      const c = document.getElementById('leadsGrid');
-      if (!leads.length) { c.innerHTML = '<p class="text-muted">Chưa có lead</p>'; return; }
-      c.innerHTML = leads.map(l => '<div class="lead-card"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><strong>' + escapeHtml(l.student_name) + '</strong><span class="status-badge ' + l.status + '">' + (statusCfg[l.status]?.label || l.status) + '</span></div><div style="font-size:13px;color:var(--text-secondary)"><div><i class="fas fa-user"></i> ' + escapeHtml(l.customer_name) + '</div><div><i class="fas fa-phone"></i> ' + l.customer_phone + '</div></div><div style="margin-top:10px;display:flex;gap:6px">' + getActionButtons(l) + '</div></div>').join('');
+    /* ===== FORM MODAL ===== */
+    function openCreateModal() {
+      document.getElementById('leadId').value = '';
+      document.getElementById('leadForm').reset();
+      document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Thêm Lead';
+      leadSelectedPackage = null; leadDefaultScholarship = 0;
+      document.getElementById('leadFeeOriginal').value = '0đ';
+      document.getElementById('leadPromoDiscount').value = '0đ';
+      document.getElementById('leadFeeTotal').textContent = '0đ';
+      document.getElementById('leadMainMonths').textContent = '0 tháng';
+      document.getElementById('leadBonusMonths').textContent = '+0 tháng';
+      document.getElementById('leadDefaultScholarshipBadge').style.display = 'none';
+      document.getElementById('leadScholarshipWarning').style.display = 'none';
+      document.getElementById('formModal').classList.add('show');
     }
 
-    // Form Modal
-    function openCreateModal() { document.getElementById('leadId').value = ''; document.getElementById('leadForm').reset(); document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Thêm Lead'; document.getElementById('formModal').classList.add('show'); }
     function closeFormModal() { document.getElementById('formModal').classList.remove('show'); }
+
     async function editLead(id) {
       try {
         const res = await api.get('/leads/' + id);
@@ -1093,11 +1307,24 @@
         f.source.value = l.source || 'facebook';
         f.note.value = l.note || '';
         document.getElementById('formModal').classList.add('show');
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
+
     async function saveLead() {
       const f = document.getElementById('leadForm');
       const id = document.getElementById('leadId').value;
+      const submitBtn = document.querySelector('#formModal .btn-primary');
+
+      const schema = {
+        studentName: [validate.rules.required],
+        customerName: [validate.rules.required],
+        customerPhone: [validate.rules.required, validate.rules.phone],
+        customerEmail: [validate.rules.email]
+      };
+
+      const { isValid } = validate.validateForm(f, schema);
+      if (!isValid) { notify.warning('Vui lòng kiểm tra lại thông tin'); return; }
+
       const data = {
         studentName: f.studentName.value,
         studentBirthYear: f.birthYear.value || null,
@@ -1108,41 +1335,45 @@
         customerEmail: f.customerEmail.value || null,
         source: f.source.value,
         note: f.note.value || null,
-        // New fields
         package_id: f.packageId?.value || null,
         tuition_fee: parseCurrency(document.getElementById('leadFeeTotal')?.textContent),
         discount_amount: parseCurrency(document.getElementById('leadPromoDiscount')?.value),
         scholarship_months: parseInt(f.scholarshipMonths?.value) || 0,
         gift_name: f.giftName?.value || null
       };
+
+      loading.buttonStart(submitBtn, id ? 'Đang cập nhật...' : 'Đang tạo...');
       try {
-        if (id) { await api.put('/leads/' + id, data); ui.success('Cập nhật thành công'); }
-        else { await api.post('/leads', data); ui.success('Thêm thành công'); }
+        if (id) {
+          await api.put('/leads/' + id, data);
+          notify.success('Cập nhật thành công');
+        } else {
+          await api.post('/leads', data);
+          notify.success('Thêm thành công');
+        }
         closeFormModal(); loadStats(); loadData();
-      } catch (e) { ui.error(e.message); }
+      } catch (e) {
+        notify.error(e.message);
+        animate.shake(f);
+      } finally {
+        loading.buttonEnd(submitBtn);
+      }
     }
 
-    function openCreateModal() {
-      document.getElementById('leadId').value = '';
-      document.getElementById('leadForm').reset();
-      document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Thêm Lead';
-      // Reset package/promo fields
-      leadSelectedPackage = null; leadDefaultScholarship = 0;
-      document.getElementById('leadFeeOriginal').value = '0đ';
-      document.getElementById('leadPromoDiscount').value = '0đ';
-      document.getElementById('leadFeeTotal').textContent = '0đ';
-      document.getElementById('leadMainMonths').textContent = '0 tháng';
-      document.getElementById('leadBonusMonths').textContent = '+0 tháng';
-      document.getElementById('leadDefaultScholarshipBadge').style.display = 'none';
-      document.getElementById('leadScholarshipWarning').style.display = 'none';
-      document.getElementById('formModal').classList.add('show');
+    async function deleteLead(id) {
+      if (!confirm('Xóa lead này?')) return;
+      try {
+        await api.delete('/leads/' + id);
+        if (currentLeadId == id) {
+          currentLeadId = null;
+          document.getElementById('leadDetailPanel').innerHTML = '<div class="ld-empty"><i class="fas fa-users"></i><p>Chọn một lead để xem chi tiết</p></div>';
+        }
+        notify.success('Đã xóa');
+        loadStats(); loadData();
+      } catch (e) { notify.error(e.message); }
     }
 
-    function closeFormModal() { document.getElementById('formModal').classList.remove('show'); }
-
-    async function deleteLead(id) { if (!confirm('Xóa lead này?')) return; try { await api.delete('/leads/' + id); ui.success('Đã xóa'); loadStats(); loadData(); } catch (e) { ui.error(e.message); } }
-
-    // Schedule Modal
+    /* ===== SCHEDULE MODAL ===== */
     let currentScheduleLead = null;
     async function openScheduleModal(id) {
       try {
@@ -1157,27 +1388,42 @@
         document.getElementById('scheduleSubject').value = currentScheduleLead.subject_id || '';
         document.getElementById('scheduleNote').value = '';
         document.getElementById('scheduleModal').classList.add('show');
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
+
     function closeScheduleModal() { document.getElementById('scheduleModal').classList.remove('show'); }
+
     async function saveSchedule() {
       const id = document.getElementById('scheduleLeadId').value;
       const date = document.getElementById('scheduleDate').value;
       const time = document.getElementById('scheduleTime').value;
-      if (!date || !time) { ui.warning('Vui lòng chọn ngày và giờ'); return; }
+      if (!date || !time) { notify.warning('Vui lòng chọn ngày và giờ'); return; }
       try {
         await api.post('/leads/' + id + '/schedule', { scheduledDate: date, scheduledTime: time, subjectId: document.getElementById('scheduleSubject').value || null, note: document.getElementById('scheduleNote').value || null });
-        ui.success('Đã đặt lịch trải nghiệm');
+        notify.success('Đã đặt lịch trải nghiệm');
         closeScheduleModal(); loadStats(); loadData();
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
 
-    // Mark status
-    async function markAttended(id) { if (!confirm('Xác nhận học sinh đã đến?')) return; try { await api.post('/leads/' + id + '/attended'); ui.success('Đã cập nhật'); loadStats(); loadData(); } catch (e) { ui.error(e.message); } }
-    async function markNoShow(id) { if (!confirm('Xác nhận học sinh không đến?')) return; try { await api.post('/leads/' + id + '/no-show'); ui.success('Đã cập nhật'); loadStats(); loadData(); } catch (e) { ui.error(e.message); } }
-    async function markCancelled(id) { const reason = prompt('Lý do:'); if (reason === null) return; try { await api.put('/leads/' + id, { status: 'cancelled', note: reason || 'Lỗi' }); ui.success('Đã cập nhật'); loadStats(); loadData(); } catch (e) { ui.error(e.message); } }
+    /* ===== MARK STATUS ===== */
+    async function markAttended(id) {
+      if (!confirm('Xác nhận học sinh đã đến?')) return;
+      try { await api.post('/leads/' + id + '/attended'); notify.success('Đã cập nhật'); loadStats(); loadData(); }
+      catch (e) { notify.error(e.message); }
+    }
+    async function markNoShow(id) {
+      if (!confirm('Xác nhận học sinh không đến?')) return;
+      try { await api.post('/leads/' + id + '/no-show'); notify.success('Đã cập nhật'); loadStats(); loadData(); }
+      catch (e) { notify.error(e.message); }
+    }
+    async function markCancelled(id) {
+      const reason = prompt('Lý do:');
+      if (reason === null) return;
+      try { await api.put('/leads/' + id, { status: 'cancelled', note: reason || 'Lỗi' }); notify.success('Đã cập nhật'); loadStats(); loadData(); }
+      catch (e) { notify.error(e.message); }
+    }
 
-    // Convert Modal
+    /* ===== CONVERT MODAL ===== */
     let currentConvertLead = null, promoData = { programs: [], items: [] }, packagesData = [], selectedPackage = null, defaultScholarshipMonths = 0;
 
     function formatCurrency(v) { return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ'; }
@@ -1246,7 +1492,6 @@
 
     function onScholarshipChange() {
       const bonusMonths = parseInt(document.getElementById('cvScholarshipMonths').value) || 0;
-      const mainMonths = parseInt(document.getElementById('cvMainCourseMonths').dataset.months) || 0;
       document.getElementById('cvBonusMonths').textContent = '+' + bonusMonths + ' tháng';
     }
 
@@ -1255,8 +1500,7 @@
       if (!programId) {
         document.getElementById('cvPromoDiscount').value = '0đ';
         document.getElementById('cvPromoDiscount').dataset.rawValue = 0;
-        calcFeeTotal();
-        return;
+        calcFeeTotal(); return;
       }
       const program = promoData.programs.find(p => p.id == programId);
       if (!program) return;
@@ -1265,9 +1509,7 @@
       if (program.discount_type === 'percent') {
         discount = Math.round(orig * program.discount_value / 100);
         if (program.max_discount && discount > program.max_discount) discount = program.max_discount;
-      } else {
-        discount = program.discount_value;
-      }
+      } else { discount = program.discount_value; }
       document.getElementById('cvPromoDiscount').value = formatCurrency(discount);
       document.getElementById('cvPromoDiscount').dataset.rawValue = discount;
       calcFeeTotal();
@@ -1302,7 +1544,7 @@
         defaultScholarshipMonths = 0;
         await loadConvertData();
         document.getElementById('convertModal').classList.add('show');
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
 
     async function loadConvertData() {
@@ -1315,14 +1557,13 @@
         document.getElementById('cvPromoProgram').innerHTML = '<option value="">-- Không áp dụng --</option>' + promoData.programs.map(p => '<option value="' + p.id + '">' + escapeHtml(p.name) + ' (' + (p.discount_type === 'percent' ? p.discount_value + '%' : formatCurrency(p.discount_value)) + ')</option>').join('');
         const giftContainer = document.getElementById('giftItemsContainer');
         if (promoData.items && promoData.items.length) {
-          giftContainer.innerHTML = promoData.items.map(i => '<label style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff;border-radius:20px;cursor:pointer;border:1px solid #e5e7eb"><input type="checkbox" class="gift-checkbox" data-id="' + i.id + '" data-name="' + escapeHtml(i.name) + '"><span>🎁 ' + escapeHtml(i.name) + '</span><small style="color:#6b7280">(' + i.stock_quantity + ')</small></label>').join('');
+          giftContainer.innerHTML = promoData.items.map(i => '<label style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg-secondary);border-radius:20px;cursor:pointer;border:1px solid var(--border)"><input type="checkbox" class="gift-checkbox" data-id="' + i.id + '" data-name="' + escapeHtml(i.name) + '"><span>🎁 ' + escapeHtml(i.name) + '</span><small style="color:#6b7280">(' + i.stock_quantity + ')</small></label>').join('');
         } else { giftContainer.innerHTML = '<span style="color:#6b7280">Chưa có quà tặng</span>'; }
       } catch (e) { console.error(e); }
     }
 
     function closeConvertModal() { document.getElementById('convertModal').classList.remove('show'); }
 
-    // Lưu data tạm để xác nhận thanh toán sau
     let pendingConvertData = null;
 
     async function convertLead() {
@@ -1340,128 +1581,118 @@
       const programId = document.getElementById('cvPromoProgram').value || null;
       const paymentStatus = document.getElementById('cvPaymentStatus').value;
 
-      if (!studentName) { ui.warning('Vui lòng nhập họ tên học sinh'); return; }
-      if (!parentName || !parentPhone) { ui.warning('Vui lòng nhập thông tin phụ huynh'); return; }
-      if (!packageId) { ui.warning('Vui lòng chọn gói học phí'); return; }
+      if (!studentName) { notify.warning('Vui lòng nhập họ tên học sinh'); return; }
+      if (!parentName || !parentPhone) { notify.warning('Vui lòng nhập thông tin phụ huynh'); return; }
+      if (!packageId) { notify.warning('Vui lòng chọn gói học phí'); return; }
 
       const selectedGifts = [];
       document.querySelectorAll('.gift-checkbox:checked').forEach(cb => selectedGifts.push({ id: cb.dataset.id, name: cb.dataset.name }));
 
-      // LƯU DATA TẠM - CHƯA GỌI API
       pendingConvertData = {
-        leadId: id,
-        studentName,
-        birthYear: document.getElementById('cvStudentBirthYear').value,
-        address: document.getElementById('cvStudentAddress').value,
-        school: document.getElementById('cvStudentSchool').value,
-        customerName: parentName,
-        customerPhone: parentPhone,
-        parentJob: document.getElementById('cvParentJob').value,
+        leadId: id, studentName, birthYear: document.getElementById('cvStudentBirthYear').value,
+        address: document.getElementById('cvStudentAddress').value, school: document.getElementById('cvStudentSchool').value,
+        customerName: parentName, customerPhone: parentPhone, parentJob: document.getElementById('cvParentJob').value,
         packageId, feeOriginal, feeDiscount: promoDiscount, feeTotal, scholarshipMonths,
         defaultScholarshipMonths, scholarshipNeedsApproval: scholarshipMonths > defaultScholarshipMonths,
-        depositAmount, paidAmount, paymentStatus,
-        programId, gifts: selectedGifts,
-        note: document.getElementById('cvNote').value,
-        branchId: currentConvertLead?.branch_id || null
+        depositAmount, paidAmount, paymentStatus, programId, gifts: selectedGifts,
+        note: document.getElementById('cvNote').value, branchId: currentConvertLead?.branch_id || null
       };
 
-      // Đóng modal convert
       closeConvertModal();
 
-      // Hiện modal QR - CHƯA TẠO HỌC VIÊN
-      document.getElementById('newStudentId').value = ''; // Chưa có ID
+      document.getElementById('newStudentId').value = '';
       document.getElementById('successStudentName').textContent = studentName;
       document.getElementById('successStudentCode').textContent = 'Mã: (Chờ xác nhận)';
 
-      // Tính số tiền cần thu theo trạng thái
-      let qrAmount = feeTotal;
-      let qrLabel = 'Số tiền cần chuyển';
+      let qrAmount = feeTotal, qrLabel = 'Cần đóng';
+      if (paymentStatus === 'pending') { qrAmount = feeTotal; qrLabel = 'Tổng học phí cần đóng'; }
+      else if (paymentStatus === 'deposit') { qrAmount = depositAmount; qrLabel = 'Tiền cọc cần chuyển'; }
+      else if (paymentStatus === 'partial') { qrAmount = depositAmount + paidAmount; qrLabel = 'Số tiền cần chuyển'; }
+      else if (paymentStatus === 'paid') { qrAmount = feeTotal; qrLabel = 'Tổng học phí'; }
 
-      if (paymentStatus === 'pending') {
-        qrAmount = feeTotal;
-        qrLabel = 'Tổng học phí cần đóng';
-      } else if (paymentStatus === 'deposit') {
-        qrAmount = depositAmount;
-        qrLabel = 'Tiền cọc cần chuyển';
-      } else if (paymentStatus === 'partial') {
-        qrAmount = depositAmount + paidAmount;
-        qrLabel = 'Số tiền cần chuyển';
-      } else if (paymentStatus === 'paid') {
-        qrAmount = feeTotal;
-        qrLabel = 'Tổng học phí';
-      }
-
-      // Lưu số tiền để xác nhận sau
       pendingConvertData.qrAmount = qrAmount;
+
+      const tempDesc = (parentPhone.slice(-4) + ' ' + studentName).substring(0, 25);
 
       document.getElementById('successQRSection').style.display = 'block';
       document.getElementById('successFullPaidSection').style.display = 'none';
+      document.getElementById('successFeeTotalDisp').textContent = formatCurrency(feeTotal);
+      document.getElementById('successPaidAmount').textContent = '0đ';
       document.getElementById('successRemainingAmount').textContent = formatCurrency(qrAmount);
       document.getElementById('successRemainingRaw').value = qrAmount;
       document.getElementById('successRemainingLabel').textContent = qrLabel;
-      document.getElementById('successPaidAmount').textContent = '0đ (chờ xác nhận)';
-
-      // Tạo mô tả tạm cho QR (dùng tên thay vì mã vì chưa có mã)
-      const tempDesc = parentPhone.slice(-4) + ' ' + studentName.substring(0, 15);
       document.getElementById('successPaymentDesc').textContent = tempDesc;
       document.getElementById('successQRImage').src = getQRUrl(qrAmount, tempDesc, pendingConvertData.branchId);
+      document.getElementById('successConfirmAmount').value = qrAmount;
+
+      const branchInfo = getBranchBankInfo(pendingConvertData.branchId);
+      document.getElementById('successBankInfo').textContent = branchInfo
+        ? branchInfo.bank_name + ' — TK: ' + branchInfo.bank_account
+        : 'Vietcombank — TK: ' + paymentCfg.account_no;
 
       document.getElementById('convertSuccessModal').classList.add('show');
-      ui.info('Vui lòng xác nhận thanh toán để hoàn tất chuyển đổi');
+      notify.info('Vui lòng xác nhận thanh toán để hoàn tất chuyển đổi');
     }
 
     function closeConvertSuccessModal() {
       document.getElementById('convertSuccessModal').classList.remove('show');
-      pendingConvertData = null; // Hủy data tạm nếu đóng modal
+      pendingConvertData = null;
+    }
+
+    function setSuccessFullAmount() {
+      document.getElementById('successConfirmAmount').value = parseFloat(document.getElementById('successRemainingRaw').value) || 0;
     }
 
     async function confirmPaymentReceived() {
-      // Kiểm tra có data chờ convert không
-      if (!pendingConvertData) {
-        ui.error('Không có dữ liệu chuyển đổi');
-        return;
-      }
-
+      if (!pendingConvertData) { notify.error('Không có dữ liệu chuyển đổi'); return; }
+      const confirmedAmount = parseFloat(document.getElementById('successConfirmAmount').value) || 0;
       const qrAmount = pendingConvertData.qrAmount || 0;
-      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(qrAmount) + ' và chuyển đổi thành học viên?')) return;
-
+      if (confirmedAmount <= 0) { notify.warning('Vui lòng nhập số tiền xác nhận'); return; }
+      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(confirmedAmount) + ' và chuyển đổi thành học viên?')) return;
       try {
-        // GỌI API CONVERT - TẠO HỌC VIÊN + GHI NHẬN TIỀN
         const result = await api.post('/leads/' + pendingConvertData.leadId + '/convert', {
-          ...pendingConvertData,
-          confirmedAmount: qrAmount // Số tiền đã xác nhận
+          ...pendingConvertData, confirmedAmount
         });
-
         const student = result.data || {};
         const studentId = student.id || student.studentId;
         const studentCode = student.student_code || student.studentCode || '';
-
-        // Cập nhật hiển thị
         document.getElementById('newStudentId').value = studentId;
         document.getElementById('successStudentCode').textContent = 'Mã: ' + studentCode;
-        document.getElementById('successPaidAmount').textContent = formatCurrency(qrAmount);
-
-        // Ẩn QR, hiện thông báo thành công
         document.getElementById('successQRSection').style.display = 'none';
         document.getElementById('successFullPaidSection').style.display = 'block';
-
-        ui.success('Chuyển đổi thành công! Mã học viên: ' + studentCode);
+        document.getElementById('successPaidAmountFinal').textContent = 'Đã ghi nhận: ' + formatCurrency(confirmedAmount);
+        notify.success('Chuyển đổi thành công! Mã học viên: ' + studentCode);
         pendingConvertData = null;
         loadStats(); loadData();
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
 
-    function downloadEnrollmentForm() {
+    async function downloadEnrollmentForm() {
       const studentId = document.getElementById('newStudentId').value;
-      if (!studentId) return;
-      const token = localStorage.getItem('token');
-      fetch(window.LMS_CONFIG.API_BASE + '/enrollment/' + studentId + '/form', { headers: { 'Authorization': 'Bearer ' + token } })
-        .then(r => r.blob())
-        .then(blob => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Don_nhap_hoc_' + studentId + '.docx'; a.click(); })
-        .catch(e => ui.error(e.message));
+      if (!studentId) { notify.warning('Vui lòng xác nhận chuyển đổi trước khi xuất đơn'); return; }
+      const btn = event?.target?.closest('button');
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xuất...'; }
+      try {
+        const token = localStorage.getItem('token');
+        const r = await fetch(window.LMS_CONFIG.API_BASE + '/enrollment/' + studentId + '/form', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!r.ok) {
+          const err = await r.json().catch(() => ({ message: 'Lỗi xuất đơn' }));
+          throw new Error(err.message || 'Lỗi xuất đơn');
+        }
+        const blob = await r.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Don_nhap_hoc_' + studentId + '.docx';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      } catch (e) {
+        notify.error(e.message);
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-file-word"></i> Xuất đơn nhập học'; }
+      }
     }
 
-    // Payment Modal
+    /* ===== PAYMENT MODAL ===== */
     async function openPaymentModal(id) {
       try {
         const res = await api.get('/leads/' + id);
@@ -1469,44 +1700,63 @@
         const feeTotal = parseFloat(lead.fee_total) || 0;
         const actualRev = parseFloat(lead.actual_revenue) || 0;
         const remaining = Math.max(0, feeTotal - actualRev);
-        if (remaining <= 0) { ui.info('Đã đóng đủ!'); return; }
+        if (remaining <= 0) { notify.info('Học sinh đã đóng đủ học phí!'); return; }
+
         document.getElementById('paymentLeadId').value = id;
         document.getElementById('paymentStudentId').value = lead.converted_student_id || '';
         document.getElementById('paymentRemainingRaw').value = remaining;
-        document.getElementById('paymentStudentName').textContent = lead.student_name || '';
-        document.getElementById('paymentStudentCode').textContent = 'Mã: ' + (lead.converted_student_code || lead.code || '');
+
+        const name = lead.student_name || '';
+        document.getElementById('paymentAvatar').textContent = name.charAt(0).toUpperCase() || '?';
+        document.getElementById('paymentStudentName').textContent = name;
+        document.getElementById('paymentStudentCode').textContent = 'Mã: ' + (lead.converted_student_code || lead.code || '---');
         document.getElementById('paymentFeeTotal').textContent = formatCurrency(feeTotal);
+        document.getElementById('paymentPaid').textContent = formatCurrency(actualRev);
         document.getElementById('paymentRemaining').textContent = formatCurrency(remaining);
-        const transferDesc = (lead.converted_student_code || lead.code) + ' ' + (lead.student_name || '').substring(0, 15);
+
+        const code = lead.converted_student_code || lead.code || '';
+        const transferDesc = (code + ' ' + name).substring(0, 25).trim();
         document.getElementById('paymentTransferDesc').textContent = transferDesc;
 
-        // Lấy branch_id từ lead để tạo QR theo chi nhánh
         const branchInfo = getBranchBankInfo(lead.branch_id);
-        if (branchInfo) {
-          document.getElementById('paymentTransferDesc').innerHTML = transferDesc + '<br><small style="color:#6b7280">(' + branchInfo.branch_name + ' - ' + branchInfo.bank_name + ')</small>';
-        }
+        document.getElementById('paymentBankInfo').textContent = branchInfo
+          ? branchInfo.bank_name + ' — TK: ' + branchInfo.bank_account
+          : 'Vietcombank — TK: ' + paymentCfg.account_no;
+
         document.getElementById('paymentQRImage').src = getQRUrl(remaining, transferDesc, lead.branch_id);
-        document.getElementById('btnConfirmLeadPayment').style.display = lead.converted_student_id ? 'block' : 'none';
+        document.getElementById('paymentConfirmAmount').value = remaining;
+
+        const hasStudent = !!lead.converted_student_id;
+        document.getElementById('paymentConfirmSection').style.display = hasStudent ? 'block' : 'none';
         document.getElementById('paymentModal').classList.add('show');
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
 
     function closePaymentModal() { document.getElementById('paymentModal').classList.remove('show'); }
 
-    async function confirmLeadPayment() {
-      const studentId = document.getElementById('paymentStudentId').value;
+    function setFullAmount() {
       const remaining = parseFloat(document.getElementById('paymentRemainingRaw').value) || 0;
-      if (!studentId || remaining <= 0) return;
-      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(remaining) + '?')) return;
-      try {
-        await api.post('/students/' + studentId + '/confirm-payment', { amount: remaining, paymentMethod: 'bank_transfer', note: 'Thanh toán qua QR' });
-        ui.success('Đã ghi nhận thanh toán');
-        closePaymentModal(); loadStats(); loadData();
-      } catch (e) { ui.error(e.message); }
+      document.getElementById('paymentConfirmAmount').value = remaining;
     }
 
-    // Call Modal
+    async function confirmLeadPayment() {
+      const studentId = document.getElementById('paymentStudentId').value;
+      const amount = parseFloat(document.getElementById('paymentConfirmAmount').value) || 0;
+      const remaining = parseFloat(document.getElementById('paymentRemainingRaw').value) || 0;
+      if (!studentId) { notify.error('Không tìm thấy học sinh'); return; }
+      if (amount <= 0) { notify.warning('Vui lòng nhập số tiền xác nhận'); return; }
+      if (amount > remaining + 1000) { notify.warning('Số tiền vượt quá số còn nợ (' + formatCurrency(remaining) + ')'); return; }
+      if (!confirm('Xác nhận đã nhận được ' + formatCurrency(amount) + '?')) return;
+      try {
+        await api.post('/students/' + studentId + '/confirm-payment', { amount, paymentMethod: 'bank_transfer', note: 'Thanh toán qua QR' });
+        notify.success('Đã ghi nhận thanh toán ' + formatCurrency(amount));
+        closePaymentModal(); loadStats(); loadData();
+      } catch (e) { notify.error(e.message); }
+    }
+
+    /* ===== CALL MODAL ===== */
     let callTimer = null, callSeconds = 0;
+
     function openCallModal(id, name, phone) {
       document.getElementById('callLeadId').value = id;
       document.getElementById('callName').textContent = name;
@@ -1522,7 +1772,12 @@
       loadCallHistory(id);
       document.getElementById('callModal').classList.add('show');
     }
-    function closeCallModal() { document.getElementById('callModal').classList.remove('show'); if (callTimer) { clearInterval(callTimer); callTimer = null; } }
+
+    function closeCallModal() {
+      document.getElementById('callModal').classList.remove('show');
+      if (callTimer) { clearInterval(callTimer); callTimer = null; }
+    }
+
     function startCall() {
       const phone = document.getElementById('callPhone').textContent;
       document.getElementById('callStatus').textContent = 'Đang gọi...';
@@ -1531,9 +1786,14 @@
       document.getElementById('hangupBtn').style.display = 'inline-flex';
       document.getElementById('callTimer').style.display = 'block';
       callSeconds = 0; document.getElementById('callTimer').textContent = '00:00';
-      callTimer = setInterval(() => { callSeconds++; document.getElementById('callTimer').textContent = Math.floor(callSeconds / 60).toString().padStart(2, '0') + ':' + (callSeconds % 60).toString().padStart(2, '0'); }, 1000);
+      if (callTimer) { clearInterval(callTimer); callTimer = null; }
+      callTimer = setInterval(() => {
+        callSeconds++;
+        document.getElementById('callTimer').textContent = Math.floor(callSeconds / 60).toString().padStart(2, '0') + ':' + (callSeconds % 60).toString().padStart(2, '0');
+      }, 1000);
       window.open('tel:' + phone, '_self');
     }
+
     function endCall() {
       if (callTimer) { clearInterval(callTimer); callTimer = null; }
       document.getElementById('callStatus').textContent = 'Kết thúc';
@@ -1541,20 +1801,22 @@
       document.getElementById('startCallBtn').style.display = 'inline-flex';
       document.getElementById('hangupBtn').style.display = 'none';
     }
+
     async function saveCallNote() {
       const id = document.getElementById('callLeadId').value;
       const note = document.getElementById('callNote').value;
       const result = document.getElementById('callResult').value;
-      if (!note && !result) { ui.warning('Nhập ghi chú hoặc kết quả'); return; }
+      if (!note && !result) { notify.warning('Nhập ghi chú hoặc kết quả'); return; }
       try {
         await api.post('/leads/' + id + '/call-log', { duration: callSeconds, result, note, called_at: new Date().toISOString() });
-        ui.success('Đã lưu');
+        notify.success('Đã lưu');
         document.getElementById('callNote').value = '';
         document.getElementById('callResult').value = '';
         callSeconds = 0;
         loadCallHistory(id);
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
+
     async function loadCallHistory(id) {
       const c = document.getElementById('callHistory');
       try {
@@ -1569,6 +1831,10 @@
     function formatDate(d) { return d ? new Date(d).toLocaleDateString('vi-VN') : '-'; }
 
     document.addEventListener('DOMContentLoaded', init);
+
+    window.addEventListener('pagehide', () => {
+      if (callTimer) { clearInterval(callTimer); callTimer = null; }
+    });
   </script>
 </body>
 

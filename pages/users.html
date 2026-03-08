@@ -133,6 +133,8 @@
 
   <script src="../js/config.js"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/reactive.js"></script>
+  <script src="../js/crud-mixin.js"></script>
   <script src="../js/sidebar.js"></script>
   <script>
     let roles = [];
@@ -335,12 +337,25 @@
         renderBranchCheckboxes();
         toggleBranchSection();
         modal.show('formModal');
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
 
     async function saveData() {
       const formEl = document.getElementById('dataForm');
-      if (!form.validate(formEl)) { ui.error('Điền đầy đủ'); return; }
+      const submitBtn = document.querySelector('#formModal .btn-primary');
+
+      // Validation schema
+      const schema = {
+        fullName: [validate.rules.required],
+        email: [validate.rules.required, validate.rules.email],
+        phone: [validate.rules.phone]
+      };
+
+      const { isValid } = validate.validateForm(formEl, schema);
+      if (!isValid) {
+        notify.warning('Vui lòng kiểm tra lại thông tin');
+        return;
+      }
 
       const data = form.getData(formEl);
       const id = document.getElementById('itemId').value;
@@ -356,23 +371,34 @@
 
       if (!isSystemWide) {
         if (selectedBranches.length === 0) {
-          ui.error('Vui lòng chọn ít nhất 1 cơ sở');
+          notify.warning('Vui lòng chọn ít nhất 1 cơ sở');
           return;
         }
-        // Sắp xếp để primary branch đầu tiên
-        data.branch_ids = [primaryBranchId, ...selectedBranches.filter(id => id !== primaryBranchId)];
+        data.branch_ids = [primaryBranchId, ...selectedBranches.filter(bid => bid !== primaryBranchId)];
       }
 
       if (id && !data.password) delete data.password;
 
+      loading.buttonStart(submitBtn, id ? 'Đang cập nhật...' : 'Đang tạo...');
+
       try {
-        if (id) await api.put(`/users/${id}`, data);
-        else await api.post('/users', data);
-        ui.success('Lưu thành công');
+        if (id) {
+          await api.put(`/users/${id}`, data);
+          const row = document.querySelector(`tr[data-id="${id}"]`);
+          if (row) await animate.highlight(row, '#dcfce7', 800);
+        } else {
+          await api.post('/users', data);
+        }
+        notify.success('Lưu thành công');
         modal.hide('formModal');
-        loadManagers(); // Refresh managers list
+        loadManagers();
         loadData();
-      } catch (e) { ui.error(e.message); }
+      } catch (e) {
+        notify.error(e.message);
+        animate.shake(formEl);
+      } finally {
+        loading.buttonEnd(submitBtn);
+      }
     }
 
     document.addEventListener('DOMContentLoaded', init);

@@ -296,6 +296,12 @@ const ui = {
       document.body.appendChild(container);
     }
 
+    // Giới hạn tối đa 5 toasts, xóa cái cũ nhất nếu vượt
+    const existingToasts = container.querySelectorAll('.toast');
+    if (existingToasts.length >= 5) {
+      existingToasts[0].remove();
+    }
+
     const icons = {
       success: 'fa-check-circle',
       error: 'fa-exclamation-circle',
@@ -305,13 +311,17 @@ const ui = {
 
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.innerHTML = `
-      <i class="fas ${icons[type] || icons.info}"></i>
-      <span>${message}</span>
-      <button class="toast-close" onclick="this.parentElement.remove()">
-        <i class="fas fa-times"></i>
-      </button>
-    `;
+    const iconEl = document.createElement('i');
+    iconEl.className = `fas ${icons[type] || icons.info}`;
+    const spanEl = document.createElement('span');
+    spanEl.textContent = message;
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'toast-close';
+    closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+    closeBtn.addEventListener('click', () => toast.remove());
+    toast.appendChild(iconEl);
+    toast.appendChild(spanEl);
+    toast.appendChild(closeBtn);
     container.appendChild(toast);
 
     setTimeout(() => {
@@ -539,16 +549,41 @@ const modal = {
   }
 };
 
+// Kiểm tra form trong modal có dữ liệu chưa lưu không
+function modalHasDirtyForm(overlayEl) {
+  const forms = overlayEl.querySelectorAll('form');
+  for (const f of forms) {
+    for (const input of f.querySelectorAll('input, textarea, select')) {
+      if (input.type === 'hidden' || input.type === 'submit') continue;
+      if (input.type === 'checkbox' || input.type === 'radio') {
+        if (input.checked !== input.defaultChecked) return true;
+      } else if (input.value !== input.defaultValue) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 // Close modal on escape key
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', async (e) => {
   if (e.key === 'Escape') {
+    const activeModal = document.querySelector('.modal-overlay.active');
+    if (activeModal && modalHasDirtyForm(activeModal)) {
+      const confirmed = await ui.confirm('Bạn có thay đổi chưa lưu. Bạn có muốn đóng không?', 'Xác nhận đóng');
+      if (!confirmed) return;
+    }
     modal.hideAll();
   }
 });
 
 // Close modal on overlay click
-document.addEventListener('click', (e) => {
+document.addEventListener('click', async (e) => {
   if (e.target.classList.contains('modal-overlay')) {
+    if (modalHasDirtyForm(e.target)) {
+      const confirmed = await ui.confirm('Bạn có thay đổi chưa lưu. Bạn có muốn đóng không?', 'Xác nhận đóng');
+      if (!confirmed) return;
+    }
     modal.hideAll();
   }
 });
@@ -561,8 +596,23 @@ const form = {
     const data = {};
     const formData = new FormData(formEl);
     formData.forEach((value, key) => {
-      // Convert empty strings to null for optional fields
-      data[key] = value === '' ? null : value;
+      if (value === '') {
+        data[key] = null;
+        return;
+      }
+      // Giữ đúng kiểu dữ liệu dựa theo input type
+      const input = formEl.querySelector(`[name="${key}"]`);
+      if (input) {
+        if (input.type === 'number') {
+          data[key] = value === '' ? null : Number(value);
+        } else if (input.type === 'checkbox') {
+          data[key] = input.checked;
+        } else {
+          data[key] = value;
+        }
+      } else {
+        data[key] = value;
+      }
     });
     return data;
   },
@@ -667,21 +717,27 @@ const form = {
     input.classList.add('is-invalid');
     const errorDiv = document.createElement('div');
     errorDiv.className = 'error-message';
-    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-exclamation-circle';
+    errorDiv.appendChild(icon);
+    errorDiv.appendChild(document.createTextNode(' ' + message));
     input.parentNode.appendChild(errorDiv);
   },
 
   isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    // TLD phải có ít nhất 2 ký tự
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
   },
 
   isValidPhone(phone) {
-    // Vietnam phone format
-    return /^(0|\+84)[0-9]{9,10}$/.test(phone.replace(/\s/g, ''));
+    // Số điện thoại Việt Nam: đầu số hợp lệ cho mobile (03x,05x,07x,08x,09x)
+    // và số cố định (02x)
+    const normalized = phone.replace(/\s/g, '').replace(/^\+84/, '0');
+    return /^0(2[0-9]|3[2-9]|5[2689]|7[06-9]|8[1-9]|9[0-9])[0-9]{7}$/.test(normalized);
   },
 
   isValidPassword(password) {
-    // At least 6 chars, 1 uppercase, 1 lowercase, 1 number
+    // Ít nhất 6 ký tự, có chữ hoa, chữ thường và số
     return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/.test(password);
   }
 };
@@ -694,32 +750,52 @@ const branch = {
   list: [],
 
   async init() {
-    // Load branches from user data
     this.list = auth.user?.branches || [];
-    this.current = this.getCurrent();
+    this.current = this._restoreCurrent();
     this.renderSelector();
   },
 
-  getCurrent() {
-    // Priority: localStorage > primaryBranch > first branch
+  // Khôi phục cơ sở đã chọn: localStorage → primaryBranch → cơ sở đầu tiên
+  _restoreCurrent() {
     const savedId = localStorage.getItem('currentBranchId');
     if (savedId) {
       const found = this.list.find(b => b.id == savedId);
       if (found) return found;
+      // savedId không còn hợp lệ (đã bị xóa/thu hồi quyền)
+      localStorage.removeItem('currentBranchId');
     }
     return auth.user?.primaryBranch || this.list[0] || null;
   },
 
+  /**
+   * Chuyển sang cơ sở khác.
+   * @param {string|number} branchId - ID cơ sở, hoặc "" để xem tất cả (chỉ is_system_wide)
+   */
   setCurrent(branchId) {
-    const found = this.list.find(b => b.id == branchId);
-    if (found) {
+    const isShowAll = branchId === '' || branchId === null || branchId === undefined;
+
+    if (isShowAll) {
+      // "Tất cả cơ sở" — chỉ admin/is_system_wide mới có option này
+      if (!auth.user?.is_system_wide) return;
+      this.current = null;
+      localStorage.removeItem('currentBranchId');
+      notify.info('Đang xem tất cả cơ sở');
+    } else {
+      const found = this.list.find(b => b.id == branchId);
+      if (!found) return; // branchId không hợp lệ, bỏ qua
       this.current = found;
-      localStorage.setItem('currentBranchId', branchId);
-      // Reload current page data
-      if (typeof loadData === 'function') loadData();
-      if (typeof loadTableData === 'function') loadTableData();
-      ui.success(`Đã chuyển sang cơ sở: ${found.name}`);
+      localStorage.setItem('currentBranchId', String(branchId));
+      notify.success(`Đã chuyển sang: ${found.name}`);
     }
+
+    // Phát sự kiện để các trang lắng nghe và tự reload
+    window.dispatchEvent(new CustomEvent('branchchange', {
+      detail: { branch: this.current }
+    }));
+
+    // Backward compat: gọi loadData nếu trang không lắng nghe sự kiện
+    if (typeof window.loadData === 'function') window.loadData();
+    else if (typeof window.loadTableData === 'function') window.loadTableData();
   },
 
   getId() {
@@ -731,20 +807,24 @@ const branch = {
   },
 
   getName() {
-    return this.current?.name || '';
+    return this.current?.name || 'Tất cả cơ sở';
   },
 
-  // Add branchId to API query string
+  /**
+   * Thêm branchId vào params nếu cần lọc theo cơ sở.
+   * - current != null → lọc theo current (áp dụng cho cả admin đã chọn cơ sở cụ thể)
+   * - current == null (is_system_wide chọn "Tất cả") → không thêm → backend trả tất cả
+   */
   addToQuery(params = {}) {
-    if (this.current && !auth.user?.is_system_wide) {
+    if (this.current) {
       params.branchId = this.current.id;
     }
     return params;
   },
 
-  // Build query string with branch filter
+  // Build query string kèm branch filter
   buildQuery(params = {}) {
-    const withBranch = this.addToQuery(params);
+    const withBranch = this.addToQuery({ ...params });
     const query = new URLSearchParams();
     Object.keys(withBranch).forEach(key => {
       if (withBranch[key] !== null && withBranch[key] !== undefined && withBranch[key] !== '') {
@@ -758,45 +838,50 @@ const branch = {
     const container = document.getElementById('branchSelector');
     if (!container) return;
 
-    // Admin can see all, others only see their branches
-    if (auth.user?.is_system_wide) {
-      // Admin: show dropdown with "All" option
-      container.innerHTML = `
-        <div class="branch-selector">
-          <i class="fas fa-building"></i>
-          <select id="branchSelect" onchange="branch.setCurrent(this.value)">
-            <option value="">Tất cả cơ sở</option>
-            ${this.list.map(b => `
-              <option value="${b.id}" ${this.current?.id == b.id ? 'selected' : ''}>
-                ${b.name}
-              </option>
-            `).join('')}
-          </select>
-        </div>
-      `;
-    } else if (this.list.length > 1) {
-      // Multiple branches: show dropdown
-      container.innerHTML = `
-        <div class="branch-selector">
-          <i class="fas fa-building"></i>
-          <select id="branchSelect" onchange="branch.setCurrent(this.value)">
-            ${this.list.map(b => `
-              <option value="${b.id}" ${this.current?.id == b.id ? 'selected' : ''}>
-                ${b.name}
-              </option>
-            `).join('')}
-          </select>
-        </div>
-      `;
+    container.innerHTML = '';
+
+    const wrapper = document.createElement('div');
+
+    if (auth.user?.is_system_wide || this.list.length > 1) {
+      // Dropdown: admin hoặc user nhiều cơ sở
+      wrapper.className = 'branch-selector';
+      const icon = document.createElement('i');
+      icon.className = 'fas fa-building';
+      wrapper.appendChild(icon);
+
+      const select = document.createElement('select');
+      select.id = 'branchSelect';
+
+      if (auth.user?.is_system_wide) {
+        const allOpt = document.createElement('option');
+        allOpt.value = '';
+        allOpt.textContent = 'Tất cả cơ sở';
+        allOpt.selected = this.current === null;
+        select.appendChild(allOpt);
+      }
+
+      this.list.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b.id;
+        opt.textContent = b.name;
+        opt.selected = this.current?.id == b.id;
+        select.appendChild(opt);
+      });
+
+      // Dùng event listener thay vì inline onchange
+      select.addEventListener('change', (e) => this.setCurrent(e.target.value));
+      wrapper.appendChild(select);
+
     } else if (this.list.length === 1) {
-      // Single branch: just show name
-      container.innerHTML = `
-        <div class="branch-badge">
-          <i class="fas fa-building"></i>
-          <span>${this.list[0].name}</span>
-        </div>
-      `;
+      // Chỉ một cơ sở: hiển thị badge tĩnh, không cần dropdown
+      wrapper.className = 'branch-badge';
+      wrapper.innerHTML = '<i class="fas fa-building"></i>';
+      const span = document.createElement('span');
+      span.textContent = this.list[0].name;
+      wrapper.appendChild(span);
     }
+
+    container.appendChild(wrapper);
   }
 };
 
@@ -855,10 +940,14 @@ const loading = {
 
   button(btn, isLoading, originalText = '') {
     if (isLoading) {
+      // Đánh dấu ngay trước bất kỳ async operation nào để tránh double-click
+      if (btn.dataset.loading === 'true') return;
+      btn.dataset.loading = 'true';
       btn.disabled = true;
       btn.dataset.originalText = btn.innerHTML;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
     } else {
+      btn.dataset.loading = '';
       btn.disabled = false;
       btn.innerHTML = originalText || btn.dataset.originalText || 'Submit';
     }

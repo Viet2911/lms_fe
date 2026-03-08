@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,17 +8,84 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.2s; }
-    .upload-area:hover { border-color: var(--primary); background: var(--bg-main); }
-    .upload-icon { font-size: 48px; color: var(--primary); margin-bottom: 16px; }
-    .file-card { background: white; border-radius: 12px; padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; text-align: center; transition: all 0.2s; }
-    .file-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-    .file-icon { width: 64px; height: 64px; background: var(--bg-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; font-size: 24px; color: var(--primary); }
-    .file-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; margin-bottom: 4px; }
-    .file-actions { display: flex; gap: 8px; margin-top: 12px; }
-    .selected-file { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg-main); border-radius: 8px; margin-bottom: 8px; }
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: var(--bg-main);
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .file-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .file-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .file-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--bg-main);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      font-size: 24px;
+      color: var(--primary);
+    }
+
+    .file-name {
+      font-weight: 600;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      margin-bottom: 4px;
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .selected-file {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: var(--bg-main);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
   </style>
 </head>
+
 <body>
   <div class="app-container">
     <aside class="sidebar" id="sidebar"></aside>
@@ -25,15 +93,23 @@
     <main class="main-content">
       <header class="header">
         <div class="header-left">
-          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
-          <div><h1 class="page-title">Thư viện File</h1><p class="page-subtitle">Quản lý file bài tập, tài liệu (Cloudinary)</p></div>
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i
+              class="fas fa-bars"></i></button>
+          <div>
+            <h1 class="page-title">Thư viện File</h1>
+            <p class="page-subtitle">Quản lý file bài tập, tài liệu (Cloudinary)</p>
+          </div>
         </div>
         <div class="header-right">
-          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i class="fas fa-sun"></i></button>
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i
+              class="fas fa-sun"></i></button>
           <button class="btn btn-primary" onclick="openUploadModal()"><i class="fas fa-upload"></i> Tải lên</button>
           <div class="user-menu" onclick="auth.logout()">
             <div class="user-avatar" id="userAvatar">U</div>
-            <div class="user-info"><div class="user-name" id="userName">User</div><div class="user-role" id="userRole">Role</div></div>
+            <div class="user-info">
+              <div class="user-name" id="userName">User</div>
+              <div class="user-role" id="userRole">Role</div>
+            </div>
           </div>
         </div>
       </header>
@@ -41,7 +117,8 @@
       <div class="page-content">
         <div class="stats-grid" id="statsGrid"></div>
         <div class="filters-bar">
-          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Tìm kiếm..." onkeyup="if(event.key==='Enter') loadData()"></div>
+          <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput"
+              placeholder="Tìm kiếm..." onkeyup="if(event.key==='Enter') loadData()"></div>
           <select id="typeFilter" class="filter-select" onchange="loadData()">
             <option value="">Tất cả loại</option>
             <option value="pdf">PDF</option>
@@ -50,7 +127,8 @@
           </select>
           <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i></button>
         </div>
-        <div class="cards-grid" id="filesGrid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));"></div>
+        <div class="cards-grid" id="filesGrid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+        </div>
       </div>
     </main>
   </div>
@@ -58,7 +136,10 @@
   <!-- Upload Modal -->
   <div class="modal-overlay" id="uploadModal">
     <div class="modal-content">
-      <div class="modal-header"><h3 class="modal-title">Tải file lên Cloudinary</h3><button class="modal-close" onclick="modal.hide('uploadModal')">&times;</button></div>
+      <div class="modal-header">
+        <h3 class="modal-title">Tải file lên Cloudinary</h3><button class="modal-close"
+          onclick="modal.hide('uploadModal')">&times;</button>
+      </div>
       <div class="modal-body">
         <form id="uploadForm">
           <div class="form-group">
@@ -66,11 +147,13 @@
             <div class="upload-area" id="uploadArea">
               <i class="fas fa-cloud-upload-alt upload-icon"></i>
               <p>Kéo thả file hoặc click để chọn</p>
-              <input type="file" id="fileInput" style="display:none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif">
+              <input type="file" id="fileInput" style="display:none;" multiple
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif">
             </div>
             <div id="selectedFiles"></div>
           </div>
-          <div class="form-group"><label class="form-label">Mô tả</label><input type="text" name="description" class="form-control" placeholder="Mô tả file..."></div>
+          <div class="form-group"><label class="form-label">Mô tả</label><input type="text" name="description"
+              class="form-control" placeholder="Mô tả file..."></div>
           <div class="form-group">
             <label class="form-label">Danh mục</label>
             <select name="category" class="form-control">
@@ -83,7 +166,8 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="modal.hide('uploadModal')">Hủy</button>
-        <button class="btn btn-primary" onclick="uploadFiles()" id="btnUpload"><i class="fas fa-upload"></i> Tải lên</button>
+        <button class="btn btn-primary" onclick="uploadFiles()" id="btnUpload"><i class="fas fa-upload"></i> Tải
+          lên</button>
       </div>
     </div>
   </div>
@@ -91,6 +175,8 @@
   <script src="../js/config.js"></script>
   <script src="../js/app.js"></script>
   <script src="../js/sidebar.js"></script>
+  <script src="../js/reactive.js"></script>
+  <script src="../js/crud-mixin.js"></script>
   <script>
     let selectedFiles = [];
 
@@ -239,4 +325,5 @@
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
+
 </html>

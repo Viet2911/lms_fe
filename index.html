@@ -8,163 +8,603 @@
   <link rel="icon" type="image/x-icon" href="./css/graduation-cap-solid.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
+    /* ===== DASHBOARD LAYOUT ===== */
+    .page-content {
+      padding: 28px 32px;
     }
 
-    .dashboard-card {
-      background: var(--bg-card);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      overflow: hidden;
+    .dash-section {
+      margin-top: 28px;
     }
 
-    .dashboard-card-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .dashboard-card-header h3 {
-      font-size: 16px;
-      font-weight: 600;
+    .dash-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .dashboard-card-header h3 i {
-      color: var(--primary);
+    .dash-section-title i {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #34a853, #2d9647);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
     }
 
-    .dashboard-card-body {
-      padding: 16px 20px;
+    .dash-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
     }
 
-    .dashboard-card-body .empty {
+    .dash-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .dash-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .dash-grid-1-2 {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+    }
+
+    .dash-grid-2-1 {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1100px) {
+      .dash-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dash-grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dash-grid-1-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .page-content {
+        padding: 16px;
+      }
+
+      .dash-grid-2,
+      .dash-grid-3,
+      .dash-grid-4,
+      .dash-grid-1-2,
+      .dash-grid-2-1 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== TOPBAR OVERRIDES ===== */
+    .header {
+      padding: 0 28px;
+      height: 68px;
+      box-shadow: 0 1px 0 var(--border);
+    }
+
+    .theme-toggle.topbar-btn {
+      border-radius: 10px;
+      width: 38px;
+      height: 38px;
+    }
+
+    @media (max-width: 768px) {
+      .topbar-search {
+        display: none;
+      }
+    }
+
+    /* ===== TOPBAR SEARCH ===== */
+    .topbar-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 12px;
+      height: 38px;
+      width: 240px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .topbar-search:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.1);
+    }
+
+    .topbar-search i {
       color: var(--text-muted);
-      text-align: center;
-      padding: 20px;
+      font-size: 13px;
     }
 
-    .mini-table {
+    .topbar-search input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 13px;
+      color: var(--text-primary);
       width: 100%;
     }
 
-    .mini-table td {
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-    }
-
-    .mini-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .mini-table .label {
+    .topbar-search input::placeholder {
       color: var(--text-muted);
     }
 
-    .quick-stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .quick-stat {
+    .topbar-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
       background: var(--bg-secondary);
-      padding: 12px;
-      border-radius: 8px;
-      text-align: center;
-    }
-
-    .quick-stat .value {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .quick-stat .label {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .session-item {
       display: flex;
       align-items: center;
-      padding: 12px 0;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 15px;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .topbar-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .notif-dot {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: 2px solid var(--bg-secondary);
+    }
+
+    /* ===== STAT CARDS ===== */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-pill {
+      background: var(--bg-card);
+      border-radius: 18px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+      border: 1px solid transparent;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: default;
+    }
+
+    .stat-pill:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .spi {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .spi.g {
+      background: linear-gradient(135deg, #34a853, #2d9647);
+      color: #fff;
+    }
+
+    .spi.b {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: #fff;
+    }
+
+    .spi.o {
+      background: linear-gradient(135deg, #f97316, #ea6c0a);
+      color: #fff;
+    }
+
+    .spi.y {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+    }
+
+    .spi.r {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+    }
+
+    .spi.p {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: #fff;
+    }
+
+    .spi.c {
+      background: linear-gradient(135deg, #06b6d4, #0891b2);
+      color: #fff;
+    }
+
+    .spi.sl {
+      background: linear-gradient(135deg, #94a3b8, #64748b);
+      color: #fff;
+    }
+
+    .spv {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1;
+      letter-spacing: -0.5px;
+    }
+
+    .spl {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* ===== DASH CARDS ===== */
+    .dash-card {
+      background: var(--bg-card);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border);
+    }
+
+    .dash-card-hd {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       border-bottom: 1px solid var(--border);
     }
 
-    .session-item:last-child {
-      border-bottom: none;
-    }
-
-    .session-time {
-      background: var(--primary);
-      color: white;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-weight: 600;
-      margin-right: 12px;
-      min-width: 60px;
-      text-align: center;
-    }
-
-    .session-info {
-      flex: 1;
-    }
-
-    .session-info .class-name {
-      font-weight: 600;
-    }
-
-    .session-info .meta {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .trial-progress {
+    .dash-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .trial-progress .bar {
+    .dash-card-title i {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: rgba(52, 168, 83, 0.12);
+      color: #34a853;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .dash-card-bd {
+      padding: 16px 20px;
+    }
+
+    .dash-card-bd.np {
+      padding: 0;
+    }
+
+    /* ===== MINI TABLE ===== */
+    .dt {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .dt td {
+      padding: 11px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    .dt tr:last-child td {
+      border-bottom: none;
+    }
+
+    .dt tr {
+      transition: background 0.15s;
+    }
+
+    .dt tr:hover td {
+      background: var(--bg-hover);
+    }
+
+    /* ===== SESSION ROW ===== */
+    .srow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .srow:hover {
+      background: var(--bg-hover);
+    }
+
+    .srow:last-child {
+      border-bottom: none;
+    }
+
+    .stime {
+      background: linear-gradient(135deg, #34a853, #2d9647);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 9px;
+      min-width: 52px;
+      text-align: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(52, 168, 83, 0.3);
+    }
+
+    .sinfo {
       flex: 1;
+      min-width: 0;
+    }
+
+    .sname {
+      font-weight: 600;
+      font-size: 13px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text-primary);
+    }
+
+    .smeta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ===== BRANCH TAG ===== */
+    .btag {
+      display: inline-block;
+      background: rgba(52, 168, 83, 0.1);
+      color: #34a853;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      margin-left: 5px;
+      vertical-align: middle;
+      letter-spacing: 0.3px;
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    .pbar {
       height: 6px;
-      background: var(--bg-secondary);
-      border-radius: 3px;
+      background: var(--border);
+      border-radius: 99px;
       overflow: hidden;
     }
 
-    .trial-progress .bar-fill {
+    .pbar-fill {
       height: 100%;
-      background: var(--primary);
-      border-radius: 3px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #34a853, #2d9647);
     }
 
-    .trial-progress .text {
-      font-size: 12px;
+    /* ===== EMPTY STATE ===== */
+    .dempty {
+      text-align: center;
+      padding: 36px 20px;
       color: var(--text-muted);
-      white-space: nowrap;
+      font-size: 13px;
     }
 
-    .branch-tag-sm {
-      display: inline-block;
+    .dempty i {
+      font-size: 28px;
+      margin-bottom: 10px;
+      opacity: 0.3;
+      display: block;
+    }
+
+    /* ===== RANK ===== */
+    .rnum {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
       background: var(--bg-secondary);
-      color: var(--primary);
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    /* ===== OK BANNER ===== */
+    .ok-banner {
+      text-align: center;
+      padding: 32px 20px;
+      color: #34a853;
+    }
+
+    .ok-banner i {
+      font-size: 36px;
+      margin-bottom: 10px;
+      display: block;
+      opacity: 0.8;
+    }
+
+    /* ===== FINANCE METRIC CARD ===== */
+    .dash-card-bd .metric-center {
+      text-align: center;
+      padding: 22px 12px;
+    }
+
+    /* ===== SIDEBAR OVERRIDES ===== */
+    .sidebar {
+      width: 240px;
+      border-right: 1px solid var(--border);
+      box-shadow: 1px 0 0 var(--border);
+    }
+
+    .main-content {
+      margin-left: 240px;
+    }
+
+    .sidebar-logo {
+      padding: 20px 16px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+
+    .sidebar-logo i {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, #34a853, #2d9647);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      color: white;
+      box-shadow: 0 4px 10px rgba(52, 168, 83, 0.3);
+    }
+
+    .sidebar-nav {
+      padding: 4px 10px;
+    }
+
+    .nav-item {
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      gap: 10px;
+      margin-bottom: 2px;
+    }
+
+    .nav-item i {
+      width: 18px;
+      font-size: 14px;
+    }
+
+    .nav-item.active {
+      background: rgba(52, 168, 83, 0.1);
+      color: #34a853;
       font-weight: 600;
-      margin-left: 4px;
+    }
+
+    .nav-item.active i {
+      color: #34a853;
+    }
+
+    .nav-section-title {
+      font-size: 10px;
+      padding: 12px 14px 4px;
+      color: var(--text-muted);
+      letter-spacing: 0.8px;
+    }
+
+    .sidebar-branch {
+      padding: 0 10px 8px;
+    }
+
+    .sidebar-branch select,
+    .sidebar-branch .branch-badge {
+      border-radius: 10px;
+      font-size: 12.5px;
+    }
+
+    .sidebar-footer {
+      padding: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+      }
+    }
+
+    /* ===== WELCOME BANNER ===== */
+    .dash-welcome {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .dash-welcome-text h2 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .dash-welcome-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .dash-welcome-icon {
+      font-size: 42px;
+      color: #34a853;
+      opacity: 0.25;
+    }
+
+    /* Override for warning/alert cards */
+    .dash-card[style*="border-color:#fde68a"],
+    .dash-card[style*="border-color:#fca5a5"],
+    .dash-card[style*="border-color:#a5f3fc"] {
+      border-width: 1.5px;
     }
   </style>
 </head>
@@ -176,17 +616,26 @@
     <main class="main-content">
       <header class="header">
         <div class="header-left">
-          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i
-              class="fas fa-bars"></i></button>
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
           <div>
             <h1 class="page-title">Dashboard</h1>
             <p class="page-subtitle">Xin chào, <span id="welcomeName">User</span>!</p>
           </div>
         </div>
         <div class="header-right">
-          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện">
+          <div class="topbar-search">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Tìm kiếm...">
+          </div>
+          <button class="topbar-btn theme-toggle" onclick="theme.toggle()" title="Đổi giao diện">
             <i class="fas fa-moon"></i>
             <i class="fas fa-sun"></i>
+          </button>
+          <button class="topbar-btn" title="Thông báo">
+            <i class="fas fa-bell"></i>
+            <span class="notif-dot"></span>
           </button>
           <div class="user-menu" onclick="auth.logout()">
             <div class="user-avatar" id="userAvatar">U</div>
@@ -199,6 +648,13 @@
       </header>
 
       <div class="page-content">
+        <div class="dash-welcome" id="dashWelcome" style="display:none">
+          <div class="dash-welcome-text">
+            <h2>Xin chào, <span id="welcomeNameBanner">User</span>! 👋</h2>
+            <p id="welcomeDateLine">Chào mừng quay lại hệ thống ARMY Tech LMS</p>
+          </div>
+          <div class="dash-welcome-icon"><i class="fas fa-graduation-cap"></i></div>
+        </div>
         <div id="dashboardContent">
           <div class="loading">
             <div class="spinner"></div>
@@ -211,555 +667,964 @@
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>
   <script src="js/sidebar.js"></script>
+  <script src="../js/reactive.js"></script>
+  <script src="../js/crud-mixin.js"></script>
   <script>
+    /* ===== HELPERS ===== */
+    function fmtCur(v) { return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ'; }
+    function fmtTime(t) { return t ? t.substring(0, 5) : '--:--'; }
+
+    const _charts = {};
+    function mkChart(id, cfg) {
+      if (_charts[id]) { _charts[id].destroy(); }
+      const el = document.getElementById(id);
+      if (!el) return;
+      _charts[id] = new Chart(el, cfg);
+    }
+
+    function secTitle(icon, lbl) {
+      return `<div class="dash-section-title"><i class="${icon}"></i> ${lbl}</div>`;
+    }
+
+    function empty(icon, msg) {
+      return `<div class="dempty"><i class="${icon}"></i>${msg}</div>`;
+    }
+
+    /* ===== LOAD DASHBOARD ===== */
     async function loadDashboard() {
       const role = auth.user?.role_name;
       const container = document.getElementById('dashboardContent');
-
       try {
-        let endpoint = '/dashboard/admin';
-        let renderFn = renderAdminDashboard;
-
-        // Xác định endpoint và render function theo role
+        let endpoint = '/dashboard/admin', renderFn = renderAdminDash;
         switch (role) {
-          case 'ADMIN':
-          case 'GDV':
-            endpoint = '/dashboard/admin';
-            renderFn = renderAdminDashboard;
-            break;
-          case 'CHU':
-            endpoint = '/dashboard/owner';
-            renderFn = renderOwnerDashboard;
-            break;
-          case 'QLCS':
-            endpoint = '/dashboard/qlcs';
-            renderFn = renderOwnerDashboard;
-            break;
-          case 'HOEC':
-            endpoint = '/dashboard/hoec';
-            renderFn = renderHOECDashboard;
-            break;
-          case 'OM':
-            endpoint = '/dashboard/om';
-            renderFn = renderOMDashboard;
-            break;
-          case 'CM':
-            endpoint = '/dashboard/cm';
-            renderFn = renderCMDashboard;
-            break;
-          case 'EC':
-          case 'SALE':
-            endpoint = '/dashboard/ec';
-            renderFn = renderECDashboard;
-            break;
-          case 'TEACHER':
-            endpoint = '/dashboard/teacher';
-            renderFn = renderTeacherDashboard;
-            break;
-          case 'TA':
-            endpoint = '/dashboard/ta';
-            renderFn = renderTeacherDashboard;
-            break;
-          default:
-            endpoint = '/dashboard/ec';
-            renderFn = renderECDashboard;
+          case 'ADMIN': case 'GDV': endpoint = '/dashboard/admin'; renderFn = renderAdminDash; break;
+          case 'CHU': endpoint = '/dashboard/owner'; renderFn = renderOwnerDash; break;
+          case 'QLCS': endpoint = '/dashboard/qlcs'; renderFn = renderOwnerDash; break;
+          case 'HOEC': endpoint = '/dashboard/hoec'; renderFn = renderHOECDash; break;
+          case 'OM': endpoint = '/dashboard/om'; renderFn = renderOMDash; break;
+          case 'CM': endpoint = '/dashboard/cm'; renderFn = renderCMDash; break;
+          case 'EC': case 'SALE': endpoint = '/dashboard/ec'; renderFn = renderECDash; break;
+          case 'TEACHER': endpoint = '/dashboard/teacher'; renderFn = renderTeacherDash; break;
+          case 'TA': endpoint = '/dashboard/ta'; renderFn = renderTeacherDash; break;
+          default: endpoint = '/dashboard/ec'; renderFn = renderECDash;
         }
-
-        const query = branch.buildQuery({});
-        const result = await api.get(endpoint + query);
-        const data = result.data;
-
-        renderFn(container, data);
-      } catch (error) {
-        container.innerHTML = `<div class="empty-state"><p>Không thể tải dữ liệu: ${error.message}</p></div>`;
+        const result = await api.get(endpoint + branch.buildQuery({}));
+        renderFn(container, result.data);
+      } catch (e) {
+        container.innerHTML = `<div class="empty-state"><p>Không thể tải dữ liệu: ${e.message}</p></div>`;
       }
     }
 
-    function renderAdminDashboard(container, data) {
+    /* =====================================================
+       ADMIN DASHBOARD
+    ===================================================== */
+    function renderAdminDash(container, d) {
+      const leads = d.leads || {};
+      const students = d.students || {};
+      const cls = d.classes || {};
+      const ss = d.saleStats || {};
+
+      // Conversion rate
+      const totalPipeline = (leads.scheduled || 0) + (leads.trial || 0) + (leads.waiting || 0) + (leads.converted || 0);
+      const convRate = totalPipeline > 0 ? Math.round((leads.converted || 0) / totalPipeline * 100) : 0;
+
       container.innerHTML = `
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-user-graduate"></i></div><div class="stat-content"><div class="stat-value">${data.students?.active || 0}</div><div class="stat-label">Học sinh (${data.students?.total || 0} tổng)</div></div></div>
-          <div class="stat-card"><div class="stat-icon info"><i class="fas fa-chalkboard"></i></div><div class="stat-content"><div class="stat-value">${data.classes?.active || 0}</div><div class="stat-label">Lớp đang hoạt động</div></div></div>
-          <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-calendar-day"></i></div><div class="stat-content"><div class="stat-value">${data.leads?.today || 0}</div><div class="stat-label">Lịch hôm nay</div></div></div>
-          <div class="stat-card" style="border-left: 4px solid #06b6d4;"><div class="stat-icon" style="background:#cffafe;color:#0891b2;"><i class="fas fa-clock"></i></div><div class="stat-content"><div class="stat-value">${data.leads?.waiting || 0}</div><div class="stat-label">Chờ xử lý</div></div></div>
-          <div class="stat-card"><div class="stat-icon" style="background:#ede9fe;color:#7c3aed;"><i class="fas fa-graduation-cap"></i></div><div class="stat-content"><div class="stat-value">${data.leads?.trial || 0}</div><div class="stat-label">Đang học thử</div></div></div>
-          <div class="stat-card"><div class="stat-icon success"><i class="fas fa-check-circle"></i></div><div class="stat-content"><div class="stat-value">${data.leads?.converted || 0}</div><div class="stat-label">Đã chuyển đổi</div></div></div>
-          <div class="stat-card"><div class="stat-icon secondary"><i class="fas fa-chalkboard-teacher"></i></div><div class="stat-content"><div class="stat-value">${data.teachers || 0}</div><div class="stat-label">Giáo viên</div></div></div>
-          <div class="stat-card"><div class="stat-icon" style="background:#fef3c7;color:#d97706;"><i class="fas fa-user-clock"></i></div><div class="stat-content"><div class="stat-value">${data.students?.pending || 0}</div><div class="stat-label">Chờ xếp lớp</div></div></div>
+        <!-- ── KPIs ── -->
+        <div class="stats-row" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+          <div class="stat-pill">
+            <div class="spi g"><i class="fas fa-user-graduate"></i></div>
+            <div><div class="spv">${students.active || 0}</div><div class="spl">Học viên đang học</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi b"><i class="fas fa-chalkboard"></i></div>
+            <div><div class="spv">${cls.active || 0}</div><div class="spl">Lớp hoạt động</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi y"><i class="fas fa-calendar-day"></i></div>
+            <div><div class="spv">${leads.today || 0}</div><div class="spl">Lịch hôm nay</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi c"><i class="fas fa-clock"></i></div>
+            <div><div class="spv">${leads.waiting || 0}</div><div class="spl">Chờ xử lý</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi g"><i class="fas fa-check-circle"></i></div>
+            <div><div class="spv">${leads.converted || 0}</div><div class="spl">Chuyển đổi T.này</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi ${convRate >= 30 ? 'g' : convRate >= 15 ? 'y' : 'r'}"><i class="fas fa-percentage"></i></div>
+            <div><div class="spv">${convRate}%</div><div class="spl">Tỉ lệ chuyển đổi</div></div>
+          </div>
         </div>
 
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-calendar-check"></i> Leads cần xử lý</h3><a href="pages/leads.html" class="btn btn-sm btn-primary">Xem tất cả</a></div>
-            <div class="dashboard-card-body">
-              ${data.recentLeads?.length ? `<table class="mini-table">
-                ${data.recentLeads.map(l => `<tr>
-                  <td>
-                    <strong>${l.student_name}</strong> <span class="branch-tag-sm">${l.branch_code}</span>
-                    <br><small class="text-muted">${l.customer_phone}</small>
-                  </td>
-                  <td>${l.subject_name || '-'}</td>
-                  <td>
-                    ${l.status === 'waiting' ?
-          `<span class="badge" style="background:#cffafe;color:#0891b2;"><i class="fas fa-clock"></i> Chờ (${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3})</span>` :
-          l.status === 'trial' ?
-            `<span class="badge badge-info">${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3} buổi</span>` :
-            `<span class="badge badge-warning">${l.scheduled_time?.substring(0, 5) || '-'}</span>`
+        <!-- ── Charts row ── -->
+        <div class="dash-section">
+          <div class="dash-grid-3">
+            <!-- Lớp học donut -->
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-chalkboard"></i> Tỉ lệ lớp học</span>
+                <a href="pages/classes.html" class="btn btn-sm btn-secondary" style="font-size:11px">Xem lớp</a>
+              </div>
+              <div class="dash-card-bd" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                <div style="width:130px;height:130px;flex-shrink:0;position:relative">
+                  <canvas id="classDonut"></canvas>
+                  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+                    <div style="font-size:18px;font-weight:800;color:#34a853">${cls.total || 0}</div>
+                    <div style="font-size:10px;color:var(--text-muted)">tổng</div>
+                  </div>
+                </div>
+                <div style="flex:1;min-width:100px;display:flex;flex-direction:column;gap:8px">
+                  ${[
+                    ['#34a853', 'Đang dạy', cls.active || 0],
+                    ['#2563eb', 'Hoàn thành', cls.completed || 0],
+                    ['#94a3b8', 'Ngừng', cls.inactive || 0],
+                  ].map(([c, l, v]) => `
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="width:9px;height:9px;border-radius:2px;background:${c};flex-shrink:0;display:inline-block"></span>
+                      <span style="font-size:12px;flex:1;color:var(--text-secondary)">${l}</span>
+                      <strong style="font-size:13px">${v}</strong>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+
+            <!-- Leads funnel -->
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-filter"></i> Phễu Sale</span>
+                <a href="pages/leads.html" class="btn btn-sm btn-secondary" style="font-size:11px">Xem leads</a>
+              </div>
+              <div class="dash-card-bd" style="display:flex;flex-direction:column;gap:10px">
+                ${[
+                  ['Đã lên lịch', leads.scheduled || 0, '#f59e0b', '#fffbeb'],
+                  ['Đang trial', leads.trial || 0, '#7c3aed', '#f5f3ff'],
+                  ['Chờ xử lý', leads.waiting || 0, '#06b6d4', '#ecfeff'],
+                  ['Chuyển đổi', leads.converted || 0, '#34a853', '#f0fdf4'],
+                ].map(([lbl, val, color, bg]) => {
+                  const pct = totalPipeline > 0 ? Math.min(100, Math.round(val / totalPipeline * 100)) : 0;
+                  return `<div>
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+                      <span style="color:var(--text-secondary)">${lbl}</span>
+                      <strong style="color:${color}">${val}</strong>
+                    </div>
+                    <div class="pbar"><div class="pbar-fill" style="width:${pct}%;background:${color}"></div></div>
+                  </div>`;
+                }).join('')}
+                <div style="font-size:11px;color:var(--text-muted);text-align:right;margin-top:2px">Tỉ lệ chuyển đổi: <strong style="color:#34a853">${convRate}%</strong></div>
+              </div>
+            </div>
+
+            <!-- Sale tháng -->
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-chart-line"></i> Doanh số tháng này</span>
+                <a href="pages/sale-reports.html" class="btn btn-sm btn-secondary" style="font-size:11px">Chi tiết</a>
+              </div>
+              <div class="dash-card-bd" style="display:flex;flex-direction:column;gap:14px">
+                <div style="text-align:center">
+                  <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">DOANH SỐ</div>
+                  <div style="font-size:26px;font-weight:800;color:#34a853">${fmtCur(ss.total_revenue)}</div>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <div style="flex:1;background:var(--bg-secondary);border-radius:10px;padding:10px;text-align:center">
+                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">Cọc</div>
+                    <div style="font-size:14px;font-weight:700;color:#f59e0b">${fmtCur(ss.total_deposit)}</div>
+                  </div>
+                  <div style="flex:1;background:var(--bg-secondary);border-radius:10px;padding:10px;text-align:center">
+                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">Dự thu</div>
+                    <div style="font-size:14px;font-weight:700;color:#4285f4">${fmtCur(ss.total_expected)}</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <div style="flex:1;background:var(--bg-secondary);border-radius:10px;padding:10px;text-align:center">
+                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">Leads chuyển</div>
+                    <div style="font-size:18px;font-weight:700;color:#34a853">${ss.total_converted || leads.converted || 0}</div>
+                  </div>
+                  <div style="flex:1;background:var(--bg-secondary);border-radius:10px;padding:10px;text-align:center">
+                    <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">Check-in</div>
+                    <div style="font-size:18px;font-weight:700;color:#7c3aed">${ss.total_checkin || 0}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Hôm nay ── -->
+        <div class="dash-section">
+          ${secTitle('fas fa-calendar-day', 'Hôm nay')}
+          <div class="dash-grid-2">
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-list-check"></i> Leads cần xử lý</span>
+                <a href="pages/leads.html" class="btn btn-sm btn-primary">Xem tất cả</a>
+              </div>
+              <div class="dash-card-bd np">
+                ${d.recentLeads?.length ? `<table class="dt">
+                  ${d.recentLeads.map(l => `<tr>
+                    <td>
+                      <div style="font-weight:600">${l.student_name}<span class="btag">${l.branch_code}</span></div>
+                      <div style="font-size:11px;color:var(--text-muted)">${l.customer_phone}</div>
+                    </td>
+                    <td>
+                      ${l.status === 'waiting'
+                        ? `<span class="badge" style="background:#ecfeff;color:#0891b2"><i class="fas fa-clock"></i> Chờ</span>`
+                        : l.status === 'trial'
+                          ? `<span class="badge badge-info">${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3} buổi</span>`
+                          : `<span class="badge badge-warning">${fmtTime(l.scheduled_time)}</span>`}
+                    </td>
+                  </tr>`).join('')}
+                </table>` : empty('fas fa-inbox', 'Không có leads cần xử lý')}
+              </div>
+            </div>
+
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-chalkboard"></i> Buổi học hôm nay</span>
+                <span class="badge badge-info">${d.todaySessions?.length || 0} buổi</span>
+              </div>
+              <div class="dash-card-bd np">
+                ${d.todaySessions?.length ? d.todaySessions.map(s => `
+                  <div class="srow">
+                    <div class="stime">${fmtTime(s.start_time)}</div>
+                    <div class="sinfo">
+                      <div class="sname">${s.class_name}<span class="btag">${s.branch_code}</span></div>
+                      <div class="smeta">GV: ${s.teacher_name || 'N/A'}</div>
+                    </div>
+                    <span class="badge ${s.attendance_submitted ? 'badge-success' : 'badge-warning'}">${s.attendance_submitted ? 'Đã ĐD' : 'Chưa ĐD'}</span>
+                  </div>
+                `).join('') : empty('fas fa-calendar-xmark', 'Không có buổi học hôm nay')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Cảnh báo & Mới ── -->
+        <div class="dash-section">
+          ${secTitle('fas fa-bell', 'Cảnh báo & Mới nhất')}
+          <div class="dash-grid-2">
+            ${d.pendingStudents?.length ? `
+            <div class="dash-card" style="border-color:#fde68a">
+              <div class="dash-card-hd" style="background:#fffbeb">
+                <span class="dash-card-title" style="color:#b45309"><i class="fas fa-exclamation-triangle" style="color:#f59e0b"></i> Chờ xếp lớp (${d.pendingStudents.length})</span>
+                <a href="pages/students.html?status=pending" class="btn btn-sm btn-warning">Xử lý</a>
+              </div>
+              <div class="dash-card-bd np">
+                <table class="dt">
+                  ${d.pendingStudents.slice(0, 5).map(s => `<tr>
+                    <td><strong>${s.full_name}</strong><span class="btag">${s.branch_code}</span></td>
+                    <td style="color:var(--text-muted);font-size:12px">${s.subject_name || '-'}</td>
+                    <td style="color:var(--text-muted);font-size:12px">${s.parent_phone || '-'}</td>
+                  </tr>`).join('')}
+                </table>
+              </div>
+            </div>
+            ` : `
+            <div class="dash-card">
+              <div class="dash-card-bd ok-banner">
+                <i class="fas fa-check-circle"></i>
+                <strong>Không có học sinh chờ xếp lớp</strong>
+              </div>
+            </div>`}
+
+            ${d.expiringStudents?.length ? `
+            <div class="dash-card" style="border-color:#fca5a5">
+              <div class="dash-card-hd" style="background:#fef2f2">
+                <span class="dash-card-title" style="color:#dc2626"><i class="fas fa-exclamation-triangle" style="color:#ef4444"></i> Học viên sắp/hết phí (${d.expiringStudents.length})</span>
+                <a href="pages/fee-warning.html" class="btn btn-sm btn-danger">Xử lý</a>
+              </div>
+              <div class="dash-card-bd np">
+                <table class="dt">
+                  ${d.expiringStudents.slice(0, 5).map(s => `<tr>
+                    <td><strong>${s.full_name}</strong><span class="btag">${s.branch_code}</span></td>
+                    <td style="color:var(--text-muted);font-size:12px">${s.class_name || '-'}</td>
+                    <td><strong class="${s.remaining_sessions <= 0 ? 'text-danger' : 'text-warning'}">${s.remaining_sessions || 0} buổi</strong></td>
+                  </tr>`).join('')}
+                </table>
+              </div>
+            </div>` : `
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-user-plus"></i> Học viên mới nhất</span>
+                <a href="pages/students.html" class="btn btn-sm btn-secondary">Xem tất cả</a>
+              </div>
+              <div class="dash-card-bd np">
+                ${d.recentStudents?.length ? `<table class="dt">
+                  ${d.recentStudents.map(s => `<tr>
+                    <td><strong>${s.full_name}</strong><span class="btag">${s.branch_code}</span></td>
+                    <td><code>${s.student_code}</code></td>
+                    <td style="color:var(--text-muted);font-size:12px">${ui.formatDate(s.created_at)}</td>
+                  </tr>`).join('')}
+                </table>` : empty('fas fa-user-plus', 'Chưa có học viên mới')}
+              </div>
+            </div>`}
+          </div>
+        </div>
+      `;
+
+      setTimeout(() => {
+        mkChart('classDonut', {
+          type: 'doughnut',
+          data: {
+            datasets: [{
+              data: [cls.active || 0, cls.completed || 0, cls.inactive || 0],
+              backgroundColor: ['#34a853', '#2563eb', '#94a3b8'],
+              borderWidth: 0, hoverOffset: 4
+            }]
+          },
+          options: {
+            cutout: '70%',
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.raw}` } } },
+            responsive: true, maintainAspectRatio: true
+          }
+        });
+      }, 80);
+    }
+
+    /* =====================================================
+       OWNER DASHBOARD
+    ===================================================== */
+    function renderOwnerDash(container, d) {
+      const ss = d.saleStats || {};
+
+      container.innerHTML = `
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="spi g"><i class="fas fa-user-graduate"></i></div>
+            <div><div class="spv">${d.students?.active || 0}</div><div class="spl">Học viên</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi b"><i class="fas fa-chalkboard"></i></div>
+            <div><div class="spv">${d.classes?.active || 0}</div><div class="spl">Lớp học</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi g"><i class="fas fa-money-bill-wave"></i></div>
+            <div><div class="spv" style="font-size:15px">${fmtCur(ss.total_revenue)}</div><div class="spl">Doanh số tháng</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi y"><i class="fas fa-hand-holding-usd"></i></div>
+            <div><div class="spv" style="font-size:15px">${fmtCur(ss.total_deposit)}</div><div class="spl">Cọc</div></div>
+          </div>
+        </div>
+
+        <div class="dash-section">
+          ${secTitle('fas fa-chart-bar', 'Doanh thu')}
+          <div class="dash-grid-2">
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-building"></i> Theo cơ sở</span>
+              </div>
+              <div class="dash-card-bd" style="min-height:180px">
+                <canvas id="branchChart" style="max-height:190px"></canvas>
+              </div>
+            </div>
+
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-trophy"></i> Top EC tháng ${d.currentMonth}</span>
+                <a href="pages/sale-reports.html" class="btn btn-sm btn-primary">Chi tiết</a>
+              </div>
+              <div class="dash-card-bd np">
+                ${d.topEcs?.length ? `<table class="dt">
+                  ${d.topEcs.slice(0, 5).map((e, i) => `<tr>
+                    <td style="width:28px;padding-right:4px">
+                      ${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `<div class="rnum">${i + 1}</div>`}
+                    </td>
+                    <td><strong>${e.ec_name}</strong><span class="btag">${e.branch_code || ''}</span></td>
+                    <td style="color:#34a853;font-weight:600;font-size:12px">${fmtCur(e.revenue)}</td>
+                    <td><span class="badge ${e.kpi_percent >= 100 ? 'badge-success' : 'badge-warning'}">${e.kpi_percent || 0}%</span></td>
+                  </tr>`).join('')}
+                </table>` : empty('fas fa-trophy', 'Chưa có dữ liệu')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-section">
+          ${secTitle('fas fa-chart-line', 'Tổng quan tài chính')}
+          <div class="dash-grid-3">
+            <div class="dash-card">
+              <div class="dash-card-bd" style="text-align:center;padding:18px 12px">
+                <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Doanh số</div>
+                <div style="font-size:24px;font-weight:800;color:#34a853">${fmtCur(ss.total_revenue)}</div>
+              </div>
+            </div>
+            <div class="dash-card">
+              <div class="dash-card-bd" style="text-align:center;padding:18px 12px">
+                <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Cọc</div>
+                <div style="font-size:24px;font-weight:800;color:#f59e0b">${fmtCur(ss.total_deposit)}</div>
+              </div>
+            </div>
+            <div class="dash-card">
+              <div class="dash-card-bd" style="text-align:center;padding:18px 12px">
+                <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Dự thu</div>
+                <div style="font-size:24px;font-weight:800;color:#4285f4">${fmtCur(ss.total_expected)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        ${d.expiringStudents?.length ? `
+        <div class="dash-section">
+          ${secTitle('fas fa-bell', 'Cảnh báo')}
+          <div class="dash-card" style="border-color:#fca5a5">
+            <div class="dash-card-hd" style="background:#fef2f2">
+              <span class="dash-card-title" style="color:#dc2626"><i class="fas fa-exclamation-triangle" style="color:#ef4444"></i> Học viên cần gia hạn (${d.expiringStudents.length})</span>
+              <a href="pages/fee-warning.html" class="btn btn-sm btn-danger">Xem tất cả</a>
+            </div>
+            <div class="dash-card-bd np">
+              <table class="dt">
+                ${d.expiringStudents.slice(0, 5).map(s => `<tr>
+                  <td><strong>${s.full_name}</strong><span class="btag">${s.branch_code}</span></td>
+                  <td style="color:var(--text-muted);font-size:12px">${s.class_name || '-'}</td>
+                  <td><strong class="${s.remaining_sessions <= 0 ? 'text-danger' : 'text-warning'}">${s.remaining_sessions || 0} buổi còn lại</strong></td>
+                </tr>`).join('')}
+              </table>
+            </div>
+          </div>
+        </div>` : ''}
+      `;
+
+      setTimeout(() => {
+        if (d.revenueByBranch?.length) {
+          mkChart('branchChart', {
+            type: 'bar',
+            data: {
+              labels: d.revenueByBranch.map(b => b.code || b.name),
+              datasets: [
+                {
+                  label: 'Doanh số',
+                  data: d.revenueByBranch.map(b => b.revenue || 0),
+                  backgroundColor: 'rgba(52,168,83,0.75)',
+                  borderRadius: 5,
+                },
+                {
+                  label: 'Cọc',
+                  data: d.revenueByBranch.map(b => b.deposit || 0),
+                  backgroundColor: 'rgba(245,158,11,0.75)',
+                  borderRadius: 5,
+                }
+              ]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              plugins: {
+                legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 } } }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: { callback: v => v >= 1e6 ? (v / 1e6).toFixed(0) + 'M' : v, font: { size: 10 } },
+                  grid: { color: '#f0f0f0' }
+                },
+                x: { ticks: { font: { size: 11 } }, grid: { display: false } }
+              }
+            }
+          });
         }
-                  </td>
-                </tr>`).join('')}
-              </table>` : '<p class="empty">Không có leads cần xử lý</p>'}
-            </div>
-          </div>
-
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-calendar-day"></i> Buổi học hôm nay</h3><span class="badge badge-info">${data.todaySessions?.length || 0}</span></div>
-            <div class="dashboard-card-body">
-              ${data.todaySessions?.length ? data.todaySessions.map(s => `
-                <div class="session-item">
-                  <div class="session-time">${s.start_time?.substring(0, 5)}</div>
-                  <div class="session-info">
-                    <div class="class-name">${s.class_name} <span class="branch-tag-sm">${s.branch_code}</span></div>
-                    <div class="meta">GV: ${s.teacher_name || 'N/A'}</div>
-                  </div>
-                  <span class="badge ${s.attendance_submitted ? 'badge-success' : 'badge-warning'}">${s.attendance_submitted ? 'Đã ĐD' : 'Chưa ĐD'}</span>
-                </div>
-              `).join('') : '<p class="empty">Không có buổi học hôm nay</p>'}
-            </div>
-          </div>
-
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-user-plus"></i> Học sinh mới</h3><a href="pages/students.html" class="btn btn-sm btn-secondary">Xem tất cả</a></div>
-            <div class="dashboard-card-body">
-              ${data.recentStudents?.length ? `<table class="mini-table">
-                ${data.recentStudents.map(s => `<tr>
-                  <td><strong>${s.full_name}</strong> <span class="branch-tag-sm">${s.branch_code}</span></td>
-                  <td><code>${s.student_code}</code></td>
-                  <td class="text-muted">${ui.formatDate(s.created_at)}</td>
-                </tr>`).join('')}
-              </table>` : '<p class="empty">Chưa có học sinh</p>'}
-            </div>
-          </div>
-
-          ${data.pendingStudents?.length ? `
-          <div class="dashboard-card" style="border: 2px solid #f59e0b;">
-            <div class="dashboard-card-header" style="background:#fef3c7;"><h3 style="color:#b45309;"><i class="fas fa-exclamation-triangle"></i> Chờ xếp lớp (${data.pendingStudents.length})</h3><a href="pages/students.html?status=pending" class="btn btn-sm btn-warning">Xử lý</a></div>
-            <div class="dashboard-card-body">
-              <table class="mini-table">
-                ${data.pendingStudents.map(s => `<tr>
-                  <td><strong>${s.full_name}</strong> <span class="branch-tag-sm">${s.branch_code}</span></td>
-                  <td>${s.subject_name || '-'}</td>
-                  <td>${s.parent_phone || '-'}</td>
-                </tr>`).join('')}
-              </table>
-            </div>
-          </div>
-          ` : ''}
-        </div>
-      `;
+      }, 80);
     }
 
-    function renderSaleDashboard(container, data) {
+    /* =====================================================
+       HOEC DASHBOARD
+    ===================================================== */
+    function renderHOECDash(container, d) {
+      const ss = d.saleStats || {};
+
       container.innerHTML = `
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-user-graduate"></i></div><div class="stat-content"><div class="stat-value">${data.students?.active || 0}</div><div class="stat-label">Học sinh của tôi</div></div></div>
-          <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-calendar-day"></i></div><div class="stat-content"><div class="stat-value">${data.leads?.today || 0}</div><div class="stat-label">Lịch hôm nay</div></div></div>
-          <div class="stat-card" style="border-left: 4px solid #06b6d4;"><div class="stat-icon" style="background:#cffafe;color:#0891b2;"><i class="fas fa-clock"></i></div><div class="stat-content"><div class="stat-value">${data.leads?.waiting || 0}</div><div class="stat-label">Chờ tiếp theo</div></div></div>
-          <div class="stat-card"><div class="stat-icon info"><i class="fas fa-graduation-cap"></i></div><div class="stat-content"><div class="stat-value">${data.leads?.trial || 0}</div><div class="stat-label">Đang học thử</div></div></div>
-          <div class="stat-card"><div class="stat-icon success"><i class="fas fa-user-check"></i></div><div class="stat-content"><div class="stat-value">${data.leads?.converted || 0}</div><div class="stat-label">Đã chuyển đổi</div></div></div>
-          <div class="stat-card"><div class="stat-icon secondary"><i class="fas fa-calendar-check"></i></div><div class="stat-content"><div class="stat-value">${data.leads?.scheduled || 0}</div><div class="stat-label">Chờ trải nghiệm</div></div></div>
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="spi b"><i class="fas fa-users"></i></div>
+            <div><div class="spv">${d.myEcs?.length || 0}</div><div class="spl">EC quản lý</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi g"><i class="fas fa-money-bill-wave"></i></div>
+            <div><div class="spv" style="font-size:15px">${fmtCur(ss.total_revenue)}</div><div class="spl">Tổng doanh số</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi c"><i class="fas fa-user-check"></i></div>
+            <div><div class="spv">${ss.total_checkin || 0}</div><div class="spl">Tổng checkin</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi ${(ss.avg_kpi || 0) >= 100 ? 'g' : 'y'}"><i class="fas fa-bullseye"></i></div>
+            <div><div class="spv">${Math.round(ss.avg_kpi || 0)}%</div><div class="spl">KPI trung bình</div></div>
+          </div>
         </div>
 
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-calendar-check"></i> Lịch hôm nay</h3><a href="pages/trial-calendar.html" class="btn btn-sm btn-primary">Xem lịch</a></div>
-            <div class="dashboard-card-body">
-              ${data.todayLeads?.length ? data.todayLeads.map(l => `
-                <div class="session-item">
-                  <div class="session-time">${l.scheduled_time?.substring(0, 5) || '--:--'}</div>
-                  <div class="session-info">
-                    <div class="class-name">${l.student_name} <span class="branch-tag-sm">${l.branch_code}</span></div>
-                    <div class="meta">${l.customer_name} - ${l.customer_phone}</div>
-                  </div>
-                  <span class="badge badge-${l.status === 'scheduled' ? 'warning' : 'info'}">
-                    ${l.status === 'scheduled' ? 'Chờ' : `B${(l.trial_sessions_attended || 0) + 1}`}
-                  </span>
-                </div>
-              `).join('') : '<p class="empty">Không có lịch hôm nay</p>'}
+        <div class="dash-section">
+          ${secTitle('fas fa-chart-bar', 'Hiệu suất EC')}
+          <div class="dash-grid-2">
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-chart-bar"></i> KPI EC tháng ${d.currentMonth}</span>
+              </div>
+              <div class="dash-card-bd" style="min-height:180px">
+                <canvas id="ecKpiChart" style="max-height:190px"></canvas>
+              </div>
+            </div>
+
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-trophy"></i> BXH EC</span>
+                <a href="pages/sale-reports.html" class="btn btn-sm btn-primary">Chi tiết</a>
+              </div>
+              <div class="dash-card-bd np">
+                ${d.ecRanking?.length ? `<table class="dt">
+                  ${d.ecRanking.map((e, i) => `<tr>
+                    <td style="width:28px;padding-right:4px">
+                      ${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `<div class="rnum">${i + 1}</div>`}
+                    </td>
+                    <td><strong>${e.ec_name}</strong><span class="btag">${e.branch_code || ''}</span></td>
+                    <td style="color:#34a853;font-weight:600;font-size:12px">${fmtCur(e.revenue)}</td>
+                    <td><span class="badge ${e.kpi_percent >= 100 ? 'badge-success' : e.kpi_percent >= 70 ? 'badge-warning' : 'badge-danger'}">${e.kpi_percent || 0}%</span></td>
+                  </tr>`).join('')}
+                </table>` : empty('fas fa-trophy', 'Chưa có dữ liệu')}
+              </div>
             </div>
           </div>
+        </div>
 
-          ${data.waitingLeads?.length ? `
-          <div class="dashboard-card" style="border: 2px solid #06b6d4;">
-            <div class="dashboard-card-header" style="background:#cffafe;"><h3 style="color:#0891b2;"><i class="fas fa-clock"></i> Chờ đặt lịch (${data.waitingLeads.length})</h3><a href="pages/leads.html?status=waiting" class="btn btn-sm" style="background:#0891b2;color:white;">Xử lý</a></div>
-            <div class="dashboard-card-body">
-              <table class="mini-table">
-                ${data.waitingLeads.map(l => `<tr>
+        <div class="dash-section">
+          ${secTitle('fas fa-chart-line', 'Tổng quan tài chính')}
+          <div class="dash-grid-3">
+            <div class="dash-card">
+              <div class="dash-card-bd" style="text-align:center;padding:18px">
+                <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Doanh số</div>
+                <div style="font-size:24px;font-weight:800;color:#34a853">${fmtCur(ss.total_revenue)}</div>
+              </div>
+            </div>
+            <div class="dash-card">
+              <div class="dash-card-bd" style="text-align:center;padding:18px">
+                <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Cọc</div>
+                <div style="font-size:24px;font-weight:800;color:#f59e0b">${fmtCur(ss.total_deposit)}</div>
+              </div>
+            </div>
+            <div class="dash-card">
+              <div class="dash-card-bd" style="text-align:center;padding:18px">
+                <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Dự thu</div>
+                <div style="font-size:24px;font-weight:800;color:#4285f4">${fmtCur(ss.total_expected)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      setTimeout(() => {
+        if (d.ecRanking?.length) {
+          mkChart('ecKpiChart', {
+            type: 'bar',
+            data: {
+              labels: d.ecRanking.map(e => e.ec_name?.split(' ').pop() || e.ec_name),
+              datasets: [{
+                label: 'KPI %',
+                data: d.ecRanking.map(e => e.kpi_percent || 0),
+                backgroundColor: d.ecRanking.map(e =>
+                  e.kpi_percent >= 100 ? 'rgba(52,168,83,0.8)' :
+                    e.kpi_percent >= 70 ? 'rgba(245,158,11,0.8)' : 'rgba(234,67,53,0.8)'
+                ),
+                borderRadius: 5,
+              }]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: { beginAtZero: true, ticks: { callback: v => v + '%', font: { size: 10 } }, grid: { color: '#f0f0f0' } },
+                x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+              }
+            }
+          });
+        }
+      }, 80);
+    }
+
+    /* =====================================================
+       EC DASHBOARD
+    ===================================================== */
+    function renderECDash(container, d) {
+      const kpiTarget = d.myKpi?.target_revenue || 0;
+      const kpiRevenue = d.myReport?.revenue || 0;
+      const kpiPct = kpiTarget > 0 ? Math.round(kpiRevenue / kpiTarget * 100) : 0;
+      const kpiColor = kpiPct >= 100 ? '#34a853' : kpiPct >= 70 ? '#f59e0b' : '#ea4335';
+      const ms = d.myStats || {};
+
+      container.innerHTML = `
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="spi y"><i class="fas fa-calendar-day"></i></div>
+            <div><div class="spv">${ms.today || 0}</div><div class="spl">Lịch hôm nay</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi c"><i class="fas fa-clock"></i></div>
+            <div><div class="spv">${ms.waiting || 0}</div><div class="spl">Chờ đặt lịch</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi p"><i class="fas fa-graduation-cap"></i></div>
+            <div><div class="spv">${ms.trial || 0}</div><div class="spl">Đang trial</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi g"><i class="fas fa-user-check"></i></div>
+            <div><div class="spv">${ms.converted || 0}</div><div class="spl">Chuyển đổi</div></div>
+          </div>
+        </div>
+
+        <div class="dash-section">
+          ${secTitle('fas fa-bullseye', 'KPI & Lịch hôm nay')}
+          <div class="dash-grid-1-2">
+            <!-- KPI ring card -->
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-bullseye"></i> KPI tháng ${d.currentMonth}</span>
+                <a href="pages/my-kpi.html" class="btn btn-sm btn-primary">Chi tiết</a>
+              </div>
+              <div class="dash-card-bd" style="display:flex;flex-direction:column;align-items:center;gap:12px">
+                <div style="position:relative;width:150px;height:150px">
+                  <canvas id="kpiRing"></canvas>
+                  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+                    <div style="font-size:30px;font-weight:800;color:${kpiColor}">${kpiPct}%</div>
+                    <div style="font-size:10px;color:var(--text-muted)">hoàn thành</div>
+                  </div>
+                </div>
+                <div style="width:100%;padding-top:12px;border-top:1px solid var(--border)">
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+                    <span style="color:var(--text-muted)">Thực hiện</span>
+                    <strong style="color:#34a853">${fmtCur(kpiRevenue)}</strong>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:10px">
+                    <span style="color:var(--text-muted)">Mục tiêu</span>
+                    <strong>${fmtCur(kpiTarget)}</strong>
+                  </div>
+                  <div class="pbar"><div class="pbar-fill" style="width:${Math.min(kpiPct, 100)}%;background:${kpiColor}"></div></div>
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);text-align:center">
+                  Xếp hạng <strong style="color:var(--text-primary)">#${d.myRanking?.rank_all || '-'}</strong> toàn hệ thống
+                  &nbsp;·&nbsp; <strong style="color:var(--text-primary)">#${d.myRanking?.rank_branch || '-'}</strong> cơ sở
+                </div>
+              </div>
+            </div>
+
+            <!-- Today leads -->
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-calendar-check"></i> Lịch hôm nay</span>
+                <a href="pages/trial-calendar.html" class="btn btn-sm btn-secondary">Xem lịch</a>
+              </div>
+              <div class="dash-card-bd np">
+                ${d.todayLeads?.length ? d.todayLeads.map(l => `
+                  <div class="srow">
+                    <div class="stime">${fmtTime(l.scheduled_time)}</div>
+                    <div class="sinfo">
+                      <div class="sname">${l.student_name}</div>
+                      <div class="smeta">${l.customer_phone}</div>
+                    </div>
+                    <span class="badge badge-${l.status === 'scheduled' ? 'warning' : 'info'}">${l.status === 'scheduled' ? 'Chờ' : `B${(l.trial_sessions_attended || 0) + 1}`}</span>
+                  </div>
+                `).join('') : empty('fas fa-calendar-xmark', 'Không có lịch hôm nay')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        ${d.waitingLeads?.length ? `
+        <div class="dash-section">
+          ${secTitle('fas fa-clock', 'Chờ đặt lịch')}
+          <div class="dash-card" style="border-color:#a5f3fc">
+            <div class="dash-card-hd" style="background:#ecfeff">
+              <span class="dash-card-title" style="color:#0e7490"><i class="fas fa-clock" style="color:#06b6d4"></i> Chờ đặt lịch (${d.waitingLeads.length})</span>
+              <a href="pages/leads.html?status=waiting" class="btn btn-sm" style="background:#0891b2;color:white">Xử lý ngay</a>
+            </div>
+            <div class="dash-card-bd np">
+              <table class="dt">
+                ${d.waitingLeads.slice(0, 6).map(l => `<tr>
                   <td>
-                    <strong>${l.student_name}</strong> <span class="branch-tag-sm">${l.branch_code}</span>
-                    <br><small class="text-muted">${l.customer_phone}</small>
+                    <strong>${l.student_name}</strong><br>
+                    <span style="font-size:11px;color:var(--text-muted)">${l.customer_phone}</span>
                   </td>
-                  <td>${l.subject_name || '-'}</td>
+                  <td style="color:var(--text-muted);font-size:12px">${l.subject_name || '-'}</td>
                   <td>
-                    <div class="trial-progress">
-                      <div class="bar"><div class="bar-fill" style="width:${((l.trial_sessions_attended || 0) / (l.trial_sessions_max || 3)) * 100}%"></div></div>
-                      <span class="text">${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3}</span>
+                    <div style="display:flex;align-items:center;gap:8px;min-width:90px">
+                      <div class="pbar" style="flex:1"><div class="pbar-fill" style="width:${((l.trial_sessions_attended || 0) / (l.trial_sessions_max || 3)) * 100}%"></div></div>
+                      <span style="font-size:11px;color:var(--text-muted)">${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3}</span>
                     </div>
                   </td>
                 </tr>`).join('')}
               </table>
             </div>
           </div>
-          ` : ''}
-
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-user-clock"></i> Đang học thử</h3><a href="pages/trial-calendar.html" class="btn btn-sm btn-secondary">Xem tất cả</a></div>
-            <div class="dashboard-card-body">
-              ${data.trialLeads?.length ? `<table class="mini-table">
-                ${data.trialLeads.map(l => `<tr>
-                  <td>
-                    <strong>${l.student_name}</strong> <span class="branch-tag-sm">${l.branch_code}</span>
-                    <br><small class="text-muted">${l.subject_name || ''}</small>
-                  </td>
-                  <td>${l.customer_phone}</td>
-                  <td>
-                    <div class="trial-progress">
-                      <div class="bar"><div class="bar-fill" style="width:${((l.trial_sessions_attended || 0) / (l.trial_sessions_max || 3)) * 100}%"></div></div>
-                      <span class="text">${l.trial_sessions_attended || 0}/${l.trial_sessions_max || 3}</span>
-                    </div>
-                  </td>
-                </tr>`).join('')}
-              </table>` : '<p class="empty">Không có học sinh học thử</p>'}
-            </div>
-          </div>
-        </div>
+        </div>` : ''}
       `;
+
+      setTimeout(() => {
+        mkChart('kpiRing', {
+          type: 'doughnut',
+          data: {
+            datasets: [{
+              data: [Math.min(kpiPct, 100), Math.max(0, 100 - Math.min(kpiPct, 100))],
+              backgroundColor: [kpiColor, '#f0f4f0'],
+              borderWidth: 0,
+            }]
+          },
+          options: {
+            cutout: '76%',
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            responsive: true, maintainAspectRatio: true
+          }
+        });
+      }, 80);
     }
 
-    function renderTeacherDashboard(container, data) {
-      const stats = data.stats || {};
+    /* =====================================================
+       TEACHER DASHBOARD
+    ===================================================== */
+    function renderTeacherDash(container, d) {
+      const stats = d.stats || {};
+
       container.innerHTML = `
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-chalkboard"></i></div><div class="stat-content"><div class="stat-value">${stats.total_classes || 0}</div><div class="stat-label">Lớp đang dạy</div></div></div>
-          <div class="stat-card"><div class="stat-icon info"><i class="fas fa-user-graduate"></i></div><div class="stat-content"><div class="stat-value">${stats.total_students || 0}</div><div class="stat-label">Học sinh</div></div></div>
-          <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-calendar-day"></i></div><div class="stat-content"><div class="stat-value">${stats.today_sessions || 0}</div><div class="stat-label">Buổi học hôm nay</div></div></div>
-          <div class="stat-card"><div class="stat-icon success"><i class="fas fa-tasks"></i></div><div class="stat-content"><div class="stat-value">${stats.total_assignments || 0}</div><div class="stat-label">Bài tập đã giao</div></div></div>
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="spi g"><i class="fas fa-chalkboard"></i></div>
+            <div><div class="spv">${stats.total_classes || 0}</div><div class="spl">Lớp đang dạy</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi b"><i class="fas fa-user-graduate"></i></div>
+            <div><div class="spv">${stats.total_students || 0}</div><div class="spl">Học sinh</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi y"><i class="fas fa-calendar-day"></i></div>
+            <div><div class="spv">${stats.today_sessions || 0}</div><div class="spl">Buổi hôm nay</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi p"><i class="fas fa-tasks"></i></div>
+            <div><div class="spv">${stats.total_assignments || 0}</div><div class="spl">Bài tập đã giao</div></div>
+          </div>
         </div>
 
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-calendar-day"></i> Buổi học hôm nay</h3></div>
-            <div class="dashboard-card-body">
-              ${data.todaySessions?.length ? data.todaySessions.map(s => `
-                <div class="session-item">
-                  <div class="session-time">${s.start_time?.substring(0, 5)}</div>
-                  <div class="session-info">
-                    <div class="class-name">${s.class_name} - Buổi ${s.session_number}</div>
-                    <div class="meta">${s.student_count} học sinh</div>
-                  </div>
-                  ${s.attendance_submitted
-          ? '<span class="badge badge-success">Đã điểm danh</span>'
+        <div class="dash-section">
+          ${secTitle('fas fa-calendar-day', 'Hôm nay & Cần xử lý')}
+          <div class="dash-grid-2">
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-calendar-day"></i> Buổi học hôm nay</span>
+              </div>
+              <div class="dash-card-bd np">
+                ${d.todaySessions?.length ? d.todaySessions.map(s => `
+                  <div class="srow">
+                    <div class="stime">${fmtTime(s.start_time)}</div>
+                    <div class="sinfo">
+                      <div class="sname">${s.class_name} · Buổi ${s.session_number}</div>
+                      <div class="smeta">${s.student_count} học sinh</div>
+                    </div>
+                    ${s.attendance_submitted
+          ? '<span class="badge badge-success">Đã ĐD</span>'
           : `<a href="pages/attendance.html?sessionId=${s.id}" class="btn btn-sm btn-primary">Điểm danh</a>`}
-                </div>
-              `).join('') : '<p class="empty">Không có buổi học hôm nay</p>'}
+                  </div>
+                `).join('') : empty('fas fa-calendar-xmark', 'Không có buổi học hôm nay')}
+              </div>
+            </div>
+
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title" style="color:#b45309"><i class="fas fa-exclamation-triangle" style="color:#f59e0b"></i> Chưa điểm danh</span>
+              </div>
+              <div class="dash-card-bd np">
+                ${d.pendingAttendance?.length ? `<table class="dt">
+                  ${d.pendingAttendance.map(s => `<tr>
+                    <td><strong>${s.class_name}</strong> · Buổi ${s.session_number}</td>
+                    <td style="color:var(--text-muted);font-size:12px">${ui.formatDate(s.session_date)}</td>
+                    <td><a href="pages/attendance.html?sessionId=${s.id}" class="btn btn-sm btn-warning">Điểm danh</a></td>
+                  </tr>`).join('')}
+                </table>` : `<div class="ok-banner"><i class="fas fa-check-circle"></i><strong>Tất cả đã điểm danh!</strong></div>`}
+              </div>
             </div>
           </div>
+        </div>
 
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-exclamation-triangle"></i> Chưa điểm danh</h3></div>
-            <div class="dashboard-card-body">
-              ${data.pendingAttendance?.length ? `<table class="mini-table">
-                ${data.pendingAttendance.map(s => `<tr>
-                  <td><strong>${s.class_name}</strong> - Buổi ${s.session_number}</td>
-                  <td>${ui.formatDate(s.session_date)}</td>
-                  <td><a href="pages/attendance.html?sessionId=${s.id}" class="btn btn-sm btn-warning">Điểm danh</a></td>
-                </tr>`).join('')}
-              </table>` : '<p class="empty">Tất cả đã điểm danh ✓</p>'}
+        <div class="dash-section">
+          ${secTitle('fas fa-chalkboard', 'Lớp của tôi')}
+          <div class="dash-card">
+            <div class="dash-card-hd">
+              <span class="dash-card-title"><i class="fas fa-list"></i> Danh sách lớp</span>
+              <a href="pages/classes.html" class="btn btn-sm btn-secondary">Xem tất cả</a>
             </div>
-          </div>
-
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-chalkboard"></i> Lớp của tôi</h3><a href="pages/classes.html" class="btn btn-sm btn-secondary">Xem tất cả</a></div>
-            <div class="dashboard-card-body">
-              ${data.classes?.length ? `<table class="mini-table">
-                ${data.classes.map(c => `<tr>
-                  <td><strong>${c.class_name}</strong><br><small class="text-muted">${c.subject_name || ''} - ${c.level_name || ''}</small></td>
-                  <td>${c.study_days || ''}<br><small>${c.start_time?.substring(0, 5) || ''}</small></td>
+            <div class="dash-card-bd np">
+              ${d.classes?.length ? `<table class="dt">
+                ${d.classes.map(c => `<tr>
+                  <td>
+                    <strong>${c.class_name}</strong><br>
+                    <span style="font-size:11px;color:var(--text-muted)">${c.subject_name || ''} · ${c.level_name || ''}</span>
+                  </td>
+                  <td style="color:var(--text-muted);font-size:12px">${c.study_days || ''}<br>${fmtTime(c.start_time)}</td>
                   <td><span class="badge badge-info">${c.student_count} HS</span></td>
                 </tr>`).join('')}
-              </table>` : '<p class="empty">Chưa có lớp nào</p>'}
+              </table>` : empty('fas fa-chalkboard', 'Chưa có lớp nào')}
             </div>
           </div>
         </div>
       `;
     }
 
-    function renderCMDashboard(container, data) {
+    /* =====================================================
+       CM DASHBOARD
+    ===================================================== */
+    function renderCMDash(container, d) {
       container.innerHTML = `
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-chalkboard"></i></div><div class="stat-content"><div class="stat-value">${data.classes?.active || 0}</div><div class="stat-label">Lớp hoạt động</div></div></div>
-          <div class="stat-card"><div class="stat-icon info"><i class="fas fa-user-graduate"></i></div><div class="stat-content"><div class="stat-value">${data.students?.active || 0}</div><div class="stat-label">Học viên</div></div></div>
-          <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-exclamation-triangle"></i></div><div class="stat-content"><div class="stat-value">${data.students?.expiring_soon || 0}</div><div class="stat-label">Sắp hết phí</div></div></div>
-          <div class="stat-card"><div class="stat-icon danger"><i class="fas fa-times-circle"></i></div><div class="stat-content"><div class="stat-value">${data.students?.expired || 0}</div><div class="stat-label">Đã hết phí</div></div></div>
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="spi g"><i class="fas fa-chalkboard"></i></div>
+            <div><div class="spv">${d.classes?.active || 0}</div><div class="spl">Lớp hoạt động</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi b"><i class="fas fa-user-graduate"></i></div>
+            <div><div class="spv">${d.students?.active || 0}</div><div class="spl">Học viên</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi y"><i class="fas fa-exclamation-triangle"></i></div>
+            <div><div class="spv">${d.students?.expiring_soon || 0}</div><div class="spl">Sắp hết phí</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi r"><i class="fas fa-times-circle"></i></div>
+            <div><div class="spv">${d.students?.expired || 0}</div><div class="spl">Đã hết phí</div></div>
+          </div>
         </div>
 
-        <div class="dashboard-grid">
-          ${data.expiringStudents?.length ? `
-          <div class="dashboard-card" style="border: 2px solid #f59e0b;">
-            <div class="dashboard-card-header" style="background:#fef3c7;"><h3 style="color:#b45309;"><i class="fas fa-exclamation-triangle"></i> Cần gia hạn (${data.expiringStudents.length})</h3><a href="pages/fee-warning.html" class="btn btn-sm btn-warning">Xử lý</a></div>
-            <div class="dashboard-card-body">
-              <table class="mini-table">
-                ${data.expiringStudents.slice(0, 5).map(s => `<tr>
+        <div class="dash-section">
+          ${secTitle('fas fa-calendar-day', 'Hôm nay')}
+          <div class="dash-grid-2">
+            ${d.expiringStudents?.length ? `
+            <div class="dash-card" style="border-color:#fde68a">
+              <div class="dash-card-hd" style="background:#fffbeb">
+                <span class="dash-card-title" style="color:#b45309"><i class="fas fa-exclamation-triangle" style="color:#f59e0b"></i> Cần gia hạn (${d.expiringStudents.length})</span>
+                <a href="pages/fee-warning.html" class="btn btn-sm btn-warning">Xử lý</a>
+              </div>
+              <div class="dash-card-bd np">
+                <table class="dt">
+                  ${d.expiringStudents.slice(0, 5).map(s => `<tr>
+                    <td><strong>${s.full_name}</strong></td>
+                    <td style="color:var(--text-muted);font-size:12px">${s.class_name || '-'}</td>
+                    <td><strong class="${s.remaining_sessions <= 0 ? 'text-danger' : 'text-warning'}">${s.remaining_sessions || 0} buổi</strong></td>
+                  </tr>`).join('')}
+                </table>
+              </div>
+            </div>` : ''}
+
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-calendar-day"></i> Buổi học hôm nay</span>
+              </div>
+              <div class="dash-card-bd np">
+                ${d.todaySessions?.length ? d.todaySessions.map(s => `
+                  <div class="srow">
+                    <div class="stime">${fmtTime(s.start_time)}</div>
+                    <div class="sinfo">
+                      <div class="sname">${s.class_name}</div>
+                      <div class="smeta">GV: ${s.teacher_name || 'N/A'}</div>
+                    </div>
+                    <span class="badge ${s.attendance_submitted ? 'badge-success' : 'badge-warning'}">${s.attendance_submitted ? 'Đã ĐD' : 'Chưa ĐD'}</span>
+                  </div>
+                `).join('') : empty('fas fa-calendar-xmark', 'Không có buổi học hôm nay')}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        ${d.pendingStudents?.length ? `
+        <div class="dash-section">
+          ${secTitle('fas fa-user-clock', 'Chờ xếp lớp')}
+          <div class="dash-card">
+            <div class="dash-card-hd">
+              <span class="dash-card-title"><i class="fas fa-user-clock"></i> Học viên chờ xếp lớp (${d.pendingStudents.length})</span>
+            </div>
+            <div class="dash-card-bd np">
+              <table class="dt">
+                ${d.pendingStudents.slice(0, 8).map(s => `<tr>
                   <td><strong>${s.full_name}</strong></td>
-                  <td>${s.class_name || '-'}</td>
-                  <td><strong class="${s.remaining_sessions <= 0 ? 'text-danger' : 'text-warning'}">${s.remaining_sessions || 0} buổi</strong></td>
+                  <td style="color:var(--text-muted);font-size:12px">${s.subject_name || '-'}</td>
+                  <td style="color:var(--text-muted);font-size:12px">${s.parent_phone || '-'}</td>
                 </tr>`).join('')}
               </table>
             </div>
-          </div>` : ''}
+          </div>
+        </div>` : ''}
+      `;
+    }
 
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-calendar-day"></i> Buổi học hôm nay</h3></div>
-            <div class="dashboard-card-body">
-              ${data.todaySessions?.length ? data.todaySessions.map(s => `
-                <div class="session-item">
-                  <div class="session-time">${s.start_time?.substring(0, 5)}</div>
-                  <div class="session-info">
-                    <div class="class-name">${s.class_name}</div>
-                    <div class="meta">GV: ${s.teacher_name || 'N/A'}</div>
+    /* =====================================================
+       OM DASHBOARD
+    ===================================================== */
+    function renderOMDash(container, d) {
+      container.innerHTML = `
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="spi g"><i class="fas fa-chalkboard"></i></div>
+            <div><div class="spv">${d.classes?.active || 0}</div><div class="spl">Lớp hoạt động</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi b"><i class="fas fa-calendar-day"></i></div>
+            <div><div class="spv">${d.todaySessions?.length || 0}</div><div class="spl">Buổi học hôm nay</div></div>
+          </div>
+          <div class="stat-pill">
+            <div class="spi y"><i class="fas fa-exclamation-triangle"></i></div>
+            <div><div class="spv">${d.expiringStudents?.length || 0}</div><div class="spl">Sắp hết phí</div></div>
+          </div>
+        </div>
+
+        <div class="dash-section">
+          ${secTitle('fas fa-calendar-day', 'Hôm nay')}
+          <div class="dash-grid-2">
+            <div class="dash-card">
+              <div class="dash-card-hd">
+                <span class="dash-card-title"><i class="fas fa-calendar-day"></i> Buổi học hôm nay</span>
+              </div>
+              <div class="dash-card-bd np">
+                ${d.todaySessions?.length ? d.todaySessions.map(s => `
+                  <div class="srow">
+                    <div class="stime">${fmtTime(s.start_time)}</div>
+                    <div class="sinfo">
+                      <div class="sname">${s.class_name}<span class="btag">${s.branch_code}</span></div>
+                      <div class="smeta">GV: ${s.teacher_name || 'N/A'} · ${s.student_count || 0} HS</div>
+                    </div>
+                    <span class="badge ${s.attendance_submitted ? 'badge-success' : 'badge-warning'}">${s.attendance_submitted ? 'Đã ĐD' : 'Chưa ĐD'}</span>
                   </div>
-                  <span class="badge ${s.attendance_submitted ? 'badge-success' : 'badge-warning'}">${s.attendance_submitted ? 'Đã ĐD' : 'Chưa ĐD'}</span>
-                </div>
-              `).join('') : '<p class="empty">Không có buổi học hôm nay</p>'}
-            </div>
-          </div>
-
-          ${data.pendingStudents?.length ? `
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-user-clock"></i> Chờ xếp lớp (${data.pendingStudents.length})</h3></div>
-            <div class="dashboard-card-body">
-              <table class="mini-table">
-                ${data.pendingStudents.slice(0, 5).map(s => `<tr>
-                  <td><strong>${s.full_name}</strong></td>
-                  <td>${s.subject_name || '-'}</td>
-                  <td>${s.parent_phone || '-'}</td>
-                </tr>`).join('')}
-              </table>
-            </div>
-          </div>` : ''}
-        </div>
-      `;
-    }
-
-    // Dashboard CHỦ
-    function renderOwnerDashboard(container, data) {
-      container.innerHTML = `
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-user-graduate"></i></div><div class="stat-content"><div class="stat-value">${data.students?.active || 0}</div><div class="stat-label">Học viên</div></div></div>
-          <div class="stat-card"><div class="stat-icon info"><i class="fas fa-chalkboard"></i></div><div class="stat-content"><div class="stat-value">${data.classes?.active || 0}</div><div class="stat-label">Lớp học</div></div></div>
-          <div class="stat-card"><div class="stat-icon success"><i class="fas fa-money-bill-wave"></i></div><div class="stat-content"><div class="stat-value">${formatCurrency(data.saleStats?.total_revenue)}</div><div class="stat-label">Doanh số tháng</div></div></div>
-          <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-hand-holding-usd"></i></div><div class="stat-content"><div class="stat-value">${formatCurrency(data.saleStats?.total_deposit)}</div><div class="stat-label">Cọc</div></div></div>
-        </div>
-
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-trophy"></i> Top EC tháng ${data.currentMonth}</h3><a href="pages/sale-reports.html" class="btn btn-sm btn-primary">Xem chi tiết</a></div>
-            <div class="dashboard-card-body">
-              ${data.topEcs?.length ? `<table class="mini-table">
-                ${data.topEcs.slice(0, 5).map((e, i) => `<tr>
-                  <td>${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1)}</td>
-                  <td><strong>${e.ec_name}</strong> <span class="branch-tag-sm">${e.branch_code || ''}</span></td>
-                  <td class="text-success"><strong>${formatCurrency(e.revenue)}</strong></td>
-                  <td><span class="badge ${e.kpi_percent >= 100 ? 'badge-success' : 'badge-warning'}">${e.kpi_percent || 0}%</span></td>
-                </tr>`).join('')}
-              </table>` : '<p class="empty">Chưa có dữ liệu</p>'}
-            </div>
-          </div>
-
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-building"></i> Doanh thu theo cơ sở</h3></div>
-            <div class="dashboard-card-body">
-              ${data.revenueByBranch?.length ? `<table class="mini-table">
-                ${data.revenueByBranch.map(b => `<tr>
-                  <td><strong>${b.code}</strong> - ${b.name}</td>
-                  <td class="text-success">${formatCurrency(b.revenue)}</td>
-                  <td class="text-warning">${formatCurrency(b.deposit)}</td>
-                </tr>`).join('')}
-              </table>` : '<p class="empty">Chưa có dữ liệu</p>'}
-            </div>
-          </div>
-
-          ${data.expiringStudents?.length ? `
-          <div class="dashboard-card" style="border: 2px solid #ef4444;">
-            <div class="dashboard-card-header" style="background:#fef2f2;"><h3 style="color:#dc2626;"><i class="fas fa-exclamation-triangle"></i> Học viên cần gia hạn</h3><a href="pages/fee-warning.html" class="btn btn-sm btn-danger">Xem tất cả</a></div>
-            <div class="dashboard-card-body">
-              <table class="mini-table">
-                ${data.expiringStudents.slice(0, 5).map(s => `<tr>
-                  <td><strong>${s.full_name}</strong> <span class="branch-tag-sm">${s.branch_code}</span></td>
-                  <td><strong class="${s.remaining_sessions <= 0 ? 'text-danger' : 'text-warning'}">${s.remaining_sessions || 0} buổi</strong></td>
-                </tr>`).join('')}
-              </table>
-            </div>
-          </div>` : ''}
-        </div>
-      `;
-    }
-
-    // Dashboard OM
-    function renderOMDashboard(container, data) {
-      container.innerHTML = `
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-chalkboard"></i></div><div class="stat-content"><div class="stat-value">${data.classes?.active || 0}</div><div class="stat-label">Lớp hoạt động</div></div></div>
-          <div class="stat-card"><div class="stat-icon info"><i class="fas fa-calendar-day"></i></div><div class="stat-content"><div class="stat-value">${data.todaySessions?.length || 0}</div><div class="stat-label">Buổi học hôm nay</div></div></div>
-          <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-exclamation-triangle"></i></div><div class="stat-content"><div class="stat-value">${data.expiringStudents?.length || 0}</div><div class="stat-label">Sắp hết phí</div></div></div>
-        </div>
-
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-calendar-day"></i> Buổi học hôm nay</h3></div>
-            <div class="dashboard-card-body">
-              ${data.todaySessions?.length ? data.todaySessions.map(s => `
-                <div class="session-item">
-                  <div class="session-time">${s.start_time?.substring(0, 5)}</div>
-                  <div class="session-info">
-                    <div class="class-name">${s.class_name} <span class="branch-tag-sm">${s.branch_code}</span></div>
-                    <div class="meta">GV: ${s.teacher_name || 'N/A'} | ${s.student_count || 0} HS</div>
-                  </div>
-                  <span class="badge ${s.attendance_submitted ? 'badge-success' : 'badge-warning'}">${s.attendance_submitted ? 'Đã ĐD' : 'Chưa ĐD'}</span>
-                </div>
-              `).join('') : '<p class="empty">Không có buổi học hôm nay</p>'}
-            </div>
-          </div>
-
-          ${data.expiringStudents?.length ? `
-          <div class="dashboard-card" style="border: 2px solid #f59e0b;">
-            <div class="dashboard-card-header" style="background:#fef3c7;"><h3 style="color:#b45309;"><i class="fas fa-exclamation-triangle"></i> Cần gia hạn</h3><a href="pages/fee-warning.html" class="btn btn-sm btn-warning">Xử lý</a></div>
-            <div class="dashboard-card-body">
-              <table class="mini-table">
-                ${data.expiringStudents.slice(0, 5).map(s => `<tr>
-                  <td><strong>${s.full_name}</strong> <span class="branch-tag-sm">${s.branch_code}</span></td>
-                  <td>${s.class_name || '-'}</td>
-                  <td><strong class="text-warning">${s.remaining_sessions || 0} buổi</strong></td>
-                </tr>`).join('')}
-              </table>
-            </div>
-          </div>` : ''}
-        </div>
-      `;
-    }
-
-    // Dashboard HOEC
-    function renderHOECDashboard(container, data) {
-      container.innerHTML = `
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-users"></i></div><div class="stat-content"><div class="stat-value">${data.myEcs?.length || 0}</div><div class="stat-label">EC quản lý</div></div></div>
-          <div class="stat-card"><div class="stat-icon success"><i class="fas fa-money-bill-wave"></i></div><div class="stat-content"><div class="stat-value">${formatCurrency(data.saleStats?.total_revenue)}</div><div class="stat-label">Tổng doanh số</div></div></div>
-          <div class="stat-card"><div class="stat-icon info"><i class="fas fa-user-check"></i></div><div class="stat-content"><div class="stat-value">${data.saleStats?.total_checkin || 0}</div><div class="stat-label">Tổng checkin</div></div></div>
-          <div class="stat-card"><div class="stat-icon warning"><i class="fas fa-percentage"></i></div><div class="stat-content"><div class="stat-value">${Math.round(data.saleStats?.avg_kpi || 0)}%</div><div class="stat-label">KPI trung bình</div></div></div>
-        </div>
-
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-trophy"></i> BXH EC tháng ${data.currentMonth}</h3><a href="pages/sale-reports.html" class="btn btn-sm btn-primary">Chi tiết</a></div>
-            <div class="dashboard-card-body">
-              ${data.ecRanking?.length ? `<table class="mini-table">
-                ${data.ecRanking.map((e, i) => `<tr>
-                  <td>${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1)}</td>
-                  <td><strong>${e.ec_name}</strong> <span class="branch-tag-sm">${e.branch_code || ''}</span></td>
-                  <td class="text-success"><strong>${formatCurrency(e.revenue)}</strong></td>
-                  <td><span class="badge ${e.kpi_percent >= 100 ? 'badge-success' : e.kpi_percent >= 70 ? 'badge-warning' : 'badge-danger'}">${e.kpi_percent || 0}%</span></td>
-                </tr>`).join('')}
-              </table>` : '<p class="empty">Chưa có dữ liệu</p>'}
-            </div>
-          </div>
-
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-bullseye"></i> Quản lý KPI</h3><a href="pages/kpi.html" class="btn btn-sm btn-success">Set KPI</a></div>
-            <div class="dashboard-card-body">
-              <div class="quick-stats">
-                <div class="quick-stat"><div class="value text-success">${formatCurrency(data.saleStats?.total_revenue)}</div><div class="label">Doanh số</div></div>
-                <div class="quick-stat"><div class="value text-warning">${formatCurrency(data.saleStats?.total_deposit)}</div><div class="label">Cọc</div></div>
-                <div class="quick-stat"><div class="value text-info">${formatCurrency(data.saleStats?.total_expected)}</div><div class="label">Dự thu</div></div>
-                <div class="quick-stat"><div class="value">${data.saleStats?.total_checkin || 0}</div><div class="label">Checkin</div></div>
+                `).join('') : empty('fas fa-calendar-xmark', 'Không có buổi học hôm nay')}
               </div>
             </div>
+
+            ${d.expiringStudents?.length ? `
+            <div class="dash-card" style="border-color:#fde68a">
+              <div class="dash-card-hd" style="background:#fffbeb">
+                <span class="dash-card-title" style="color:#b45309"><i class="fas fa-exclamation-triangle" style="color:#f59e0b"></i> Cần gia hạn (${d.expiringStudents.length})</span>
+                <a href="pages/fee-warning.html" class="btn btn-sm btn-warning">Xử lý</a>
+              </div>
+              <div class="dash-card-bd np">
+                <table class="dt">
+                  ${d.expiringStudents.slice(0, 5).map(s => `<tr>
+                    <td><strong>${s.full_name}</strong><span class="btag">${s.branch_code}</span></td>
+                    <td style="color:var(--text-muted);font-size:12px">${s.class_name || '-'}</td>
+                    <td><strong class="text-warning">${s.remaining_sessions || 0} buổi</strong></td>
+                  </tr>`).join('')}
+                </table>
+              </div>
+            </div>` : ''}
           </div>
         </div>
       `;
     }
 
-    // Dashboard EC
-    function renderECDashboard(container, data) {
-      const kpiPercent = data.myKpi?.target_revenue > 0 ? Math.round((data.myReport?.revenue || 0) / data.myKpi.target_revenue * 100) : 0;
-      container.innerHTML = `
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-icon primary"><i class="fas fa-calendar-day"></i></div><div class="stat-content"><div class="stat-value">${data.myStats?.today || 0}</div><div class="stat-label">Lịch hôm nay</div></div></div>
-          <div class="stat-card" style="border-left: 4px solid #06b6d4;"><div class="stat-icon" style="background:#cffafe;color:#0891b2;"><i class="fas fa-clock"></i></div><div class="stat-content"><div class="stat-value">${data.myStats?.waiting || 0}</div><div class="stat-label">Chờ đặt lịch</div></div></div>
-          <div class="stat-card"><div class="stat-icon info"><i class="fas fa-graduation-cap"></i></div><div class="stat-content"><div class="stat-value">${data.myStats?.trial || 0}</div><div class="stat-label">Đang trial</div></div></div>
-          <div class="stat-card"><div class="stat-icon success"><i class="fas fa-user-check"></i></div><div class="stat-content"><div class="stat-value">${data.myStats?.converted || 0}</div><div class="stat-label">Đã chuyển đổi</div></div></div>
-        </div>
-
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-bullseye"></i> KPI tháng ${data.currentMonth}</h3><a href="pages/my-kpi.html" class="btn btn-sm btn-primary">Chi tiết</a></div>
-            <div class="dashboard-card-body">
-              <div style="text-align:center;margin-bottom:15px">
-                <span style="font-size:2.5rem;font-weight:bold;color:${kpiPercent >= 100 ? '#10b981' : kpiPercent >= 70 ? '#f59e0b' : '#ef4444'}">${kpiPercent}%</span>
-                <p class="text-muted">Hoàn thành KPI</p>
-              </div>
-              <div style="background:var(--bg-secondary);border-radius:8px;height:20px;overflow:hidden">
-                <div style="width:${Math.min(kpiPercent, 100)}%;height:100%;background:${kpiPercent >= 100 ? '#10b981' : kpiPercent >= 70 ? '#f59e0b' : '#ef4444'};border-radius:8px"></div>
-              </div>
-              <div class="quick-stats" style="margin-top:15px">
-                <div class="quick-stat"><div class="value text-success">${formatCurrency(data.myReport?.revenue)}</div><div class="label">Doanh số</div></div>
-                <div class="quick-stat"><div class="value">${formatCurrency(data.myKpi?.target_revenue)}</div><div class="label">Mục tiêu</div></div>
-              </div>
-              <div style="text-align:center;margin-top:10px">
-                <span class="text-muted">Xếp hạng: </span>
-                <strong>#${data.myRanking?.rank_all || '-'}</strong> toàn hệ thống |
-                <strong>#${data.myRanking?.rank_branch || '-'}</strong> tại cơ sở
-              </div>
-            </div>
-          </div>
-
-          <div class="dashboard-card">
-            <div class="dashboard-card-header"><h3><i class="fas fa-calendar-check"></i> Lịch hôm nay</h3><a href="pages/trial-calendar.html" class="btn btn-sm btn-secondary">Xem lịch</a></div>
-            <div class="dashboard-card-body">
-              ${data.todayLeads?.length ? data.todayLeads.map(l => `
-                <div class="session-item">
-                  <div class="session-time">${l.scheduled_time?.substring(0, 5) || '--:--'}</div>
-                  <div class="session-info">
-                    <div class="class-name">${l.student_name}</div>
-                    <div class="meta">${l.customer_phone}</div>
-                  </div>
-                  <span class="badge badge-${l.status === 'scheduled' ? 'warning' : 'info'}">${l.status === 'scheduled' ? 'Chờ' : `B${(l.trial_sessions_attended || 0) + 1}`}</span>
-                </div>
-              `).join('') : '<p class="empty">Không có lịch hôm nay</p>'}
-            </div>
-          </div>
-
-          ${data.waitingLeads?.length ? `
-          <div class="dashboard-card" style="border: 2px solid #06b6d4;">
-            <div class="dashboard-card-header" style="background:#cffafe;"><h3 style="color:#0891b2;"><i class="fas fa-clock"></i> Chờ đặt lịch (${data.waitingLeads.length})</h3><a href="pages/leads.html?status=waiting" class="btn btn-sm" style="background:#0891b2;color:white;">Xử lý</a></div>
-            <div class="dashboard-card-body">
-              <table class="mini-table">
-                ${data.waitingLeads.slice(0, 5).map(l => `<tr>
-                  <td><strong>${l.student_name}</strong></td>
-                  <td>${l.customer_phone}</td>
-                  <td><span class="badge badge-info">${l.trial_sessions_attended || 0} buổi</span></td>
-                </tr>`).join('')}
-              </table>
-            </div>
-          </div>` : ''}
-        </div>
-      `;
-    }
-
-    function formatCurrency(v) { return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ'; }
-
+    /* ===== INIT ===== */
     document.addEventListener('DOMContentLoaded', () => {
       if (!auth.checkAuth()) return;
-      document.getElementById('welcomeName').textContent = auth.user?.full_name || 'User';
+      const name = auth.user?.full_name || 'User';
+      document.getElementById('welcomeName').textContent = name;
+      document.getElementById('welcomeNameBanner').textContent = name;
+
+      // Show welcome date
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('welcomeDateLine').textContent = dateStr;
+      document.getElementById('dashWelcome').style.display = 'flex';
+
       buildSidebar('sidebar');
       loadDashboard();
     });

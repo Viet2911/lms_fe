@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/style.css">
 </head>
+
 <body>
   <div class="app-container">
     <!-- Sidebar -->
@@ -94,7 +96,9 @@
                   </tr>
                 </thead>
                 <tbody id="tableBody">
-                  <tr><td colspan="10" class="text-center">Đang tải...</td></tr>
+                  <tr>
+                    <td colspan="10" class="text-center">Đang tải...</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -114,7 +118,7 @@
       <form id="branchForm" onsubmit="saveBranch(event)">
         <div class="modal-body">
           <input type="hidden" id="branchId" name="id">
-          
+
           <div class="form-row">
             <div class="form-group">
               <label class="form-label">Mã cơ sở <span class="text-danger">*</span></label>
@@ -167,6 +171,8 @@
 
   <script src="../js/config.js"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/reactive.js"></script>
+  <script src="../js/crud-mixin.js"></script>
   <script src="../js/sidebar.js"></script>
   <script>
     let branches = [];
@@ -175,9 +181,9 @@
     document.addEventListener('DOMContentLoaded', () => {
       if (!auth.checkAuth()) return;
       buildSidebar('sidebar');
-      
+
       if (!auth.hasRole('ADMIN')) {
-        ui.error('Bạn không có quyền truy cập trang này');
+        notify.error('Bạn không có quyền truy cập trang này');
         setTimeout(() => window.location.href = '../index.html', 1500);
         return;
       }
@@ -191,7 +197,7 @@
         branches = result.data || [];
         renderTable();
       } catch (error) {
-        ui.error(error.message);
+        notify.error(error.message);
       }
     }
 
@@ -199,7 +205,7 @@
       try {
         const result = await api.get('/branches/stats');
         const stats = result.data || [];
-        
+
         let totalStudents = 0, totalClasses = 0;
         stats.forEach(s => {
           totalStudents += parseInt(s.total_students) || 0;
@@ -217,7 +223,7 @@
 
     function renderTable() {
       const tbody = document.getElementById('tableBody');
-      
+
       if (branches.length === 0) {
         tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted">Chưa có cơ sở nào</td></tr>';
         return;
@@ -264,58 +270,80 @@
       try {
         const result = await api.get(`/branches/${id}`);
         const branch = result.data;
-        
+
         document.getElementById('modalTitle').textContent = 'Sửa Cơ sở';
         document.getElementById('branchId').value = branch.id;
         document.getElementById('statusGroup').style.display = 'block';
-        
+
         form.setData(document.getElementById('branchForm'), branch);
         modal.show('branchModal');
       } catch (error) {
-        ui.error(error.message);
+        notify.error(error.message);
       }
     }
 
     async function saveBranch(e) {
       e.preventDefault();
-      
+
       const formEl = document.getElementById('branchForm');
-      if (!form.validate(formEl)) return;
-      
+      const submitBtn = document.querySelector('#branchModal .btn-primary');
+
+      // Validation
+      const schema = {
+        name: [validate.rules.required],
+        code: [validate.rules.required, validate.rules.maxLength(10)],
+        address: [validate.rules.required],
+        phone: [validate.rules.phone]
+      };
+
+      const { isValid } = validate.validateForm(formEl, schema);
+      if (!isValid) {
+        notify.warning('Vui lòng kiểm tra lại thông tin');
+        return;
+      }
+
       const data = form.getData(formEl);
       const id = data.id;
       delete data.id;
 
+      loading.buttonStart(submitBtn, id ? 'Đang cập nhật...' : 'Đang tạo...');
+
       try {
         if (id) {
           await api.put(`/branches/${id}`, data);
-          ui.success('Cập nhật cơ sở thành công');
+          const card = document.querySelector(`[data-id="${id}"]`);
+          if (card) await animate.highlight(card, '#dcfce7', 800);
+          notify.success('Cập nhật cơ sở thành công');
         } else {
           await api.post('/branches', data);
-          ui.success('Thêm cơ sở thành công');
+          notify.success('Thêm cơ sở thành công');
         }
-        
+
         modal.hide('branchModal');
         loadBranches();
         loadStats();
       } catch (error) {
-        ui.error(error.message);
+        notify.error(error.message);
+        animate.shake(formEl);
+      } finally {
+        loading.buttonEnd(submitBtn);
       }
     }
 
     async function deleteBranch(id) {
-      const confirmed = await ui.confirm('Bạn có chắc muốn vô hiệu hóa cơ sở này?');
+      const confirmed = confirm('Bạn có chắc muốn vô hiệu hóa cơ sở này?');
       if (!confirmed) return;
 
       try {
         await api.delete(`/branches/${id}`);
-        ui.success('Đã vô hiệu hóa cơ sở');
+        notify.success('Đã vô hiệu hóa cơ sở');
         loadBranches();
         loadStats();
       } catch (error) {
-        ui.error(error.message);
+        notify.error(error.message);
       }
     }
   </script>
 </body>
+
 </html>

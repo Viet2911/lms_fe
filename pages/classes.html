@@ -8,108 +8,379 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .class-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .class-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .class-card-header {
+    /* ========== SPLIT LAYOUT ========== */
+    .main-content {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
+      flex-direction: column;
     }
 
-    .class-card-title {
-      font-size: 18px;
-      font-weight: 600;
+    .classes-layout {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 64px);
+      overflow: hidden;
+    }
+
+    /* ========== LEFT PANEL ========== */
+    .classes-left {
+      width: 300px;
+      min-width: 300px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-card);
+    }
+
+    .left-header {
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .left-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 10px;
+      margin-bottom: 10px;
+    }
+
+    .left-search i {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .left-search input {
+      border: none;
+      background: transparent;
+      outline: none;
+      flex: 1;
+      font-size: 13px;
       color: var(--text-primary);
     }
 
-    .class-card-code {
+    .filter-pills {
+      display: flex;
+      gap: 6px;
+    }
+
+    .filter-pill {
+      flex: 1;
+      padding: 5px 0;
+      border-radius: 20px;
       font-size: 12px;
-      color: var(--text-muted);
-      font-family: monospace;
-    }
-
-    .class-card-info {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: transparent;
       color: var(--text-secondary);
+      transition: all 0.15s;
+      text-align: center;
     }
 
-    .class-card-info i {
-      width: 16px;
-      color: var(--primary-color);
+    .filter-pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
     }
 
-    .class-card-footer {
+    .left-count {
+      padding: 6px 14px;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.3px;
+    }
+
+    .classes-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .classes-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .classes-list::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    /* ---- List Item ---- */
+    .class-list-item {
+      display: flex;
+      align-items: stretch;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+
+    .class-list-item:hover {
+      background: var(--bg-secondary);
+    }
+
+    .class-list-item.selected {
+      background: #eff6ff;
+    }
+
+    .cli-bar {
+      width: 4px;
+      flex-shrink: 0;
+    }
+
+    .cli-body {
+      flex: 1;
+      padding: 11px 12px;
+      min-width: 0;
+    }
+
+    .cli-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 3px;
+    }
+
+    .cli-name {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cli-badge {
+      font-size: 10px;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .cli-badge.active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .cli-badge.inactive {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .cli-badge.completed {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .cli-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cli-foot {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border-color);
+      font-size: 11px;
+      color: var(--text-muted);
     }
 
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 20px;
-    }
-
-    .tabs {
+    .cli-foot .cli-hs {
       display: flex;
-      gap: 4px;
-      border-bottom: 2px solid var(--border-color);
+      align-items: center;
+      gap: 3px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .left-footer {
+      padding: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ========== RIGHT PANEL ========== */
+    .classes-right {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg-secondary);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Empty state */
+    .right-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 60px 40px;
+    }
+
+    .right-empty-icon {
+      font-size: 72px;
       margin-bottom: 20px;
+      opacity: 0.1;
+      color: var(--primary);
+    }
+
+    .right-empty h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .right-empty p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* ========== DETAIL PANEL ========== */
+    #classDetailPanel {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .detail-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Hero */
+    .detail-hero {
+      padding: 18px 24px 0;
+    }
+
+    .detail-hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .detail-class-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+      line-height: 1.2;
+    }
+
+    .detail-class-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .detail-class-sub .dot {
+      color: var(--border);
+    }
+
+    .detail-hero-actions {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    /* Stats strip */
+    .detail-stats-strip {
+      display: flex;
+      border-top: 1px solid var(--border);
+      margin: 0 -24px;
+    }
+
+    .detail-stat {
+      flex: 1;
+      padding: 9px 12px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+
+    .detail-stat:last-child {
+      border-right: none;
+    }
+
+    .detail-stat .ds-val {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--primary);
+      display: block;
+    }
+
+    .detail-stat .ds-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    /* Tabs */
+    .detail-tabs {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      padding: 0 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .detail-tabs::-webkit-scrollbar {
+      display: none;
     }
 
     .tab-btn {
-      padding: 12px 20px;
+      padding: 11px 16px;
       background: none;
       border: none;
+      border-bottom: 2px solid transparent;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       color: var(--text-secondary);
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
-      transition: all 0.2s;
+      margin-bottom: -1px;
+      white-space: nowrap;
+      transition: all 0.15s;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
     }
 
     .tab-btn:hover {
-      color: var(--primary-color);
+      color: var(--primary);
       background: var(--bg-secondary);
     }
 
     .tab-btn.active {
-      color: var(--primary-color);
-      border-bottom-color: var(--primary-color);
+      color: var(--primary);
+      border-bottom-color: var(--primary);
     }
 
     .tab-btn .badge {
-      background: var(--primary-color);
+      background: var(--primary);
       color: white;
-      padding: 2px 8px;
+      padding: 1px 7px;
       border-radius: 10px;
-      font-size: 11px;
+      font-size: 10px;
     }
 
+    /* Tab content */
     .tab-content {
       display: none;
     }
@@ -118,166 +389,170 @@
       display: block;
     }
 
-    .stats-mini {
-      display: flex;
-      gap: 16px;
+    .detail-body {
+      padding: 24px;
+    }
+
+    /* ========== INFO GRID ========== */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
       margin-bottom: 20px;
     }
 
-    .stat-mini {
-      background: var(--bg-secondary);
-      padding: 12px 16px;
+    .info-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      text-align: center;
-      flex: 1;
+      padding: 12px 14px;
     }
 
-    .stat-mini .value {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--primary-color);
-    }
-
-    .stat-mini .label {
-      font-size: 12px;
+    .info-item .info-label {
+      font-size: 11px;
       color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
     }
 
-    /* Sessions horizontal scroll */
+    .info-item .info-val {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    /* Sessions scroll */
     .sessions-scroll {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       overflow-x: auto;
-      padding: 8px 0 16px;
+      padding: 4px 0 12px;
     }
 
     .sessions-scroll::-webkit-scrollbar {
-      height: 6px;
+      height: 4px;
     }
 
     .sessions-scroll::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 3px;
+      background: var(--border);
+      border-radius: 2px;
     }
 
     .session-box {
-      min-width: 100px;
-      padding: 12px;
+      min-width: 80px;
+      padding: 10px 8px;
       border-radius: 10px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
       flex-shrink: 0;
       border: 2px solid transparent;
     }
 
     .session-box:hover:not(.disabled) {
-      transform: scale(1.05);
+      transform: translateY(-2px);
     }
 
     .session-box.disabled {
       opacity: 0.5;
       cursor: not-allowed;
-      filter: grayscale(0.5);
     }
 
     .session-box.completed {
-      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      background: #dcfce7;
       border-color: #22c55e;
     }
 
     .session-box.pending {
-      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      background: #fef3c7;
       border-color: #f59e0b;
     }
 
     .session-box.future {
-      background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-      border-color: #9ca3af;
+      background: var(--bg-secondary);
+      border-color: var(--border);
+    }
+
+    .session-box.cancelled {
+      background: #fee2e2;
+      border-color: #ef4444;
+      opacity: 0.7;
     }
 
     .session-box.active {
-      border-color: #2563eb;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-      transform: scale(1.05);
+      border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+      transform: translateY(-2px);
     }
 
     .session-box .session-num {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
-      color: #1f2937;
+      color: var(--text-primary);
     }
 
     .session-box .session-date {
-      font-size: 11px;
-      color: #6b7280;
-      margin-top: 4px;
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
     }
 
     .session-box .session-status {
-      font-size: 10px;
-      margin-top: 6px;
-      padding: 2px 6px;
-      border-radius: 8px;
+      font-size: 9px;
+      margin-top: 5px;
+      padding: 2px 5px;
+      border-radius: 6px;
+      color: white;
     }
 
     .session-box.completed .session-status {
       background: #22c55e;
-      color: white;
     }
 
     .session-box.pending .session-status {
       background: #f59e0b;
-      color: white;
     }
 
     .session-box.future .session-status {
       background: #9ca3af;
-      color: white;
+    }
+
+    .session-box.cancelled .session-status {
+      background: #ef4444;
+    }
+
+    .session-box.rescheduled::after {
+      content: '⟳';
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      font-size: 10px;
+      color: #f59e0b;
     }
 
     .session-box.rescheduled {
       position: relative;
     }
 
-    .session-box.rescheduled::after {
-      content: '⟳';
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      font-size: 12px;
-      color: #f59e0b;
-    }
-
-    .session-box.cancelled {
-      background: linear-gradient(135deg, #fee2e2, #fecaca);
-      border-color: #ef4444;
-      opacity: 0.7;
-    }
-
-    .session-box.cancelled .session-status {
-      background: #ef4444;
-      color: white;
-    }
-
     /* Attendance table */
     .attendance-table {
       width: 100%;
       border-collapse: separate;
-      border-spacing: 0 8px;
+      border-spacing: 0 6px;
     }
 
     .attendance-table th {
       text-align: left;
-      padding: 8px 12px;
-      font-size: 13px;
-      color: #6b7280;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--text-muted);
       font-weight: 500;
     }
 
     .attendance-table td {
-      padding: 12px;
-      background: white;
+      padding: 10px 12px;
+      background: var(--bg-card);
     }
 
     .attendance-table tr td:first-child {
@@ -288,15 +563,15 @@
       border-radius: 0 8px 8px 0;
     }
 
-    .attendance-table .student-info {
+    .student-info {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .attendance-table .student-avatar {
-      width: 36px;
-      height: 36px;
+    .student-avatar {
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       background: linear-gradient(135deg, #3b82f6, #2563eb);
       color: white;
@@ -304,39 +579,41 @@
       align-items: center;
       justify-content: center;
       font-weight: 600;
-      font-size: 14px;
+      font-size: 13px;
+      flex-shrink: 0;
     }
 
-    .attendance-table .student-name {
+    .student-name {
       font-weight: 600;
-      color: #1f2937;
+      color: var(--text-primary);
+      font-size: 13px;
     }
 
-    .attendance-table .student-code {
+    .student-code {
       font-size: 11px;
-      color: #9ca3af;
+      color: var(--text-muted);
       font-family: monospace;
     }
 
-    /* Status buttons */
     .status-buttons {
       display: flex;
-      gap: 6px;
+      gap: 5px;
+      flex-wrap: wrap;
     }
 
     .status-btn {
-      padding: 6px 12px;
-      border: 2px solid #e5e7eb;
-      background: white;
+      padding: 5px 10px;
+      border: 1.5px solid var(--border);
+      background: var(--bg-secondary);
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
 
     .status-btn:hover {
-      background: #f3f4f6;
+      border-color: var(--primary);
     }
 
     .status-btn.active.on-time {
@@ -363,155 +640,86 @@
       color: #991b1b;
     }
 
-    /* Warning badge */
     .warning-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
+      gap: 3px;
+      padding: 1px 7px;
       background: #fee2e2;
       color: #dc2626;
       border-radius: 10px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
-    }
-
-    /* Add student modal */
-    .student-select-list {
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .student-select-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .student-select-item:hover {
-      background: #f3f4f6;
-      border-color: #3b82f6;
-    }
-
-    .student-select-item.selected {
-      background: #dbeafe;
-      border-color: #3b82f6;
-    }
-
-    .student-select-item input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-    }
-
-    .student-select-info {
-      flex: 1;
-    }
-
-    .student-select-name {
-      font-weight: 600;
-      color: #1f2937;
-    }
-
-    .student-select-meta {
-      font-size: 12px;
-      color: #6b7280;
     }
 
     /* Assignment cards */
     .assignment-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      transition: all 0.2s;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
     }
 
     .assignment-card:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--shadow);
     }
 
     .assignment-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .assignment-title {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
-      color: #1f2937;
+      color: var(--text-primary);
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .assignment-title i {
-      color: #3b82f6;
-    }
-
     .assignment-desc {
-      color: #6b7280;
-      font-size: 14px;
+      color: var(--text-secondary);
+      font-size: 13px;
       line-height: 1.5;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       white-space: pre-wrap;
     }
 
     .assignment-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
-      font-size: 13px;
-      color: #6b7280;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
     }
 
     .assignment-meta span {
       display: flex;
       align-items: center;
-      gap: 6px;
-    }
-
-    .assignment-meta i {
-      color: #9ca3af;
+      gap: 5px;
     }
 
     .assignment-actions {
       display: flex;
       gap: 8px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid #f3f4f6;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
     }
 
-    /* Submission list */
+    /* Submission */
     .submission-item {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 12px;
-      background: #f9fafb;
+      background: var(--bg-secondary);
       border-radius: 8px;
       margin-bottom: 8px;
-    }
-
-    .submission-item .student-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
     }
 
     .submission-info {
@@ -520,18 +728,19 @@
 
     .submission-name {
       font-weight: 600;
-      color: #1f2937;
+      color: var(--text-primary);
+      font-size: 13px;
     }
 
     .submission-time {
-      font-size: 12px;
-      color: #6b7280;
+      font-size: 11px;
+      color: var(--text-muted);
     }
 
     .submission-grade {
-      padding: 4px 12px;
+      padding: 3px 10px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
     }
 
@@ -545,43 +754,81 @@
       color: #92400e;
     }
 
-    /* View toggle */
-    .view-toggle {
+    /* Select student */
+    .student-select-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .student-select-item {
       display: flex;
-      gap: 4px;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
     }
 
-    .view-toggle .btn {
-      padding: 8px 12px;
+    .student-select-item:hover {
+      background: var(--bg-secondary);
+      border-color: var(--primary);
     }
 
-    /* Calendar/Week View */
+    .student-select-item.selected {
+      background: #dbeafe;
+      border-color: #3b82f6;
+    }
+
+    .student-select-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+    }
+
+    .student-select-info {
+      flex: 1;
+    }
+
+    .student-select-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 13px;
+    }
+
+    .student-select-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Calendar */
     .calendar-wrapper {
       background: var(--bg-card);
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
     }
 
     .calendar-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 20px;
+      padding: 14px 20px;
       background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border);
     }
 
     .calendar-nav {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .calendar-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
-      min-width: 200px;
+      min-width: 180px;
       text-align: center;
     }
 
@@ -591,44 +838,35 @@
     }
 
     .week-day-header {
-      padding: 12px;
+      padding: 10px;
       text-align: center;
       font-weight: 600;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-muted);
       background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border-color);
-      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
     }
 
     .week-day-header:last-child {
       border-right: none;
     }
 
-    .week-day-header .day-name {
-      font-size: 12px;
-      text-transform: uppercase;
-    }
-
     .week-day-header .day-date {
       font-size: 18px;
       font-weight: 700;
-      margin-top: 4px;
-    }
-
-    .week-day-header.today {
-      background: #eff6ff;
+      margin-top: 2px;
     }
 
     .week-day-header.today .day-date {
-      color: var(--primary-color);
+      color: var(--primary);
     }
 
     .week-day-content {
-      min-height: 300px;
-      padding: 8px;
-      border-right: 1px solid var(--border-color);
-      border-bottom: 1px solid var(--border-color);
+      min-height: 200px;
+      padding: 6px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
     .week-day-content:last-child {
@@ -636,36 +874,35 @@
     }
 
     .class-event {
-      padding: 8px 10px;
-      margin-bottom: 6px;
-      border-radius: 8px;
-      font-size: 12px;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      border-radius: 6px;
+      font-size: 11px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
       background: linear-gradient(135deg, #3b82f6, #2563eb);
       color: white;
     }
 
     .class-event:hover {
       transform: scale(1.02);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .class-event .event-time {
       font-weight: 700;
-      font-size: 11px;
+      font-size: 10px;
       opacity: 0.9;
     }
 
     .class-event .event-name {
       font-weight: 600;
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
     .class-event .event-info {
-      font-size: 10px;
+      font-size: 9px;
       opacity: 0.8;
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
     .class-event.session-active {
@@ -684,16 +921,17 @@
     <main class="main-content">
       <header class="header">
         <div class="header-left">
-          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i
-              class="fas fa-bars"></i></button>
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+          </button>
           <div>
             <h1 class="page-title">Lớp học</h1>
           </div>
         </div>
         <div class="header-right">
-          <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-sync"></i></button>
-          <button class="btn btn-primary" onclick="openCreateModal()" id="btnCreate"><i class="fas fa-plus"></i> Thêm
-            lớp</button>
+          <button class="btn btn-secondary btn-sm" onclick="toggleCalendar()" title="Xem lịch tuần">
+            <i class="fas fa-calendar-week"></i> Lịch
+          </button>
           <div class="user-menu" onclick="auth.logout()">
             <div class="user-avatar" id="userAvatar">U</div>
             <div class="user-info">
@@ -704,61 +942,167 @@
         </div>
       </header>
 
-      <div class="page-content">
-        <div class="filters-bar" style="justify-content:space-between">
-          <div style="display:flex;gap:12px;align-items:center">
-            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput"
-                placeholder="Tìm kiếm..." onkeyup="if(event.key==='Enter') loadData()"></div>
-            <select id="statusFilter" class="filter-select" onchange="loadData()">
-              <option value="">Tất cả</option>
-              <option value="active">Đang hoạt động</option>
-              <option value="inactive">Ngừng</option>
-            </select>
-            <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i></button>
-          </div>
-          <div class="view-toggle">
-            <button class="btn btn-sm ${currentView === 'grid' ? 'btn-primary' : 'btn-secondary'}"
-              onclick="switchView('grid')" title="Xem dạng thẻ"><i class="fas fa-th-large"></i></button>
-            <button class="btn btn-sm ${currentView === 'calendar' ? 'btn-primary' : 'btn-secondary'}"
-              onclick="switchView('calendar')" title="Xem dạng lịch"><i class="fas fa-calendar-alt"></i></button>
-          </div>
-        </div>
+      <!-- SPLIT LAYOUT -->
+      <div class="classes-layout">
 
-        <!-- Grid View -->
-        <div id="gridView" style="display:block">
-          <div class="cards-grid" id="classesGrid">
+        <!-- ===== LEFT: danh sách lớp ===== -->
+        <div class="classes-left">
+          <div class="left-header">
+            <div class="left-search">
+              <i class="fas fa-search"></i>
+              <input type="text" id="searchInput" placeholder="Tìm lớp học..."
+                onkeyup="if(event.key==='Enter') loadData()">
+            </div>
+            <div class="filter-pills">
+              <button class="filter-pill active" onclick="setFilter('')" id="pill-all">Tất cả</button>
+              <button class="filter-pill" onclick="setFilter('active')" id="pill-active">Đang học</button>
+              <button class="filter-pill" onclick="setFilter('completed')" id="pill-completed">Hoàn thành</button>
+              <button class="filter-pill" onclick="setFilter('inactive')" id="pill-inactive">Ngừng</button>
+            </div>
+          </div>
+
+          <div class="left-count" id="classesCount">Đang tải...</div>
+
+          <div class="classes-list" id="classesList">
             <div class="loading">
               <div class="spinner"></div>
             </div>
           </div>
-        </div>
 
-        <!-- Calendar View -->
-        <div id="calendarView" style="display:none">
-          <div class="calendar-wrapper">
-            <div class="calendar-header">
-              <div class="calendar-nav">
-                <button class="btn btn-secondary btn-sm" onclick="changeWeek(-1)"><i
-                    class="fas fa-chevron-left"></i></button>
-                <span class="calendar-title" id="weekTitle">Tuần 1, Tháng 1</span>
-                <button class="btn btn-secondary btn-sm" onclick="changeWeek(1)"><i
-                    class="fas fa-chevron-right"></i></button>
-                <button class="btn btn-secondary btn-sm" onclick="goToToday()">Hôm nay</button>
-              </div>
-            </div>
-            <div class="week-grid" id="weekGrid"></div>
+          <div class="left-footer" id="btnCreateWrap">
+            <button class="btn btn-primary btn-block" onclick="openCreateModal()" id="btnCreate">
+              <i class="fas fa-plus"></i> Thêm lớp mới
+            </button>
           </div>
         </div>
-      </div>
+
+        <!-- ===== RIGHT: chi tiết lớp ===== -->
+        <div class="classes-right" id="classesRight">
+
+          <!-- Empty state -->
+          <div class="right-empty" id="classEmpty">
+            <div class="right-empty-icon"><i class="fas fa-chalkboard"></i></div>
+            <h3>Chọn một lớp học</h3>
+            <p>Chọn lớp ở danh sách bên trái để xem chi tiết, điểm danh, nhận xét...</p>
+          </div>
+
+          <!-- Calendar view -->
+          <div id="calendarView" style="display:none; padding: 20px;">
+            <div class="calendar-wrapper">
+              <div class="calendar-header">
+                <div class="calendar-nav">
+                  <button class="btn btn-secondary btn-sm" onclick="changeWeek(-1)"><i
+                      class="fas fa-chevron-left"></i></button>
+                  <span class="calendar-title" id="weekTitle">Đang tải...</span>
+                  <button class="btn btn-secondary btn-sm" onclick="changeWeek(1)"><i
+                      class="fas fa-chevron-right"></i></button>
+                  <button class="btn btn-secondary btn-sm" onclick="goToToday()">Hôm nay</button>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="hideCalendar()"><i class="fas fa-times"></i> Đóng
+                  lịch</button>
+              </div>
+              <div class="week-grid" id="weekGrid"></div>
+            </div>
+          </div>
+
+          <!-- Class detail panel -->
+          <div id="classDetailPanel" style="display:none">
+
+            <!-- Sticky header: hero + tabs -->
+            <div class="detail-sticky">
+
+              <!-- Hero -->
+              <div class="detail-hero">
+                <div class="detail-hero-top">
+                  <div style="min-width:0">
+                    <div class="detail-class-name" id="detailTitle">-</div>
+                    <div class="detail-class-sub">
+                      <span id="detailCode">-</span>
+                      <span class="dot">•</span>
+                      <span id="detailBranch">-</span>
+                      <span class="dot">•</span>
+                      <span id="detailStatusBadge">-</span>
+                    </div>
+                  </div>
+                  <div class="detail-hero-actions">
+                    <button class="btn btn-sm btn-primary" id="btnPromoteClass" onclick="openPromoteModal()" style="display:none">
+                      <i class="fas fa-level-up-alt"></i> Đẩy lên lớp mới
+                    </button>
+                    <button class="btn btn-sm btn-secondary" onclick="editClass(currentClass?.id)">
+                      <i class="fas fa-edit"></i> Sửa
+                    </button>
+                    <button class="btn btn-sm btn-secondary" onclick="viewClass(currentClass?.id)" title="Tải lại">
+                      <i class="fas fa-sync"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Stats strip -->
+                <div class="detail-stats-strip">
+                  <div class="detail-stat">
+                    <span class="ds-val" id="heroStudentCount">0</span>
+                    <span class="ds-lbl">Học sinh</span>
+                  </div>
+                  <div class="detail-stat">
+                    <span class="ds-val" id="heroSessionDone">0/0</span>
+                    <span class="ds-lbl">Đã điểm danh</span>
+                  </div>
+                  <div class="detail-stat">
+                    <span class="ds-val" id="heroSchedule">-</span>
+                    <span class="ds-lbl">Lịch học</span>
+                  </div>
+                  <div class="detail-stat">
+                    <span class="ds-val" id="heroTime">-</span>
+                    <span class="ds-lbl">Giờ học</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tabs -->
+              <div class="detail-tabs">
+                <button class="tab-btn active" onclick="switchTab('info')">
+                  <i class="fas fa-info-circle"></i> Thông tin
+                </button>
+                <button class="tab-btn" onclick="switchTab('students')">
+                  <i class="fas fa-users"></i> Học sinh
+                  <span class="badge" id="studentCount">0</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('attendance')">
+                  <i class="fas fa-clipboard-check"></i> Điểm danh
+                </button>
+                <button class="tab-btn" onclick="switchTab('feedback')">
+                  <i class="fas fa-comment-alt"></i> Nhận xét
+                </button>
+                <button class="tab-btn" onclick="switchTab('assignments')">
+                  <i class="fas fa-book-open"></i> BTVN
+                  <span class="badge" id="assignmentCount">0</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tab body -->
+            <div class="detail-body">
+              <div id="tab-info" class="tab-content active"></div>
+              <div id="tab-students" class="tab-content"></div>
+              <div id="tab-attendance" class="tab-content"></div>
+              <div id="tab-feedback" class="tab-content"></div>
+              <div id="tab-assignments" class="tab-content"></div>
+            </div>
+
+          </div><!-- end classDetailPanel -->
+        </div><!-- end classes-right -->
+      </div><!-- end classes-layout -->
     </main>
   </div>
+
+  <!-- ===== MODALS ===== -->
 
   <!-- Create/Edit Modal -->
   <div class="modal-overlay" id="formModal">
     <div class="modal-content modal-lg">
       <div class="modal-header">
-        <h3 class="modal-title" id="modalTitle">Thêm lớp học</h3><button class="modal-close"
-          onclick="modal.hide('formModal')">&times;</button>
+        <h3 class="modal-title" id="modalTitle">Thêm lớp học</h3>
+        <button class="modal-close" onclick="modal.hide('formModal')">&times;</button>
       </div>
       <div class="modal-body">
         <form id="classForm">
@@ -770,89 +1114,79 @@
             </select>
           </div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label required">Tên lớp</label><input type="text"
-                name="className" class="form-control" required></div>
-            <div class="form-group"><label class="form-label">Môn học</label><select name="subjectId"
-                class="form-control" id="subjectSelect">
+            <div class="form-group">
+              <label class="form-label required">Tên lớp</label>
+              <input type="text" name="className" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Môn học</label>
+              <select name="subjectId" class="form-control" id="subjectSelect">
                 <option value="">Chọn</option>
-              </select></div>
+              </select>
+            </div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label">Cấp độ</label><select name="levelId" class="form-control"
-                id="levelSelect">
+            <div class="form-group">
+              <label class="form-label">Cấp độ</label>
+              <select name="levelId" class="form-control" id="levelSelect">
                 <option value="">Chọn</option>
-              </select></div>
-            <div class="form-group"><label class="form-label">Giáo viên</label><select name="teacherId"
-                class="form-control" id="teacherSelect">
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Giáo viên</label>
+              <select name="teacherId" class="form-control" id="teacherSelect">
                 <option value="">Chọn</option>
-              </select></div>
+              </select>
+            </div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label">CM</label><select name="cmId" class="form-control"
-                id="cmSelect">
+            <div class="form-group">
+              <label class="form-label">CM</label>
+              <select name="cmId" class="form-control" id="cmSelect">
                 <option value="">Chọn</option>
-              </select></div>
-            <div class="form-group"><label class="form-label">Phòng</label><input type="text" name="room"
-                class="form-control"></div>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phòng</label>
+              <input type="text" name="room" class="form-control">
+            </div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label">Ngày học</label><input type="text" name="studyDays"
-                class="form-control" placeholder="T2, T4, T6"></div>
-            <div class="form-group"><label class="form-label">Số buổi</label><input type="number" name="totalSessions"
-                class="form-control" value="15"></div>
+            <div class="form-group">
+              <label class="form-label">Ngày học</label>
+              <input type="text" name="studyDays" class="form-control" placeholder="T2, T4, T6">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Số buổi</label>
+              <input type="number" name="totalSessions" class="form-control" value="15">
+            </div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label">Giờ bắt đầu</label><input type="time" name="startTime"
-                class="form-control"></div>
-            <div class="form-group"><label class="form-label">Giờ kết thúc</label><input type="time" name="endTime"
-                class="form-control"></div>
+            <div class="form-group">
+              <label class="form-label">Giờ bắt đầu</label>
+              <input type="time" name="startTime" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Giờ kết thúc</label>
+              <input type="time" name="endTime" class="form-control">
+            </div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label">Ngày khai giảng</label><input type="date" name="startDate"
-                class="form-control"></div>
-            <div class="form-group"><label class="form-label">Sĩ số tối đa</label><input type="number"
-                name="maxStudents" class="form-control" value="15"></div>
+            <div class="form-group">
+              <label class="form-label">Ngày khai giảng</label>
+              <input type="date" name="startDate" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sĩ số tối đa</label>
+              <input type="number" name="maxStudents" class="form-control" value="15">
+            </div>
           </div>
         </form>
       </div>
-      <div class="modal-footer"><button class="btn btn-secondary" onclick="modal.hide('formModal')">Hủy</button><button
-          class="btn btn-primary" onclick="saveClass()"><i class="fas fa-save"></i> Lưu</button></div>
-    </div>
-  </div>
-
-  <!-- Detail Modal with Tabs -->
-  <div class="modal-overlay" id="detailModal">
-    <div class="modal-content xl" style="max-width: 1000px;">
-      <div class="modal-header"
-        style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border-radius: 12px 12px 0 0;">
-        <div>
-          <h3 class="modal-title" id="detailTitle">Chi tiết lớp học</h3>
-          <p id="detailCode" style="opacity:0.8; font-size:13px; margin:0;"></p>
-        </div>
-        <button class="modal-close" onclick="modal.hide('detailModal')" style="color:white;">&times;</button>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="modal.hide('formModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveClass()"><i class="fas fa-save"></i> Lưu</button>
       </div>
-      <div class="modal-body" style="padding: 0;">
-        <div class="tabs" style="padding: 0 20px; background: var(--bg-secondary);">
-          <button class="tab-btn active" onclick="switchTab('info')"><i class="fas fa-info-circle"></i> Thông
-            tin</button>
-          <button class="tab-btn" onclick="switchTab('students')"><i class="fas fa-users"></i> Học sinh <span
-              class="badge" id="studentCount">0</span></button>
-          <button class="tab-btn" onclick="switchTab('attendance')"><i class="fas fa-clipboard-check"></i> Điểm
-            danh</button>
-          <button class="tab-btn" onclick="switchTab('feedback')"><i class="fas fa-comment-alt"></i> Nhận xét</button>
-          <button class="tab-btn" onclick="switchTab('assignments')"><i class="fas fa-book-open"></i> BTVN <span
-              class="badge" id="assignmentCount">0</span></button>
-        </div>
-
-        <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
-          <div id="tab-info" class="tab-content active"></div>
-          <div id="tab-students" class="tab-content"></div>
-          <div id="tab-attendance" class="tab-content"></div>
-          <div id="tab-feedback" class="tab-content"></div>
-          <div id="tab-assignments" class="tab-content"></div>
-        </div>
-      </div>
-      <div class="modal-footer" id="detailFooter"></div>
     </div>
   </div>
 
@@ -864,15 +1198,15 @@
         <button class="modal-close" onclick="modal.hide('addStudentModal')">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="filters-bar" style="margin-bottom:16px">
+        <div class="filters-bar" style="margin-bottom:12px">
           <div class="search-box" style="flex:1">
             <i class="fas fa-search"></i>
             <input type="text" id="studentSearchInput" placeholder="Tìm theo tên, SĐT..."
               onkeyup="filterWaitingStudents()">
           </div>
         </div>
-        <p style="margin-bottom:12px;color:#6b7280;font-size:13px">
-          <i class="fas fa-info-circle"></i> Danh sách học sinh đang chờ lớp (status: waiting/pending)
+        <p style="margin-bottom:10px;color:var(--text-muted);font-size:12px">
+          <i class="fas fa-info-circle"></i> Danh sách học sinh đang chờ lớp (waiting/pending/active)
         </p>
         <div class="student-select-list" id="waitingStudentsList">
           <div class="loading">
@@ -881,7 +1215,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <span id="selectedCount" style="flex:1;color:#6b7280">Đã chọn: 0 học sinh</span>
+        <span id="selectedCount" style="flex:1;color:var(--text-muted);font-size:13px">Đã chọn: 0 học sinh</span>
         <button class="btn btn-secondary" onclick="modal.hide('addStudentModal')">Hủy</button>
         <button class="btn btn-primary" onclick="addSelectedStudents()"><i class="fas fa-plus"></i> Thêm vào
           lớp</button>
@@ -893,7 +1227,7 @@
   <div class="modal-overlay" id="assignmentModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title" id="assignmentModalTitle"><i class="fas fa-book-open"></i> Giao bài tập về nhà</h3>
+        <h3 class="modal-title" id="assignmentModalTitle"><i class="fas fa-book-open"></i> Giao bài tập</h3>
         <button class="modal-close" onclick="modal.hide('assignmentModal')">&times;</button>
       </div>
       <div class="modal-body">
@@ -911,8 +1245,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">Mô tả / Yêu cầu</label>
-            <textarea name="description" class="form-control" rows="4"
-              placeholder="Mô tả chi tiết bài tập, yêu cầu cần hoàn thành..."></textarea>
+            <textarea name="description" class="form-control" rows="4" placeholder="Mô tả chi tiết..."></textarea>
           </div>
           <div class="form-row">
             <div class="form-group">
@@ -933,7 +1266,7 @@
     </div>
   </div>
 
-  <!-- View Submissions Modal -->
+  <!-- Submissions Modal -->
   <div class="modal-overlay" id="submissionsModal">
     <div class="modal-content modal-lg">
       <div class="modal-header">
@@ -946,16 +1279,16 @@
     </div>
   </div>
 
-  <!-- Reschedule Session Modal -->
+  <!-- Reschedule Modal -->
   <div class="modal-overlay" id="rescheduleModal">
-    <div class="modal-content" style="max-width:450px">
+    <div class="modal-content" style="max-width:440px">
       <div class="modal-header">
         <h3 class="modal-title"><i class="fas fa-calendar-alt"></i> Dời buổi học</h3>
         <button class="modal-close" onclick="modal.hide('rescheduleModal')">&times;</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="rescheduleSessionId">
-        <div class="alert alert-info" style="margin-bottom:16px">
+        <div class="alert alert-info" style="margin-bottom:14px">
           <i class="fas fa-info-circle"></i>
           <span id="rescheduleInfo">Buổi 1 - Ngày 01/02/2025</span>
         </div>
@@ -985,7 +1318,7 @@
             <span class="checkmark"></span>
             Dời tất cả các buổi sau theo
           </label>
-          <small style="color:#6b7280;display:block;margin-top:4px">
+          <small style="color:var(--text-muted);display:block;margin-top:4px;font-size:12px">
             <i class="fas fa-info-circle"></i> Nếu chọn, các buổi sau sẽ tự động dời theo cùng số ngày
           </small>
         </div>
@@ -997,8 +1330,64 @@
     </div>
   </div>
 
+  <!-- Promote Class Modal -->
+  <div class="modal-overlay" id="promoteModal">
+    <div class="modal-content" style="max-width:480px">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-level-up-alt"></i> Đẩy lên lớp mới</h3>
+        <button class="modal-close" onclick="modal.hide('promoteModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info" style="margin-bottom:16px;padding:12px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;font-size:13px;color:#1e40af">
+          <i class="fas fa-info-circle"></i>
+          Lớp mới sẽ kế thừa giáo viên, lịch học, cơ sở từ lớp cũ.
+          Tất cả học sinh đang active sẽ được chuyển sang lớp mới.
+        </div>
+        <div class="form-group">
+          <label class="form-label required">Tên lớp mới</label>
+          <input type="text" id="promoteClassName" class="form-control" placeholder="VD: RBT1.2-TH-LLQ-001">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cấp độ mới</label>
+          <select id="promoteLevelId" class="form-control">
+            <option value="">Chọn cấp độ...</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label required">Ngày khai giảng</label>
+            <input type="date" id="promoteStartDate" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Số buổi</label>
+            <input type="number" id="promoteTotalSessions" class="form-control" value="15" min="1">
+          </div>
+        </div>
+        <div id="promoteStudentInfo" style="background:var(--bg-secondary);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text-secondary)">
+          <i class="fas fa-users"></i> Đang tải danh sách học sinh...
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="modal.hide('promoteModal')">Hủy</button>
+        <button class="btn btn-primary" id="btnConfirmPromote" onclick="confirmPromote()">
+          <i class="fas fa-level-up-alt"></i> Tạo lớp mới
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden status filter for compatibility -->
+  <select id="statusFilter" style="display:none" onchange="loadData()">
+    <option value="">Tất cả</option>
+    <option value="active">Đang hoạt động</option>
+    <option value="completed">Hoàn thành</option>
+    <option value="inactive">Ngừng</option>
+  </select>
+
   <script src="../js/config.js"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/reactive.js"></script>
+  <script src="../js/crud-mixin.js"></script>
   <script src="../js/sidebar.js"></script>
   <script>
     let classes = [];
@@ -1010,39 +1399,79 @@
     let selectedStudentIds = [];
     let selectedSessionId = null;
     let attendanceData = {};
+    let currentFilter = '';
 
-    // Calendar view variables
-    let currentView = 'grid';
+    // Calendar
     let currentWeekStart = getWeekStart(new Date());
     let allSessions = [];
+    let calendarVisible = false;
+
+    // ============================================
+    // INIT
+    // ============================================
+    async function init() {
+      if (!auth.checkAuth()) return;
+      buildSidebar('sidebar');
+      if (!auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN')) {
+        document.getElementById('btnCreateWrap').style.display = 'none';
+      }
+      setupBranchSelect();
+      await loadOptions();
+      await loadData();
+      window.addEventListener('branchchange', () => { loadData(); });
+    }
+
+    function setFilter(status) {
+      currentFilter = status;
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      document.getElementById(`pill-${status || 'all'}`).classList.add('active');
+      document.getElementById('statusFilter').value = status;
+      loadData();
+    }
+
+    // ============================================
+    // CALENDAR
+    // ============================================
+    function localDateStr(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
 
     function getWeekStart(date) {
       const d = new Date(date);
       const day = d.getDay();
-      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday
-      return new Date(d.setDate(diff));
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      d.setDate(diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
     }
 
-    function switchView(view) {
-      currentView = view;
-      document.getElementById('gridView').style.display = view === 'grid' ? 'block' : 'none';
-      document.getElementById('calendarView').style.display = view === 'calendar' ? 'block' : 'none';
-
-      // Update toggle buttons
-      document.querySelectorAll('.view-toggle .btn').forEach(btn => {
-        btn.classList.remove('btn-primary');
-        btn.classList.add('btn-secondary');
-      });
-      event.target.closest('.btn').classList.remove('btn-secondary');
-      event.target.closest('.btn').classList.add('btn-primary');
-
-      if (view === 'calendar') {
+    function toggleCalendar() {
+      calendarVisible = !calendarVisible;
+      if (calendarVisible) {
+        document.getElementById('classEmpty').style.display = 'none';
+        document.getElementById('classDetailPanel').style.display = 'none';
+        document.getElementById('calendarView').style.display = 'block';
         loadCalendarData();
+      } else {
+        hideCalendar();
+      }
+    }
+
+    function hideCalendar() {
+      calendarVisible = false;
+      document.getElementById('calendarView').style.display = 'none';
+      if (currentClass) {
+        document.getElementById('classDetailPanel').style.display = 'flex';
+      } else {
+        document.getElementById('classEmpty').style.display = 'flex';
       }
     }
 
     function changeWeek(delta) {
-      currentWeekStart.setDate(currentWeekStart.getDate() + (delta * 7));
+      currentWeekStart.setDate(currentWeekStart.getDate() + delta * 7);
       loadCalendarData();
     }
 
@@ -1054,78 +1483,55 @@
     async function loadCalendarData() {
       const weekEnd = new Date(currentWeekStart);
       weekEnd.setDate(weekEnd.getDate() + 6);
-
-      // Update title
       const monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
       const weekNum = Math.ceil((currentWeekStart.getDate() + new Date(currentWeekStart.getFullYear(), currentWeekStart.getMonth(), 1).getDay()) / 7);
       document.getElementById('weekTitle').textContent = `Tuần ${weekNum}, ${monthNames[currentWeekStart.getMonth()]} ${currentWeekStart.getFullYear()}`;
-
       try {
-        const startDate = currentWeekStart.toISOString().split('T')[0];
-        const endDate = weekEnd.toISOString().split('T')[0];
+        const startDate = localDateStr(currentWeekStart);
+        const endDate = localDateStr(weekEnd);
         const branchQuery = branch.buildQuery({});
-        const res = await api.get(`/sessions?start_date=${startDate}&end_date=${endDate}${branchQuery.replace('?', '&')}&limit=200`);
+        const res = await api.get(`/sessions?fromDate=${startDate}&toDate=${endDate}${branchQuery.replace('?', '&')}&limit=200`);
         allSessions = res.data || [];
         renderWeekGrid();
-      } catch (e) {
-        console.error(e);
-        ui.error('Không thể tải lịch');
-      }
+      } catch (e) { notify.error('Không thể tải lịch'); }
     }
 
     function renderWeekGrid() {
       const dayNames = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'];
-      const today = new Date().toISOString().split('T')[0];
-
+      const today = localDateStr(new Date());
       let html = '';
-
-      // Headers
       for (let i = 0; i < 7; i++) {
         const date = new Date(currentWeekStart);
         date.setDate(date.getDate() + i);
-        const dateStr = date.toISOString().split('T')[0];
-        const isToday = dateStr === today;
-        html += `<div class="week-day-header ${isToday ? 'today' : ''}">
+        const dateStr = localDateStr(date);
+        html += `<div class="week-day-header ${dateStr === today ? 'today' : ''}">
           <div class="day-name">${dayNames[i]}</div>
           <div class="day-date">${date.getDate()}</div>
         </div>`;
       }
-
-      // Content rows
       for (let i = 0; i < 7; i++) {
         const date = new Date(currentWeekStart);
         date.setDate(date.getDate() + i);
-        const dateStr = date.toISOString().split('T')[0];
-
-        const daySessions = allSessions.filter(s => s.session_date?.split('T')[0] === dateStr);
-
+        const dateStr = localDateStr(date);
+        const daySessions = allSessions.filter(s => (s.session_date || '').slice(0, 10) === dateStr);
         html += `<div class="week-day-content">`;
         daySessions.forEach(s => {
-          const statusClass = s.status === 'completed' ? 'session-completed' : (s.status === 'active' ? 'session-active' : '');
-          html += `<div class="class-event ${statusClass}" onclick="viewClass(${s.class_id})">
+          const cls = s.status === 'completed' ? 'session-completed' : (s.status === 'active' ? 'session-active' : '');
+          html += `<div class="class-event ${cls}" onclick="viewClass(${s.class_id})">
             <div class="event-time">${s.start_time || '08:00'} - ${s.end_time || '10:00'}</div>
             <div class="event-name">${escapeHtml(s.class_name || 'Lớp')}</div>
             <div class="event-info">Buổi ${s.session_number || 1} • ${s.student_count || 0} HS</div>
           </div>`;
         });
-        if (!daySessions.length) {
-          html += `<div style="color:var(--text-muted);font-size:12px;text-align:center;padding:20px">Không có lớp</div>`;
-        }
+        if (!daySessions.length) html += `<div style="color:var(--text-muted);font-size:11px;text-align:center;padding:16px 4px">Không có lớp</div>`;
         html += `</div>`;
       }
-
       document.getElementById('weekGrid').innerHTML = html;
     }
 
-    async function init() {
-      if (!auth.checkAuth()) return;
-      buildSidebar('sidebar');
-      if (!auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN')) document.getElementById('btnCreate').style.display = 'none';
-      setupBranchSelect();
-      await loadOptions();
-      await loadData();
-    }
-
+    // ============================================
+    // LOAD DATA
+    // ============================================
     function setupBranchSelect() { loadBranchOptions(); }
 
     async function loadBranchOptions() {
@@ -1134,29 +1540,21 @@
       try {
         const result = await api.get('/branches');
         const allBranches = result.data || [];
-        if (allBranches.length === 0) { branchSelect.innerHTML = '<option value="">Chưa có cơ sở</option>'; return; }
-
+        if (!allBranches.length) { branchSelect.innerHTML = '<option value="">Chưa có cơ sở</option>'; return; }
         const userBranches = auth.user?.branches || [];
         const isAdmin = auth.user?.is_system_wide;
-
         if (userBranches.length > 0 && !isAdmin) {
           if (userBranches.length === 1) {
             branchGroup.style.display = 'none';
             branchSelect.innerHTML = `<option value="${userBranches[0].id}">${userBranches[0].name}</option>`;
             branchSelect.value = userBranches[0].id;
           } else {
-            branchGroup.style.display = 'block';
             const primaryId = auth.user?.primaryBranch?.id || userBranches[0]?.id;
-            branchSelect.innerHTML = userBranches.map(b =>
-              `<option value="${b.id}" ${b.id == primaryId ? 'selected' : ''}>${b.name}</option>`
-            ).join('');
+            branchSelect.innerHTML = userBranches.map(b => `<option value="${b.id}" ${b.id == primaryId ? 'selected' : ''}>${b.name}</option>`).join('');
           }
         } else {
-          branchGroup.style.display = 'block';
           const currentBranchId = branch.getId() || allBranches[0]?.id;
-          branchSelect.innerHTML = allBranches.map(b =>
-            `<option value="${b.id}" ${b.id == currentBranchId ? 'selected' : ''}>${b.name}</option>`
-          ).join('');
+          branchSelect.innerHTML = allBranches.map(b => `<option value="${b.id}" ${b.id == currentBranchId ? 'selected' : ''}>${b.name}</option>`).join('');
         }
       } catch (e) { console.error(e); }
     }
@@ -1176,9 +1574,9 @@
 
     async function loadData() {
       const search = document.getElementById('searchInput').value;
-      const status = document.getElementById('statusFilter').value;
-      const container = document.getElementById('classesGrid');
-      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      const status = currentFilter;
+      const list = document.getElementById('classesList');
+      list.innerHTML = '<div style="padding:20px;text-align:center"><div class="spinner"></div></div>';
       try {
         const params = {};
         if (search) params.search = search;
@@ -1187,80 +1585,67 @@
         const result = await api.get('/classes' + query);
         classes = result.data || [];
         renderClasses();
-      } catch (e) { container.innerHTML = '<p>Lỗi: ' + e.message + '</p>'; }
+      } catch (e) {
+        list.innerHTML = '<p style="padding:20px;color:var(--danger);font-size:13px">Lỗi: ' + e.message + '</p>';
+      }
     }
 
     function renderClasses() {
-      const container = document.getElementById('classesGrid');
+      const list = document.getElementById('classesList');
       const showBranch = auth.user?.is_system_wide && !branch.getId();
-      if (!classes.length) { container.innerHTML = '<div class="empty-state"><i class="fas fa-chalkboard"></i><p>Chưa có lớp học</p></div>'; return; }
-      container.innerHTML = classes.map(c => `
-        <div class="class-card" onclick="viewClass(${c.id})">
-          <div class="class-card-header">
-            <div>
-              <div class="class-card-title">${escapeHtml(c.class_name)}</div>
-              <div class="class-card-code">${c.class_code}</div>
+
+      if (!classes.length) {
+        list.innerHTML = `<div style="padding:40px 20px;text-align:center;color:var(--text-muted)">
+          <i class="fas fa-inbox" style="font-size:36px;display:block;margin-bottom:10px;opacity:0.3"></i>
+          <span style="font-size:13px">Không có lớp nào</span>
+        </div>`;
+        document.getElementById('classesCount').textContent = '0 lớp';
+        return;
+      }
+
+      const activeCount = classes.filter(c => c.status === 'active').length;
+      const completedCount = classes.filter(c => c.status === 'completed').length;
+      document.getElementById('classesCount').textContent = `${classes.length} lớp · ${activeCount} đang học · ${completedCount} hoàn thành`;
+
+      const barColors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#f97316'];
+
+      list.innerHTML = classes.map((c, idx) => {
+        const color = c.status === 'active' ? barColors[idx % barColors.length] : c.status === 'completed' ? '#3b82f6' : '#d1d5db';
+        const isSelected = currentClass?.id === c.id;
+        const capacity = c.max_students || 15;
+        const filled = c.student_count || 0;
+        const badgeClass = c.status === 'active' ? 'active' : c.status === 'completed' ? 'completed' : 'inactive';
+        const badgeText = c.status === 'active' ? 'Đang học' : c.status === 'completed' ? 'Hoàn thành' : 'Ngừng';
+        return `
+          <div class="class-list-item ${isSelected ? 'selected' : ''}" onclick="viewClass(${c.id})" data-id="${c.id}">
+            <div class="cli-bar" style="background:${color}"></div>
+            <div class="cli-body">
+              <div class="cli-top">
+                <span class="cli-name" title="${escapeHtml(c.class_name)}">${escapeHtml(c.class_name)}</span>
+                <span class="cli-badge ${badgeClass}">${badgeText}</span>
+              </div>
+              <div class="cli-meta">
+                <i class="fas fa-chalkboard-teacher" style="width:11px;margin-right:2px"></i>${c.teacher_name || 'Chưa có GV'}${c.subject_name ? ' · ' + c.subject_name : ''}
+                ${showBranch && c.branch_name ? ` · <i class="fas fa-building"></i> ${c.branch_name}` : ''}
+              </div>
+              <div class="cli-foot">
+                <span><i class="fas fa-calendar" style="margin-right:3px;opacity:0.6"></i>${c.study_days || '-'} ${c.start_time?.substring(0, 5) || ''}</span>
+                <span class="cli-hs"><i class="fas fa-user-friends"></i> ${filled}/${capacity}</span>
+              </div>
             </div>
-            <span class="badge badge-${c.status === 'active' ? 'success' : 'secondary'}">${c.status === 'active' ? 'Hoạt động' : 'Ngừng'}</span>
-          </div>
-          ${showBranch && c.branch_name ? `<div class="branch-tag" style="margin-bottom:8px;"><i class="fas fa-building"></i> ${c.branch_name}</div>` : ''}
-          <div class="class-card-info">
-            <div><i class="fas fa-book"></i> ${c.subject_name || 'Chưa chọn môn'}</div>
-            <div><i class="fas fa-layer-group"></i> ${c.level_name || '-'}</div>
-            <div><i class="fas fa-chalkboard-teacher"></i> ${c.teacher_name || 'Chưa có GV'}</div>
-            <div><i class="fas fa-users"></i> ${c.student_count || 0}/${c.max_students || 15}</div>
-            <div><i class="fas fa-calendar"></i> ${c.study_days || '-'}</div>
-            <div><i class="fas fa-clock"></i> ${c.start_time?.substring(0, 5) || '-'}</div>
-          </div>
-          <div class="class-card-footer">
-            <span style="font-size:12px;color:var(--text-muted)"><i class="fas fa-door-open"></i> ${c.room || 'Chưa có phòng'}</span>
-            <button class="btn btn-sm btn-primary" onclick="event.stopPropagation();viewClass(${c.id})"><i class="fas fa-eye"></i></button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function openCreateModal() {
-      document.getElementById('modalTitle').textContent = 'Thêm lớp học';
-      document.getElementById('classId').value = '';
-      form.reset(document.getElementById('classForm'));
-      modal.show('formModal');
-    }
-
-    async function editClass(id) {
-      try {
-        const result = await api.get(`/classes/${id}`);
-        const c = result.data;
-        document.getElementById('modalTitle').textContent = 'Sửa lớp học';
-        document.getElementById('classId').value = id;
-        form.setData(document.getElementById('classForm'), {
-          branchId: c.branch_id, className: c.class_name, subjectId: c.subject_id, levelId: c.level_id,
-          teacherId: c.teacher_id, cmId: c.cm_id, room: c.room, studyDays: c.study_days,
-          totalSessions: c.total_sessions, startTime: c.start_time?.substring(0, 5), endTime: c.end_time?.substring(0, 5),
-          startDate: c.start_date?.substring(0, 10), maxStudents: c.max_students
-        });
-        modal.show('formModal');
-      } catch (e) { ui.error(e.message); }
-    }
-
-    async function saveClass() {
-      const formEl = document.getElementById('classForm');
-      if (!form.validate(formEl)) { ui.error('Vui lòng điền đầy đủ'); return; }
-      const data = form.getData(formEl);
-      const id = document.getElementById('classId').value;
-      try {
-        if (id) await api.put(`/classes/${id}`, data);
-        else await api.post('/classes', data);
-        ui.success('Lưu thành công');
-        modal.hide('formModal');
-        loadData();
-      } catch (e) { ui.error(e.message); }
+          </div>`;
+      }).join('');
     }
 
     // ============================================
     // VIEW CLASS DETAIL
     // ============================================
     async function viewClass(id) {
+      // Highlight item in list
+      document.querySelectorAll('.class-list-item').forEach(el => el.classList.remove('selected'));
+      const item = document.querySelector(`.class-list-item[data-id="${id}"]`);
+      if (item) item.classList.add('selected');
+
       try {
         const [classRes, studentsRes, sessionsRes, assignmentsRes] = await Promise.all([
           api.get(`/classes/${id}`),
@@ -1274,20 +1659,47 @@
         currentSessions = sessionsRes.data || [];
         currentAssignments = assignmentsRes.data || [];
 
+        const completedSessions = currentSessions.filter(s => s.attendance_submitted).length;
+
+        // Populate hero
         document.getElementById('detailTitle').textContent = currentClass.class_name;
         document.getElementById('detailCode').textContent = currentClass.class_code;
+        document.getElementById('detailBranch').textContent = currentClass.branch_name || '';
+        const statusMap = {
+          active: '<span style="color:#10b981;font-weight:600">● Đang học</span>',
+          completed: '<span style="color:#2563eb;font-weight:600">✓ Hoàn thành</span>',
+          inactive: '<span style="color:#9ca3af">○ Ngừng</span>'
+        };
+        document.getElementById('detailStatusBadge').innerHTML = statusMap[currentClass.status] || statusMap.inactive;
+        document.getElementById('heroStudentCount').textContent = currentStudents.length;
+        document.getElementById('heroSessionDone').textContent = `${completedSessions}/${currentSessions.length}`;
+        document.getElementById('heroSchedule').textContent = currentClass.study_days || '-';
+        document.getElementById('heroTime').textContent = currentClass.start_time
+          ? `${currentClass.start_time.substring(0, 5)}${currentClass.end_time ? '–' + currentClass.end_time.substring(0, 5) : ''}`
+          : '-';
         document.getElementById('studentCount').textContent = currentStudents.length;
         document.getElementById('assignmentCount').textContent = currentAssignments.length;
+
+        // Show promote button only for completed classes (authorized roles)
+        const canPromote = auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN');
+        const promoteBtn = document.getElementById('btnPromoteClass');
+        promoteBtn.style.display = (currentClass.status === 'completed' && canPromote) ? 'inline-flex' : 'none';
+
+        // Show panel
+        document.getElementById('classEmpty').style.display = 'none';
+        document.getElementById('calendarView').style.display = 'none';
+        document.getElementById('classDetailPanel').style.display = 'flex';
+        calendarVisible = false;
 
         renderInfoTab();
         renderStudentsTab();
         renderAttendanceTab();
         renderFeedbackTab();
         renderAssignmentsTab();
-
         switchTab('info');
-        modal.show('detailModal');
-      } catch (e) { ui.error(e.message); }
+
+        document.getElementById('classesRight').scrollTop = 0;
+      } catch (e) { notify.error(e.message); }
     }
 
     function switchTab(tabName) {
@@ -1298,35 +1710,163 @@
     }
 
     // ============================================
+    // CRUD
+    // ============================================
+    function openCreateModal() {
+      document.getElementById('modalTitle').textContent = 'Thêm lớp học';
+      document.getElementById('classId').value = '';
+      form.reset(document.getElementById('classForm'));
+      modal.show('formModal');
+    }
+
+    async function editClass(id) {
+      if (!id) return;
+      try {
+        const result = await api.get(`/classes/${id}`);
+        const c = result.data;
+        document.getElementById('modalTitle').textContent = 'Sửa lớp học';
+        document.getElementById('classId').value = id;
+        form.setData(document.getElementById('classForm'), {
+          branchId: c.branch_id, className: c.class_name, subjectId: c.subject_id, levelId: c.level_id,
+          teacherId: c.teacher_id, cmId: c.cm_id, room: c.room, studyDays: c.study_days,
+          totalSessions: c.total_sessions, startTime: c.start_time?.substring(0, 5), endTime: c.end_time?.substring(0, 5),
+          startDate: c.start_date?.substring(0, 10), maxStudents: c.max_students
+        });
+        modal.show('formModal');
+      } catch (e) { notify.error(e.message); }
+    }
+
+    async function saveClass() {
+      const formEl = document.getElementById('classForm');
+      const submitBtn = document.querySelector('#formModal .btn-primary');
+      const { isValid } = validate.validateForm(formEl, { className: [validate.rules.required], branchId: [validate.rules.required] });
+      if (!isValid) { notify.warning('Vui lòng điền đầy đủ thông tin'); return; }
+      const data = form.getData(formEl);
+      const id = document.getElementById('classId').value;
+      loading.buttonStart(submitBtn, id ? 'Đang cập nhật...' : 'Đang tạo...');
+      try {
+        if (id) { await api.put(`/classes/${id}`, data); }
+        else { await api.post('/classes', data); }
+        notify.success('Lưu thành công');
+        modal.hide('formModal');
+        loadData();
+      } catch (e) {
+        notify.error(e.message);
+        animate.shake(formEl);
+      } finally { loading.buttonEnd(submitBtn); }
+    }
+
+    // ============================================
+    // PROMOTE CLASS
+    // ============================================
+    function suggestPromotedName(name) {
+      // Try to increment version number: RBT1.1 -> RBT1.2, RBT1.9 -> RBT2.0
+      return name.replace(/(\d+)\.(\d+)/, (_, major, minor) => {
+        const m = parseInt(minor) + 1;
+        return m > 9 ? `${parseInt(major) + 1}.0` : `${major}.${m}`;
+      });
+    }
+
+    async function openPromoteModal() {
+      if (!currentClass) return;
+
+      // Pre-fill name suggestion
+      document.getElementById('promoteClassName').value = suggestPromotedName(currentClass.class_name);
+
+      // Fill level select from already-loaded options
+      const levelSelect = document.getElementById('levelSelect');
+      document.getElementById('promoteLevelId').innerHTML = levelSelect.innerHTML;
+      // Pre-select next level if available
+      const currentLevelIdx = Array.from(levelSelect.options).findIndex(o => o.value == currentClass.level_id);
+      const nextOption = levelSelect.options[currentLevelIdx + 1];
+      if (nextOption) document.getElementById('promoteLevelId').value = nextOption.value;
+
+      // Pre-fill total sessions
+      document.getElementById('promoteTotalSessions').value = currentClass.total_sessions || 15;
+
+      // Show student count
+      document.getElementById('promoteStudentInfo').innerHTML =
+        `<i class="fas fa-users" style="color:var(--primary)"></i> <strong>${currentStudents.length} học sinh</strong> sẽ được chuyển sang lớp mới`;
+
+      modal.show('promoteModal');
+    }
+
+    async function confirmPromote() {
+      const className = document.getElementById('promoteClassName').value.trim();
+      const levelId = document.getElementById('promoteLevelId').value;
+      const startDate = document.getElementById('promoteStartDate').value;
+      const totalSessions = document.getElementById('promoteTotalSessions').value;
+
+      if (!className) { notify.warning('Vui lòng nhập tên lớp mới'); return; }
+      if (!startDate) { notify.warning('Vui lòng chọn ngày khai giảng'); return; }
+
+      const btn = document.getElementById('btnConfirmPromote');
+      loading.buttonStart(btn, 'Đang tạo...');
+      try {
+        const res = await api.post(`/classes/${currentClass.id}/promote`, {
+          className, levelId: levelId || null, startDate, totalSessions: parseInt(totalSessions) || 15
+        });
+        notify.success(res.message || 'Tạo lớp mới thành công');
+        modal.hide('promoteModal');
+        await loadData();
+        if (res.data?.id) viewClass(res.data.id);
+      } catch (e) {
+        notify.error(e.message);
+      } finally {
+        loading.buttonEnd(btn);
+      }
+    }
+
+    // ============================================
     // TAB: THÔNG TIN
     // ============================================
     function renderInfoTab() {
       const c = currentClass;
       const completedSessions = currentSessions.filter(s => s.attendance_submitted).length;
+      const pct = currentSessions.length ? Math.round(completedSessions / currentSessions.length * 100) : 0;
 
       document.getElementById('tab-info').innerHTML = `
-        <div class="stats-mini">
-          <div class="stat-mini"><div class="value">${currentStudents.length}</div><div class="label">Học sinh</div></div>
-          <div class="stat-mini"><div class="value">${completedSessions}/${currentSessions.length}</div><div class="label">Đã điểm danh</div></div>
-          <div class="stat-mini"><div class="value">${c.total_sessions || 15}</div><div class="label">Tổng buổi</div></div>
-        </div>
-        
-        <div class="detail-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;">
-          <div class="detail-item" style="background:#f9fafb;padding:12px;border-radius:8px"><label style="color:#6b7280;font-size:12px">Môn học</label><div style="font-weight:600">${c.subject_name || '-'}</div></div>
-          <div class="detail-item" style="background:#f9fafb;padding:12px;border-radius:8px"><label style="color:#6b7280;font-size:12px">Cấp độ</label><div style="font-weight:600">${c.level_name || '-'}</div></div>
-          <div class="detail-item" style="background:#f9fafb;padding:12px;border-radius:8px"><label style="color:#6b7280;font-size:12px">Giáo viên</label><div style="font-weight:600">${c.teacher_name || '-'}</div></div>
-          <div class="detail-item" style="background:#f9fafb;padding:12px;border-radius:8px"><label style="color:#6b7280;font-size:12px">CM</label><div style="font-weight:600">${c.cm_name || '-'}</div></div>
-          <div class="detail-item" style="background:#f9fafb;padding:12px;border-radius:8px"><label style="color:#6b7280;font-size:12px">Phòng</label><div style="font-weight:600">${c.room || '-'}</div></div>
-          <div class="detail-item" style="background:#f9fafb;padding:12px;border-radius:8px"><label style="color:#6b7280;font-size:12px">Lịch học</label><div style="font-weight:600">${c.study_days || '-'} (${c.start_time?.substring(0, 5) || ''} - ${c.end_time?.substring(0, 5) || ''})</div></div>
-          <div class="detail-item" style="background:#f9fafb;padding:12px;border-radius:8px"><label style="color:#6b7280;font-size:12px">Ngày khai giảng</label><div style="font-weight:600">${formatDate(c.start_date)}</div></div>
-          <div class="detail-item" style="background:#f9fafb;padding:12px;border-radius:8px"><label style="color:#6b7280;font-size:12px">Sĩ số</label><div style="font-weight:600">${currentStudents.length} / ${c.max_students || 15}</div></div>
-        </div>
-        
-        ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-secondary" onclick="editClass(${c.id})"><i class="fas fa-edit"></i> Sửa</button>
-            <button class="btn btn-primary" onclick="generateSessions()"><i class="fas fa-magic"></i> Tạo buổi học</button>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label"><i class="fas fa-book"></i> Môn học</div>
+            <div class="info-val">${c.subject_name || '—'}</div>
           </div>
+          <div class="info-item">
+            <div class="info-label"><i class="fas fa-layer-group"></i> Cấp độ</div>
+            <div class="info-val">${c.level_name || '—'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label"><i class="fas fa-door-open"></i> Phòng học</div>
+            <div class="info-val">${c.room || '—'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label"><i class="fas fa-chalkboard-teacher"></i> Giáo viên</div>
+            <div class="info-val">${c.teacher_name || '—'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label"><i class="fas fa-user-tie"></i> CM phụ trách</div>
+            <div class="info-val">${c.cm_name || '—'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label"><i class="fas fa-calendar-day"></i> Ngày khai giảng</div>
+            <div class="info-val">${formatDate(c.start_date)}</div>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <span style="font-weight:600;font-size:13px"><i class="fas fa-tasks" style="color:var(--primary)"></i> Tiến độ buổi học</span>
+            <span style="font-size:13px;color:var(--text-muted)">${completedSessions}/${currentSessions.length} buổi (${pct}%)</span>
+          </div>
+          <div style="background:var(--bg-secondary);border-radius:20px;height:8px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--primary),#06b6d4);border-radius:20px;transition:width 0.5s"></div>
+          </div>
+        </div>
+
+        ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `
+          <button class="btn btn-primary" onclick="generateSessions()">
+            <i class="fas fa-magic"></i> Tạo buổi học tự động
+          </button>
         ` : ''}
       `;
     }
@@ -1337,36 +1877,45 @@
     function renderStudentsTab() {
       document.getElementById('tab-students').innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <h4 style="margin:0"><i class="fas fa-users"></i> Danh sách học sinh (${currentStudents.length})</h4>
-          ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `<button class="btn btn-primary" onclick="openAddStudentModal()"><i class="fas fa-user-plus"></i> Thêm học sinh</button>` : ''}
+          <h4 style="margin:0;font-size:15px"><i class="fas fa-users" style="color:var(--primary)"></i> Danh sách học sinh (${currentStudents.length})</h4>
+          ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `
+            <button class="btn btn-primary btn-sm" onclick="openAddStudentModal()"><i class="fas fa-user-plus"></i> Thêm học sinh</button>
+          ` : ''}
         </div>
-        
+
         ${currentStudents.length ? `
           <table class="table">
-            <thead><tr><th>Mã</th><th>Họ tên</th><th>SĐT PH</th><th>Đúng giờ</th><th>Muộn</th><th>Nghỉ</th><th></th></tr></thead>
+            <thead>
+              <tr><th>Mã</th><th>Họ tên</th><th>SĐT PH</th><th style="text-align:center">Đúng giờ</th><th style="text-align:center">Muộn</th><th style="text-align:center">Nghỉ</th><th></th></tr>
+            </thead>
             <tbody>
               ${currentStudents.map(s => {
         const hasWarning = (s.late_count || 0) + (s.absent_count || 0) >= 3;
-        return `
-                <tr>
-                  <td><code style="font-size:11px">${s.student_code || '-'}</code></td>
+        return `<tr>
+                  <td><code style="font-size:11px">${s.student_code || '—'}</code></td>
                   <td>
                     <strong>${escapeHtml(s.full_name)}</strong>
-                    ${hasWarning ? '<span class="warning-badge"><i class="fas fa-exclamation-triangle"></i> Cảnh báo</span>' : ''}
+                    ${hasWarning ? ' <span class="warning-badge"><i class="fas fa-exclamation-triangle"></i> Cảnh báo</span>' : ''}
                   </td>
-                  <td>${s.parent_phone || '-'}</td>
-                  <td><span class="badge badge-success">${s.ontime_count || 0}</span></td>
-                  <td><span class="badge badge-warning">${s.late_count || 0}</span></td>
-                  <td><span class="badge badge-danger">${s.absent_count || 0}</span></td>
+                  <td style="color:var(--text-muted)">${s.parent_phone || '—'}</td>
+                  <td style="text-align:center"><span class="badge badge-success">${s.ontime_count || 0}</span></td>
+                  <td style="text-align:center"><span class="badge badge-warning">${s.late_count || 0}</span></td>
+                  <td style="text-align:center"><span class="badge badge-danger">${s.absent_count || 0}</span></td>
                   <td>
-                    ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `<button class="btn btn-sm btn-danger" onclick="removeStudent(${s.id})" title="Xóa khỏi lớp"><i class="fas fa-times"></i></button>` : ''}
+                    ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `
+                      <button class="btn btn-sm btn-danger" onclick="removeStudent(${s.id})" title="Xóa khỏi lớp"><i class="fas fa-times"></i></button>
+                    ` : ''}
                   </td>
-                </tr>
-              `;
+                </tr>`;
       }).join('')}
             </tbody>
           </table>
-        ` : '<div class="empty-state" style="padding:40px"><i class="fas fa-users" style="font-size:48px;color:#d1d5db"></i><p>Chưa có học sinh trong lớp</p></div>'}
+        ` : `
+          <div class="empty-state" style="padding:40px">
+            <i class="fas fa-users" style="font-size:48px;color:#d1d5db"></i>
+            <p>Chưa có học sinh trong lớp</p>
+          </div>
+        `}
       `;
     }
 
@@ -1383,40 +1932,33 @@
             <i class="fas fa-calendar-alt" style="font-size:48px;color:#d1d5db"></i>
             <p>Chưa có buổi học</p>
             ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `<button class="btn btn-primary" onclick="generateSessions()"><i class="fas fa-magic"></i> Tạo buổi học</button>` : ''}
-          </div>
-        `;
+          </div>`;
         return;
       }
 
       document.getElementById('tab-attendance').innerHTML = `
-        <div style="margin-bottom:16px">
-          <h4 style="margin:0 0 8px"><i class="fas fa-calendar-alt"></i> Chọn buổi học để điểm danh</h4>
-          <p style="margin:0;font-size:12px;color:#6b7280">
-            <i class="fas fa-info-circle"></i> 
-            Giáo viên: điểm danh trước 5 phút ~ sau 15 phút buổi học | 
-            CM/OM/Admin: điểm danh mọi lúc
+        <div style="margin-bottom:14px">
+          <h4 style="margin:0 0 4px;font-size:15px"><i class="fas fa-calendar-alt" style="color:var(--primary)"></i> Chọn buổi học để điểm danh</h4>
+          <p style="margin:0;font-size:12px;color:var(--text-muted)">
+            GV: điểm danh trước 5 phút ~ sau 15 phút buổi học &nbsp;|&nbsp; CM/OM/Admin: mọi lúc
           </p>
         </div>
         <div class="sessions-scroll" id="sessionsScroll">
           ${currentSessions.map(s => {
         const sessionStatus = getSessionStatus(s);
         const rescheduledClass = s.original_date ? 'rescheduled' : '';
-        return `
-              <div class="session-box ${sessionStatus.statusClass} ${rescheduledClass} ${sessionStatus.canAttend ? '' : 'disabled'}" 
-                   onclick="${sessionStatus.canAttend ? `selectSession(${s.id})` : 'showAttendanceRestriction()'}" 
-                   id="session-${s.id}"
-                   title="${sessionStatus.tooltip}${s.original_date ? '\n(Đã dời từ ' + formatDate(s.original_date) + ')' : ''}">
-                <div class="session-num">B${s.session_number}</div>
-                <div class="session-date">${formatDateShort(s.session_date)}</div>
-                <div class="session-status">${sessionStatus.statusText}</div>
-              </div>
-            `;
+        return `<div class="session-box ${sessionStatus.statusClass} ${rescheduledClass} ${sessionStatus.canAttend ? '' : 'disabled'}"
+                onclick="${sessionStatus.canAttend ? `selectSession(${s.id})` : 'showAttendanceRestriction()'}"
+                id="session-${s.id}" title="${sessionStatus.tooltip}${s.original_date ? '\n(Đã dời từ ' + formatDate(s.original_date) + ')' : ''}">
+              <div class="session-num">B${s.session_number}</div>
+              <div class="session-date">${formatDateShort(s.session_date)}</div>
+              <div class="session-status">${sessionStatus.statusText}</div>
+            </div>`;
       }).join('')}
         </div>
-        
         <div id="attendanceContent">
-          <div style="text-align:center;padding:40px;color:#6b7280">
-            <i class="fas fa-hand-pointer" style="font-size:32px;margin-bottom:12px"></i>
+          <div style="text-align:center;padding:32px;color:var(--text-muted)">
+            <i class="fas fa-hand-pointer" style="font-size:28px;margin-bottom:10px;opacity:0.4"></i>
             <p>Chọn một buổi học ở trên để điểm danh</p>
           </div>
         </div>
@@ -1425,129 +1967,69 @@
 
     function getSessionStatus(session) {
       const now = new Date();
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const sessionDate = new Date(session.session_date);
-      sessionDate.setHours(0, 0, 0, 0);
-
-      // Parse session time
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const sessionDate = new Date(session.session_date); sessionDate.setHours(0, 0, 0, 0);
       const [startHour, startMin] = (session.start_time || '08:00').split(':').map(Number);
       const [endHour, endMin] = (session.end_time || '09:30').split(':').map(Number);
-
-      // Create session datetime objects
-      const sessionStart = new Date(session.session_date);
-      sessionStart.setHours(startHour, startMin, 0, 0);
-
-      const sessionEnd = new Date(session.session_date);
-      sessionEnd.setHours(endHour, endMin, 0, 0);
-
-      // Time window: 5 minutes before start to 15 minutes after end
+      const sessionStart = new Date(session.session_date); sessionStart.setHours(startHour, startMin, 0, 0);
+      const sessionEnd = new Date(session.session_date); sessionEnd.setHours(endHour, endMin, 0, 0);
       const attendanceWindowStart = new Date(sessionStart.getTime() - 5 * 60 * 1000);
       const attendanceWindowEnd = new Date(sessionEnd.getTime() + 15 * 60 * 1000);
-
-      // Check user role
       const isTeacher = auth.user?.role_name === 'TEACHER';
       const canAlwaysAttend = auth.hasRole('CM', 'OM', 'HOEC', 'ADMIN');
-
-      // Determine status
       let statusClass, statusText, canAttend, tooltip;
 
       if (session.attendance_submitted) {
-        statusClass = 'completed';
-        statusText = '✓ Xong';
-        canAttend = canAlwaysAttend; // CM/Admin can edit
+        statusClass = 'completed'; statusText = '✓ Xong';
+        canAttend = canAlwaysAttend;
         tooltip = 'Đã điểm danh' + (canAlwaysAttend ? ' - Có thể sửa' : '');
       } else if (sessionDate > today) {
-        // Future session
-        statusClass = 'future';
-        statusText = 'Chưa tới';
+        statusClass = 'future'; statusText = 'Chưa tới';
         canAttend = canAlwaysAttend;
         tooltip = isTeacher ? 'Chưa đến ngày học' : 'Buổi học chưa diễn ra';
       } else if (sessionDate.getTime() === today.getTime()) {
-        // Today's session
         if (now < attendanceWindowStart) {
-          // Before time window
-          statusClass = 'future';
-          statusText = 'Chờ...';
-          canAttend = canAlwaysAttend;
-          tooltip = isTeacher
-            ? `Có thể điểm danh từ ${formatTime(attendanceWindowStart)}`
-            : 'Chưa đến giờ điểm danh';
+          statusClass = 'future'; statusText = 'Chờ...'; canAttend = canAlwaysAttend;
+          tooltip = isTeacher ? `Có thể điểm danh từ ${formatTime(attendanceWindowStart)}` : 'Chưa đến giờ';
         } else if (now >= attendanceWindowStart && now <= attendanceWindowEnd) {
-          // Within time window - Teacher can attend
-          statusClass = 'pending';
-          statusText = '⚠ Điểm danh';
-          canAttend = true;
+          statusClass = 'pending'; statusText = '⚠ Điểm danh'; canAttend = true;
           tooltip = 'Đang trong thời gian điểm danh';
         } else {
-          // After time window
-          statusClass = 'pending';
-          statusText = '⚠ Quá giờ';
-          canAttend = canAlwaysAttend;
-          tooltip = isTeacher
-            ? 'Đã quá thời gian điểm danh (sau 15p). Liên hệ CM.'
-            : 'Cần điểm danh';
+          statusClass = 'pending'; statusText = '⚠ Quá giờ'; canAttend = canAlwaysAttend;
+          tooltip = isTeacher ? 'Đã quá thời gian điểm danh. Liên hệ CM.' : 'Cần điểm danh';
         }
       } else {
-        // Past session
-        statusClass = 'pending';
-        statusText = '⚠ Trễ';
-        canAttend = canAlwaysAttend;
-        tooltip = isTeacher
-          ? 'Buổi học đã qua. Liên hệ CM để điểm danh.'
-          : 'Cần điểm danh bù';
+        statusClass = 'pending'; statusText = '⚠ Trễ'; canAttend = canAlwaysAttend;
+        tooltip = isTeacher ? 'Buổi học đã qua. Liên hệ CM.' : 'Cần điểm danh bù';
       }
-
       return { statusClass, statusText, canAttend, tooltip };
     }
 
-    function formatTime(date) {
-      return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-    }
+    function formatTime(date) { return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }); }
 
     function showAttendanceRestriction() {
       const isTeacher = auth.user?.role_name === 'TEACHER';
-      if (isTeacher) {
-        ui.warning('Bạn chỉ có thể điểm danh trong khoảng: trước 5 phút ~ sau 15 phút buổi học. Liên hệ CM/OM nếu cần điểm danh ngoài thời gian này.');
-      } else {
-        ui.warning('Buổi học chưa diễn ra hoặc bạn không có quyền điểm danh.');
-      }
+      if (isTeacher) notify.warning('Bạn chỉ có thể điểm danh trong khoảng: trước 5 phút ~ sau 15 phút buổi học.');
+      else notify.warning('Buổi học chưa diễn ra hoặc bạn không có quyền điểm danh.');
     }
-
 
     async function selectSession(sessionId) {
       selectedSessionId = sessionId;
-
-      // Update visual
       document.querySelectorAll('.session-box').forEach(box => box.classList.remove('active'));
       document.getElementById(`session-${sessionId}`).classList.add('active');
-
-      // Load attendance data
       try {
         const res = await api.get(`/attendance/session/${sessionId}`);
         const existingAttendance = res.data || [];
-        console.log('API attendance data:', existingAttendance);
-
-        // Build attendance data map
-        // Map database status back to frontend status (present -> on_time)
         attendanceData = {};
         currentStudents.forEach(s => {
           const existing = existingAttendance.find(a => a.student_id === s.id);
-          let status = existing?.status || null; // null = chưa điểm danh
-          // Map present -> on_time for display
+          let status = existing?.status || null;
           if (status === 'present') status = 'on_time';
           attendanceData[s.id] = status;
-          console.log(`Student ${s.id}: existing=${existing?.status}, mapped=${status}`);
         });
-
         renderAttendanceForm();
       } catch (e) {
-        console.error('Load attendance error:', e);
-        // No existing data, default to null (chưa điểm danh)
-        currentStudents.forEach(s => {
-          attendanceData[s.id] = null;
-        });
+        currentStudents.forEach(s => { attendanceData[s.id] = null; });
         renderAttendanceForm();
       }
     }
@@ -1555,24 +2037,24 @@
     function renderAttendanceForm() {
       const session = currentSessions.find(s => s.id === selectedSessionId);
       if (!session) return;
-
       const canManage = auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN');
-      const originalInfo = session.original_date ? `<span style="color:#f59e0b;font-size:12px;margin-left:8px" title="Ngày gốc: ${formatDate(session.original_date)}"><i class="fas fa-history"></i> Đã dời</span>` : '';
+      const originalInfo = session.original_date
+        ? `<span style="color:#f59e0b;font-size:12px;margin-left:8px" title="Ngày gốc: ${formatDate(session.original_date)}"><i class="fas fa-history"></i> Đã dời</span>` : '';
 
       document.getElementById('attendanceContent').innerHTML = `
-        <div style="background:#f9fafb;padding:16px;border-radius:12px;margin-bottom:16px">
+        <div style="background:var(--bg-secondary);border:1px solid var(--border);padding:14px 16px;border-radius:10px;margin-bottom:14px">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div>
-              <h4 style="margin:0">Buổi ${session.session_number} - ${formatDate(session.session_date)} ${originalInfo}</h4>
-              <p style="margin:4px 0 0;color:#6b7280;font-size:13px">${session.start_time?.substring(0, 5) || ''} - ${session.end_time?.substring(0, 5) || ''}</p>
+              <h4 style="margin:0;font-size:14px">Buổi ${session.session_number} — ${formatDate(session.session_date)} ${originalInfo}</h4>
+              <p style="margin:3px 0 0;color:var(--text-muted);font-size:12px">${session.start_time?.substring(0, 5) || ''} – ${session.end_time?.substring(0, 5) || ''}</p>
             </div>
             <div style="display:flex;gap:8px">
-              ${canManage ? `<button class="btn btn-sm btn-warning" onclick="openRescheduleModal(${session.id})" title="Dời buổi học"><i class="fas fa-calendar-alt"></i> Dời buổi</button>` : ''}
+              ${canManage ? `<button class="btn btn-sm btn-warning" onclick="openRescheduleModal(${session.id})"><i class="fas fa-calendar-alt"></i> Dời buổi</button>` : ''}
               <button class="btn btn-sm btn-secondary" onclick="quickMarkAll('on_time')"><i class="fas fa-check-double"></i> Tất cả đúng giờ</button>
             </div>
           </div>
         </div>
-        
+
         ${currentStudents.length ? `
           <table class="attendance-table">
             <thead><tr><th>Học sinh</th><th>Trạng thái điểm danh</th></tr></thead>
@@ -1580,8 +2062,7 @@
               ${currentStudents.map(s => {
         const current = attendanceData[s.id];
         const hasWarning = (s.late_count || 0) + (s.absent_count || 0) >= 3;
-        return `
-                <tr>
+        return `<tr>
                   <td>
                     <div class="student-info">
                       <div class="student-avatar">${s.full_name.charAt(0)}</div>
@@ -1593,139 +2074,99 @@
                   </td>
                   <td>
                     <div class="status-buttons">
-                      <button class="status-btn on-time ${current === 'on_time' ? 'active' : ''}" onclick="setAttendance(${s.id}, 'on_time')">
-                        <i class="fas fa-check"></i> Đúng giờ
-                      </button>
-                      <button class="status-btn late ${current === 'late' ? 'active' : ''}" onclick="setAttendance(${s.id}, 'late')">
-                        <i class="fas fa-clock"></i> Muộn
-                      </button>
-                      <button class="status-btn excused ${current === 'excused' ? 'active' : ''}" onclick="setAttendance(${s.id}, 'excused')">
-                        <i class="fas fa-envelope"></i> Có phép
-                      </button>
-                      <button class="status-btn absent ${current === 'absent' ? 'active' : ''}" onclick="setAttendance(${s.id}, 'absent')">
-                        <i class="fas fa-times"></i> Không phép
-                      </button>
+                      <button class="status-btn on-time ${current === 'on_time' ? 'active' : ''}" onclick="setAttendance(${s.id}, 'on_time')"><i class="fas fa-check"></i> Đúng giờ</button>
+                      <button class="status-btn late ${current === 'late' ? 'active' : ''}" onclick="setAttendance(${s.id}, 'late')"><i class="fas fa-clock"></i> Muộn</button>
+                      <button class="status-btn excused ${current === 'excused' ? 'active' : ''}" onclick="setAttendance(${s.id}, 'excused')"><i class="fas fa-envelope"></i> Có phép</button>
+                      <button class="status-btn absent ${current === 'absent' ? 'active' : ''}" onclick="setAttendance(${s.id}, 'absent')"><i class="fas fa-times"></i> Không phép</button>
                     </div>
                   </td>
-                </tr>
-              `;
+                </tr>`;
       }).join('')}
             </tbody>
           </table>
-          
-          <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:12px">
+          <div style="margin-top:16px;display:flex;justify-content:flex-end;gap:10px">
             <button class="btn btn-secondary" onclick="renderAttendanceTab()">Hủy</button>
             <button class="btn btn-primary" onclick="saveAttendance()"><i class="fas fa-save"></i> Lưu điểm danh</button>
           </div>
-        ` : '<p class="text-muted">Không có học sinh để điểm danh</p>'}
+        ` : '<p style="color:var(--text-muted);padding:20px 0">Không có học sinh để điểm danh</p>'}
       `;
     }
 
     function setAttendance(studentId, status) {
       attendanceData[studentId] = status;
-
-      // Update button visual - find all buttons for this student
-      document.querySelectorAll(`.status-btn`).forEach(btn => {
+      document.querySelectorAll('.status-btn').forEach(btn => {
         const onclick = btn.getAttribute('onclick') || '';
         if (onclick.includes(`setAttendance(${studentId},`)) {
           btn.classList.remove('active');
-          // Check if this button matches the status
           const statusClass = status.replace('_', '-');
-          if (btn.classList.contains(statusClass)) {
-            btn.classList.add('active');
-          }
+          if (btn.classList.contains(statusClass)) btn.classList.add('active');
         }
       });
     }
 
     function quickMarkAll(status) {
-      currentStudents.forEach(s => {
-        attendanceData[s.id] = status;
-      });
+      currentStudents.forEach(s => { attendanceData[s.id] = status; });
       renderAttendanceForm();
     }
 
     async function saveAttendance() {
       if (!selectedSessionId) return;
-
       const attendances = Object.entries(attendanceData).map(([studentId, status]) => ({
-        studentId: parseInt(studentId),
-        status: status
+        studentId: parseInt(studentId), status
       }));
-
       try {
         await api.post(`/attendance/session/${selectedSessionId}/mark`, { attendances });
-        ui.success('Lưu điểm danh thành công');
-
-        // Reload class data
+        notify.success('Lưu điểm danh thành công');
         viewClass(currentClass.id);
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
 
     // ============================================
-    // TAB: NHẬN XÉT SAU BUỔI HỌC
+    // TAB: NHẬN XÉT
     // ============================================
     let feedbackSessionId = null;
     let feedbackData = {};
 
     function renderFeedbackTab() {
       if (!currentSessions.length) {
-        document.getElementById('tab-feedback').innerHTML = '<p class="text-muted text-center">Chưa có buổi học nào</p>';
+        document.getElementById('tab-feedback').innerHTML = '<p style="color:var(--text-muted);padding:20px 0;text-align:center">Chưa có buổi học nào</p>';
         return;
       }
-
-      // Show sessions list
       document.getElementById('tab-feedback').innerHTML = `
-        <div style="margin-bottom:16px">
-          <h4 style="margin:0 0 12px"><i class="fas fa-comment-alt"></i> Nhận xét sau buổi học</h4>
-          <p style="color:#6b7280;font-size:13px;margin:0">Chọn buổi học để xem/thêm nhận xét cho học sinh</p>
+        <div style="margin-bottom:14px">
+          <h4 style="margin:0 0 4px;font-size:15px"><i class="fas fa-comment-alt" style="color:var(--primary)"></i> Nhận xét sau buổi học</h4>
+          <p style="color:var(--text-muted);font-size:12px;margin:0">Chọn buổi học để xem/thêm nhận xét cho học sinh</p>
         </div>
-        
-        <div class="sessions-scroll" style="margin-bottom:20px">
+        <div class="sessions-scroll" style="margin-bottom:16px">
           ${currentSessions.map(s => `
-            <div class="session-box ${s.attendance_submitted ? 'completed' : 'future'}" 
+            <div class="session-box ${s.attendance_submitted ? 'completed' : 'future'}"
                  id="feedback-session-${s.id}" onclick="selectFeedbackSession(${s.id})">
               <div class="session-num">${s.session_number}</div>
-              <div class="session-date">${formatDate(s.session_date)}</div>
+              <div class="session-date">${formatDateShort(s.session_date)}</div>
             </div>
           `).join('')}
         </div>
-        
         <div id="feedbackContent">
-          <p class="text-muted text-center">👆 Chọn buổi học để xem nhận xét</p>
+          <p style="color:var(--text-muted);text-align:center;padding:20px 0">👆 Chọn buổi học để xem nhận xét</p>
         </div>
       `;
     }
 
     async function selectFeedbackSession(sessionId) {
       feedbackSessionId = sessionId;
-
-      // Update visual
       document.querySelectorAll('#tab-feedback .session-box').forEach(box => box.classList.remove('active'));
       document.getElementById(`feedback-session-${sessionId}`).classList.add('active');
-
-      // Load existing feedbacks
       try {
         const res = await api.get(`/sessions/${sessionId}/feedbacks`);
         const existingFeedbacks = res.data || [];
-
         feedbackData = {};
         currentStudents.forEach(s => {
           const existing = existingFeedbacks.find(f => f.student_id === s.id);
-          feedbackData[s.id] = {
-            rating: existing?.rating || 0,
-            feedback: existing?.feedback || '',
-            homework_assigned: existing?.homework_assigned || false,
-            parent_notified: existing?.parent_notified || false
-          };
+          feedbackData[s.id] = { rating: existing?.rating || 0, feedback: existing?.feedback || '', homework_assigned: existing?.homework_assigned || false, parent_notified: existing?.parent_notified || false };
         });
-
         renderFeedbackForm();
       } catch (e) {
-        console.error(e);
-        currentStudents.forEach(s => {
-          feedbackData[s.id] = { rating: 0, feedback: '', homework_assigned: false, parent_notified: false };
-        });
+        currentStudents.forEach(s => { feedbackData[s.id] = { rating: 0, feedback: '', homework_assigned: false, parent_notified: false }; });
         renderFeedbackForm();
       }
     }
@@ -1733,241 +2174,84 @@
     function renderFeedbackForm() {
       const session = currentSessions.find(s => s.id === feedbackSessionId);
       if (!session) return;
-
       document.getElementById('feedbackContent').innerHTML = `
-        <div style="background:#f9fafb;padding:16px;border-radius:12px;margin-bottom:16px">
-          <h4 style="margin:0">Buổi ${session.session_number} - ${formatDate(session.session_date)}</h4>
+        <div style="background:var(--bg-secondary);border:1px solid var(--border);padding:12px 16px;border-radius:10px;margin-bottom:14px">
+          <h4 style="margin:0;font-size:14px">Buổi ${session.session_number} — ${formatDate(session.session_date)}</h4>
         </div>
-        
         ${currentStudents.length ? `
-          <div class="feedback-list">
+          <div>
             ${currentStudents.map(s => {
         const fb = feedbackData[s.id] || {};
-        return `
-              <div class="feedback-item" style="background:white;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:12px">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                  <div style="display:flex;align-items:center;gap:12px">
-                    <div class="student-avatar" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;display:flex;align-items:center;justify-content:center;font-weight:600">${s.full_name.charAt(0)}</div>
+        return `<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <div class="student-avatar">${s.full_name.charAt(0)}</div>
                     <div>
-                      <div style="font-weight:600">${escapeHtml(s.full_name)}</div>
-                      <div style="font-size:12px;color:#6b7280">${s.student_code || ''}</div>
+                      <div style="font-weight:600;font-size:13px">${escapeHtml(s.full_name)}</div>
+                      <div style="font-size:11px;color:var(--text-muted)">${s.student_code || ''}</div>
                     </div>
                   </div>
-                  <div class="rating-stars" style="display:flex;gap:4px">
-                    ${[1, 2, 3, 4, 5].map(star => `
-                      <i class="fas fa-star" style="cursor:pointer;font-size:20px;color:${fb.rating >= star ? '#f59e0b' : '#d1d5db'}" 
-                         onclick="setFeedbackRating(${s.id}, ${star})"></i>
-                    `).join('')}
+                  <div style="display:flex;gap:3px">
+                    ${[1, 2, 3, 4, 5].map(star => `<i class="fas fa-star" style="cursor:pointer;font-size:18px;color:${fb.rating >= star ? '#f59e0b' : '#d1d5db'}" onclick="setFeedbackRating(${s.id}, ${star})"></i>`).join('')}
                   </div>
                 </div>
-                <textarea class="form-control" placeholder="Nhận xét về học sinh..." rows="2" style="margin-bottom:12px"
-                          onchange="setFeedbackText(${s.id}, this.value)">${fb.feedback || ''}</textarea>
-                <div style="display:flex;gap:16px;font-size:13px">
-                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                <textarea class="form-control" placeholder="Nhận xét về học sinh..." rows="2" style="margin-bottom:10px" onchange="setFeedbackText(${s.id}, this.value)">${fb.feedback || ''}</textarea>
+                <div style="display:flex;gap:16px;font-size:12px">
+                  <label style="display:flex;align-items:center;gap:5px;cursor:pointer">
                     <input type="checkbox" ${fb.homework_assigned ? 'checked' : ''} onchange="setFeedbackCheckbox(${s.id}, 'homework_assigned', this.checked)">
                     <i class="fas fa-book"></i> Đã giao BTVN
                   </label>
-                  <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                  <label style="display:flex;align-items:center;gap:5px;cursor:pointer">
                     <input type="checkbox" ${fb.parent_notified ? 'checked' : ''} onchange="setFeedbackCheckbox(${s.id}, 'parent_notified', this.checked)">
                     <i class="fas fa-bell"></i> Đã thông báo PH
                   </label>
                 </div>
-              </div>
-            `;
+              </div>`;
       }).join('')}
           </div>
-          
-          <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:12px">
+          <div style="margin-top:16px;display:flex;justify-content:flex-end;gap:10px">
             <button class="btn btn-secondary" onclick="renderFeedbackTab()">Hủy</button>
             <button class="btn btn-primary" onclick="saveFeedbacks()"><i class="fas fa-save"></i> Lưu nhận xét</button>
           </div>
-        ` : '<p class="text-muted">Không có học sinh</p>'}
+        ` : '<p style="color:var(--text-muted)">Không có học sinh</p>'}
       `;
     }
 
     function setFeedbackRating(studentId, rating) {
       feedbackData[studentId].rating = rating;
-      // Update stars visual
-      const item = document.querySelector(`[onclick="setFeedbackRating(${studentId}, 1)"]`).closest('.feedback-item');
-      item.querySelectorAll('.fa-star').forEach((star, idx) => {
-        star.style.color = idx < rating ? '#f59e0b' : '#d1d5db';
-      });
+      const item = document.querySelector(`[onclick="setFeedbackRating(${studentId}, 1)"]`).closest('div[style*="border"]');
+      item.querySelectorAll('.fa-star').forEach((star, idx) => { star.style.color = idx < rating ? '#f59e0b' : '#d1d5db'; });
     }
 
-    function setFeedbackText(studentId, text) {
-      feedbackData[studentId].feedback = text;
-    }
-
-    function setFeedbackCheckbox(studentId, field, checked) {
-      feedbackData[studentId][field] = checked;
-    }
+    function setFeedbackText(studentId, text) { feedbackData[studentId].feedback = text; }
+    function setFeedbackCheckbox(studentId, field, checked) { feedbackData[studentId][field] = checked; }
 
     async function saveFeedbacks() {
-      if (!feedbackSessionId) { ui.warning('Chưa chọn buổi học'); return; }
-
+      if (!feedbackSessionId) { notify.warning('Chưa chọn buổi học'); return; }
       try {
-        // Save each student feedback
         for (const studentId of Object.keys(feedbackData)) {
           const fb = feedbackData[studentId];
-          await api.post(`/sessions/${feedbackSessionId}/feedbacks`, {
-            student_id: parseInt(studentId),
-            rating: fb.rating,
-            feedback: fb.feedback,
-            homework_assigned: fb.homework_assigned,
-            parent_notified: fb.parent_notified
-          });
+          await api.post(`/sessions/${feedbackSessionId}/feedbacks`, { student_id: parseInt(studentId), rating: fb.rating, feedback: fb.feedback, homework_assigned: fb.homework_assigned, parent_notified: fb.parent_notified });
         }
-
-        ui.success('Đã lưu nhận xét thành công');
-      } catch (e) { ui.error(e.message); }
+        notify.success('Đã lưu nhận xét thành công');
+      } catch (e) { notify.error(e.message); }
     }
 
     // ============================================
-    // ADD STUDENT FROM WAITING LIST
-    // ============================================
-    async function openAddStudentModal() {
-      selectedStudentIds = [];
-      document.getElementById('selectedCount').textContent = 'Đã chọn: 0 học sinh';
-      document.getElementById('studentSearchInput').value = '';
-      document.getElementById('waitingStudentsList').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-
-      modal.show('addStudentModal');
-
-      try {
-        // Load students with status waiting, pending, or active (để có thể thêm vào lớp)
-        const branchId = currentClass.branch_id;
-        const [res1, res2, res3] = await Promise.all([
-          api.get(`/students?status=waiting&branchId=${branchId}&limit=100`),
-          api.get(`/students?status=pending&branchId=${branchId}&limit=100`),
-          api.get(`/students?status=active&branchId=${branchId}&limit=100`)
-        ]);
-
-        waitingStudents = [...(res1.data || []), ...(res2.data || []), ...(res3.data || [])];
-
-        // Remove duplicates by id
-        waitingStudents = waitingStudents.filter((s, i, arr) => arr.findIndex(x => x.id === s.id) === i);
-
-        // Filter out students already in class
-        const existingIds = currentStudents.map(s => s.id);
-        waitingStudents = waitingStudents.filter(s => !existingIds.includes(s.id));
-
-        renderWaitingStudents();
-      } catch (e) {
-        document.getElementById('waitingStudentsList').innerHTML = '<p class="text-danger">Lỗi tải dữ liệu</p>';
-      }
-    }
-
-    function renderWaitingStudents() {
-      const searchTerm = document.getElementById('studentSearchInput').value.toLowerCase();
-      let filtered = waitingStudents;
-
-      if (searchTerm) {
-        filtered = waitingStudents.filter(s =>
-          s.full_name.toLowerCase().includes(searchTerm) ||
-          (s.parent_phone || '').includes(searchTerm) ||
-          (s.student_code || '').toLowerCase().includes(searchTerm)
-        );
-      }
-
-      if (!filtered.length) {
-        document.getElementById('waitingStudentsList').innerHTML = `
-          <div style="text-align:center;padding:40px;color:#6b7280">
-            <i class="fas fa-user-clock" style="font-size:48px;margin-bottom:12px;color:#d1d5db"></i>
-            <p>Không có học sinh đang chờ lớp</p>
-          </div>
-        `;
-        return;
-      }
-
-      document.getElementById('waitingStudentsList').innerHTML = filtered.map(s => `
-        <div class="student-select-item ${selectedStudentIds.includes(s.id) ? 'selected' : ''}" onclick="toggleStudentSelect(${s.id})">
-          <input type="checkbox" ${selectedStudentIds.includes(s.id) ? 'checked' : ''} onclick="event.stopPropagation();toggleStudentSelect(${s.id})">
-          <div class="student-avatar" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;display:flex;align-items:center;justify-content:center;font-weight:600">${s.full_name.charAt(0)}</div>
-          <div class="student-select-info">
-            <div class="student-select-name">${escapeHtml(s.full_name)}</div>
-            <div class="student-select-meta">
-              <span><i class="fas fa-phone"></i> ${s.parent_phone || '-'}</span>
-              <span style="margin-left:12px"><i class="fas fa-book"></i> ${s.subject_name || 'Chưa chọn môn'}</span>
-              <span style="margin-left:12px;color:${s.status === 'active' ? '#10b981' : '#f59e0b'}"><i class="fas fa-${s.status === 'active' ? 'check-circle' : 'clock'}"></i> ${s.status === 'waiting' ? 'Đợi lớp' : s.status === 'pending' ? 'Chờ xếp lớp' : 'Đang học'}</span>
-            </div>
-          </div>
-          <code style="font-size:11px;color:#9ca3af">${s.student_code || ''}</code>
-        </div>
-      `).join('');
-    }
-
-    function filterWaitingStudents() {
-      renderWaitingStudents();
-    }
-
-    function toggleStudentSelect(studentId) {
-      const idx = selectedStudentIds.indexOf(studentId);
-      if (idx > -1) {
-        selectedStudentIds.splice(idx, 1);
-      } else {
-        selectedStudentIds.push(studentId);
-      }
-
-      document.getElementById('selectedCount').textContent = `Đã chọn: ${selectedStudentIds.length} học sinh`;
-      renderWaitingStudents();
-    }
-
-    async function addSelectedStudents() {
-      if (!selectedStudentIds.length) {
-        ui.warning('Vui lòng chọn ít nhất 1 học sinh');
-        return;
-      }
-
-      try {
-        let addedCount = 0;
-        for (const studentId of selectedStudentIds) {
-          await api.post(`/classes/${currentClass.id}/students`, { studentId });
-          addedCount++;
-        }
-
-        ui.success(`Đã thêm ${addedCount} học sinh vào lớp`);
-        modal.hide('addStudentModal');
-        viewClass(currentClass.id);
-      } catch (e) { ui.error(e.message); }
-    }
-
-    async function removeStudent(studentId) {
-      if (!confirm('Xóa học sinh khỏi lớp này?')) return;
-      try {
-        await api.delete(`/classes/${currentClass.id}/students/${studentId}`);
-        ui.success('Đã xóa học sinh khỏi lớp');
-        viewClass(currentClass.id);
-      } catch (e) { ui.error(e.message); }
-    }
-
-    async function generateSessions() {
-      if (!confirm('Tạo buổi học tự động dựa trên lịch học?')) return;
-      try {
-        await api.post('/sessions/generate', { classId: currentClass.id });
-        ui.success('Đã tạo buổi học');
-        viewClass(currentClass.id);
-      } catch (e) { ui.error(e.message); }
-    }
-
-    // ============================================
-    // TAB: BÀI TẬP VỀ NHÀ (BTVN)
+    // TAB: BTVN
     // ============================================
     function renderAssignmentsTab() {
       document.getElementById('tab-assignments').innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <h4 style="margin:0"><i class="fas fa-book-open"></i> Bài tập về nhà (${currentAssignments.length})</h4>
-          ${auth.hasRole('TEACHER', 'CM', 'ADMIN') ? `<button class="btn btn-primary" onclick="openAssignmentModal()"><i class="fas fa-plus"></i> Giao BTVN</button>` : ''}
+          <h4 style="margin:0;font-size:15px"><i class="fas fa-book-open" style="color:var(--primary)"></i> Bài tập về nhà (${currentAssignments.length})</h4>
+          ${auth.hasRole('TEACHER', 'CM', 'ADMIN') ? `<button class="btn btn-primary btn-sm" onclick="openAssignmentModal()"><i class="fas fa-plus"></i> Giao BTVN</button>` : ''}
         </div>
-        
         ${currentAssignments.length ? `
-          <div class="assignments-list">
+          <div>
             ${currentAssignments.map(a => `
               <div class="assignment-card">
                 <div class="assignment-header">
-                  <div class="assignment-title">
-                    <i class="fas fa-tasks"></i>
-                    ${escapeHtml(a.title)}
-                  </div>
+                  <div class="assignment-title"><i class="fas fa-tasks" style="color:var(--primary)"></i>${escapeHtml(a.title)}</div>
                   ${a.session_number ? `<span class="badge badge-info">Buổi ${a.session_number}</span>` : ''}
                 </div>
                 ${a.description ? `<div class="assignment-desc">${escapeHtml(a.description)}</div>` : ''}
@@ -1975,7 +2259,6 @@
                   ${a.due_date ? `<span><i class="fas fa-clock"></i> Hạn: ${formatDate(a.due_date)} ${a.due_time ? a.due_time.substring(0, 5) : ''}</span>` : '<span><i class="fas fa-clock"></i> Không giới hạn</span>'}
                   <span><i class="fas fa-file-alt"></i> ${a.submission_count || 0} bài nộp</span>
                   <span><i class="fas fa-check-circle"></i> ${a.graded_count || 0} đã chấm</span>
-                  <span><i class="fas fa-user"></i> ${a.created_by_name || '-'}</span>
                 </div>
                 <div class="assignment-actions">
                   <button class="btn btn-sm btn-secondary" onclick="viewSubmissions(${a.id})"><i class="fas fa-eye"></i> Xem bài nộp</button>
@@ -1991,27 +2274,17 @@
           <div class="empty-state" style="padding:40px">
             <i class="fas fa-book-open" style="font-size:48px;color:#d1d5db"></i>
             <p>Chưa có bài tập về nhà</p>
-            ${auth.hasRole('TEACHER', 'CM', 'ADMIN') ? `<button class="btn btn-primary" onclick="openAssignmentModal()"><i class="fas fa-plus"></i> Giao BTVN đầu tiên</button>` : ''}
           </div>
         `}
       `;
     }
 
     function openAssignmentModal(assignmentId = null) {
-      document.getElementById('assignmentModalTitle').innerHTML = assignmentId
-        ? '<i class="fas fa-edit"></i> Sửa bài tập'
-        : '<i class="fas fa-book-open"></i> Giao bài tập về nhà';
+      document.getElementById('assignmentModalTitle').innerHTML = assignmentId ? '<i class="fas fa-edit"></i> Sửa bài tập' : '<i class="fas fa-book-open"></i> Giao bài tập về nhà';
       document.getElementById('assignmentId').value = assignmentId || '';
-
-      // Populate session dropdown
-      document.getElementById('assignmentSessionSelect').innerHTML =
-        '<option value="">-- Không gắn buổi cụ thể --</option>' +
+      document.getElementById('assignmentSessionSelect').innerHTML = '<option value="">-- Không gắn buổi cụ thể --</option>' +
         currentSessions.map(s => `<option value="${s.id}">Buổi ${s.session_number} - ${formatDate(s.session_date)}</option>`).join('');
-
-      if (!assignmentId) {
-        form.reset(document.getElementById('assignmentForm'));
-      }
-
+      if (!assignmentId) form.reset(document.getElementById('assignmentForm'));
       modal.show('assignmentModal');
     }
 
@@ -2019,48 +2292,32 @@
       try {
         const res = await api.get(`/assignments/${id}`);
         const a = res.data;
-
         openAssignmentModal(id);
-
         form.setData(document.getElementById('assignmentForm'), {
-          sessionId: a.session_id || '',
-          title: a.title,
-          description: a.description || '',
-          dueDate: a.due_date ? a.due_date.substring(0, 10) : '',
-          dueTime: a.due_time ? a.due_time.substring(0, 5) : '23:59'
+          sessionId: a.session_id || '', title: a.title, description: a.description || '',
+          dueDate: a.due_date ? a.due_date.substring(0, 10) : '', dueTime: a.due_time ? a.due_time.substring(0, 5) : '23:59'
         });
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
 
     async function saveAssignment() {
       const formEl = document.getElementById('assignmentForm');
-      if (!form.validate(formEl)) { ui.error('Vui lòng nhập tiêu đề bài tập'); return; }
-
+      if (!form.validate(formEl)) { notify.error('Vui lòng nhập tiêu đề bài tập'); return; }
       const data = form.getData(formEl);
       data.classId = currentClass.id;
-
       const id = document.getElementById('assignmentId').value;
-
       try {
-        if (id) {
-          await api.put(`/assignments/${id}`, data);
-          ui.success('Cập nhật bài tập thành công');
-        } else {
-          await api.post('/assignments', data);
-          ui.success('Giao bài tập thành công');
-        }
+        if (id) { await api.put(`/assignments/${id}`, data); notify.success('Cập nhật bài tập thành công'); }
+        else { await api.post('/assignments', data); notify.success('Giao bài tập thành công'); }
         modal.hide('assignmentModal');
         viewClass(currentClass.id);
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
 
     async function deleteAssignment(id) {
       if (!confirm('Xóa bài tập này? Tất cả bài nộp cũng sẽ bị xóa.')) return;
-      try {
-        await api.delete(`/assignments/${id}`);
-        ui.success('Đã xóa bài tập');
-        viewClass(currentClass.id);
-      } catch (e) { ui.error(e.message); }
+      try { await api.delete(`/assignments/${id}`); notify.success('Đã xóa bài tập'); viewClass(currentClass.id); }
+      catch (e) { notify.error(e.message); }
     }
 
     async function viewSubmissions(assignmentId) {
@@ -2069,103 +2326,148 @@
           api.get(`/assignments/${assignmentId}`),
           api.get(`/assignments/${assignmentId}/submissions`)
         ]);
-
         const assignment = assignmentRes.data;
         const submissions = submissionsRes.data || [];
-
         document.getElementById('submissionsList').innerHTML = `
-          <div style="margin-bottom:16px;padding:16px;background:#f9fafb;border-radius:8px">
-            <h4 style="margin:0 0 8px">${escapeHtml(assignment.title)}</h4>
-            <p style="margin:0;color:#6b7280;font-size:13px">${escapeHtml(assignment.description || 'Không có mô tả')}</p>
+          <div style="margin-bottom:14px;padding:14px;background:var(--bg-secondary);border-radius:8px">
+            <h4 style="margin:0 0 6px">${escapeHtml(assignment.title)}</h4>
+            <p style="margin:0;color:var(--text-muted);font-size:13px">${escapeHtml(assignment.description || 'Không có mô tả')}</p>
           </div>
-          
           ${submissions.length ? `
-            <div class="submissions-list">
+            <div>
               ${submissions.map(s => `
                 <div class="submission-item">
                   <div class="student-avatar">${s.student_name?.charAt(0) || 'S'}</div>
                   <div class="submission-info">
-                    <div class="submission-name">${escapeHtml(s.student_name)} <code style="font-size:11px;color:#9ca3af">${s.student_code || ''}</code></div>
+                    <div class="submission-name">${escapeHtml(s.student_name)} <code style="font-size:10px;color:#9ca3af">${s.student_code || ''}</code></div>
                     <div class="submission-time">Nộp lúc: ${formatDateTime(s.submitted_at)}</div>
-                    ${s.content ? `<div style="margin-top:8px;padding:8px;background:#f3f4f6;border-radius:4px;font-size:13px">${escapeHtml(s.content)}</div>` : ''}
+                    ${s.content ? `<div style="margin-top:6px;padding:6px;background:var(--bg-secondary);border-radius:4px;font-size:12px">${escapeHtml(s.content)}</div>` : ''}
                   </div>
                   <div>
-                    ${s.status === 'graded'
-            ? `<span class="submission-grade graded">${s.grade} điểm</span>`
-            : `<span class="submission-grade pending">Chưa chấm</span>`
-          }
-                    ${auth.hasRole('TEACHER', 'ADMIN') && s.status !== 'graded' ? `
-                      <button class="btn btn-sm btn-primary" onclick="gradeSubmission(${s.id})" style="margin-left:8px"><i class="fas fa-check"></i> Chấm</button>
-                    ` : ''}
+                    ${s.status === 'graded' ? `<span class="submission-grade graded">${s.grade} điểm</span>` : `<span class="submission-grade pending">Chưa chấm</span>`}
+                    ${auth.hasRole('TEACHER', 'ADMIN') && s.status !== 'graded' ? `<button class="btn btn-sm btn-primary" onclick="gradeSubmission(${s.id})" style="margin-left:8px"><i class="fas fa-check"></i> Chấm</button>` : ''}
                   </div>
-                </div>
-              `).join('')}
+                </div>`).join('')}
             </div>
-          ` : `
-            <div style="text-align:center;padding:40px;color:#6b7280">
-              <i class="fas fa-inbox" style="font-size:48px;margin-bottom:12px;color:#d1d5db"></i>
-              <p>Chưa có học sinh nộp bài</p>
-            </div>
-          `}
+          ` : `<div style="text-align:center;padding:40px;color:var(--text-muted)">
+            <i class="fas fa-inbox" style="font-size:40px;margin-bottom:10px;opacity:0.3;display:block"></i>
+            <p>Chưa có học sinh nộp bài</p>
+          </div>`}
         `;
-
         modal.show('submissionsModal');
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
 
     async function gradeSubmission(submissionId) {
       const grade = prompt('Nhập điểm (0-10):');
       if (grade === null) return;
-
       const gradeNum = parseFloat(grade);
-      if (isNaN(gradeNum) || gradeNum < 0 || gradeNum > 10) {
-        ui.error('Điểm phải từ 0 đến 10');
-        return;
-      }
-
+      if (isNaN(gradeNum) || gradeNum < 0 || gradeNum > 10) { notify.error('Điểm phải từ 0 đến 10'); return; }
       const feedback = prompt('Nhận xét (tùy chọn):') || '';
-
       try {
         await api.post(`/assignments/${submissionId}/grade`, { grade: gradeNum, feedback });
-        ui.success('Chấm điểm thành công');
+        notify.success('Chấm điểm thành công');
         modal.hide('submissionsModal');
         viewClass(currentClass.id);
-      } catch (e) { ui.error(e.message); }
+      } catch (e) { notify.error(e.message); }
     }
 
-    // Helpers
-    function escapeHtml(str) {
-      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // ============================================
+    // ADD STUDENT
+    // ============================================
+    async function openAddStudentModal() {
+      selectedStudentIds = [];
+      document.getElementById('selectedCount').textContent = 'Đã chọn: 0 học sinh';
+      document.getElementById('studentSearchInput').value = '';
+      document.getElementById('waitingStudentsList').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      modal.show('addStudentModal');
+      try {
+        const branchId = currentClass.branch_id;
+        const [res1, res2, res3] = await Promise.all([
+          api.get(`/students?status=waiting&branchId=${branchId}&limit=100`),
+          api.get(`/students?status=pending&branchId=${branchId}&limit=100`),
+          api.get(`/students?status=active&branchId=${branchId}&limit=100`)
+        ]);
+        waitingStudents = [...(res1.data || []), ...(res2.data || []), ...(res3.data || [])].filter((s, i, arr) => arr.findIndex(x => x.id === s.id) === i);
+        const existingIds = currentStudents.map(s => s.id);
+        waitingStudents = waitingStudents.filter(s => !existingIds.includes(s.id));
+        renderWaitingStudents();
+      } catch (e) {
+        document.getElementById('waitingStudentsList').innerHTML = '<p style="color:var(--danger);padding:20px">Lỗi tải dữ liệu</p>';
+      }
     }
 
-    function formatDate(dateStr) {
-      if (!dateStr) return '-';
-      const d = new Date(dateStr);
-      return d.toLocaleDateString('vi-VN');
+    function renderWaitingStudents() {
+      const searchTerm = document.getElementById('studentSearchInput').value.toLowerCase();
+      const filtered = searchTerm
+        ? waitingStudents.filter(s => s.full_name.toLowerCase().includes(searchTerm) || (s.parent_phone || '').includes(searchTerm) || (s.student_code || '').toLowerCase().includes(searchTerm))
+        : waitingStudents;
+      if (!filtered.length) {
+        document.getElementById('waitingStudentsList').innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted)"><i class="fas fa-user-clock" style="font-size:40px;margin-bottom:10px;display:block;opacity:0.3"></i><p>Không có học sinh đang chờ lớp</p></div>`;
+        return;
+      }
+      document.getElementById('waitingStudentsList').innerHTML = filtered.map(s => `
+        <div class="student-select-item ${selectedStudentIds.includes(s.id) ? 'selected' : ''}" onclick="toggleStudentSelect(${s.id})">
+          <input type="checkbox" ${selectedStudentIds.includes(s.id) ? 'checked' : ''} onclick="event.stopPropagation();toggleStudentSelect(${s.id})">
+          <div class="student-avatar">${s.full_name.charAt(0)}</div>
+          <div class="student-select-info">
+            <div class="student-select-name">${escapeHtml(s.full_name)}</div>
+            <div class="student-select-meta">
+              <i class="fas fa-phone"></i> ${s.parent_phone || '—'}
+              ${s.subject_name ? ` · <i class="fas fa-book"></i> ${s.subject_name}` : ''}
+              <span style="margin-left:8px;color:${s.status === 'active' ? '#10b981' : '#f59e0b'}">● ${s.status === 'waiting' ? 'Đợi lớp' : s.status === 'pending' ? 'Chờ xếp' : 'Đang học'}</span>
+            </div>
+          </div>
+          <code style="font-size:10px;color:#9ca3af">${s.student_code || ''}</code>
+        </div>`).join('');
     }
 
-    function formatDateShort(dateStr) {
-      if (!dateStr) return '-';
-      const d = new Date(dateStr);
-      return `${d.getDate()}/${d.getMonth() + 1}`;
+    function filterWaitingStudents() { renderWaitingStudents(); }
+
+    function toggleStudentSelect(studentId) {
+      const idx = selectedStudentIds.indexOf(studentId);
+      if (idx > -1) selectedStudentIds.splice(idx, 1);
+      else selectedStudentIds.push(studentId);
+      document.getElementById('selectedCount').textContent = `Đã chọn: ${selectedStudentIds.length} học sinh`;
+      renderWaitingStudents();
     }
 
-    function formatDateTime(dateStr) {
-      if (!dateStr) return '-';
-      const d = new Date(dateStr);
-      return d.toLocaleString('vi-VN');
+    async function addSelectedStudents() {
+      if (!selectedStudentIds.length) { notify.warning('Vui lòng chọn ít nhất 1 học sinh'); return; }
+      try {
+        for (const studentId of selectedStudentIds) { await api.post(`/classes/${currentClass.id}/students`, { studentId }); }
+        notify.success(`Đã thêm ${selectedStudentIds.length} học sinh vào lớp`);
+        modal.hide('addStudentModal');
+        viewClass(currentClass.id);
+      } catch (e) { notify.error(e.message); }
     }
 
-    // ==================== RESCHEDULE SESSION ====================
+    async function removeStudent(studentId) {
+      if (!confirm('Xóa học sinh khỏi lớp này?')) return;
+      try {
+        await api.delete(`/classes/${currentClass.id}/students/${studentId}`);
+        notify.success('Đã xóa học sinh khỏi lớp');
+        viewClass(currentClass.id);
+      } catch (e) { notify.error(e.message); }
+    }
 
+    async function generateSessions() {
+      if (!confirm('Tạo buổi học tự động dựa trên lịch học?')) return;
+      try {
+        await api.post('/sessions/generate', { classId: currentClass.id });
+        notify.success('Đã tạo buổi học');
+        viewClass(currentClass.id);
+      } catch (e) { notify.error(e.message); }
+    }
+
+    // ============================================
+    // RESCHEDULE
+    // ============================================
     function openRescheduleModal(sessionId) {
       const session = currentSessions.find(s => s.id === sessionId);
       if (!session) return;
-
       document.getElementById('rescheduleSessionId').value = sessionId;
       document.getElementById('rescheduleInfo').textContent = `Buổi ${session.session_number} - Ngày ${formatDate(session.session_date)}`;
-
-      // Set min date to today
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('rescheduleNewDate').min = today;
       document.getElementById('rescheduleNewDate').value = '';
@@ -2173,11 +2475,9 @@
       document.getElementById('rescheduleCustomReason').value = '';
       document.getElementById('customReasonGroup').style.display = 'none';
       document.getElementById('rescheduleShiftFollowing').checked = true;
-
       modal.show('rescheduleModal');
     }
 
-    // Show/hide custom reason input
     document.getElementById('rescheduleReason')?.addEventListener('change', function () {
       document.getElementById('customReasonGroup').style.display = this.value === 'Khác' ? 'block' : 'none';
     });
@@ -2187,37 +2487,35 @@
       const newDate = document.getElementById('rescheduleNewDate').value;
       let reason = document.getElementById('rescheduleReason').value;
       const shiftFollowing = document.getElementById('rescheduleShiftFollowing').checked;
-
-      if (!newDate) {
-        ui.warning('Vui lòng chọn ngày mới');
-        return;
-      }
-
-      if (reason === 'Khác') {
-        reason = document.getElementById('rescheduleCustomReason').value || 'Lý do khác';
-      }
-
-      const confirmMsg = shiftFollowing
-        ? 'Xác nhận dời buổi này và TẤT CẢ các buổi sau?'
-        : 'Xác nhận dời CHỈ buổi này?';
-
-      if (!confirm(confirmMsg)) return;
-
+      if (!newDate) { notify.warning('Vui lòng chọn ngày mới'); return; }
+      if (reason === 'Khác') reason = document.getElementById('rescheduleCustomReason').value || 'Lý do khác';
+      if (!confirm(shiftFollowing ? 'Xác nhận dời buổi này và TẤT CẢ các buổi sau?' : 'Xác nhận dời CHỈ buổi này?')) return;
       try {
-        const result = await api.post(`/sessions/${sessionId}/reschedule`, {
-          newDate,
-          reason,
-          shiftFollowing
-        });
-
-        ui.success(result.message || `Đã dời ${result.affectedSessions || 1} buổi học`);
+        const result = await api.post(`/sessions/${sessionId}/reschedule`, { newDate, reason, shiftFollowing });
+        notify.success(result.message || `Đã dời ${result.affectedSessions || 1} buổi học`);
         modal.hide('rescheduleModal');
-
-        // Reload class detail to refresh sessions
         viewClass(currentClass.id);
-      } catch (e) {
-        ui.error(e.message);
-      }
+      } catch (e) { notify.error(e.message); }
+    }
+
+    // ============================================
+    // HELPERS
+    // ============================================
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function formatDate(dateStr) {
+      if (!dateStr) return '—';
+      return new Date(dateStr).toLocaleDateString('vi-VN');
+    }
+    function formatDateShort(dateStr) {
+      if (!dateStr) return '—';
+      const d = new Date(dateStr);
+      return `${d.getDate()}/${d.getMonth() + 1}`;
+    }
+    function formatDateTime(dateStr) {
+      if (!dateStr) return '—';
+      return new Date(dateStr).toLocaleString('vi-VN');
     }
 
     document.addEventListener('DOMContentLoaded', init);
