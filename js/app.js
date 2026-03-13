@@ -90,6 +90,10 @@ const api = {
       const result = await response.json();
 
       if (response.status === 401) {
+        // Skip auto-logout for login endpoint — let caller handle the error
+        if (endpoint.includes('/auth/login')) {
+          throw new Error(result.message || 'Sai tên đăng nhập hoặc mật khẩu');
+        }
         this.removeToken();
         ui.error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
         setTimeout(() => {
@@ -750,9 +754,30 @@ const branch = {
   list: [],
 
   async init() {
+    // Step 1: Set immediately from localStorage so branch.current is available synchronously
+    // (pages call loadOptions right after branch.init() without await)
     this.list = auth.user?.branches || [];
     this.current = this._restoreCurrent();
     this.renderSelector();
+
+    // Step 2: Refresh list from API in background (so new branches appear without re-login)
+    if (auth.isLoggedIn()) {
+      try {
+        const res = await api.get('/branches');
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          const prevId = this.current?.id;
+          if (auth.user?.is_system_wide) {
+            this.list = res.data;
+          } else {
+            const assignedIds = new Set((auth.user?.branches || []).map(b => b.id));
+            this.list = assignedIds.size > 0 ? res.data.filter(b => assignedIds.has(b.id)) : res.data;
+          }
+          // Restore current from updated list
+          this.current = (prevId && this.list.find(b => b.id == prevId)) || this._restoreCurrent();
+          this.renderSelector();
+        }
+      } catch { /* keep localStorage data */ }
+    }
   },
 
   // Khôi phục cơ sở đã chọn: localStorage → primaryBranch → cơ sở đầu tiên
@@ -989,13 +1014,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // GLOBAL ERROR HANDLER
 // ===========================================
 window.onerror = function (message, source, lineno, colno, error) {
-  console.error('Global error:', { message, source, lineno, colno, error });
   // Don't show UI error for script errors
   return false;
 };
 
 window.addEventListener('unhandledrejection', function (event) {
-  console.error('Unhandled promise rejection:', event.reason);
   if (event.reason?.message) {
     ui.error(event.reason.message);
   }

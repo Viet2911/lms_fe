@@ -171,10 +171,10 @@
   </div>
 
   <script src="../js/config.js"></script>
-  <script src="../js/app.js"></script>
-  <script src="../js/reactive.js"></script>
-  <script src="../js/crud-mixin.js"></script>
-  <script src="../js/sidebar.js"></script>
+  <script src="../js/app.js?v=4.1"></script>
+  <script src="../js/reactive.js?v=4.1"></script>
+  <script src="../js/crud-mixin.js?v=4.1"></script>
+  <script src="../js/sidebar.js?v=4.4"></script>
   <script>
     let packages = [];
     let branches = [];
@@ -232,7 +232,6 @@
           </tr>
         `).join('');
       } catch (e) {
-        console.error('Error loading packages:', e);
       }
     }
 
@@ -281,7 +280,6 @@
 
         saveBtn.style.display = 'inline-block';
       } catch (e) {
-        console.error('Error loading branch prices:', e);
       }
     }
 

@@ -17,7 +17,7 @@
         }
 
         .stat-box {
-            background: white;
+            background: var(--bg-card);
             border-radius: 16px;
             padding: 24px;
             border: 1px solid #e5e7eb;
@@ -105,7 +105,7 @@
 
         .tab-btn.active {
             color: #16a34a;
-            background: white;
+            background: var(--bg-card);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
@@ -156,7 +156,7 @@
 
         /* Promo Card */
         .promo-card {
-            background: white;
+            background: var(--bg-card);
             border-radius: 14px;
             padding: 20px;
             border: 1px solid #e5e7eb;
@@ -218,7 +218,7 @@
         }
 
         .item-card {
-            background: white;
+            background: var(--bg-card);
             border-radius: 14px;
             padding: 20px;
             border: 1px solid #e5e7eb;
@@ -716,10 +716,10 @@
     </div>
 
     <script src="../js/config.js"></script>
-    <script src="../js/app.js"></script>
-    <script src="../js/reactive.js"></script>
-    <script src="../js/crud-mixin.js"></script>
-    <script src="../js/sidebar.js"></script>
+    <script src="../js/app.js?v=4.1"></script>
+    <script src="../js/reactive.js?v=4.1"></script>
+    <script src="../js/crud-mixin.js?v=4.1"></script>
+    <script src="../js/sidebar.js?v=4.4"></script>
     <script>
         let programs = [], items = [], scholarships = [], pending = [];
 
@@ -759,7 +759,7 @@
                 const res = await api.get('/promotions/programs/all');
                 programs = res.data || [];
                 renderPrograms();
-            } catch (e) { console.error(e); }
+            } catch (e) { }
         }
 
         function renderPrograms() {
@@ -845,7 +845,7 @@
                 const res = await api.get('/promotions/items');
                 items = res.data || [];
                 renderItems();
-            } catch (e) { console.error(e); }
+            } catch (e) { }
         }
 
         function renderItems() {
@@ -924,7 +924,7 @@
                 const res = await api.get('/promotions/scholarships');
                 scholarships = res.data || [];
                 renderScholarships();
-            } catch (e) { console.error(e); }
+            } catch (e) { }
         }
 
         function renderScholarships() {
@@ -968,7 +968,7 @@
                 const res = await api.get('/promotions/pending');
                 pending = res.data || [];
                 renderPending();
-            } catch (e) { console.error(e); }
+            } catch (e) { }
         }
 
         function renderPending() {

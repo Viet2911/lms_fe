@@ -1385,10 +1385,10 @@
   </select>
 
   <script src="../js/config.js"></script>
-  <script src="../js/app.js"></script>
-  <script src="../js/reactive.js"></script>
-  <script src="../js/crud-mixin.js"></script>
-  <script src="../js/sidebar.js"></script>
+  <script src="../js/app.js?v=4.1"></script>
+  <script src="../js/reactive.js?v=4.1"></script>
+  <script src="../js/crud-mixin.js?v=4.1"></script>
+  <script src="../js/sidebar.js?v=4.4"></script>
   <script>
     let classes = [];
     let currentClass = null;
@@ -1418,7 +1418,7 @@
       setupBranchSelect();
       await loadOptions();
       await loadData();
-      window.addEventListener('branchchange', () => { loadData(); });
+      window.addEventListener('branchchange', () => { loadOptions(); loadData(); });
     }
 
     function setFilter(status) {
@@ -1556,20 +1556,21 @@
           const currentBranchId = branch.getId() || allBranches[0]?.id;
           branchSelect.innerHTML = allBranches.map(b => `<option value="${b.id}" ${b.id == currentBranchId ? 'selected' : ''}>${b.name}</option>`).join('');
         }
-      } catch (e) { console.error(e); }
+      } catch (e) { }
     }
 
     async function loadOptions() {
       try {
+        const bq = branch.buildQuery({});
         const [subjects, levels, teachers, cms] = await Promise.all([
           api.get('/common/subjects'), api.get('/common/levels'),
-          api.get('/users/by-role/TEACHER'), api.get('/users/by-role/CM')
+          api.get('/users/by-role/TEACHER' + bq), api.get('/users/by-role/CM' + bq)
         ]);
         document.getElementById('subjectSelect').innerHTML = '<option value="">Chọn</option>' + (subjects.data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
         document.getElementById('levelSelect').innerHTML = '<option value="">Chọn</option>' + (levels.data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join('');
         document.getElementById('teacherSelect').innerHTML = '<option value="">Chọn</option>' + (teachers.data || []).map(t => `<option value="${t.id}">${t.full_name}</option>`).join('');
         document.getElementById('cmSelect').innerHTML = '<option value="">Chọn</option>' + (cms.data || []).map(c => `<option value="${c.id}">${c.full_name}</option>`).join('');
-      } catch (e) { console.error(e); }
+      } catch (e) { }
     }
 
     async function loadData() {

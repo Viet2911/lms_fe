@@ -54,10 +54,10 @@
   </div>
 
   <script src="../js/config.js"></script>
-  <script src="../js/app.js"></script>
-  <script src="../js/sidebar.js"></script>
-  <script src="../js/reactive.js"></script>
-  <script src="../js/crud-mixin.js"></script>
+  <script src="../js/app.js?v=4.1"></script>
+  <script src="../js/sidebar.js?v=4.4"></script>
+  <script src="../js/reactive.js?v=4.1"></script>
+  <script src="../js/crud-mixin.js?v=4.1"></script>
   <script>
     let currentPage = 1;
 
@@ -74,7 +74,7 @@
         const result = await api.get('/classes' + query);
         document.getElementById('classFilter').innerHTML = '<option value="">Tất cả lớp</option>' +
           (result.data || []).map(c => `<option value="${c.id}">${c.class_name}</option>`).join('');
-      } catch (e) { console.error(e); }
+      } catch (e) { }
     }
 
     async function loadData(page = 1) {

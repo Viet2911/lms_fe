@@ -365,10 +365,10 @@
   </div>
 
   <script src="../js/config.js"></script>
-  <script src="../js/app.js"></script>
-  <script src="../js/sidebar.js"></script>
-  <script src="../js/reactive.js"></script>
-  <script src="../js/crud-mixin.js"></script>
+  <script src="../js/app.js?v=4.1"></script>
+  <script src="../js/sidebar.js?v=4.4"></script>
+  <script src="../js/reactive.js?v=4.1"></script>
+  <script src="../js/crud-mixin.js?v=4.1"></script>
   <script>
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth() + 1;
@@ -435,7 +435,6 @@
           ).join('');
         }
       } catch (e) {
-        console.error('Load branches error:', e);
       }
     }
 
@@ -471,7 +470,7 @@
           <div class="stat-card"><div class="stat-icon info"><i class="fas fa-calendar-day"></i></div><div class="stat-content"><div class="stat-value">${s.today || 0}</div><div class="stat-label">Hôm nay</div></div></div>
           <div class="stat-card"><div class="stat-icon success"><i class="fas fa-user-check"></i></div><div class="stat-content"><div class="stat-value">${s.converted || 0}</div><div class="stat-label">Đã chuyển đổi</div></div></div>
         `;
-      } catch (e) { console.error(e); }
+      } catch (e) { }
     }
 
     async function loadCalendar() {
@@ -567,19 +566,10 @@
 
       // Debug logs
       const branchSelect = document.getElementById('branchFormSelect');
-      console.log('=== DEBUG BRANCH ===');
-      console.log('branchSelect element:', branchSelect);
-      console.log('branchSelect.value:', branchSelect?.value);
-      console.log('branchSelect.disabled:', branchSelect?.disabled);
-      console.log('data.branchId from form:', data.branchId);
-      console.log('auth.user.branches:', auth.user?.branches);
-      console.log('branch.getId():', branch.getId());
 
       // Lấy branchId từ select (display:none vẫn gửi được nếu không disabled)
       data.branchId = branchSelect?.value || data.branchId || branch.getId() || auth.user?.branches?.[0]?.id;
 
-      console.log('Final branchId:', data.branchId);
-      console.log('===================');
 
       if (!data.branchId) {
         ui.error('Cần chọn cơ sở');

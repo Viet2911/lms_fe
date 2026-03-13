@@ -154,6 +154,69 @@
     }
     .sb-link.active i { color: var(--primary); }
 
+    /* User dropdown */
+    .sb-user-dropdown { display: flex; flex-direction: column; }
+    .sb-user-chevron {
+      font-size: 10px;
+      color: var(--text-muted);
+      transition: transform 0.2s;
+      margin-left: auto;
+    }
+    .sb-user-dropdown.open .sb-user-chevron { transform: rotate(180deg); }
+    .sb-user-menu {
+      display: none;
+      order: -1;
+      margin: 0 8px 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    .sb-user-dropdown.open .sb-user-menu { display: block; }
+    .sb-user-menu-info {
+      padding: 16px;
+      text-align: center;
+      background: var(--bg-secondary);
+    }
+    .sb-avatar-lg {
+      width: 44px;
+      height: 44px;
+      font-size: 18px;
+      margin: 0 auto 8px;
+    }
+    .sb-menu-divider { height: 1px; background: var(--border); }
+    .sb-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .sb-menu-item:hover { background: var(--bg-hover); color: var(--primary); text-decoration: none; }
+    .sb-menu-item i { width: 16px; text-align: center; font-size: 13px; }
+    .sb-menu-logout { color: #ef4444; }
+    .sb-menu-logout:hover { background: rgba(239,68,68,0.08); color: #ef4444; }
+    .sb-dev-info {
+      padding: 10px 14px 12px;
+      background: var(--bg-secondary);
+    }
+    .sb-dev-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 3px 0;
+      transition: color 0.15s;
+    }
+    .sb-dev-link:hover { color: var(--primary); text-decoration: none; }
+    .sb-dev-link i { width: 14px; text-align: center; font-size: 11px; }
+
     /* Footer */
     .sb-footer {
       border-top: 1px solid var(--border);
@@ -181,21 +244,7 @@
     }
     .sb-user-name { font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.2; }
     .sb-user-role { font-size: 11px; color: var(--text-muted); }
-    .sb-logout {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 16px;
-      margin: 1px 8px;
-      border-radius: 8px;
-      color: #ef4444;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      transition: background 0.15s;
-    }
-    .sb-logout i { width: 16px; text-align: center; }
-    .sb-logout:hover { background: rgba(239,68,68,0.1); text-decoration: none; color: #ef4444; }
+    .sb-logout { display: none; }
 
     /* Divider line between sections */
     .sb-divider { height: 1px; background: var(--border); margin: 4px 16px; }
@@ -277,18 +326,15 @@ function buildSidebar(containerId) {
   }
 
   // ── Quản lý lớp ──
-  if (canAny('classes.view', 'sessions.view', 'attendance.view', 'attendance.checkin')) {
+  if (can('classes.view')) {
     let links = '';
-    if (can('classes.view')) links += link('classes.html', 'fas fa-chalkboard', 'Lớp học');
-    if (can('sessions.view')) links += link('sessions.html', 'fas fa-calendar-check', 'Buổi học');
-    if (canAny('attendance.view', 'attendance.checkin')) links += link('attendance.html', 'fas fa-clipboard-check', 'Điểm danh');
+    links += link('classes.html', 'fas fa-chalkboard', 'Lớp học');
     html += group('grp-lop', 'fas fa-chalkboard-teacher', 'Quản lý lớp', links);
   }
 
   // ── Học phí ──
   if (canAny('renewals.view', 'renewals.create')) {
     let links = '';
-    if (can('renewals.view')) links += link('fee-warning.html', 'fas fa-exclamation-triangle', 'Cảnh báo phí');
     if (can('renewals.view')) links += link('renewals.html', 'fas fa-sync-alt', 'Tái phí');
     html += group('grp-hocphi', 'fas fa-wallet', 'Học phí', links);
   }
@@ -322,16 +368,67 @@ function buildSidebar(containerId) {
   const initial = userName.trim().split(' ').pop()[0]?.toUpperCase() || 'U';
   html += `
     <div class="sb-footer">
-      <div class="sb-user">
-        <div class="sb-avatar">${initial}</div>
-        <div>
-          <div class="sb-user-name">${userName}</div>
-          <div class="sb-user-role">${getRoleDisplay(role)}</div>
+      <div class="sb-user-dropdown" id="sbUserDropdown">
+        <div class="sb-user" onclick="toggleUserDropdown()" style="cursor:pointer">
+          <div class="sb-avatar">${initial}</div>
+          <div style="flex:1">
+            <div class="sb-user-name">${userName}</div>
+            <div class="sb-user-role">${getRoleDisplay(role)}</div>
+          </div>
+          <i class="fas fa-chevron-up sb-user-chevron"></i>
+        </div>
+        <div class="sb-user-menu">
+          <div class="sb-user-menu-info">
+            <div class="sb-avatar sb-avatar-lg">${initial}</div>
+            <div class="sb-user-name" style="font-size:14px">${userName}</div>
+            <div class="sb-user-role">${getRoleDisplay(role)}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${auth.user?.email || ''}</div>
+          </div>
+          <div class="sb-menu-divider"></div>
+          <a href="#" class="sb-menu-item" onclick="showChangePasswordModal(); return false;">
+            <i class="fas fa-key"></i> Đổi mật khẩu
+          </a>
+          <div class="sb-menu-divider"></div>
+          <div class="sb-dev-info">
+            <div style="font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Liên hệ Dev</div>
+            <a href="tel:0973436564" class="sb-dev-link"><i class="fas fa-phone"></i> 0973 436 564</a>
+            <a href="https://zalo.me/0973436564" target="_blank" class="sb-dev-link"><i class="fas fa-comment"></i> Zalo</a>
+            <a href="mailto:levietth001@gmail.com" class="sb-dev-link"><i class="fas fa-envelope"></i> levietth001@gmail.com</a>
+          </div>
+          <div class="sb-menu-divider"></div>
+          <a href="#" class="sb-menu-item sb-menu-logout" onclick="auth.logout(); return false;">
+            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+          </a>
         </div>
       </div>
-      <a href="#" class="sb-logout" onclick="auth.logout(); return false;">
-        <i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span>
-      </a>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal-overlay" id="changePasswordModal" onclick="if(event.target===this)closeChangePasswordModal()">
+      <div class="modal-content" style="max-width:400px">
+        <div class="modal-header">
+          <div class="modal-title"><i class="fas fa-key"></i> Đổi mật khẩu</div>
+          <button class="modal-close" onclick="closeChangePasswordModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Mật khẩu hiện tại</label>
+            <input type="password" id="cpOldPassword" class="form-control" placeholder="Nhập mật khẩu hiện tại">
+          </div>
+          <div class="form-group">
+            <label>Mật khẩu mới</label>
+            <input type="password" id="cpNewPassword" class="form-control" placeholder="Ít nhất 6 ký tự">
+          </div>
+          <div class="form-group">
+            <label>Xác nhận mật khẩu mới</label>
+            <input type="password" id="cpConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeChangePasswordModal()">Hủy</button>
+          <button class="btn btn-primary" onclick="submitChangePassword()"><i class="fas fa-save"></i> Lưu</button>
+        </div>
+      </div>
     </div>
   `;
 
@@ -348,6 +445,9 @@ function buildSidebar(containerId) {
       g.classList.add('open');
     }
   });
+
+  // Inject user chip into topbar
+  buildTopbarUser();
 }
 
 function toggleSbGroup(id) {
@@ -372,6 +472,7 @@ function getRoleDisplay(role) {
     'EC': 'Tư vấn viên',
     'SALE': 'Tư vấn viên',
     'TEACHER': 'Giáo viên',
+    'HEAD_TEACHER': 'Trưởng giáo viên',
     'TA': 'Trợ giảng',
     'ACCOUNTANT': 'Kế toán',
     'MKT': 'Marketing',
@@ -380,6 +481,202 @@ function getRoleDisplay(role) {
   return roleNames[role?.toUpperCase()] || role;
 }
 
+function toggleUserDropdown() {
+  const el = document.getElementById('sbUserDropdown');
+  if (!el) return;
+  el.classList.toggle('open');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  const el = document.getElementById('sbUserDropdown');
+  if (el && !el.contains(e.target)) el.classList.remove('open');
+});
+
+function showChangePasswordModal() {
+  document.getElementById('sbUserDropdown')?.classList.remove('open');
+  document.getElementById('cpOldPassword').value = '';
+  document.getElementById('cpNewPassword').value = '';
+  document.getElementById('cpConfirmPassword').value = '';
+  document.getElementById('changePasswordModal').style.display = 'flex';
+}
+
+function closeChangePasswordModal() {
+  document.getElementById('changePasswordModal').style.display = 'none';
+}
+
+async function submitChangePassword() {
+  const oldPw = document.getElementById('cpOldPassword').value;
+  const newPw = document.getElementById('cpNewPassword').value;
+  const confirmPw = document.getElementById('cpConfirmPassword').value;
+  if (!oldPw || !newPw || !confirmPw) { notify.warning('Vui lòng điền đầy đủ thông tin'); return; }
+  if (newPw.length < 6) { notify.warning('Mật khẩu mới phải có ít nhất 6 ký tự'); return; }
+  if (newPw !== confirmPw) { notify.warning('Mật khẩu xác nhận không khớp'); return; }
+  const btn = document.querySelector('#changePasswordModal .btn-primary');
+  const orig = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+  try {
+    await api.put('/users/change-password', { oldPassword: oldPw, newPassword: newPw });
+    notify.success('Đổi mật khẩu thành công');
+    closeChangePasswordModal();
+  } catch (e) {
+    notify.error(e.message || 'Đổi mật khẩu thất bại');
+  } finally {
+    btn.disabled = false; btn.innerHTML = orig;
+  }
+}
+
+function buildTopbarUser() {
+  const topbarRight = document.querySelector('.topbar-right');
+  if (!topbarRight || document.getElementById('tbUserBtn')) return;
+
+  const userName = auth.user?.full_name || 'User';
+  const role = auth.user?.role || '';
+  const initial = userName.trim().split(' ').pop()[0]?.toUpperCase() || 'U';
+
+  // Inject styles once
+  if (!document.getElementById('tb-user-styles')) {
+    const st = document.createElement('style');
+    st.id = 'tb-user-styles';
+    st.textContent = `
+      .tb-user-sep { width: 1px; height: 28px; background: var(--border); margin: 0 4px; }
+      .tb-user-btn {
+        display: flex; align-items: center; gap: 8px;
+        padding: 5px 10px 5px 6px;
+        border-radius: 50px;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: var(--bg-secondary);
+        transition: background 0.15s, border-color 0.15s;
+        position: relative;
+      }
+      .tb-user-btn:hover { background: var(--bg-hover); border-color: var(--primary); }
+      .tb-user-btn.open { border-color: var(--primary); }
+      .tb-avatar {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: var(--primary); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 12px; font-weight: 700; flex-shrink: 0;
+      }
+      .tb-user-info { line-height: 1.2; }
+      .tb-user-name { font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+      .tb-user-role { font-size: 10px; color: var(--text-muted); }
+      .tb-chevron { font-size: 9px; color: var(--text-muted); transition: transform 0.2s; margin-left: 2px; }
+      .tb-user-btn.open .tb-chevron { transform: rotate(180deg); }
+      .tb-dropdown {
+        display: none;
+        position: fixed;
+        top: 0; right: 0;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: var(--shadow-lg);
+        min-width: 220px;
+        overflow: hidden;
+        z-index: 9999;
+      }
+      .tb-dropdown.open { display: block; }
+      .tb-dd-info {
+        padding: 16px;
+        text-align: center;
+        background: var(--bg-secondary);
+      }
+      .tb-dd-avatar {
+        width: 44px; height: 44px; border-radius: 50%;
+        background: var(--primary); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px; font-weight: 700;
+        margin: 0 auto 8px;
+      }
+      .tb-dd-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+      .tb-dd-role { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+      .tb-dd-email { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+      .tb-dd-divider { height: 1px; background: var(--border); }
+      .tb-dd-item {
+        display: flex; align-items: center; gap: 10px;
+        padding: 10px 14px;
+        font-size: 13px; color: var(--text-secondary);
+        text-decoration: none; cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+        background: none; border: none; width: 100%; text-align: left;
+      }
+      .tb-dd-item:hover { background: var(--bg-hover); color: var(--primary); text-decoration: none; }
+      .tb-dd-item i { width: 16px; text-align: center; font-size: 13px; }
+      .tb-dd-logout { color: #ef4444; }
+      .tb-dd-logout:hover { background: rgba(239,68,68,0.08); color: #ef4444; }
+    `;
+    document.head.appendChild(st);
+  }
+
+  // Separator + button
+  const sep = document.createElement('div');
+  sep.className = 'tb-user-sep';
+
+  const btn = document.createElement('div');
+  btn.id = 'tbUserBtn';
+  btn.className = 'tb-user-btn';
+  btn.innerHTML = `
+    <div class="tb-avatar">${initial}</div>
+    <div class="tb-user-info">
+      <div class="tb-user-name">${userName}</div>
+      <div class="tb-user-role">${getRoleDisplay(role)}</div>
+    </div>
+    <i class="fas fa-chevron-down tb-chevron"></i>
+  `;
+
+  // Dropdown (fixed position, positioned by JS)
+  const dd = document.createElement('div');
+  dd.id = 'tbDropdown';
+  dd.className = 'tb-dropdown';
+  dd.innerHTML = `
+    <div class="tb-dd-info">
+      <div class="tb-dd-avatar">${initial}</div>
+      <div class="tb-dd-name">${userName}</div>
+      <div class="tb-dd-role">${getRoleDisplay(role)}</div>
+      <div class="tb-dd-email">${auth.user?.email || ''}</div>
+    </div>
+    <div class="tb-dd-divider"></div>
+    <button class="tb-dd-item" onclick="closeTbDropdown(); showChangePasswordModal();">
+      <i class="fas fa-key"></i> Đổi mật khẩu
+    </button>
+    <div class="tb-dd-divider"></div>
+    <button class="tb-dd-item tb-dd-logout" onclick="closeTbDropdown(); auth.logout();">
+      <i class="fas fa-sign-out-alt"></i> Đăng xuất
+    </button>
+  `;
+  document.body.appendChild(dd);
+
+  topbarRight.appendChild(sep);
+  topbarRight.appendChild(btn);
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = btn.classList.toggle('open');
+    dd.classList.toggle('open', isOpen);
+    if (isOpen) {
+      // Position dropdown below the button
+      const rect = btn.getBoundingClientRect();
+      dd.style.top = (rect.bottom + 6) + 'px';
+      dd.style.right = (window.innerWidth - rect.right) + 'px';
+      dd.style.left = 'auto';
+    }
+  });
+
+  document.addEventListener('click', () => closeTbDropdown());
+  dd.addEventListener('click', (e) => e.stopPropagation());
+}
+
+function closeTbDropdown() {
+  document.getElementById('tbUserBtn')?.classList.remove('open');
+  document.getElementById('tbDropdown')?.classList.remove('open');
+}
+
 window.buildSidebar = buildSidebar;
+window.buildTopbarUser = buildTopbarUser;
+window.closeTbDropdown = closeTbDropdown;
 window.toggleSbGroup = toggleSbGroup;
 window.getRoleDisplay = getRoleDisplay;
+window.toggleUserDropdown = toggleUserDropdown;
+window.showChangePasswordModal = showChangePasswordModal;
+window.closeChangePasswordModal = closeChangePasswordModal;
+window.submitChangePassword = submitChangePassword;

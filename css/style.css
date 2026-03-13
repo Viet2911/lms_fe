@@ -2067,11 +2067,11 @@ code {
   padding: 6px 12px;
   background: var(--bg-secondary);
   border-radius: 8px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
 }
 
 .branch-selector i {
-  color: var(--primary-color);
+  color: var(--primary);
 }
 
 .branch-selector select {
@@ -2093,7 +2093,7 @@ code {
   align-items: center;
   gap: 8px;
   padding: 6px 12px;
-  background: var(--primary-color);
+  background: var(--primary);
   color: white;
   border-radius: 8px;
   font-size: 14px;
@@ -2267,4 +2267,234 @@ code {
     width: 100%;
     text-align: center;
   }
+}
+
+/* ===========================================
+   DARK MODE - GLOBAL OVERRIDES
+   =========================================== */
+
+/* --- Status badges (used across all pages) --- */
+[data-theme="dark"] .status-badge,
+[data-theme="dark"] [class*="status-badge"],
+[data-theme="dark"] .sli-badge,
+[data-theme="dark"] .fee-badge {
+  filter: brightness(0.5) saturate(1.5);
+  color: #fff !important;
+}
+
+/* Override filter for specific statuses with better dark colors */
+[data-theme="dark"] .status-badge.active,
+[data-theme="dark"] .sli-badge.normal {
+  background: rgba(34,197,94,0.2) !important;
+  color: #4ade80 !important;
+  filter: none;
+}
+[data-theme="dark"] .status-badge.pending,
+[data-theme="dark"] .status-badge.expiring_soon,
+[data-theme="dark"] .sli-badge.medium {
+  background: rgba(245,158,11,0.2) !important;
+  color: #fbbf24 !important;
+  filter: none;
+}
+[data-theme="dark"] .status-badge.expired,
+[data-theme="dark"] .status-badge.quit_paid,
+[data-theme="dark"] .sli-badge.low {
+  background: rgba(239,68,68,0.2) !important;
+  color: #f87171 !important;
+  filter: none;
+}
+[data-theme="dark"] .status-badge.paused,
+[data-theme="dark"] .status-badge.reserved {
+  background: rgba(139,92,246,0.2) !important;
+  color: #a78bfa !important;
+  filter: none;
+}
+[data-theme="dark"] .status-badge.waiting {
+  background: rgba(59,130,246,0.2) !important;
+  color: #60a5fa !important;
+  filter: none;
+}
+[data-theme="dark"] .status-badge.quit_refund {
+  background: rgba(249,115,22,0.2) !important;
+  color: #fb923c !important;
+  filter: none;
+}
+
+/* --- Form sections (students, leads...) --- */
+[data-theme="dark"] .form-section.blue {
+  background: rgba(59,130,246,0.1) !important;
+  border: 1px solid rgba(59,130,246,0.2);
+}
+[data-theme="dark"] .form-section.blue h4 { color: #60a5fa !important; }
+
+[data-theme="dark"] .form-section.yellow {
+  background: rgba(245,158,11,0.1) !important;
+  border: 1px solid rgba(245,158,11,0.2);
+}
+[data-theme="dark"] .form-section.yellow h4 { color: #fbbf24 !important; }
+
+[data-theme="dark"] .form-section.green {
+  background: rgba(34,197,94,0.1) !important;
+  border: 1px solid rgba(34,197,94,0.2);
+}
+[data-theme="dark"] .form-section.green h4 { color: #4ade80 !important; }
+
+[data-theme="dark"] .form-section.pink {
+  background: rgba(236,72,153,0.1) !important;
+  border: 1px solid rgba(236,72,153,0.2);
+}
+[data-theme="dark"] .form-section.pink h4 { color: #f472b6 !important; }
+
+[data-theme="dark"] .form-section.purple {
+  background: rgba(139,92,246,0.1) !important;
+  border: 1px solid rgba(139,92,246,0.2);
+}
+[data-theme="dark"] .form-section.purple h4 { color: #a78bfa !important; }
+
+[data-theme="dark"] .form-section.red {
+  background: rgba(239,68,68,0.1) !important;
+  border: 1px solid rgba(239,68,68,0.2);
+}
+[data-theme="dark"] .form-section.red h4 { color: #f87171 !important; }
+
+/* --- Info/summary boxes with hardcoded light backgrounds --- */
+[data-theme="dark"] .summary-total {
+  border-top-color: var(--border) !important;
+}
+[data-theme="dark"] .gift-checkbox {
+  background: rgba(219,39,119,0.1) !important;
+  border-color: rgba(219,39,119,0.3) !important;
+  color: var(--text-primary);
+}
+[data-theme="dark"] .gift-checkbox.checked {
+  background: #be185d !important;
+  color: #fff !important;
+}
+[data-theme="dark"] .gift-checkbox.disabled {
+  background: var(--bg-secondary) !important;
+  border-color: var(--border) !important;
+}
+
+/* --- Tables: hardcoded white/light row backgrounds --- */
+[data-theme="dark"] .table tr,
+[data-theme="dark"] table tr {
+  background: transparent;
+}
+[data-theme="dark"] .table-striped tr:nth-child(even),
+[data-theme="dark"] table.striped tr:nth-child(even) {
+  background: rgba(255,255,255,0.03);
+}
+
+/* --- Cards/panels with hardcoded white --- */
+[data-theme="dark"] [style*="background: white"],
+[data-theme="dark"] [style*="background:white"],
+[data-theme="dark"] [style*="background: #fff"],
+[data-theme="dark"] [style*="background:#fff"],
+[data-theme="dark"] [style*="background: #ffffff"],
+[data-theme="dark"] [style*="background:#ffffff"] {
+  background: var(--bg-card) !important;
+  color: var(--text-primary);
+}
+
+/* --- Inline text color overrides for light-only colors --- */
+[data-theme="dark"] [style*="color: #1e40af"],
+[data-theme="dark"] [style*="color:#1e40af"] { color: #60a5fa !important; }
+[data-theme="dark"] [style*="color: #166534"],
+[data-theme="dark"] [style*="color:#166534"] { color: #4ade80 !important; }
+[data-theme="dark"] [style*="color: #92400e"],
+[data-theme="dark"] [style*="color:#92400e"] { color: #fbbf24 !important; }
+[data-theme="dark"] [style*="color: #991b1b"],
+[data-theme="dark"] [style*="color:#991b1b"] { color: #f87171 !important; }
+[data-theme="dark"] [style*="color: #6b21a8"],
+[data-theme="dark"] [style*="color:#6b21a8"] { color: #a78bfa !important; }
+[data-theme="dark"] [style*="color: #9d174d"],
+[data-theme="dark"] [style*="color:#9d174d"] { color: #f472b6 !important; }
+[data-theme="dark"] [style*="color: #c2410c"],
+[data-theme="dark"] [style*="color:#c2410c"] { color: #fb923c !important; }
+[data-theme="dark"] [style*="color: #2563eb"],
+[data-theme="dark"] [style*="color:#2563eb"] { color: #60a5fa !important; }
+
+/* --- Inline background overrides for light-only pastel colors --- */
+[data-theme="dark"] [style*="background: #dcfce7"],
+[data-theme="dark"] [style*="background:#dcfce7"] { background: rgba(34,197,94,0.15) !important; }
+[data-theme="dark"] [style*="background: #dbeafe"],
+[data-theme="dark"] [style*="background:#dbeafe"] { background: rgba(59,130,246,0.15) !important; }
+[data-theme="dark"] [style*="background: #fef3c7"],
+[data-theme="dark"] [style*="background:#fef3c7"] { background: rgba(245,158,11,0.15) !important; }
+[data-theme="dark"] [style*="background: #fee2e2"],
+[data-theme="dark"] [style*="background:#fee2e2"] { background: rgba(239,68,68,0.15) !important; }
+[data-theme="dark"] [style*="background: #f3e8ff"],
+[data-theme="dark"] [style*="background:#f3e8ff"] { background: rgba(139,92,246,0.15) !important; }
+[data-theme="dark"] [style*="background: #fce7f3"],
+[data-theme="dark"] [style*="background:#fce7f3"] { background: rgba(236,72,153,0.15) !important; }
+[data-theme="dark"] [style*="background: #fecaca"],
+[data-theme="dark"] [style*="background:#fecaca"] { background: rgba(239,68,68,0.2) !important; }
+[data-theme="dark"] [style*="background: #fed7aa"],
+[data-theme="dark"] [style*="background:#fed7aa"] { background: rgba(249,115,22,0.15) !important; }
+[data-theme="dark"] [style*="background: #fffbeb"],
+[data-theme="dark"] [style*="background:#fffbeb"] { background: rgba(245,158,11,0.1) !important; }
+[data-theme="dark"] [style*="background: #fde68a"],
+[data-theme="dark"] [style*="background:#fde68a"] { background: rgba(245,158,11,0.2) !important; }
+[data-theme="dark"] [style*="background: #e0e7ff"],
+[data-theme="dark"] [style*="background:#e0e7ff"] { background: rgba(99,102,241,0.15) !important; }
+
+/* --- Alert/info boxes --- */
+[data-theme="dark"] .alert-info,
+[data-theme="dark"] .info-box {
+  background: rgba(59,130,246,0.1) !important;
+  border-color: rgba(59,130,246,0.25) !important;
+}
+[data-theme="dark"] .alert-warning {
+  background: rgba(245,158,11,0.1) !important;
+  border-color: rgba(245,158,11,0.25) !important;
+}
+[data-theme="dark"] .alert-danger {
+  background: rgba(239,68,68,0.1) !important;
+  border-color: rgba(239,68,68,0.25) !important;
+}
+[data-theme="dark"] .alert-success {
+  background: rgba(34,197,94,0.1) !important;
+  border-color: rgba(34,197,94,0.25) !important;
+}
+
+/* --- Inputs, selects, textareas --- */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+  color-scheme: dark;
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* --- Modal content --- */
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .modal-body,
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+/* --- Dropdown menus --- */
+[data-theme="dark"] .dropdown-menu,
+[data-theme="dark"] .dropdown-content {
+  background: var(--bg-card);
+  border-color: var(--border);
+  box-shadow: var(--shadow-lg);
+}
+[data-theme="dark"] .dropdown-item:hover {
+  background: var(--bg-hover);
+}
+
+/* --- Light mode: ensure inputs use white bg --- */
+input, select, textarea {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
 }

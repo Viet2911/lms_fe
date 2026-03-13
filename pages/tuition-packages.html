@@ -15,7 +15,7 @@
         }
 
         .package-card {
-            background: white;
+            background: var(--bg-card);
             border-radius: 16px;
             overflow: hidden;
             border: 1px solid #e5e7eb;
@@ -101,7 +101,7 @@
         }
 
         .stat-box {
-            background: white;
+            background: var(--bg-card);
             border-radius: 12px;
             padding: 20px;
             border: 1px solid #e5e7eb;
@@ -242,10 +242,10 @@
     </div>
 
     <script src="../js/config.js"></script>
-    <script src="../js/app.js"></script>
-    <script src="../js/sidebar.js"></script>
-    <script src="../js/reactive.js"></script>
-    <script src="../js/crud-mixin.js"></script>
+    <script src="../js/app.js?v=4.1"></script>
+    <script src="../js/sidebar.js?v=4.4"></script>
+    <script src="../js/reactive.js?v=4.1"></script>
+    <script src="../js/crud-mixin.js?v=4.1"></script>
     <script>
         let packages = [];
         let subjects = [];
@@ -271,7 +271,7 @@
                 const formSelect = document.getElementById('pkgSubject');
                 formSelect.innerHTML = '<option value="">-- Combo/Chung --</option>' +
                     subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-            } catch (e) { console.error(e); }
+            } catch (e) { }
         }
 
         async function loadPackages() {
@@ -283,7 +283,6 @@
                 renderPackages();
                 updateStats();
             } catch (e) {
-                console.error(e);
                 document.getElementById('packageGrid').innerHTML = '<div class="text-center text-danger">Lỗi tải dữ liệu</div>';
             }
         }

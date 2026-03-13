@@ -665,10 +665,10 @@
   </div>
 
   <script src="js/config.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/sidebar.js"></script>
-  <script src="../js/reactive.js"></script>
-  <script src="../js/crud-mixin.js"></script>
+  <script src="js/app.js?v=4.1"></script>
+  <script src="js/sidebar.js?v=4.1"></script>
+  <script src="../js/reactive.js?v=4.1"></script>
+  <script src="../js/crud-mixin.js?v=4.1"></script>
   <script>
     /* ===== HELPERS ===== */
     function fmtCur(v) { return v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ'; }
@@ -820,7 +820,7 @@
             <div class="dash-card">
               <div class="dash-card-hd">
                 <span class="dash-card-title"><i class="fas fa-chart-line"></i> Doanh số tháng này</span>
-                <a href="pages/sale-reports.html" class="btn btn-sm btn-secondary" style="font-size:11px">Chi tiết</a>
+                <a href="pages/reports.html" class="btn btn-sm btn-secondary" style="font-size:11px">Chi tiết</a>
               </div>
               <div class="dash-card-bd" style="display:flex;flex-direction:column;gap:14px">
                 <div style="text-align:center">
@@ -933,7 +933,7 @@
             <div class="dash-card" style="border-color:#fca5a5">
               <div class="dash-card-hd" style="background:#fef2f2">
                 <span class="dash-card-title" style="color:#dc2626"><i class="fas fa-exclamation-triangle" style="color:#ef4444"></i> Học viên sắp/hết phí (${d.expiringStudents.length})</span>
-                <a href="pages/fee-warning.html" class="btn btn-sm btn-danger">Xử lý</a>
+                <a href="pages/renewals.html" class="btn btn-sm btn-danger">Xử lý</a>
               </div>
               <div class="dash-card-bd np">
                 <table class="dt">
@@ -1024,7 +1024,7 @@
             <div class="dash-card">
               <div class="dash-card-hd">
                 <span class="dash-card-title"><i class="fas fa-trophy"></i> Top EC tháng ${d.currentMonth}</span>
-                <a href="pages/sale-reports.html" class="btn btn-sm btn-primary">Chi tiết</a>
+                <a href="pages/reports.html" class="btn btn-sm btn-primary">Chi tiết</a>
               </div>
               <div class="dash-card-bd np">
                 ${d.topEcs?.length ? `<table class="dt">
@@ -1072,7 +1072,7 @@
           <div class="dash-card" style="border-color:#fca5a5">
             <div class="dash-card-hd" style="background:#fef2f2">
               <span class="dash-card-title" style="color:#dc2626"><i class="fas fa-exclamation-triangle" style="color:#ef4444"></i> Học viên cần gia hạn (${d.expiringStudents.length})</span>
-              <a href="pages/fee-warning.html" class="btn btn-sm btn-danger">Xem tất cả</a>
+              <a href="pages/renewals.html" class="btn btn-sm btn-danger">Xem tất cả</a>
             </div>
             <div class="dash-card-bd np">
               <table class="dt">
@@ -1168,7 +1168,7 @@
             <div class="dash-card">
               <div class="dash-card-hd">
                 <span class="dash-card-title"><i class="fas fa-trophy"></i> BXH EC</span>
-                <a href="pages/sale-reports.html" class="btn btn-sm btn-primary">Chi tiết</a>
+                <a href="pages/reports.html" class="btn btn-sm btn-primary">Chi tiết</a>
               </div>
               <div class="dash-card-bd np">
                 ${d.ecRanking?.length ? `<table class="dt">
@@ -1277,7 +1277,7 @@
             <div class="dash-card">
               <div class="dash-card-hd">
                 <span class="dash-card-title"><i class="fas fa-bullseye"></i> KPI tháng ${d.currentMonth}</span>
-                <a href="pages/my-kpi.html" class="btn btn-sm btn-primary">Chi tiết</a>
+                <a href="pages/reports.html" class="btn btn-sm btn-primary">Chi tiết</a>
               </div>
               <div class="dash-card-bd" style="display:flex;flex-direction:column;align-items:center;gap:12px">
                 <div style="position:relative;width:150px;height:150px">
@@ -1496,7 +1496,7 @@
             <div class="dash-card" style="border-color:#fde68a">
               <div class="dash-card-hd" style="background:#fffbeb">
                 <span class="dash-card-title" style="color:#b45309"><i class="fas fa-exclamation-triangle" style="color:#f59e0b"></i> Cần gia hạn (${d.expiringStudents.length})</span>
-                <a href="pages/fee-warning.html" class="btn btn-sm btn-warning">Xử lý</a>
+                <a href="pages/renewals.html" class="btn btn-sm btn-warning">Xử lý</a>
               </div>
               <div class="dash-card-bd np">
                 <table class="dt">
@@ -1595,7 +1595,7 @@
             <div class="dash-card" style="border-color:#fde68a">
               <div class="dash-card-hd" style="background:#fffbeb">
                 <span class="dash-card-title" style="color:#b45309"><i class="fas fa-exclamation-triangle" style="color:#f59e0b"></i> Cần gia hạn (${d.expiringStudents.length})</span>
-                <a href="pages/fee-warning.html" class="btn btn-sm btn-warning">Xử lý</a>
+                <a href="pages/renewals.html" class="btn btn-sm btn-warning">Xử lý</a>
               </div>
               <div class="dash-card-bd np">
                 <table class="dt">

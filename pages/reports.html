@@ -8,422 +8,238 @@
   <link rel="stylesheet" href="../css/style.css">
   <style>
     /* ── Layout ── */
-    .rp-layout {
-      display: flex;
-      height: calc(100vh - 64px);
-      overflow: hidden;
-      background: var(--bg-main);
-    }
+    .rp-layout { display:flex; height:calc(100vh - 72px); overflow:hidden; }
 
     /* ── Left Nav ── */
-    .rp-nav {
-      width: 210px;
-      flex-shrink: 0;
-      background: var(--bg-card);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-    .rp-nav-title {
-      padding: 16px 16px 8px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-    .rp-nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
-      font-size: 13.5px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      border-radius: 0;
-      border-left: 3px solid transparent;
-      transition: background 0.15s, color 0.15s;
-      user-select: none;
-    }
-    .rp-nav-item i { width: 16px; text-align: center; font-size: 14px; }
-    .rp-nav-item:hover { background: var(--bg-secondary); color: var(--primary); }
-    .rp-nav-item.active {
-      background: rgba(52,168,83,0.08);
-      color: var(--primary);
-      border-left-color: var(--primary);
-      font-weight: 600;
-    }
+    .rp-nav { width:210px; flex-shrink:0; background:var(--bg-card); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto; }
+    .rp-nav-title { padding:16px 16px 8px; font-size:10px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--text-muted); }
+    .rp-nav-item { display:flex; align-items:center; gap:10px; padding:10px 16px; font-size:13.5px; color:var(--text-secondary); cursor:pointer; border-left:3px solid transparent; transition:background .15s,color .15s; user-select:none; }
+    .rp-nav-item i { width:16px; text-align:center; }
+    .rp-nav-item:hover { background:var(--bg-secondary); color:var(--primary); }
+    .rp-nav-item.active { background:rgba(52,168,83,.08); color:var(--primary); border-left-color:var(--primary); font-weight:600; }
 
     /* ── Content ── */
-    .rp-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 28px 32px;
-    }
-    .rp-section { display: none; }
-    .rp-section.active { display: block; }
+    .rp-content { flex:1; overflow-y:auto; padding:24px 28px; }
+    .rp-section { display:none; }
+    .rp-section.active { display:block; }
 
-    /* ── Page heading ── */
-    .rp-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    .rp-heading h2 {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .rp-heading h2 i { color: var(--primary); }
-    .rp-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    /* ── Heading ── */
+    .rp-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:20px; }
+    .rp-heading h2 { font-size:20px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:10px; }
+    .rp-heading h2 i { color:var(--primary); }
+    .rp-toolbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 
     /* ── Stat cards ── */
-    .stat-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .stat-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px 20px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      box-shadow: var(--shadow);
-      transition: box-shadow 0.2s;
-    }
-    .stat-box:hover { box-shadow: var(--shadow-md); }
-    .stat-box.clickable { cursor: pointer; }
-    .stat-ico {
-      width: 46px; height: 46px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; flex-shrink: 0;
-    }
-    .stat-ico.blue   { background: #eff6ff; color: #2563eb; }
-    .stat-ico.green  { background: #f0fdf4; color: #16a34a; }
-    .stat-ico.yellow { background: #fffbeb; color: #d97706; }
-    .stat-ico.purple { background: #f5f3ff; color: #7c3aed; }
-    .stat-ico.red    { background: #fef2f2; color: #dc2626; }
-    .stat-ico.teal   { background: #f0fdfa; color: #0d9488; }
-    .stat-val { font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
-    .stat-lbl { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .stat-row { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:20px; }
+    .stat-box { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; display:flex; align-items:center; gap:12px; box-shadow:var(--shadow); transition:box-shadow .2s; }
+    .stat-box:hover { box-shadow:var(--shadow-md); }
+    .stat-box.clickable { cursor:pointer; }
+    .stat-box.clickable:hover { border-color:var(--primary); }
+    .stat-ico { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .stat-ico.blue   { background:#eff6ff; color:#2563eb; }
+    .stat-ico.green  { background:#f0fdf4; color:#16a34a; }
+    .stat-ico.yellow { background:#fffbeb; color:#d97706; }
+    .stat-ico.purple { background:#f5f3ff; color:#7c3aed; }
+    .stat-ico.teal   { background:#f0fdfa; color:#0d9488; }
+    .stat-ico.red    { background:#fef2f2; color:#dc2626; }
+    .stat-val { font-size:20px; font-weight:700; color:var(--text-primary); line-height:1.2; }
+    .stat-lbl { font-size:11.5px; color:var(--text-muted); margin-top:2px; }
+    .stat-hint { font-size:10px; color:var(--primary); margin-top:1px; }
 
     /* ── White card ── */
-    .wcard {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-    .wcard-head {
-      padding: 14px 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .wcard-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-primary);
-      display: flex; align-items: center; gap: 8px;
-    }
-    .wcard-title i { color: var(--primary); }
-    .wcard-body { padding: 20px; }
-    .wcard-body.no-pad { padding: 0; }
+    .wcard { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); margin-bottom:20px; overflow:hidden; }
+    .wcard-head { padding:13px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .wcard-title { font-size:13.5px; font-weight:600; color:var(--text-primary); display:flex; align-items:center; gap:8px; }
+    .wcard-title i { color:var(--primary); }
+    .wcard-body { padding:18px; }
+    .wcard-body.no-pad { padding:0; }
 
     /* ── Summary banner ── */
-    .sum-banner {
-      background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
-      border-radius: 12px;
-      padding: 20px 24px;
-      color: #fff;
-      margin-bottom: 20px;
-    }
-    .sum-banner-title {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      opacity: 0.85;
-      margin-bottom: 14px;
-    }
-    .sum-banner-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-      gap: 12px;
-    }
-    .sum-item {
-      background: rgba(255,255,255,0.15);
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-    }
-    .sum-val { font-size: 26px; font-weight: 800; line-height: 1; }
-    .sum-lbl { font-size: 11px; opacity: 0.8; margin-top: 4px; }
-    .sum-rates {
-      display: flex; gap: 24px; align-items: center;
-      margin-top: 14px; padding-top: 14px;
-      border-top: 1px solid rgba(255,255,255,0.25);
-    }
-    .sum-rate-val { font-size: 28px; font-weight: 800; }
-    .sum-rate-lbl { font-size: 12px; opacity: 0.8; }
+    .sum-banner { background:linear-gradient(135deg,var(--primary) 0%,#059669 100%); border-radius:12px; padding:18px 22px; color:#fff; margin-bottom:20px; }
+    .sum-banner-title { font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; opacity:.85; margin-bottom:12px; }
+    .sum-banner-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:10px; }
+    .sum-item { background:rgba(255,255,255,.15); border-radius:8px; padding:10px; text-align:center; }
+    .sum-val { font-size:24px; font-weight:800; line-height:1; }
+    .sum-lbl { font-size:11px; opacity:.8; margin-top:3px; }
+    .sum-rates { display:flex; gap:20px; align-items:center; margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,.25); }
+    .sum-rate-val { font-size:26px; font-weight:800; }
+    .sum-rate-lbl { font-size:12px; opacity:.8; }
 
-    /* ── Tabs (sale report) ── */
-    .tab-bar {
-      display: flex; gap: 2px;
-      padding: 10px 16px 0;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-card);
-    }
-    .tab-btn {
-      padding: 9px 16px; font-size: 13px; font-weight: 500;
-      border: none; background: none; cursor: pointer;
-      color: var(--text-secondary);
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: all 0.15s;
-    }
-    .tab-btn:hover { color: var(--primary); }
-    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
-    .tab-pane { display: none; padding: 20px; }
-    .tab-pane.active { display: block; }
+    /* ── Tabs ── */
+    .tab-bar { display:flex; gap:2px; padding:10px 16px 0; border-bottom:1px solid var(--border); background:var(--bg-card); flex-wrap:wrap; }
+    .tab-btn { padding:8px 14px; font-size:13px; font-weight:500; border:none; background:none; cursor:pointer; color:var(--text-secondary); border-bottom:2px solid transparent; margin-bottom:-1px; transition:all .15s; }
+    .tab-btn:hover { color:var(--primary); }
+    .tab-btn.active { color:var(--primary); border-bottom-color:var(--primary); font-weight:600; }
+    .tab-pane { display:none; padding:18px; }
+    .tab-pane.active { display:block; }
 
     /* ── Period + date nav ── */
-    .period-bar {
-      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .period-tabs {
-      display: flex; background: var(--bg-secondary);
-      border-radius: 8px; padding: 3px; gap: 2px;
-    }
-    .period-tab {
-      padding: 7px 14px; border: none; background: none;
-      border-radius: 6px; font-size: 13px; font-weight: 500;
-      color: var(--text-secondary); cursor: pointer; transition: all 0.15s;
-    }
-    .period-tab.active { background: var(--bg-card); color: var(--primary); font-weight: 600; box-shadow: var(--shadow); }
-    .date-nav { display: flex; align-items: center; gap: 6px; }
-    .date-nav-btn {
-      width: 32px; height: 32px; border: 1px solid var(--border);
-      background: var(--bg-card); border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 12px; color: var(--text-secondary);
-      transition: all 0.15s;
-    }
-    .date-nav-btn:hover { border-color: var(--primary); color: var(--primary); }
-    .date-label {
-      font-size: 13.5px; font-weight: 600; color: var(--text-primary);
-      min-width: 200px; text-align: center;
-    }
+    .period-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+    .period-tabs { display:flex; background:var(--bg-secondary); border-radius:8px; padding:3px; gap:2px; }
+    .period-tab { padding:6px 13px; border:none; background:none; border-radius:6px; font-size:13px; font-weight:500; color:var(--text-secondary); cursor:pointer; transition:all .15s; }
+    .period-tab.active { background:var(--bg-card); color:var(--primary); font-weight:600; box-shadow:var(--shadow); }
+    .date-nav { display:flex; align-items:center; gap:6px; }
+    .date-nav-btn { width:32px; height:32px; border:1px solid var(--border); background:var(--bg-card); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:12px; color:var(--text-secondary); transition:all .15s; }
+    .date-nav-btn:hover { border-color:var(--primary); color:var(--primary); }
+    .date-label { font-size:13.5px; font-weight:600; color:var(--text-primary); min-width:180px; text-align:center; }
 
-    /* ── Filters row ── */
-    .filter-row {
-      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
-      margin-bottom: 16px;
-    }
-    .filter-row select, .filter-row input {
-      height: 36px; padding: 0 12px;
-      border: 1px solid var(--border); border-radius: 8px;
-      background: var(--bg-card); color: var(--text-primary);
-      font-size: 13px; outline: none;
-    }
-    .filter-row select:focus, .filter-row input:focus { border-color: var(--primary); }
-    .search-wrap {
-      flex: 1; min-width: 180px;
-      display: flex; align-items: center; gap: 8px;
-      border: 1px solid var(--border); border-radius: 8px;
-      background: var(--bg-card); padding: 0 10px; height: 36px;
-    }
-    .search-wrap i { color: var(--text-muted); font-size: 13px; }
-    .search-wrap input { border: none; background: none; outline: none; flex: 1; font-size: 13px; color: var(--text-primary); }
+    /* ── Filters ── */
+    .filter-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+    .filter-row select, .filter-row input { height:36px; padding:0 10px; border:1px solid var(--border); border-radius:8px; background:var(--bg-card); color:var(--text-primary); font-size:13px; outline:none; }
+    .filter-row select:focus, .filter-row input:focus { border-color:var(--primary); }
+    .search-wrap { flex:1; min-width:160px; display:flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:8px; background:var(--bg-card); padding:0 10px; height:36px; }
+    .search-wrap i { color:var(--text-muted); font-size:13px; }
+    .search-wrap input { border:none; background:none; outline:none; flex:1; font-size:13px; color:var(--text-primary); }
 
     /* ── Table ── */
-    .rp-table { width: 100%; border-collapse: collapse; }
-    .rp-table th {
-      background: var(--bg-secondary); padding: 11px 14px;
-      font-size: 12px; font-weight: 600; color: var(--text-muted);
-      text-align: left; border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-    .rp-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
-    .rp-table tr:last-child td { border-bottom: none; }
-    .rp-table tbody tr:hover { background: var(--bg-secondary); }
-    .rp-table tfoot td { background: var(--bg-secondary); font-weight: 600; padding: 11px 14px; }
+    .rp-table { width:100%; border-collapse:collapse; }
+    .rp-table th { background:var(--bg-secondary); padding:10px 13px; font-size:11.5px; font-weight:600; color:var(--text-muted); text-align:left; border-bottom:1px solid var(--border); white-space:nowrap; }
+    .rp-table td { padding:11px 13px; border-bottom:1px solid var(--border); font-size:13.5px; }
+    .rp-table tr:last-child td { border-bottom:none; }
+    .rp-table tbody tr:hover { background:var(--bg-secondary); }
+    .rp-table tfoot td { background:var(--bg-secondary); font-weight:600; padding:10px 13px; border-top:2px solid var(--border); }
+    .text-right { text-align:right; }
+    .text-center { text-align:center; }
 
-    /* ── Badges ── */
-    .badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
-    .badge-gray { background: var(--bg-secondary); color: var(--text-secondary); }
-    .badge-green { background: #f0fdf4; color: #16a34a; }
-    .badge-yellow { background: #fffbeb; color: #d97706; }
-    .badge-red { background: #fef2f2; color: #dc2626; }
-    .badge-blue { background: #eff6ff; color: #2563eb; }
-    .badge-teal { background: #f0fdfa; color: #0d9488; }
+    /* ── Badges & Pills ── */
+    .badge { display:inline-flex; align-items:center; padding:2px 8px; border-radius:20px; font-size:11.5px; font-weight:600; }
+    .badge-gray   { background:var(--bg-secondary); color:var(--text-secondary); }
+    .badge-green  { background:#f0fdf4; color:#16a34a; }
+    .badge-yellow { background:#fffbeb; color:#d97706; }
+    .badge-red    { background:#fef2f2; color:#dc2626; }
+    .badge-blue   { background:#eff6ff; color:#2563eb; }
+    .badge-teal   { background:#f0fdfa; color:#0d9488; }
+    .kpi-pill { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:700; }
+    .kpi-pill.high { background:#f0fdf4; color:#16a34a; }
+    .kpi-pill.mid  { background:#fffbeb; color:#d97706; }
+    .kpi-pill.low  { background:#fef2f2; color:#dc2626; }
+    .rank-dot { width:26px; height:26px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+    .rank-dot.r1 { background:linear-gradient(135deg,#fbbf24,#f59e0b); color:#fff; }
+    .rank-dot.r2 { background:linear-gradient(135deg,#94a3b8,#64748b); color:#fff; }
+    .rank-dot.r3 { background:linear-gradient(135deg,#f97316,#ea580c); color:#fff; }
+    .rank-dot.rn { background:var(--bg-secondary); color:var(--text-muted); }
+    .status-pill { display:inline-flex; align-items:center; padding:3px 9px; border-radius:20px; font-size:11.5px; font-weight:600; }
+    .status-pill.attended  { background:#f0fdf4; color:#16a34a; }
+    .status-pill.converted { background:#eff6ff; color:#2563eb; }
+    .status-pill.waiting   { background:#fffbeb; color:#d97706; }
+    .status-pill.cancelled { background:#fef2f2; color:#dc2626; }
+    .time-pill { display:inline-flex; align-items:center; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:500; }
+    .time-pill.on-time { background:#f0fdf4; color:#16a34a; }
+    .time-pill.late    { background:#fffbeb; color:#d97706; }
+    .time-pill.absent  { background:#fef2f2; color:#dc2626; }
+    .hours-pill { display:inline-flex; align-items:center; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+    .hours-pill.full    { background:#f0fdf4; color:#16a34a; }
+    .hours-pill.partial { background:#fffbeb; color:#d97706; }
+    .hours-pill.low     { background:#fef2f2; color:#dc2626; }
+    .src-tag  { background:var(--bg-secondary); border-radius:4px; padding:2px 7px; font-size:11px; }
+    .role-tag { background:var(--bg-secondary); border-radius:4px; padding:2px 7px; font-size:11px; }
 
-    .kpi-pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-    .kpi-pill.high { background: #f0fdf4; color: #16a34a; }
-    .kpi-pill.mid  { background: #fffbeb; color: #d97706; }
-    .kpi-pill.low  { background: #fef2f2; color: #dc2626; }
+    /* ── Ranking ── */
+    .rank-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .rank-label { font-size:13px; font-weight:600; color:var(--text-secondary); margin-bottom:10px; display:flex; align-items:center; gap:6px; }
 
-    .rank-dot { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
-    .rank-dot.r1 { background: linear-gradient(135deg,#fbbf24,#f59e0b); color: #fff; }
-    .rank-dot.r2 { background: linear-gradient(135deg,#94a3b8,#64748b); color: #fff; }
-    .rank-dot.r3 { background: linear-gradient(135deg,#f97316,#ea580c); color: #fff; }
-    .rank-dot.rn { background: var(--bg-secondary); color: var(--text-muted); }
-
-    .status-pill { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
-    .status-pill.attended  { background: #f0fdf4; color: #16a34a; }
-    .status-pill.converted { background: #eff6ff; color: #2563eb; }
-    .status-pill.waiting   { background: #fffbeb; color: #d97706; }
-    .status-pill.cancelled { background: #fef2f2; color: #dc2626; }
-
-    .time-pill { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 500; }
-    .time-pill.on-time { background: #f0fdf4; color: #16a34a; }
-    .time-pill.late    { background: #fffbeb; color: #d97706; }
-    .time-pill.absent  { background: #fef2f2; color: #dc2626; }
-    .hours-pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-    .hours-pill.full    { background: #f0fdf4; color: #16a34a; }
-    .hours-pill.partial { background: #fffbeb; color: #d97706; }
-    .hours-pill.low     { background: #fef2f2; color: #dc2626; }
-    .src-tag { background: var(--bg-secondary); border-radius: 4px; padding: 2px 7px; font-size: 11px; }
-    .role-tag { background: var(--bg-secondary); border-radius: 4px; padding: 2px 7px; font-size: 11px; }
-
-    /* ── Ranking grid ── */
-    .rank-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .rank-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-
-    /* ── Team card ── */
-    .team-card { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; background: var(--bg-card); }
-    .team-hd { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.15s; }
-    .team-hd:hover { background: var(--bg-secondary); }
-    .team-who { display: flex; align-items: center; gap: 12px; }
-    .team-ava { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; }
-    .team-ava.gdv  { background: linear-gradient(135deg,#dc2626,#b91c1c); }
-    .team-ava.bm   { background: linear-gradient(135deg,#7c3aed,#6d28d9); }
-    .team-ava.hoec { background: linear-gradient(135deg,#2563eb,#1d4ed8); }
-    .team-ava.ec   { background: linear-gradient(135deg,#16a34a,#15803d); }
-    .team-name { font-weight: 600; font-size: 14px; color: var(--text-primary); }
-    .team-role { font-size: 11.5px; color: var(--text-muted); }
-    .team-nums { display: flex; gap: 20px; align-items: center; }
-    .team-num-val { font-weight: 700; font-size: 15px; text-align: right; color: var(--text-primary); }
-    .team-num-val.green { color: #16a34a; }
-    .team-num-lbl { font-size: 10px; color: var(--text-muted); text-align: right; }
-    .team-chevron { color: var(--text-muted); font-size: 12px; margin-left: 8px; transition: transform 0.2s; }
-    .team-members { border-top: 1px solid var(--border); background: var(--bg-secondary); }
-    .team-members.collapsed { display: none; }
-    .member-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; border-bottom: 1px solid var(--border); }
-    .member-row:last-child { border-bottom: none; }
-    .member-row:hover { background: var(--bg-card); }
-    .member-who { display: flex; align-items: center; gap: 9px; }
-    .member-ava { width: 30px; height: 30px; border-radius: 6px; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text-secondary); }
-    .member-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
-    .member-branch { font-size: 11px; color: var(--text-muted); }
-    .member-stats { display: flex; gap: 14px; }
-    .member-stat { text-align: right; min-width: 70px; }
-    .member-stat-val { font-size: 12.5px; font-weight: 600; color: var(--text-primary); }
-    .member-stat-lbl { font-size: 10px; color: var(--text-muted); }
-    .sub-team { margin-left: 20px; border-left: 2px solid var(--border); }
+    /* ── Team ── */
+    .team-card { border:1px solid var(--border); border-radius:10px; margin-bottom:10px; overflow:hidden; background:var(--bg-card); }
+    .team-hd { padding:13px 16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:background .15s; }
+    .team-hd:hover { background:var(--bg-secondary); }
+    .team-who { display:flex; align-items:center; gap:10px; }
+    .team-ava { width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; color:#fff; flex-shrink:0; }
+    .team-ava.gdv  { background:linear-gradient(135deg,#dc2626,#b91c1c); }
+    .team-ava.bm   { background:linear-gradient(135deg,#7c3aed,#6d28d9); }
+    .team-ava.hoec { background:linear-gradient(135deg,#2563eb,#1d4ed8); }
+    .team-ava.ec   { background:linear-gradient(135deg,#16a34a,#15803d); }
+    .team-name { font-weight:600; font-size:14px; color:var(--text-primary); }
+    .team-role { font-size:11.5px; color:var(--text-muted); }
+    .team-nums { display:flex; gap:18px; align-items:center; }
+    .team-num-val { font-weight:700; font-size:14px; text-align:right; color:var(--text-primary); }
+    .team-num-val.green { color:#16a34a; }
+    .team-num-lbl { font-size:10px; color:var(--text-muted); text-align:right; }
+    .team-chevron { color:var(--text-muted); font-size:11px; margin-left:6px; transition:transform .2s; }
+    .team-members { border-top:1px solid var(--border); background:var(--bg-secondary); }
+    .team-members.collapsed { display:none; }
+    .member-row { display:flex; justify-content:space-between; align-items:center; padding:9px 16px; border-bottom:1px solid var(--border); }
+    .member-row:last-child { border-bottom:none; }
+    .member-row:hover { background:var(--bg-card); }
+    .member-who { display:flex; align-items:center; gap:9px; }
+    .member-ava { width:28px; height:28px; border-radius:6px; background:var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:var(--text-secondary); }
+    .member-name { font-size:13px; font-weight:500; color:var(--text-primary); }
+    .member-branch { font-size:11px; color:var(--text-muted); }
+    .member-stats { display:flex; gap:14px; }
+    .member-stat { text-align:right; min-width:65px; }
+    .member-stat-val { font-size:12.5px; font-weight:600; color:var(--text-primary); }
+    .member-stat-lbl { font-size:10px; color:var(--text-muted); }
+    .sub-team { margin-left:16px; border-left:2px solid var(--border); }
 
     /* ── KPI Hero ── */
-    .kpi-hero {
-      background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
-      border-radius: 14px; padding: 28px;
-      color: #fff; margin-bottom: 20px;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
-    }
-    .kpi-main { background: rgba(255,255,255,0.15); border-radius: 10px; padding: 20px; text-align: center; }
-    .kpi-pct { font-size: 52px; font-weight: 800; line-height: 1; }
-    .kpi-sublabel { font-size: 13px; opacity: 0.85; margin-top: 4px; }
-    .kpi-bar-wrap { background: rgba(255,255,255,0.25); border-radius: 8px; height: 20px; overflow: hidden; margin: 16px 0; }
-    .kpi-bar { height: 100%; background: #fff; border-radius: 8px; transition: width 0.5s ease; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 11px; font-weight: 700; }
-    .kpi-amounts { display: flex; justify-content: space-around; margin-top: 12px; }
-    .kpi-amt-val { font-size: 18px; font-weight: 700; }
-    .kpi-amt-lbl { font-size: 11px; opacity: 0.8; }
-    .kpi-ranks { display: flex; align-items: center; justify-content: center; gap: 24px; padding: 16px; }
-    .kpi-rank-box { background: rgba(255,255,255,0.15); border-radius: 10px; padding: 18px 28px; text-align: center; }
-    .kpi-rank-ico { font-size: 28px; margin-bottom: 6px; }
-    .kpi-rank-ico.gold   { color: #fbbf24; }
-    .kpi-rank-ico.silver { color: #e2e8f0; }
-    .kpi-rank-ico.bronze { color: #f59e0b; }
-    .kpi-rank-num { font-size: 32px; font-weight: 800; }
-    .kpi-rank-lbl { font-size: 11px; opacity: 0.8; }
+    .kpi-hero { background:linear-gradient(135deg,var(--primary) 0%,#059669 100%); border-radius:14px; padding:24px; color:#fff; margin-bottom:20px; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .kpi-main { background:rgba(255,255,255,.15); border-radius:10px; padding:18px; text-align:center; }
+    .kpi-pct { font-size:52px; font-weight:800; line-height:1; }
+    .kpi-sublabel { font-size:13px; opacity:.85; margin-top:4px; }
+    .kpi-bar-wrap { background:rgba(255,255,255,.25); border-radius:8px; height:18px; overflow:hidden; margin:14px 0; }
+    .kpi-bar { height:100%; background:#fff; border-radius:8px; transition:width .5s ease; display:flex; align-items:center; justify-content:center; color:var(--primary); font-size:11px; font-weight:700; }
+    .kpi-amounts { display:flex; justify-content:space-around; margin-top:10px; }
+    .kpi-amt-val { font-size:16px; font-weight:700; }
+    .kpi-amt-lbl { font-size:11px; opacity:.8; }
+    .kpi-ranks { display:flex; align-items:center; justify-content:center; gap:20px; padding:14px; }
+    .kpi-rank-box { background:rgba(255,255,255,.15); border-radius:10px; padding:16px 24px; text-align:center; }
+    .kpi-rank-ico { font-size:26px; margin-bottom:6px; }
+    .kpi-rank-ico.gold   { color:#fbbf24; }
+    .kpi-rank-ico.silver { color:#e2e8f0; }
+    .kpi-rank-ico.bronze { color:#f59e0b; }
+    .kpi-rank-num { font-size:30px; font-weight:800; }
+    .kpi-rank-lbl { font-size:11px; opacity:.8; }
 
     /* ── Quick stats (my-kpi) ── */
-    .quick-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
-    .quick-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; display: flex; align-items: center; gap: 12px; }
-    .quick-ico { width: 44px; height: 44px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-    .quick-val { font-size: 18px; font-weight: 700; color: var(--text-primary); }
-    .quick-lbl { font-size: 12px; color: var(--text-muted); }
+    .quick-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
+    .quick-box { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:14px; display:flex; align-items:center; gap:10px; }
+    .quick-ico { width:40px; height:40px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+    .quick-val { font-size:17px; font-weight:700; color:var(--text-primary); }
+    .quick-lbl { font-size:11.5px; color:var(--text-muted); }
 
     /* ── Data cards ── */
-    .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .data-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-    .data-card-title { padding: 13px 16px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
-    .data-card-title i { color: var(--primary); }
-    .data-card-body { max-height: 280px; overflow-y: auto; }
-    .data-card-body table { width: 100%; border-collapse: collapse; }
-    .data-card-body th { background: var(--bg-secondary); padding: 9px 14px; font-size: 11px; text-transform: uppercase; font-weight: 600; color: var(--text-muted); text-align: left; position: sticky; top: 0; }
-    .data-card-body td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid var(--border); }
-    .data-card-body tr:last-child td { border-bottom: none; }
-    .data-card-body tr:hover { background: var(--bg-secondary); }
+    .data-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .data-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .data-card-title { padding:12px 14px; font-size:13px; font-weight:600; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
+    .data-card-title i { color:var(--primary); }
+    .data-card-body { max-height:280px; overflow-y:auto; }
+    .data-card-body table { width:100%; border-collapse:collapse; }
+    .data-card-body th { background:var(--bg-secondary); padding:8px 12px; font-size:11px; text-transform:uppercase; font-weight:600; color:var(--text-muted); text-align:left; position:sticky; top:0; }
+    .data-card-body td { padding:11px 12px; font-size:13px; border-bottom:1px solid var(--border); }
+    .data-card-body tr:last-child td { border-bottom:none; }
+    .data-card-body tr:hover { background:var(--bg-secondary); }
 
-    /* ── Pagination (modals) ── */
-    .pg-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 0; font-size: 13px; color: var(--text-muted); }
-    .pg-bar button { padding: 5px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-card); cursor: pointer; font-size: 13px; }
-    .pg-bar button:disabled { opacity: 0.4; cursor: default; }
+    /* ── Pagination ── */
+    .pg-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 0 0; font-size:13px; color:var(--text-muted); }
+    .pg-bar button { padding:5px 12px; border:1px solid var(--border); border-radius:6px; background:var(--bg-card); cursor:pointer; font-size:13px; }
+    .pg-bar button:disabled { opacity:.4; cursor:default; }
 
-    /* ── User / Lead cells ── */
-    .person-cell { display: flex; align-items: center; gap: 10px; }
-    .person-ava { width: 34px; height: 34px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; flex-shrink: 0; }
-    .person-name { font-weight: 600; font-size: 13.5px; }
-    .person-sub { font-size: 11.5px; color: var(--text-muted); }
+    /* ── Person cell ── */
+    .person-cell { display:flex; align-items:center; gap:10px; }
+    .person-ava { width:32px; height:32px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px; flex-shrink:0; }
+    .person-name { font-weight:600; font-size:13.5px; }
+    .person-sub { font-size:11.5px; color:var(--text-muted); }
 
     /* responsive */
-    @media (max-width: 1100px) {
-      .stat-row, .quick-row { grid-template-columns: repeat(2, 1fr); }
-      .kpi-hero, .data-grid, .rank-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 768px) {
-      .rp-nav { display: none; }
-      .kpi-ranks { flex-direction: column; }
-    }
+    @media (max-width:1200px) { .stat-row { grid-template-columns:repeat(3,1fr); } }
+    @media (max-width:1000px) { .stat-row,.quick-row { grid-template-columns:repeat(2,1fr); } .kpi-hero,.data-grid,.rank-grid { grid-template-columns:1fr; } }
+    @media (max-width:768px)  { .rp-nav { display:none; } .kpi-ranks { flex-direction:column; } }
   </style>
 </head>
 <body>
 <div class="app-container">
   <aside class="sidebar" id="sidebar"></aside>
   <main class="main-content">
-    <header class="header">
-      <div class="header-left">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
         <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
-        <h1 class="page-title"><i class="fas fa-chart-pie"></i> Báo cáo & KPI</h1>
+        <h1><i class="fas fa-chart-pie"></i> Báo cáo & KPI</h1>
       </div>
-      <div class="header-right">
+      <div class="topbar-right">
         <button class="btn btn-icon" onclick="theme.toggle()" title="Đổi theme"><i class="fas fa-moon"></i></button>
-        <div class="user-menu">
-          <div class="user-avatar" id="userAvatar">U</div>
-          <div class="user-info">
-            <span class="user-name" id="userName">User</span>
-            <span class="user-role" id="userRole">Role</span>
-          </div>
-        </div>
       </div>
-    </header>
+    </div>
 
     <div class="rp-layout">
       <!-- ── Left nav ── -->
@@ -439,50 +255,116 @@
           <div class="rp-heading">
             <h2><i class="fas fa-chart-line"></i> Báo cáo Sale</h2>
             <div class="rp-toolbar">
-              <input type="month" id="saleMonth" class="form-control" style="width:150px">
-              <select id="saleBranch" class="form-control" style="width:170px"><option value="">Tất cả cơ sở</option></select>
-              <button class="btn btn-secondary btn-sm" onclick="loadSaleData()"><i class="fas fa-sync"></i></button>
+              <input type="month" id="saleMonth" class="form-control" style="width:145px">
+              <select id="saleBranch" class="form-control" style="width:160px"><option value="">Tất cả cơ sở</option></select>
+              <button class="btn btn-secondary btn-sm" onclick="loadSale()"><i class="fas fa-sync"></i></button>
             </div>
           </div>
 
+          <!-- 5 stat cards -->
           <div class="stat-row">
-            <div class="stat-box"><div class="stat-ico blue"><i class="fas fa-user-check"></i></div><div><div class="stat-val" id="saleTotalCheckin">0</div><div class="stat-lbl">Checkin</div></div></div>
-            <div class="stat-box clickable" onclick="showFullPaidList()" title="Xem danh sách đã đóng đủ"><div class="stat-ico green"><i class="fas fa-money-bill-wave"></i></div><div><div class="stat-val" id="saleTotalRevenue">0đ</div><div class="stat-lbl">Doanh số <i class="fas fa-arrow-up-right-from-square" style="font-size:9px;opacity:.6"></i></div></div></div>
-            <div class="stat-box"><div class="stat-ico yellow"><i class="fas fa-hand-holding-usd"></i></div><div><div class="stat-val" id="saleTotalDeposit">0đ</div><div class="stat-lbl">Cọc</div></div></div>
-            <div class="stat-box clickable" onclick="showExpectedList()" title="Xem dự thu"><div class="stat-ico purple"><i class="fas fa-clock"></i></div><div><div class="stat-val" id="saleTotalExpected">0đ</div><div class="stat-lbl">Dự thu <i class="fas fa-arrow-up-right-from-square" style="font-size:9px;opacity:.6"></i></div></div></div>
+            <div class="stat-box">
+              <div class="stat-ico blue"><i class="fas fa-user-check"></i></div>
+              <div><div class="stat-val" id="saleTotalCheckin">0</div><div class="stat-lbl">Checkin leads</div></div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-ico teal"><i class="fas fa-user-graduate"></i></div>
+              <div><div class="stat-val" id="saleTotalConverted">0</div><div class="stat-lbl">Đã chốt (converted)</div></div>
+            </div>
+            <div class="stat-box clickable" onclick="showFullPaidList()" title="Xem danh sách">
+              <div class="stat-ico green"><i class="fas fa-money-bill-wave"></i></div>
+              <div>
+                <div class="stat-val" id="saleTotalRevenue">0đ</div>
+                <div class="stat-lbl">Doanh số (đã đóng)</div>
+                <div class="stat-hint"><i class="fas fa-arrow-up-right-from-square" style="font-size:9px"></i> Xem DS đóng đủ</div>
+              </div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-ico yellow"><i class="fas fa-hand-holding-usd"></i></div>
+              <div><div class="stat-val" id="saleTotalDeposit">0đ</div><div class="stat-lbl">Cọc (chưa đóng đủ)</div></div>
+            </div>
+            <div class="stat-box clickable" onclick="showExpectedList()" title="Xem danh sách">
+              <div class="stat-ico purple"><i class="fas fa-clock"></i></div>
+              <div>
+                <div class="stat-val" id="saleTotalExpected">0đ</div>
+                <div class="stat-lbl">Dự thu (còn nợ)</div>
+                <div class="stat-hint"><i class="fas fa-arrow-up-right-from-square" style="font-size:9px"></i> Xem DS còn nợ</div>
+              </div>
+            </div>
           </div>
 
           <div class="wcard">
             <div class="tab-bar" id="saleTabs">
               <button class="tab-btn active" data-tab="sale-ranking"><i class="fas fa-trophy"></i> Bảng xếp hạng</button>
-              <button class="tab-btn" data-tab="sale-team"><i class="fas fa-users"></i> Theo Team</button>
               <button class="tab-btn" data-tab="sale-detail"><i class="fas fa-table"></i> Chi tiết EC</button>
               <button class="tab-btn" data-tab="sale-branch"><i class="fas fa-building"></i> Theo cơ sở</button>
+              <button class="tab-btn" data-tab="sale-team"><i class="fas fa-users"></i> Theo Team</button>
             </div>
+
+            <!-- Tab: Ranking -->
             <div class="tab-pane active" id="tab-sale-ranking">
               <div class="rank-grid">
                 <div>
                   <div class="rank-label"><i class="fas fa-medal" style="color:#d97706"></i> BXH theo Doanh số</div>
-                  <table class="rp-table"><thead><tr><th style="width:40px">#</th><th>EC</th><th>Cơ sở</th><th class="text-right">Doanh số</th><th class="text-center">KPI</th></tr></thead>
-                  <tbody id="saleRankRev"><tr><td colspan="5" class="text-center text-muted" style="padding:24px">Đang tải...</td></tr></tbody></table>
+                  <table class="rp-table">
+                    <thead><tr><th style="width:36px">#</th><th>EC</th><th>Cơ sở</th><th class="text-right">Doanh số</th><th class="text-center">KPI%</th></tr></thead>
+                    <tbody id="saleRankRev"><tr><td colspan="5" class="text-center" style="padding:24px;color:var(--text-muted)">Đang tải...</td></tr></tbody>
+                  </table>
                 </div>
                 <div>
                   <div class="rank-label"><i class="fas fa-bullseye" style="color:#7c3aed"></i> BXH theo KPI %</div>
-                  <table class="rp-table"><thead><tr><th style="width:40px">#</th><th>EC</th><th>Cơ sở</th><th class="text-center">KPI%</th><th class="text-right">Doanh số</th></tr></thead>
-                  <tbody id="saleRankKpi"><tr><td colspan="5" class="text-center text-muted" style="padding:24px">Đang tải...</td></tr></tbody></table>
+                  <table class="rp-table">
+                    <thead><tr><th style="width:36px">#</th><th>EC</th><th>Cơ sở</th><th class="text-center">KPI%</th><th class="text-right">Doanh số</th></tr></thead>
+                    <tbody id="saleRankKpi"><tr><td colspan="5" class="text-center" style="padding:24px;color:var(--text-muted)">Đang tải...</td></tr></tbody>
+                  </table>
                 </div>
               </div>
             </div>
-            <div class="tab-pane" id="tab-sale-team">
-              <div id="saleTeamWrap"><div class="text-center text-muted" style="padding:40px">Đang tải...</div></div>
-            </div>
+
+            <!-- Tab: Chi tiết EC -->
             <div class="tab-pane" id="tab-sale-detail">
-              <table class="rp-table"><thead><tr><th>EC</th><th>Cơ sở</th><th class="text-center">Checkin</th><th class="text-center">Converted</th><th class="text-right">Doanh số</th><th class="text-right">Cọc</th><th class="text-right">Dự thu</th><th class="text-center">KPI%</th></tr></thead>
-              <tbody id="saleDetail"><tr><td colspan="8" class="text-center text-muted" style="padding:24px">Đang tải...</td></tr></tbody></table>
+              <div style="overflow-x:auto">
+                <table class="rp-table">
+                  <thead>
+                    <tr>
+                      <th>EC</th><th>Cơ sở</th>
+                      <th class="text-center">Checkin</th>
+                      <th class="text-center">Chốt</th>
+                      <th class="text-right">Doanh số</th>
+                      <th class="text-right">Cọc</th>
+                      <th class="text-right">Còn nợ</th>
+                      <th class="text-center">KPI%</th>
+                    </tr>
+                  </thead>
+                  <tbody id="saleDetail"><tr><td colspan="8" class="text-center" style="padding:24px;color:var(--text-muted)">Đang tải...</td></tr></tbody>
+                  <tfoot id="saleDetailFoot"></tfoot>
+                </table>
+              </div>
             </div>
+
+            <!-- Tab: Theo cơ sở -->
             <div class="tab-pane" id="tab-sale-branch">
-              <table class="rp-table"><thead><tr><th>Cơ sở</th><th class="text-center">EC</th><th class="text-right">Doanh số</th><th class="text-right">Cọc</th><th class="text-right">Dự thu</th><th class="text-right">Tổng</th></tr></thead>
-              <tbody id="saleBranchTb"><tr><td colspan="6" class="text-center text-muted" style="padding:24px">Đang tải...</td></tr></tbody></table>
+              <div style="overflow-x:auto">
+                <table class="rp-table">
+                  <thead>
+                    <tr>
+                      <th>Cơ sở</th>
+                      <th class="text-center">Số EC</th>
+                      <th class="text-right">Doanh số</th>
+                      <th class="text-right">Cọc</th>
+                      <th class="text-right">Còn nợ</th>
+                      <th class="text-right">Tổng HP</th>
+                    </tr>
+                  </thead>
+                  <tbody id="saleBranchTb"><tr><td colspan="6" class="text-center" style="padding:24px;color:var(--text-muted)">Đang tải...</td></tr></tbody>
+                  <tfoot id="saleBranchFoot"></tfoot>
+                </table>
+              </div>
+            </div>
+
+            <!-- Tab: Team -->
+            <div class="tab-pane" id="tab-sale-team">
+              <div id="saleTeamWrap"><div class="text-center" style="padding:40px;color:var(--text-muted)">Đang tải...</div></div>
             </div>
           </div>
         </div>
@@ -538,7 +420,7 @@
             </div>
             <div class="sum-rates">
               <div><div class="sum-rate-val" id="trialConvRate">0%</div><div class="sum-rate-lbl">Tỷ lệ chuyển đổi</div></div>
-              <div style="width:1px;background:rgba(255,255,255,0.3);height:36px"></div>
+              <div style="width:1px;background:rgba(255,255,255,.3);height:36px"></div>
               <div><div class="sum-rate-val" id="trialAttRate">0%</div><div class="sum-rate-lbl">Tỷ lệ đến TN</div></div>
             </div>
           </div>
@@ -546,11 +428,11 @@
             <div style="overflow-x:auto">
               <table class="rp-table">
                 <thead><tr><th>Học sinh / Phụ huynh</th><th>Nguồn</th><th>Cơ sở</th><th>Ngày hẹn</th><th>Ngày đến</th><th>Trạng thái</th><th>EC</th><th>Ghi chú</th></tr></thead>
-                <tbody id="trialTb"><tr><td colspan="8" class="text-center text-muted" style="padding:32px">Đang tải...</td></tr></tbody>
+                <tbody id="trialTb"><tr><td colspan="8" class="text-center" style="padding:32px;color:var(--text-muted)">Đang tải...</td></tr></tbody>
               </table>
             </div>
           </div>
-          <div id="trialPg" style="margin-top:12px"></div>
+          <div id="trialPg" style="margin-top:10px"></div>
         </div>
 
         <!-- ══════════ CHECKIN ══════════ -->
@@ -598,11 +480,11 @@
             <div style="overflow-x:auto">
               <table class="rp-table">
                 <thead><tr><th>Nhân viên</th><th>Vai trò</th><th>Cơ sở</th><th>Ngày</th><th class="text-center">Vào</th><th class="text-center">Ra</th><th class="text-center">Số giờ</th><th class="text-center">Trạng thái</th><th>Ghi chú</th></tr></thead>
-                <tbody id="checkinTb"><tr><td colspan="9" class="text-center text-muted" style="padding:32px">Đang tải...</td></tr></tbody>
+                <tbody id="checkinTb"><tr><td colspan="9" class="text-center" style="padding:32px;color:var(--text-muted)">Đang tải...</td></tr></tbody>
               </table>
             </div>
           </div>
-          <div id="checkinPg" style="margin-top:12px"></div>
+          <div id="checkinPg" style="margin-top:10px"></div>
         </div>
 
         <!-- ══════════ KPI ══════════ -->
@@ -610,12 +492,12 @@
           <div class="rp-heading">
             <h2><i class="fas fa-bullseye"></i> Quản lý KPI</h2>
             <div class="rp-toolbar">
-              <input type="month" id="kpiMonth" class="form-control" style="width:150px">
-              <select id="kpiBranch" class="form-control" style="width:170px"><option value="">Tất cả cơ sở</option></select>
+              <input type="month" id="kpiMonth" class="form-control" style="width:145px">
+              <select id="kpiBranch" class="form-control" style="width:160px"><option value="">Tất cả cơ sở</option></select>
               <button class="btn btn-primary btn-sm" onclick="openBulkModal()"><i class="fas fa-plus"></i> Set hàng loạt</button>
             </div>
           </div>
-          <div class="stat-row">
+          <div class="stat-row" style="grid-template-columns:repeat(4,1fr)">
             <div class="stat-box"><div class="stat-ico blue"><i class="fas fa-users"></i></div><div><div class="stat-val" id="kpiTotalEc">0</div><div class="stat-lbl">Tổng EC</div></div></div>
             <div class="stat-box"><div class="stat-ico green"><i class="fas fa-check-circle"></i></div><div><div class="stat-val" id="kpiHas">0</div><div class="stat-lbl">Đã có KPI</div></div></div>
             <div class="stat-box"><div class="stat-ico yellow"><i class="fas fa-exclamation-circle"></i></div><div><div class="stat-val" id="kpiMiss">0</div><div class="stat-lbl">Chưa có KPI</div></div></div>
@@ -624,15 +506,21 @@
           <div class="wcard">
             <div class="wcard-head"><span class="wcard-title"><i class="fas fa-list"></i> KPI tháng <span id="kpiMonthLbl"></span></span></div>
             <div class="wcard-body no-pad">
-              <table class="rp-table"><thead><tr><th>EC</th><th>Cơ sở</th><th class="text-right">KPI Doanh số</th><th class="text-center">Checkin</th><th class="text-center">Converted</th><th class="text-center">Thao tác</th></tr></thead>
-              <tbody id="kpiTb"><tr><td colspan="6" class="text-center text-muted" style="padding:32px">Đang tải...</td></tr></tbody></table>
+              <table class="rp-table">
+                <thead><tr><th>EC</th><th>Cơ sở</th><th class="text-right">KPI Doanh số</th><th class="text-center">Checkin</th><th class="text-center">Converted</th><th class="text-center">Thao tác</th></tr></thead>
+                <tbody id="kpiTb"><tr><td colspan="6" class="text-center" style="padding:32px;color:var(--text-muted)">Đang tải...</td></tr></tbody>
+              </table>
             </div>
           </div>
           <div class="wcard" id="kpiMissCard" style="display:none">
-            <div class="wcard-head" style="background:#fffbeb"><span class="wcard-title"><i class="fas fa-exclamation-triangle" style="color:#d97706"></i> EC chưa có KPI</span></div>
+            <div class="wcard-head" style="background:#fffbeb">
+              <span class="wcard-title"><i class="fas fa-exclamation-triangle" style="color:#d97706"></i> EC chưa có KPI</span>
+            </div>
             <div class="wcard-body no-pad">
-              <table class="rp-table"><thead><tr><th>EC</th><th>Cơ sở</th><th class="text-center">Thao tác</th></tr></thead>
-              <tbody id="kpiMissTb"></tbody></table>
+              <table class="rp-table">
+                <thead><tr><th>EC</th><th>Cơ sở</th><th class="text-center">Thao tác</th></tr></thead>
+                <tbody id="kpiMissTb"></tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -641,7 +529,7 @@
         <div id="section-mykpi" class="rp-section">
           <div class="rp-heading">
             <h2><i class="fas fa-chart-bar"></i> KPI của tôi</h2>
-            <input type="month" id="myKpiMonth" class="form-control" style="width:150px">
+            <input type="month" id="myKpiMonth" class="form-control" style="width:145px">
           </div>
           <div class="kpi-hero">
             <div class="kpi-main">
@@ -667,21 +555,25 @@
             </div>
           </div>
           <div class="quick-row">
-            <div class="quick-box"><div class="quick-ico" style="background:#eff6ff;color:#2563eb"><i class="fas fa-user-check"></i></div><div><div class="quick-val" id="myCkin">0</div><div class="quick-lbl">Leads đang xử lý</div></div></div>
+            <div class="quick-box"><div class="quick-ico" style="background:#eff6ff;color:#2563eb"><i class="fas fa-user-check"></i></div><div><div class="quick-val" id="myCkin">0</div><div class="quick-lbl">Leads checkin</div></div></div>
             <div class="quick-box"><div class="quick-ico" style="background:#f0fdf4;color:#16a34a"><i class="fas fa-user-graduate"></i></div><div><div class="quick-val" id="myConv">0</div><div class="quick-lbl">Đã chuyển đổi</div></div></div>
-            <div class="quick-box"><div class="quick-ico" style="background:#fffbeb;color:#d97706"><i class="fas fa-coins"></i></div><div><div class="quick-val" id="myDep">0đ</div><div class="quick-lbl">Tổng cọc</div></div></div>
-            <div class="quick-box"><div class="quick-ico" style="background:#f5f3ff;color:#7c3aed"><i class="fas fa-hourglass-half"></i></div><div><div class="quick-val" id="myExp">0đ</div><div class="quick-lbl">Dự thu</div></div></div>
+            <div class="quick-box"><div class="quick-ico" style="background:#fffbeb;color:#d97706"><i class="fas fa-coins"></i></div><div><div class="quick-val" id="myDep">0đ</div><div class="quick-lbl">Cọc đang giữ</div></div></div>
+            <div class="quick-box"><div class="quick-ico" style="background:#f5f3ff;color:#7c3aed"><i class="fas fa-hourglass-half"></i></div><div><div class="quick-val" id="myExp">0đ</div><div class="quick-lbl">Dự thu (còn nợ)</div></div></div>
           </div>
           <div class="data-grid">
             <div class="data-card">
               <div class="data-card-title"><i class="fas fa-calendar-day"></i> Leads hôm nay</div>
-              <div class="data-card-body"><table><thead><tr><th>Học sinh</th><th>SĐT</th><th>Giờ</th><th>TT</th></tr></thead>
-              <tbody id="myTodayTb"><tr><td colspan="4" class="text-center text-muted" style="padding:24px">Không có leads</td></tr></tbody></table></div>
+              <div class="data-card-body">
+                <table><thead><tr><th>Học sinh</th><th>SĐT</th><th>Giờ</th><th>TT</th></tr></thead>
+                <tbody id="myTodayTb"><tr><td colspan="4" class="text-center" style="padding:24px;color:var(--text-muted)">Không có leads</td></tr></tbody></table>
+              </div>
             </div>
             <div class="data-card">
-              <div class="data-card-title"><i class="fas fa-check-circle"></i> Đã chuyển đổi</div>
-              <div class="data-card-body"><table><thead><tr><th>Học sinh</th><th>Ngày</th><th>Đã đóng</th><th>Học phí</th></tr></thead>
-              <tbody id="myConvTb"><tr><td colspan="4" class="text-center text-muted" style="padding:24px">Chưa có</td></tr></tbody></table></div>
+              <div class="data-card-title"><i class="fas fa-check-circle"></i> Đã chuyển đổi tháng này</div>
+              <div class="data-card-body">
+                <table><thead><tr><th>Học sinh</th><th>Ngày</th><th>Đã đóng</th><th>Học phí</th></tr></thead>
+                <tbody id="myConvTb"><tr><td colspan="4" class="text-center" style="padding:24px;color:var(--text-muted)">Chưa có</td></tr></tbody></table>
+              </div>
             </div>
           </div>
         </div>
@@ -691,38 +583,71 @@
   </main>
 </div>
 
-<!-- ── Modal: Expected Revenue ── -->
+<!-- ── Modal: Dự thu (còn nợ) ── -->
 <div class="modal" id="expectedModal">
   <div class="modal-content modal-lg">
-    <div class="modal-header"><div class="modal-title"><i class="fas fa-clock"></i> Danh sách Dự thu</div><button class="modal-close" onclick="document.getElementById('expectedModal').classList.remove('show')">&times;</button></div>
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-clock" style="color:#7c3aed"></i> Danh sách Dự thu — còn nợ</div>
+      <button class="modal-close" onclick="document.getElementById('expectedModal').classList.remove('show')">&times;</button>
+    </div>
     <div class="modal-body" style="overflow-x:auto">
-      <table class="rp-table"><thead><tr><th>Học sinh</th><th>Phụ huynh</th><th>EC</th><th>Cơ sở</th><th class="text-right">Tổng HP</th><th class="text-right">Đã cọc</th><th class="text-right">Đã đóng</th><th class="text-right">Còn lại</th></tr></thead>
-      <tbody id="expTb"><tr><td colspan="8" class="text-center" style="padding:24px">Đang tải...</td></tr></tbody>
-      <tfoot id="expFoot"></tfoot></table>
+      <table class="rp-table">
+        <thead>
+          <tr>
+            <th>Học sinh</th><th>Phụ huynh / SĐT</th><th>EC</th><th>Cơ sở</th>
+            <th class="text-right">Học phí</th>
+            <th class="text-right">Đã cọc</th>
+            <th class="text-right">Tổng đã đóng</th>
+            <th class="text-right" style="color:#dc2626">Còn nợ</th>
+          </tr>
+        </thead>
+        <tbody id="expTb"><tr><td colspan="8" class="text-center" style="padding:24px">Đang tải...</td></tr></tbody>
+        <tfoot id="expFoot"></tfoot>
+      </table>
       <div id="expPg" class="pg-bar"></div>
     </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('expectedModal').classList.remove('show')">Đóng</button></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('expectedModal').classList.remove('show')">Đóng</button>
+    </div>
   </div>
 </div>
 
-<!-- ── Modal: Full Paid ── -->
+<!-- ── Modal: Đã đóng đủ ── -->
 <div class="modal" id="fullPaidModal">
   <div class="modal-content modal-lg">
-    <div class="modal-header"><div class="modal-title"><i class="fas fa-check-circle" style="color:#16a34a"></i> Danh sách Đã đóng đủ</div><button class="modal-close" onclick="document.getElementById('fullPaidModal').classList.remove('show')">&times;</button></div>
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-check-circle" style="color:#16a34a"></i> Danh sách Đã đóng đủ</div>
+      <button class="modal-close" onclick="document.getElementById('fullPaidModal').classList.remove('show')">&times;</button>
+    </div>
     <div class="modal-body" style="overflow-x:auto">
-      <table class="rp-table"><thead><tr><th>Học sinh</th><th>Phụ huynh</th><th>EC</th><th>Cơ sở</th><th class="text-right">Tổng HP</th><th class="text-right">Đã cọc</th><th class="text-right">Đã đóng</th><th class="text-center">TT</th></tr></thead>
-      <tbody id="fpTb"><tr><td colspan="8" class="text-center" style="padding:24px">Đang tải...</td></tr></tbody>
-      <tfoot id="fpFoot"></tfoot></table>
+      <table class="rp-table">
+        <thead>
+          <tr>
+            <th>Học sinh</th><th>Phụ huynh / SĐT</th><th>EC</th><th>Cơ sở</th>
+            <th class="text-right">Học phí</th>
+            <th class="text-right">Đã cọc</th>
+            <th class="text-right">Tổng đã đóng</th>
+            <th class="text-center">Tình trạng</th>
+          </tr>
+        </thead>
+        <tbody id="fpTb"><tr><td colspan="8" class="text-center" style="padding:24px">Đang tải...</td></tr></tbody>
+        <tfoot id="fpFoot"></tfoot>
+      </table>
       <div id="fpPg" class="pg-bar"></div>
     </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('fullPaidModal').classList.remove('show')">Đóng</button></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('fullPaidModal').classList.remove('show')">Đóng</button>
+    </div>
   </div>
 </div>
 
 <!-- ── Modal: Set KPI ── -->
 <div class="modal" id="kpiEditModal">
   <div class="modal-content">
-    <div class="modal-header"><div class="modal-title" id="kpiEditTitle"><i class="fas fa-bullseye"></i> Set KPI</div><button class="modal-close" onclick="document.getElementById('kpiEditModal').classList.remove('show')">&times;</button></div>
+    <div class="modal-header">
+      <div class="modal-title" id="kpiEditTitle"><i class="fas fa-bullseye"></i> Set KPI</div>
+      <button class="modal-close" onclick="document.getElementById('kpiEditModal').classList.remove('show')">&times;</button>
+    </div>
     <div class="modal-body">
       <input type="hidden" id="kpiEcId"><input type="hidden" id="kpiBrId">
       <div class="form-group"><label class="form-label">EC</label><input type="text" id="kpiEcName" class="form-control" readonly></div>
@@ -733,35 +658,47 @@
         <div class="form-group"><label class="form-label">KPI Converted</label><input type="number" id="kpiConv" class="form-control" min="0"></div>
       </div>
     </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('kpiEditModal').classList.remove('show')">Hủy</button><button class="btn btn-primary" onclick="saveKpi()"><i class="fas fa-save"></i> Lưu KPI</button></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('kpiEditModal').classList.remove('show')">Hủy</button>
+      <button class="btn btn-primary" onclick="saveKpi()"><i class="fas fa-save"></i> Lưu KPI</button>
+    </div>
   </div>
 </div>
 
 <!-- ── Modal: Bulk KPI ── -->
 <div class="modal" id="bulkModal">
   <div class="modal-content modal-lg">
-    <div class="modal-header"><div class="modal-title"><i class="fas fa-list"></i> Set KPI hàng loạt</div><button class="modal-close" onclick="document.getElementById('bulkModal').classList.remove('show')">&times;</button></div>
+    <div class="modal-header">
+      <div class="modal-title"><i class="fas fa-list"></i> Set KPI hàng loạt</div>
+      <button class="modal-close" onclick="document.getElementById('bulkModal').classList.remove('show')">&times;</button>
+    </div>
     <div class="modal-body">
-      <div class="form-row" style="margin-bottom:16px">
+      <div class="form-row" style="margin-bottom:14px">
         <div class="form-group"><label class="form-label">Tháng áp dụng</label><input type="month" id="bulkMonth" class="form-control"></div>
         <div class="form-group"><label class="form-label">KPI mặc định</label><input type="number" id="defaultKpi" class="form-control" placeholder="VD: 50000000" step="1000000"></div>
         <div class="form-group" style="display:flex;align-items:flex-end"><button class="btn btn-secondary" onclick="applyDefault()">Áp dụng tất cả</button></div>
       </div>
-      <table class="rp-table"><thead><tr><th style="width:40px"><input type="checkbox" id="checkAll" onchange="toggleAll()"></th><th>EC</th><th>Cơ sở</th><th>KPI Doanh số</th></tr></thead><tbody id="bulkTb"></tbody></table>
+      <table class="rp-table">
+        <thead><tr><th style="width:40px"><input type="checkbox" id="checkAll" onchange="toggleAll()"></th><th>EC</th><th>Cơ sở</th><th>KPI Doanh số</th></tr></thead>
+        <tbody id="bulkTb"></tbody>
+      </table>
     </div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('bulkModal').classList.remove('show')">Hủy</button><button class="btn btn-primary" onclick="saveBulk()"><i class="fas fa-save"></i> Lưu tất cả</button></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('bulkModal').classList.remove('show')">Hủy</button>
+      <button class="btn btn-primary" onclick="saveBulk()"><i class="fas fa-save"></i> Lưu tất cả</button>
+    </div>
   </div>
 </div>
 
 <script src="../js/config.js"></script>
-<script src="../js/app.js"></script>
-<script src="../js/reactive.js"></script>
-<script src="../js/crud-mixin.js"></script>
-<script src="../js/sidebar.js"></script>
+<script src="../js/app.js?v=4.1"></script>
+<script src="../js/reactive.js?v=4.1"></script>
+<script src="../js/crud-mixin.js?v=4.1"></script>
+<script src="../js/sidebar.js?v=4.4"></script>
 <script>
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // NAVIGATION
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 const loaded = {};
 
 function showSection(s) {
@@ -774,18 +711,24 @@ function showSection(s) {
 }
 
 function sectionLoad(s) {
-  const m = { sale: loadSale, trial: () => { updateTrialLabel(); loadTrial(); }, checkin: () => { updateCheckinLabel(); loadCheckin(); }, kpi: loadKpi, mykpi: loadMyKpi };
+  const m = {
+    sale:    loadSale,
+    trial:   () => { updateTrialLabel(); loadTrial(); },
+    checkin: () => { updateCheckinLabel(); loadCheckin(); },
+    kpi:     loadKpi,
+    mykpi:   loadMyKpi
+  };
   m[s]?.();
 }
 
 function buildNav() {
   const nav = document.getElementById('rpNav');
   const items = [
-    { s: 'sale',    icon: 'fas fa-chart-line',     label: 'Báo cáo Sale',         show: () => auth.hasPermission && auth.hasPermission('reports.view') },
-    { s: 'trial',   icon: 'fas fa-clipboard-list',  label: 'Báo cáo Trải nghiệm', show: () => auth.hasRole('HOEC','QLCS','CHU','GDV','ADMIN','OM','CM','EC') },
-    { s: 'checkin', icon: 'fas fa-fingerprint',     label: 'Chấm công',            show: () => auth.hasRole('QLCS','CHU','GDV','ADMIN','OM','CM') },
-    { s: 'kpi',     icon: 'fas fa-bullseye',        label: 'Quản lý KPI',          show: () => auth.hasRole('ACCOUNTANT','HOEC','QLCS','CHU','GDV','ADMIN') },
-    { s: 'mykpi',   icon: 'fas fa-chart-bar',       label: 'KPI của tôi',          show: () => auth.hasRole('EC','SALE') },
+    { s:'sale',    icon:'fas fa-chart-line',    label:'Báo cáo Sale',         show:() => auth.hasRole('ACCOUNTANT','HOEC','QLCS','CHU','GDV','ADMIN','OM','CM','EC','SALE') },
+    { s:'trial',   icon:'fas fa-clipboard-list', label:'Báo cáo Trải nghiệm', show:() => auth.hasRole('HOEC','QLCS','CHU','GDV','ADMIN','OM','CM','EC') },
+    { s:'checkin', icon:'fas fa-fingerprint',    label:'Chấm công',            show:() => auth.hasRole('QLCS','CHU','GDV','ADMIN','OM','CM') },
+    { s:'kpi',     icon:'fas fa-bullseye',       label:'Quản lý KPI',          show:() => auth.hasRole('ACCOUNTANT','HOEC','QLCS','CHU','GDV','ADMIN') },
+    { s:'mykpi',   icon:'fas fa-chart-bar',      label:'KPI của tôi',          show:() => auth.hasRole('EC','SALE') },
   ];
   let html = '';
   items.forEach(item => {
@@ -794,29 +737,30 @@ function buildNav() {
   nav.innerHTML += html;
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // HELPERS
-// ═══════════════════════════════════════════
-const fmtCur = v => v ? new Intl.NumberFormat('vi-VN').format(v) + 'đ' : '0đ';
-const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const kpiCls = p => p>=100 ? 'high' : p>=70 ? 'mid' : 'low';
+// ═══════════════════════════════════════════════════════
+const fmtCur = v => (v && +v) ? new Intl.NumberFormat('vi-VN').format(+v) + 'đ' : '0đ';
+const esc     = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const kpiCls  = p => +p >= 100 ? 'high' : +p >= 70 ? 'mid' : 'low';
 const rankCls = i => i===0?'r1':i===1?'r2':i===2?'r3':'rn';
 const rankEmoji = i => i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+const empty   = (cols, msg='Chưa có dữ liệu') => `<tr><td colspan="${cols}" class="text-center" style="padding:28px;color:var(--text-muted)">${msg}</td></tr>`;
 
 async function loadBranches() {
   try {
     const r = await api.get('/branches');
-    const opts = (r.data||[]).map(b=>`<option value="${b.id}">${b.code} - ${b.name}</option>`).join('');
+    const opts = (r.data||[]).map(b => `<option value="${b.id}">${b.code} - ${b.name}</option>`).join('');
     ['saleBranch','trialBranch','checkinBranch','kpiBranch'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.innerHTML = '<option value="">Tất cả cơ sở</option>' + opts;
     });
-  } catch(e){}
+  } catch(e) {}
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // SALE REPORT
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 document.getElementById('saleTabs').addEventListener('click', e => {
   const b = e.target.closest('.tab-btn'); if (!b) return;
   document.querySelectorAll('#saleTabs .tab-btn').forEach(x => x.classList.remove('active'));
@@ -827,402 +771,670 @@ document.getElementById('saleTabs').addEventListener('click', e => {
 
 async function loadSale() {
   const month = document.getElementById('saleMonth').value;
-  const br = document.getElementById('saleBranch').value;
-  await Promise.all([saleSummary(month,br), saleRankRev(month,br), saleRankKpi(month,br), saleDetail(month,br), saleTeam(month,br)]);
+  const br    = document.getElementById('saleBranch').value;
+  await Promise.all([
+    saleSummary(month, br),
+    saleRankRev(month, br),
+    saleRankKpi(month, br),
+    saleDetail(month, br),
+    saleTeam(month, br)
+  ]);
 }
 
 async function saleSummary(month, br) {
   try {
-    const p = new URLSearchParams({month}); if(br) p.append('branchId',br);
-    const d = (await api.get('/sale-reports/summary?'+p)).data || {};
-    document.getElementById('saleTotalCheckin').textContent = d.total_checkin||0;
-    document.getElementById('saleTotalRevenue').textContent = fmtCur(d.total_revenue);
-    document.getElementById('saleTotalDeposit').textContent = fmtCur(d.total_deposit);
-    document.getElementById('saleTotalExpected').textContent = fmtCur(d.total_expected);
-  } catch(e){}
+    const p = new URLSearchParams({month});
+    if (br) p.append('branchId', br);
+    const d = (await api.get('/sale-reports/summary?' + p)).data || {};
+    document.getElementById('saleTotalCheckin').textContent   = d.total_checkin   || 0;
+    document.getElementById('saleTotalConverted').textContent = d.total_converted || 0;
+    document.getElementById('saleTotalRevenue').textContent   = fmtCur(d.total_revenue);
+    document.getElementById('saleTotalDeposit').textContent   = fmtCur(d.total_deposit);
+    document.getElementById('saleTotalExpected').textContent  = fmtCur(d.total_expected);
+  } catch(e) {
+    console.error('saleSummary error', e);
+  }
 }
 
 async function saleRankRev(month, br) {
   const tb = document.getElementById('saleRankRev');
   try {
-    const p = new URLSearchParams({month,limit:10}); if(br) p.append('branchId',br);
-    const data = (await api.get('/sale-reports/ranking/revenue?'+p)).data || [];
+    const p = new URLSearchParams({month, limit:10});
+    if (br) p.append('branchId', br);
+    const data = (await api.get('/sale-reports/ranking/revenue?' + p)).data || [];
     tb.innerHTML = data.length ? data.map((r,i) => `<tr>
       <td><span class="rank-dot ${rankCls(i)}">${rankEmoji(i)}</span></td>
-      <td><strong>${r.ec_name}</strong></td>
+      <td><strong>${esc(r.ec_name)}</strong></td>
       <td><span class="badge badge-gray">${r.branch_code||'-'}</span></td>
       <td class="text-right" style="color:#16a34a;font-weight:700">${fmtCur(r.revenue)}</td>
       <td class="text-center"><span class="kpi-pill ${kpiCls(r.kpi_percent)}">${r.kpi_percent||0}%</span></td>
-    </tr>`).join('') : '<tr><td colspan="5" class="text-center text-muted" style="padding:24px">Chưa có dữ liệu</td></tr>';
-  } catch(e) { tb.innerHTML = '<tr><td colspan="5" class="text-center text-muted" style="padding:24px">Lỗi tải</td></tr>'; }
+    </tr>`).join('') : empty(5);
+  } catch(e) { tb.innerHTML = empty(5, 'Lỗi tải dữ liệu'); }
 }
 
 async function saleRankKpi(month, br) {
   const tb = document.getElementById('saleRankKpi');
   try {
-    const p = new URLSearchParams({month,limit:10}); if(br) p.append('branchId',br);
-    const data = (await api.get('/sale-reports/ranking/kpi?'+p)).data || [];
+    const p = new URLSearchParams({month, limit:10});
+    if (br) p.append('branchId', br);
+    const data = (await api.get('/sale-reports/ranking/kpi?' + p)).data || [];
     tb.innerHTML = data.length ? data.map((r,i) => `<tr>
       <td><span class="rank-dot ${rankCls(i)}">${rankEmoji(i)}</span></td>
-      <td><strong>${r.ec_name}</strong></td>
+      <td><strong>${esc(r.ec_name)}</strong></td>
       <td><span class="badge badge-gray">${r.branch_code||'-'}</span></td>
       <td class="text-center"><span class="kpi-pill ${kpiCls(r.kpi_percent)}">${r.kpi_percent||0}%</span></td>
-      <td class="text-right font-bold">${fmtCur(r.revenue)}</td>
-    </tr>`).join('') : '<tr><td colspan="5" class="text-center text-muted" style="padding:24px">Chưa có dữ liệu</td></tr>';
-  } catch(e) { tb.innerHTML = '<tr><td colspan="5" class="text-center text-muted" style="padding:24px">Lỗi tải</td></tr>'; }
+      <td class="text-right" style="font-weight:600">${fmtCur(r.revenue)}</td>
+    </tr>`).join('') : empty(5);
+  } catch(e) { tb.innerHTML = empty(5, 'Lỗi tải dữ liệu'); }
 }
 
 async function saleDetail(month, br) {
+  const dtb   = document.getElementById('saleDetail');
+  const dfoot = document.getElementById('saleDetailFoot');
+  const btb   = document.getElementById('saleBranchTb');
+  const bfoot = document.getElementById('saleBranchFoot');
   try {
-    const p = new URLSearchParams({month}); if(br) p.append('branchId',br);
-    const reports = (await api.get('/sale-reports?'+p)).data?.reports || [];
-    const dtb = document.getElementById('saleDetail');
-    const btb = document.getElementById('saleBranchTb');
+    const p = new URLSearchParams({month});
+    if (br) p.append('branchId', br);
+    const reports = (await api.get('/sale-reports?' + p)).data?.reports || [];
+
     if (!reports.length) {
-      dtb.innerHTML = btb.innerHTML = '<tr><td colspan="8" class="text-center text-muted" style="padding:24px">Chưa có dữ liệu</td></tr>';
+      dtb.innerHTML = empty(8);
+      btb.innerHTML = empty(6);
+      dfoot.innerHTML = bfoot.innerHTML = '';
       return;
     }
-    dtb.innerHTML = reports.map(r => `<tr>
-      <td><strong>${r.ec_name}</strong></td>
-      <td><span class="badge badge-gray">${r.branch_code||'-'}</span></td>
-      <td class="text-center">${r.checkin_count||0}</td>
-      <td class="text-center">${r.leads_converted||0}</td>
-      <td class="text-right" style="color:#16a34a;font-weight:600">${fmtCur(r.revenue)}</td>
-      <td class="text-right" style="color:#d97706">${fmtCur(r.deposit_total)}</td>
-      <td class="text-right" style="color:#7c3aed">${fmtCur(r.expected_revenue)}</td>
-      <td class="text-center"><span class="kpi-pill ${kpiCls(r.kpi_percent)}">${r.kpi_percent||0}%</span></td>
-    </tr>`).join('');
+
+    // Chi tiết EC
+    let tCk=0, tConv=0, tRev=0, tDep=0, tExp=0;
+    dtb.innerHTML = reports.map(r => {
+      tCk   += +r.checkin_count    || 0;
+      tConv += +r.leads_converted  || 0;
+      tRev  += +r.revenue          || 0;
+      tDep  += +r.deposit_total    || 0;
+      tExp  += +r.expected_revenue || 0;
+      return `<tr>
+        <td><strong>${esc(r.ec_name)}</strong></td>
+        <td><span class="badge badge-gray">${r.branch_code||'-'}</span></td>
+        <td class="text-center">${r.checkin_count||0}</td>
+        <td class="text-center">${r.leads_converted||0}</td>
+        <td class="text-right" style="color:#16a34a;font-weight:600">${fmtCur(r.revenue)}</td>
+        <td class="text-right" style="color:#d97706">${fmtCur(r.deposit_total)}</td>
+        <td class="text-right" style="color:#7c3aed">${fmtCur(r.expected_revenue)}</td>
+        <td class="text-center"><span class="kpi-pill ${kpiCls(r.kpi_percent)}">${r.kpi_percent||0}%</span></td>
+      </tr>`;
+    }).join('');
+    dfoot.innerHTML = `<tr>
+      <td colspan="2" class="text-right" style="font-size:12px;color:var(--text-muted)">Tổng (${reports.length} EC)</td>
+      <td class="text-center">${tCk}</td>
+      <td class="text-center">${tConv}</td>
+      <td class="text-right" style="color:#16a34a">${fmtCur(tRev)}</td>
+      <td class="text-right" style="color:#d97706">${fmtCur(tDep)}</td>
+      <td class="text-right" style="color:#7c3aed">${fmtCur(tExp)}</td>
+      <td></td>
+    </tr>`;
+
+    // Theo cơ sở — tổng HP = rev + exp (= fee_total of all converted students)
     const bMap = {};
     reports.forEach(r => {
-      const k = r.branch_code||'N/A';
-      if (!bMap[k]) bMap[k] = {name:r.branch_name,code:k,ec:0,rev:0,dep:0,exp:0};
-      bMap[k].ec++; bMap[k].rev += +r.revenue||0; bMap[k].dep += +r.deposit_total||0; bMap[k].exp += +r.expected_revenue||0;
+      const k = r.branch_code || 'N/A';
+      if (!bMap[k]) bMap[k] = { name: r.branch_name||'', code: k, ec:0, rev:0, dep:0, exp:0 };
+      bMap[k].ec++;
+      bMap[k].rev += +r.revenue          || 0;
+      bMap[k].dep += +r.deposit_total    || 0;
+      bMap[k].exp += +r.expected_revenue || 0;
     });
-    btb.innerHTML = Object.values(bMap).map(b => `<tr>
-      <td><strong>${b.code}</strong>${b.name ? ' — '+b.name : ''}</td>
-      <td class="text-center">${b.ec}</td>
-      <td class="text-right" style="color:#16a34a;font-weight:600">${fmtCur(b.rev)}</td>
-      <td class="text-right" style="color:#d97706">${fmtCur(b.dep)}</td>
-      <td class="text-right" style="color:#7c3aed">${fmtCur(b.exp)}</td>
-      <td class="text-right font-bold">${fmtCur(b.rev+b.dep+b.exp)}</td>
-    </tr>`).join('');
-  } catch(e) { console.error(e); }
+    const branches = Object.values(bMap);
+    let bTotEc=0, bTotRev=0, bTotDep=0, bTotExp=0;
+    btb.innerHTML = branches.map(b => {
+      bTotEc  += b.ec;
+      bTotRev += b.rev;
+      bTotDep += b.dep;
+      bTotExp += b.exp;
+      // Tổng HP = rev + exp (actual_revenue + remaining = fee_total)
+      return `<tr>
+        <td><strong>${esc(b.code)}</strong>${b.name ? ' <span style="color:var(--text-muted);font-size:12px">— '+esc(b.name)+'</span>' : ''}</td>
+        <td class="text-center">${b.ec}</td>
+        <td class="text-right" style="color:#16a34a;font-weight:600">${fmtCur(b.rev)}</td>
+        <td class="text-right" style="color:#d97706">${fmtCur(b.dep)}</td>
+        <td class="text-right" style="color:#7c3aed">${fmtCur(b.exp)}</td>
+        <td class="text-right" style="font-weight:700">${fmtCur(b.rev + b.exp)}</td>
+      </tr>`;
+    }).join('');
+    bfoot.innerHTML = `<tr>
+      <td style="font-size:12px;color:var(--text-muted)">Tổng (${branches.length} cơ sở)</td>
+      <td class="text-center">${bTotEc}</td>
+      <td class="text-right" style="color:#16a34a">${fmtCur(bTotRev)}</td>
+      <td class="text-right" style="color:#d97706">${fmtCur(bTotDep)}</td>
+      <td class="text-right" style="color:#7c3aed">${fmtCur(bTotExp)}</td>
+      <td class="text-right" style="font-weight:700">${fmtCur(bTotRev + bTotExp)}</td>
+    </tr>`;
+  } catch(e) {
+    console.error('saleDetail error', e);
+    dtb.innerHTML = empty(8, 'Lỗi tải dữ liệu');
+    btb.innerHTML = empty(6, 'Lỗi tải dữ liệu');
+  }
 }
 
 async function saleTeam(month, br) {
   const wrap = document.getElementById('saleTeamWrap');
-  wrap.innerHTML = '<div class="text-center text-muted" style="padding:40px"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>';
+  wrap.innerHTML = '<div class="text-center" style="padding:40px;color:var(--text-muted)"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>';
   try {
-    const p = new URLSearchParams({month}); if(br) p.append('branchId',br);
-    const teams = (await api.get('/sale-reports/by-team?'+p)).data || [];
-    wrap.innerHTML = teams.length ? teams.map(t => renderTeam(t)).join('') : '<div class="text-center text-muted" style="padding:40px">Chưa có dữ liệu</div>';
-  } catch(e) { wrap.innerHTML = '<div class="text-center text-muted" style="padding:40px">Lỗi tải dữ liệu</div>'; }
+    const p = new URLSearchParams({month});
+    if (br) p.append('branchId', br);
+    const teams = (await api.get('/sale-reports/by-team?' + p)).data || [];
+    wrap.innerHTML = teams.length
+      ? teams.map(t => renderTeam(t)).join('')
+      : '<div class="text-center" style="padding:40px;color:var(--text-muted)">Chưa có dữ liệu</div>';
+  } catch(e) {
+    wrap.innerHTML = '<div class="text-center" style="padding:40px;color:var(--text-muted)">Lỗi tải dữ liệu</div>';
+  }
 }
 
 function renderTeam(t) {
-  const cls = t.role_name?.toLowerCase()||'ec';
+  const cls  = (t.role_name||'ec').toLowerCase();
   const init = (t.manager_name||'?').split(' ').map(w=>w[0]).join('').slice(-2);
   const totalRev = (t.own_revenue||0) + (t.team_revenue||0);
-  const totalCk = (t.own_checkin||0) + (t.team_checkin||0);
+  const totalCk  = (t.own_checkin||0) + (t.team_checkin||0);
   let inner = '';
-  if (t.sub_managers?.length) inner += t.sub_managers.map(s=>`<div class="sub-team">${renderTeam(s)}</div>`).join('');
-  if (t.members?.length) inner += `<div class="team-members" id="tm-${t.manager_id}">${t.members.map(m=>`
-    <div class="member-row">
-      <div class="member-who"><div class="member-ava">${(m.ec_name||'?').split(' ').map(w=>w[0]).join('').slice(-2)}</div>
-        <div><div class="member-name">${m.ec_name}</div><div class="member-branch">${m.branch_code||''}</div></div></div>
+  if (t.sub_managers?.length) inner += t.sub_managers.map(s => `<div class="sub-team">${renderTeam(s)}</div>`).join('');
+  if (t.members?.length) inner += `<div class="team-members" id="tm-${t.manager_id}">${
+    t.members.map(m => `<div class="member-row">
+      <div class="member-who">
+        <div class="member-ava">${(m.ec_name||'?').split(' ').map(w=>w[0]).join('').slice(-2)}</div>
+        <div><div class="member-name">${esc(m.ec_name)}</div><div class="member-branch">${m.branch_code||''}</div></div>
+      </div>
       <div class="member-stats">
         <div class="member-stat"><div class="member-stat-val">${m.checkin_count||0}</div><div class="member-stat-lbl">Checkin</div></div>
         <div class="member-stat"><div class="member-stat-val" style="color:#16a34a">${fmtCur(m.revenue)}</div><div class="member-stat-lbl">DS</div></div>
-        <div class="member-stat"><div class="member-stat-val">${m.kpi_percent||0}%</div><div class="member-stat-lbl">KPI</div></div>
-      </div></div>`).join('')}</div>`;
+        <div class="member-stat"><div class="member-stat-val"><span class="kpi-pill ${kpiCls(m.kpi_percent)}" style="padding:1px 7px">${m.kpi_percent||0}%</span></div><div class="member-stat-lbl">KPI</div></div>
+      </div>
+    </div>`).join('')
+  }</div>`;
   return `<div class="team-card">
     <div class="team-hd" onclick="toggleTeam('${t.manager_id}')">
-      <div class="team-who"><div class="team-ava ${cls}">${init}</div>
-        <div><div class="team-name">${t.manager_name||'N/A'}</div>
-        <div class="team-role">${t.role_display||t.role_name||''} ${t.member_count?'• '+t.member_count+' TV':''}</div></div></div>
+      <div class="team-who">
+        <div class="team-ava ${cls}">${init}</div>
+        <div>
+          <div class="team-name">${esc(t.manager_name||'N/A')}</div>
+          <div class="team-role">${t.role_display||t.role_name||''} ${t.member_count ? '• '+t.member_count+' TV' : ''}</div>
+        </div>
+      </div>
       <div class="team-nums">
         <div><div class="team-num-val">${totalCk}</div><div class="team-num-lbl">Checkin</div></div>
         <div><div class="team-num-val green">${fmtCur(totalRev)}</div><div class="team-num-lbl">Doanh số</div></div>
         <i class="fas fa-chevron-down team-chevron"></i>
-      </div></div>${inner}</div>`;
+      </div>
+    </div>
+    ${inner}
+  </div>`;
 }
 
 function toggleTeam(id) { document.getElementById('tm-'+id)?.classList.toggle('collapsed'); }
 
-// Expected / Full Paid
-let expPg=1, expTotPg=1, expSz=50, expTot=0;
-let fpPg=1, fpTotPg=1, fpSz=50, fpTot=0;
+// ═══════════════════════════════════════════════════════
+// MODAL: DỰ THU (còn nợ)
+// ═══════════════════════════════════════════════════════
+let expPg=1, expTotPg=1, expSz=50;
 
 async function showExpectedList(page=1) {
-  document.getElementById('expectedModal').classList.add('show'); expPg=page;
-  const month=document.getElementById('saleMonth').value, br=document.getElementById('saleBranch').value;
+  document.getElementById('expectedModal').classList.add('show');
+  expPg = page;
+  const month = document.getElementById('saleMonth').value;
+  const br    = document.getElementById('saleBranch').value;
+  const tb    = document.getElementById('expTb');
+  const foot  = document.getElementById('expFoot');
+  tb.innerHTML = '<tr><td colspan="8" class="text-center" style="padding:24px"><i class="fas fa-spinner fa-spin"></i></td></tr>';
   try {
-    const p=new URLSearchParams({month,page:expPg,limit:expSz}); if(br) p.append('branchId',br);
-    const pay=(await api.get('/sale-reports/expected-revenue?'+p)).data||{};
-    const list=pay.items||pay||[], pg=pay.pagination||{};
-    expPg=pg.page||expPg; expTotPg=pg.totalPages||1; expTot=pg.total||list.length;
-    let tFee=0,tDep=0,tPaid=0,tRem=0;
-    document.getElementById('expTb').innerHTML = list.length ? list.map(l=>{
-      const fee=+l.fee_total||0,dep=+l.deposit_amount||0,rev=+l.actual_revenue||0,rem=Math.max(0,fee-rev),paid=Math.max(0,rev-dep);
-      tFee+=fee;tDep+=dep;tPaid+=paid;tRem+=rem;
-      return `<tr><td><strong>${esc(l.student_name)}</strong></td><td>${esc(l.customer_name)}<br><small class="text-muted">${l.customer_phone}</small></td>
-      <td>${esc(l.ec_name||'-')}</td><td><span class="badge badge-gray">${l.branch_code||'-'}</span></td>
-      <td class="text-right">${fmtCur(fee)}</td><td class="text-right" style="color:#d97706">${fmtCur(dep)}</td>
-      <td class="text-right" style="color:#16a34a">${fmtCur(paid)}</td><td class="text-right" style="color:#dc2626;font-weight:600">${fmtCur(rem)}</td></tr>`;
-    }).join('') : '<tr><td colspan="8" class="text-center text-muted" style="padding:24px">Tất cả đã đóng đủ! 🎉</td></tr>';
-    document.getElementById('expFoot').innerHTML = list.length ? `<tr><td colspan="4" class="text-right">Tổng (${list.length} HS)</td><td class="text-right">${fmtCur(tFee)}</td><td class="text-right" style="color:#d97706">${fmtCur(tDep)}</td><td class="text-right" style="color:#16a34a">${fmtCur(tPaid)}</td><td class="text-right" style="color:#dc2626;font-weight:700">${fmtCur(tRem)}</td></tr>` : '';
+    const p = new URLSearchParams({month, page:expPg, limit:expSz});
+    if (br) p.append('branchId', br);
+    const pay  = (await api.get('/sale-reports/expected-revenue?' + p)).data || {};
+    const list = pay.items || pay || [];
+    const pg   = pay.pagination || {};
+    expPg    = pg.page       || expPg;
+    expTotPg = pg.totalPages || 1;
+
+    let tFee=0, tDep=0, tRev=0, tRem=0;
+    tb.innerHTML = list.length ? list.map(l => {
+      const fee = +l.fee_total       || 0;
+      const dep = +l.deposit_amount  || 0;
+      const rev = +l.actual_revenue  || 0;  // tổng đã đóng (bao gồm cọc)
+      const rem = +l.remaining       || Math.max(0, fee - rev);
+      tFee += fee; tDep += dep; tRev += rev; tRem += rem;
+      return `<tr>
+        <td><strong>${esc(l.student_name)}</strong><br><small class="text-muted">${l.student_code||''}</small></td>
+        <td>${esc(l.customer_name||'-')}<br><small class="text-muted">${l.customer_phone||''}</small></td>
+        <td>${esc(l.ec_name||'-')}</td>
+        <td><span class="badge badge-gray">${l.branch_code||'-'}</span></td>
+        <td class="text-right">${fmtCur(fee)}</td>
+        <td class="text-right" style="color:#d97706">${fmtCur(dep)}</td>
+        <td class="text-right" style="color:#16a34a">${fmtCur(rev)}</td>
+        <td class="text-right" style="color:#dc2626;font-weight:700">${fmtCur(rem)}</td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="8" class="text-center" style="padding:24px;color:var(--text-muted)">Tất cả học viên đã đóng đủ! 🎉</td></tr>';
+
+    foot.innerHTML = list.length ? `<tr>
+      <td colspan="4" class="text-right" style="font-size:12px;color:var(--text-muted)">Tổng (${list.length} học sinh)</td>
+      <td class="text-right">${fmtCur(tFee)}</td>
+      <td class="text-right" style="color:#d97706">${fmtCur(tDep)}</td>
+      <td class="text-right" style="color:#16a34a">${fmtCur(tRev)}</td>
+      <td class="text-right" style="color:#dc2626;font-weight:700">${fmtCur(tRem)}</td>
+    </tr>` : '';
     renderExpPg();
-  } catch(e){ document.getElementById('expTb').innerHTML='<tr><td colspan="8" class="text-center text-muted" style="padding:24px">Lỗi tải</td></tr>'; }
+  } catch(e) {
+    tb.innerHTML = empty(8, 'Lỗi tải dữ liệu');
+    console.error('showExpectedList error', e);
+  }
 }
+
 function renderExpPg() {
-  const c=document.getElementById('expPg');
-  c.innerHTML = expTot&&expTotPg>1 ? `<span>Trang ${expPg}/${expTotPg}</span><div style="display:flex;gap:6px"><button onclick="showExpectedList(${expPg-1})" ${expPg<=1?'disabled':''}>Trước</button><button onclick="showExpectedList(${expPg+1})" ${expPg>=expTotPg?'disabled':''}>Sau</button></div>` : '';
+  const c = document.getElementById('expPg');
+  c.innerHTML = expTotPg > 1
+    ? `<span>Trang ${expPg}/${expTotPg}</span><div style="display:flex;gap:6px">
+        <button onclick="showExpectedList(${expPg-1})" ${expPg<=1?'disabled':''}>Trước</button>
+        <button onclick="showExpectedList(${expPg+1})" ${expPg>=expTotPg?'disabled':''}>Sau</button>
+       </div>` : '';
 }
+
+// ═══════════════════════════════════════════════════════
+// MODAL: ĐÃ ĐÓNG ĐỦ
+// ═══════════════════════════════════════════════════════
+let fpPg=1, fpTotPg=1, fpSz=50;
 
 async function showFullPaidList(page=1) {
-  document.getElementById('fullPaidModal').classList.add('show'); fpPg=page;
-  const month=document.getElementById('saleMonth').value, br=document.getElementById('saleBranch').value;
+  document.getElementById('fullPaidModal').classList.add('show');
+  fpPg = page;
+  const month = document.getElementById('saleMonth').value;
+  const br    = document.getElementById('saleBranch').value;
+  const tb    = document.getElementById('fpTb');
+  const foot  = document.getElementById('fpFoot');
+  tb.innerHTML = '<tr><td colspan="8" class="text-center" style="padding:24px"><i class="fas fa-spinner fa-spin"></i></td></tr>';
   try {
-    const p=new URLSearchParams({month,page:fpPg,limit:fpSz}); if(br) p.append('branchId',br);
-    const pay=(await api.get('/sale-reports/full-paid?'+p)).data||{};
-    const list=pay.items||pay||[], pg=pay.pagination||{};
-    fpPg=pg.page||fpPg; fpTotPg=pg.totalPages||1; fpTot=pg.total||list.length;
-    let tFee=0,tDep=0,tPaid=0;
-    document.getElementById('fpTb').innerHTML = list.length ? list.map(l=>{
-      const fee=+l.fee_total||0,dep=+l.deposit_amount||0,rev=+l.actual_revenue||0,paid=rev-dep;
-      tFee+=fee;tDep+=dep;tPaid+=paid;
-      return `<tr><td><strong>${esc(l.student_name)}</strong></td><td>${esc(l.customer_name)}<br><small class="text-muted">${l.customer_phone}</small></td>
-      <td>${esc(l.ec_name||'-')}</td><td><span class="badge badge-gray">${l.branch_code||'-'}</span></td>
-      <td class="text-right">${fmtCur(fee)}</td><td class="text-right" style="color:#d97706">${fmtCur(dep)}</td>
-      <td class="text-right" style="color:#16a34a">${fmtCur(paid)}</td>
-      <td class="text-center"><span class="badge badge-green"><i class="fas fa-check"></i> Đủ</span></td></tr>`;
-    }).join('') : '<tr><td colspan="8" class="text-center text-muted" style="padding:24px">Chưa có học sinh đóng đủ</td></tr>';
-    document.getElementById('fpFoot').innerHTML = list.length ? `<tr><td colspan="4" class="text-right">Tổng (${list.length} HS)</td><td class="text-right">${fmtCur(tFee)}</td><td class="text-right" style="color:#d97706">${fmtCur(tDep)}</td><td class="text-right" style="color:#16a34a;font-weight:700">${fmtCur(tPaid)}</td><td></td></tr>` : '';
+    const p = new URLSearchParams({month, page:fpPg, limit:fpSz});
+    if (br) p.append('branchId', br);
+    const pay  = (await api.get('/sale-reports/full-paid?' + p)).data || {};
+    const list = pay.items || pay || [];
+    const pg   = pay.pagination || {};
+    fpPg    = pg.page       || fpPg;
+    fpTotPg = pg.totalPages || 1;
+
+    let tFee=0, tDep=0, tRev=0;
+    tb.innerHTML = list.length ? list.map(l => {
+      const fee = +l.fee_total       || 0;
+      const dep = +l.deposit_amount  || 0;
+      const rev = +l.actual_revenue  || 0;  // tổng đã đóng (= fee_total vì đóng đủ)
+      tFee += fee; tDep += dep; tRev += rev;
+      return `<tr>
+        <td><strong>${esc(l.student_name)}</strong><br><small class="text-muted">${l.student_code||''}</small></td>
+        <td>${esc(l.customer_name||'-')}<br><small class="text-muted">${l.customer_phone||''}</small></td>
+        <td>${esc(l.ec_name||'-')}</td>
+        <td><span class="badge badge-gray">${l.branch_code||'-'}</span></td>
+        <td class="text-right">${fmtCur(fee)}</td>
+        <td class="text-right" style="color:#d97706">${fmtCur(dep)}</td>
+        <td class="text-right" style="color:#16a34a;font-weight:700">${fmtCur(rev)}</td>
+        <td class="text-center"><span class="badge badge-green"><i class="fas fa-check"></i> Đủ</span></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="8" class="text-center" style="padding:24px;color:var(--text-muted)">Chưa có học sinh đóng đủ</td></tr>';
+
+    foot.innerHTML = list.length ? `<tr>
+      <td colspan="4" class="text-right" style="font-size:12px;color:var(--text-muted)">Tổng (${list.length} học sinh)</td>
+      <td class="text-right">${fmtCur(tFee)}</td>
+      <td class="text-right" style="color:#d97706">${fmtCur(tDep)}</td>
+      <td class="text-right" style="color:#16a34a;font-weight:700">${fmtCur(tRev)}</td>
+      <td></td>
+    </tr>` : '';
     renderFpPg();
-  } catch(e){ document.getElementById('fpTb').innerHTML='<tr><td colspan="8" class="text-center text-muted" style="padding:24px">Lỗi tải</td></tr>'; }
+  } catch(e) {
+    tb.innerHTML = empty(8, 'Lỗi tải dữ liệu');
+    console.error('showFullPaidList error', e);
+  }
 }
+
 function renderFpPg() {
-  const c=document.getElementById('fpPg');
-  c.innerHTML = fpTot&&fpTotPg>1 ? `<span>Trang ${fpPg}/${fpTotPg}</span><div style="display:flex;gap:6px"><button onclick="showFullPaidList(${fpPg-1})" ${fpPg<=1?'disabled':''}>Trước</button><button onclick="showFullPaidList(${fpPg+1})" ${fpPg>=fpTotPg?'disabled':''}>Sau</button></div>` : '';
+  const c = document.getElementById('fpPg');
+  c.innerHTML = fpTotPg > 1
+    ? `<span>Trang ${fpPg}/${fpTotPg}</span><div style="display:flex;gap:6px">
+        <button onclick="showFullPaidList(${fpPg-1})" ${fpPg<=1?'disabled':''}>Trước</button>
+        <button onclick="showFullPaidList(${fpPg+1})" ${fpPg>=fpTotPg?'disabled':''}>Sau</button>
+       </div>` : '';
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // TRIAL REPORT
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 let tPeriod='day', tDate=new Date();
+
 const getTrialRange = () => {
-  let s,e;
-  if(tPeriod==='day'){s=e=new Date(tDate);}
-  else if(tPeriod==='week'){s=new Date(tDate);s.setDate(tDate.getDate()-tDate.getDay()+1);e=new Date(s);e.setDate(s.getDate()+6);}
-  else if(tPeriod==='month'){s=new Date(tDate.getFullYear(),tDate.getMonth(),1);e=new Date(tDate.getFullYear(),tDate.getMonth()+1,0);}
-  else{s=new Date(tDate.getFullYear(),0,1);e=new Date(tDate.getFullYear(),11,31);}
-  return{start:s.toISOString().split('T')[0],end:e.toISOString().split('T')[0]};
+  let s, e;
+  if (tPeriod==='day')  { s=e=new Date(tDate); }
+  else if (tPeriod==='week')  { s=new Date(tDate); s.setDate(tDate.getDate()-tDate.getDay()+1); e=new Date(s); e.setDate(s.getDate()+6); }
+  else if (tPeriod==='month') { s=new Date(tDate.getFullYear(),tDate.getMonth(),1); e=new Date(tDate.getFullYear(),tDate.getMonth()+1,0); }
+  else { s=new Date(tDate.getFullYear(),0,1); e=new Date(tDate.getFullYear(),11,31); }
+  return { start: s.toISOString().split('T')[0], end: e.toISOString().split('T')[0] };
 };
-function setTrialPeriod(p){tPeriod=p;document.querySelectorAll('[data-tp]').forEach(b=>b.classList.toggle('active',b.dataset.tp===p));updateTrialLabel();loadTrial();}
-function navTrial(d){if(tPeriod==='day')tDate.setDate(tDate.getDate()+d);else if(tPeriod==='week')tDate.setDate(tDate.getDate()+d*7);else if(tPeriod==='month')tDate.setMonth(tDate.getMonth()+d);else tDate.setFullYear(tDate.getFullYear()+d);updateTrialLabel();loadTrial();}
-function setTrialDate(v){tDate=new Date(v);updateTrialLabel();loadTrial();}
-function goTrialToday(){tDate=new Date();updateTrialLabel();loadTrial();}
-function updateTrialLabel(){
-  const lbl=document.getElementById('trialLabel');
-  if(tPeriod==='day'){lbl.textContent=tDate.toLocaleDateString('vi-VN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});document.getElementById('trialPicker').value=tDate.toISOString().split('T')[0];}
-  else if(tPeriod==='week'){const ws=new Date(tDate);ws.setDate(tDate.getDate()-tDate.getDay()+1);const we=new Date(ws);we.setDate(ws.getDate()+6);lbl.textContent=ws.toLocaleDateString('vi-VN')+' – '+we.toLocaleDateString('vi-VN');}
-  else if(tPeriod==='month'){lbl.textContent=tDate.toLocaleDateString('vi-VN',{month:'long',year:'numeric'});}
-  else{lbl.textContent='Năm '+tDate.getFullYear();}
-  document.getElementById('trialPeriodLbl').textContent=lbl.textContent;
-}
-async function loadTrial(page=1){
-  try{
-    const r=getTrialRange();
-    const p=new URLSearchParams({start_date:r.start,end_date:r.end,page,limit:50});
-    const br=document.getElementById('trialBranch').value, src=document.getElementById('trialSrc').value, st=document.getElementById('trialSt').value, q=document.getElementById('trialSearch').value;
-    if(br)p.append('branchId',br);if(src)p.append('source',src);if(st)p.append('status',st);if(q)p.append('search',q);
-    const res=await api.get('/leads/trial-report?'+p);
-    const s=res.summary||{}, att=s.attended||0, sched=s.scheduled||0, conv=s.converted||0, wait=s.waiting||0;
-    document.getElementById('trialSched').textContent=sched;
-    document.getElementById('trialAtt').textContent=att;
-    document.getElementById('trialConv').textContent=conv;
-    document.getElementById('trialWait').textContent=wait;
-    document.getElementById('trialNoShow').textContent=Math.max(0,sched-att);
-    document.getElementById('trialConvRate').textContent=(att>0?Math.round(conv/att*100):0)+'%';
-    document.getElementById('trialAttRate').textContent=(sched>0?Math.round(att/sched*100):0)+'%';
-    const tb=document.getElementById('trialTb');
-    const items=res.data||[];
-    const stMap={attended:{l:'Đã đến',c:'attended'},converted:{l:'Đã chuyển đổi',c:'converted'},waiting:{l:'Chờ xử lý',c:'waiting'},cancelled:{l:'Đã hủy',c:'cancelled'}};
-    tb.innerHTML=items.length?items.map(x=>{const st=stMap[x.status]||{l:x.status,c:''};return`<tr>
-      <td><div class="person-cell"><div class="person-ava">${(x.student_name||'?')[0].toUpperCase()}</div>
-        <div><div class="person-name">${x.student_name||'-'}</div><div class="person-sub">${x.customer_name||''} — ${x.customer_phone||''}</div></div></div></td>
-      <td><span class="src-tag">${x.source||'-'}</span></td>
-      <td>${x.branch_name||'-'}</td>
-      <td>${x.scheduled_date?new Date(x.scheduled_date).toLocaleDateString('vi-VN'):'-'}</td>
-      <td>${x.attended_date?new Date(x.attended_date).toLocaleDateString('vi-VN'):'-'}</td>
-      <td><span class="status-pill ${st.c}">${st.l}</span></td>
-      <td>${x.ec_name||'-'}</td><td>${x.note||''}</td></tr>`;}).join(''):'<tr><td colspan="8" class="text-center text-muted" style="padding:32px">Không có dữ liệu</td></tr>';
-    document.getElementById('trialPg').innerHTML=res.pagination?.totalPages>1?ui.pagination(res.pagination,loadTrial):'';
-  }catch(e){document.getElementById('trialTb').innerHTML='<tr><td colspan="8" class="text-center text-muted" style="padding:24px">Lỗi tải</td></tr>';}
-}
-function exportTrial(){
-  const r=getTrialRange(),p=new URLSearchParams({start_date:r.start,end_date:r.end,export:'csv'});
-  const br=document.getElementById('trialBranch').value,src=document.getElementById('trialSrc').value,st=document.getElementById('trialSt').value;
-  if(br)p.append('branchId',br);if(src)p.append('source',src);if(st)p.append('status',st);
-  window.open(`${API_URL}/leads/trial-report/export?${p}&token=${auth.getToken()}`,'_blank');
+
+function setTrialPeriod(p) { tPeriod=p; document.querySelectorAll('[data-tp]').forEach(b=>b.classList.toggle('active',b.dataset.tp===p)); updateTrialLabel(); loadTrial(); }
+function navTrial(d)       { if(tPeriod==='day')tDate.setDate(tDate.getDate()+d); else if(tPeriod==='week')tDate.setDate(tDate.getDate()+d*7); else if(tPeriod==='month')tDate.setMonth(tDate.getMonth()+d); else tDate.setFullYear(tDate.getFullYear()+d); updateTrialLabel(); loadTrial(); }
+function setTrialDate(v)   { tDate=new Date(v); updateTrialLabel(); loadTrial(); }
+function goTrialToday()    { tDate=new Date(); updateTrialLabel(); loadTrial(); }
+
+function updateTrialLabel() {
+  const lbl = document.getElementById('trialLabel');
+  if (tPeriod==='day')   { lbl.textContent = tDate.toLocaleDateString('vi-VN',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); document.getElementById('trialPicker').value = tDate.toISOString().split('T')[0]; }
+  else if (tPeriod==='week')  { const ws=new Date(tDate); ws.setDate(tDate.getDate()-tDate.getDay()+1); const we=new Date(ws); we.setDate(ws.getDate()+6); lbl.textContent=ws.toLocaleDateString('vi-VN')+' – '+we.toLocaleDateString('vi-VN'); }
+  else if (tPeriod==='month') { lbl.textContent = tDate.toLocaleDateString('vi-VN',{month:'long',year:'numeric'}); }
+  else { lbl.textContent = 'Năm ' + tDate.getFullYear(); }
+  document.getElementById('trialPeriodLbl').textContent = lbl.textContent;
 }
 
-// ═══════════════════════════════════════════
+async function loadTrial(page=1) {
+  try {
+    const r  = getTrialRange();
+    const p  = new URLSearchParams({start_date:r.start, end_date:r.end, page, limit:50});
+    const br = document.getElementById('trialBranch').value;
+    const src= document.getElementById('trialSrc').value;
+    const st = document.getElementById('trialSt').value;
+    const q  = document.getElementById('trialSearch').value;
+    if (br)  p.append('branchId', br);
+    if (src) p.append('source',   src);
+    if (st)  p.append('status',   st);
+    if (q)   p.append('search',   q);
+    const res = await api.get('/leads/trial-report?' + p);
+    const s   = res.summary || {};
+    const att=s.attended||0, sched=s.scheduled||0, conv=s.converted||0, wait=s.waiting||0;
+    document.getElementById('trialSched').textContent   = sched;
+    document.getElementById('trialAtt').textContent     = att;
+    document.getElementById('trialConv').textContent    = conv;
+    document.getElementById('trialWait').textContent    = wait;
+    document.getElementById('trialNoShow').textContent  = Math.max(0, sched-att);
+    document.getElementById('trialConvRate').textContent= (att>0 ? Math.round(conv/att*100) : 0)+'%';
+    document.getElementById('trialAttRate').textContent = (sched>0 ? Math.round(att/sched*100) : 0)+'%';
+    const stMap = {
+      attended:  {l:'Đã đến',         c:'attended'},
+      converted: {l:'Đã chuyển đổi',  c:'converted'},
+      waiting:   {l:'Chờ xử lý',      c:'waiting'},
+      cancelled: {l:'Đã hủy',         c:'cancelled'},
+    };
+    const items = res.data || [];
+    document.getElementById('trialTb').innerHTML = items.length
+      ? items.map(x => {
+          const st = stMap[x.status] || {l:x.status, c:''};
+          return `<tr>
+            <td><div class="person-cell">
+              <div class="person-ava">${(x.student_name||'?')[0].toUpperCase()}</div>
+              <div><div class="person-name">${esc(x.student_name||'-')}</div>
+              <div class="person-sub">${esc(x.customer_name||'')} — ${x.customer_phone||''}</div></div>
+            </div></td>
+            <td><span class="src-tag">${x.source||'-'}</span></td>
+            <td>${esc(x.branch_name||'-')}</td>
+            <td>${x.scheduled_date ? new Date(x.scheduled_date).toLocaleDateString('vi-VN') : '-'}</td>
+            <td>${x.attended_date  ? new Date(x.attended_date).toLocaleDateString('vi-VN')  : '-'}</td>
+            <td><span class="status-pill ${st.c}">${st.l}</span></td>
+            <td>${esc(x.ec_name||'-')}</td>
+            <td>${esc(x.note||'')}</td>
+          </tr>`;
+        }).join('')
+      : empty(8, 'Không có dữ liệu');
+    document.getElementById('trialPg').innerHTML = res.pagination?.totalPages > 1 ? ui.pagination(res.pagination, loadTrial) : '';
+  } catch(e) {
+    document.getElementById('trialTb').innerHTML = empty(8, 'Lỗi tải dữ liệu');
+  }
+}
+
+function exportTrial() {
+  const r = getTrialRange(), p = new URLSearchParams({start_date:r.start, end_date:r.end, export:'csv'});
+  const br=document.getElementById('trialBranch').value, src=document.getElementById('trialSrc').value, st=document.getElementById('trialSt').value;
+  if (br) p.append('branchId',br); if (src) p.append('source',src); if (st) p.append('status',st);
+  window.open(`${API_URL}/leads/trial-report/export?${p}&token=${auth.getToken()}`, '_blank');
+}
+
+// ═══════════════════════════════════════════════════════
 // CHECKIN REPORT
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 let cPeriod='day', cDate=new Date();
-const getCkRange=()=>{let s,e;if(cPeriod==='day'){s=e=new Date(cDate);}else if(cPeriod==='week'){s=new Date(cDate);s.setDate(cDate.getDate()-cDate.getDay()+1);e=new Date(s);e.setDate(s.getDate()+6);}else if(cPeriod==='month'){s=new Date(cDate.getFullYear(),cDate.getMonth(),1);e=new Date(cDate.getFullYear(),cDate.getMonth()+1,0);}else{s=new Date(cDate.getFullYear(),0,1);e=new Date(cDate.getFullYear(),11,31);}return{start:s.toISOString().split('T')[0],end:e.toISOString().split('T')[0]};};
-function setCheckinPeriod(p){cPeriod=p;document.querySelectorAll('[data-cp]').forEach(b=>b.classList.toggle('active',b.dataset.cp===p));updateCheckinLabel();loadCheckin();}
-function navCheckin(d){if(cPeriod==='day')cDate.setDate(cDate.getDate()+d);else if(cPeriod==='week')cDate.setDate(cDate.getDate()+d*7);else if(cPeriod==='month')cDate.setMonth(cDate.getMonth()+d);else cDate.setFullYear(cDate.getFullYear()+d);updateCheckinLabel();loadCheckin();}
-function setCheckinDate(v){cDate=new Date(v);updateCheckinLabel();loadCheckin();}
-function goCheckinToday(){cDate=new Date();updateCheckinLabel();loadCheckin();}
-function updateCheckinLabel(){
-  const lbl=document.getElementById('checkinLabel');
-  if(cPeriod==='day'){lbl.textContent=cDate.toLocaleDateString('vi-VN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});document.getElementById('checkinPicker').value=cDate.toISOString().split('T')[0];}
-  else if(cPeriod==='week'){const ws=new Date(cDate);ws.setDate(cDate.getDate()-cDate.getDay()+1);const we=new Date(ws);we.setDate(ws.getDate()+6);lbl.textContent=ws.toLocaleDateString('vi-VN')+' – '+we.toLocaleDateString('vi-VN');}
-  else if(cPeriod==='month'){lbl.textContent=cDate.toLocaleDateString('vi-VN',{month:'long',year:'numeric'});}
-  else{lbl.textContent='Năm '+cDate.getFullYear();}
-}
-async function loadCheckin(page=1){
-  try{
-    const r=getCkRange();
-    const p=new URLSearchParams({start_date:r.start,end_date:r.end,page,limit:50});
-    const br=document.getElementById('checkinBranch').value,rol=document.getElementById('checkinRole').value,q=document.getElementById('checkinSearch').value;
-    if(br)p.append('branch_id',br);if(rol)p.append('role',rol);if(q)p.append('search',q);
-    const res=await api.get('/checkin/report?'+p);
-    const s=res.summary||{};
-    document.getElementById('ckTotal').textContent=s.total_staff||0;
-    document.getElementById('ckIn').textContent=s.checked_in||0;
-    document.getElementById('ckOnTime').textContent=s.on_time||0;
-    document.getElementById('ckLate').textContent=s.late||0;
-    document.getElementById('ckAbsent').textContent=s.absent||0;
-    document.getElementById('ckHours').textContent=(s.total_hours||0).toFixed(1)+'h';
-    const tb=document.getElementById('checkinTb');
-    const items=res.data||[];
-    tb.innerHTML=items.length?items.map(x=>{
-      const h=x.total_hours||0,hc=h>=8?'full':h>=4?'partial':'low';
-      const sc=x.status==='on_time'?'on-time':x.status==='late'?'late':'absent';
-      const sl=x.status==='on_time'?'Đúng giờ':x.status==='late'?'Đi muộn':'Vắng';
-      return`<tr>
-        <td><div class="person-cell"><div class="person-ava">${(x.full_name||'?')[0].toUpperCase()}</div>
-          <div><div class="person-name">${x.full_name||'-'}</div><div class="person-sub">${x.employee_code||''}</div></div></div></td>
-        <td><span class="role-tag">${x.role_name||'-'}</span></td>
-        <td>${x.branch_name||'-'}</td>
-        <td>${x.checkin_date?new Date(x.checkin_date).toLocaleDateString('vi-VN'):'-'}</td>
-        <td class="text-center">${x.checkin_time||'-'}</td>
-        <td class="text-center">${x.checkout_time||'-'}</td>
-        <td class="text-center"><span class="hours-pill ${hc}">${h.toFixed(1)}h</span></td>
-        <td class="text-center"><span class="time-pill ${sc}">${sl}</span></td>
-        <td>${x.note||''}</td></tr>`;
-    }).join(''):'<tr><td colspan="9" class="text-center text-muted" style="padding:32px">Không có dữ liệu</td></tr>';
-    document.getElementById('checkinPg').innerHTML=res.pagination?.totalPages>1?ui.pagination(res.pagination,loadCheckin):'';
-  }catch(e){document.getElementById('checkinTb').innerHTML='<tr><td colspan="9" class="text-center text-muted" style="padding:24px">Lỗi tải</td></tr>';}
-}
-function exportCheckin(){
-  const r=getCkRange(),p=new URLSearchParams({start_date:r.start,end_date:r.end});
-  const br=document.getElementById('checkinBranch').value,rol=document.getElementById('checkinRole').value;
-  if(br)p.append('branch_id',br);if(rol)p.append('role',rol);
-  window.open(`${API_URL}/checkin/export?${p}&token=${auth.getToken()}`,'_blank');
+
+const getCkRange = () => {
+  let s, e;
+  if (cPeriod==='day')  { s=e=new Date(cDate); }
+  else if (cPeriod==='week')  { s=new Date(cDate); s.setDate(cDate.getDate()-cDate.getDay()+1); e=new Date(s); e.setDate(s.getDate()+6); }
+  else if (cPeriod==='month') { s=new Date(cDate.getFullYear(),cDate.getMonth(),1); e=new Date(cDate.getFullYear(),cDate.getMonth()+1,0); }
+  else { s=new Date(cDate.getFullYear(),0,1); e=new Date(cDate.getFullYear(),11,31); }
+  return { start: s.toISOString().split('T')[0], end: e.toISOString().split('T')[0] };
+};
+
+function setCheckinPeriod(p) { cPeriod=p; document.querySelectorAll('[data-cp]').forEach(b=>b.classList.toggle('active',b.dataset.cp===p)); updateCheckinLabel(); loadCheckin(); }
+function navCheckin(d)       { if(cPeriod==='day')cDate.setDate(cDate.getDate()+d); else if(cPeriod==='week')cDate.setDate(cDate.getDate()+d*7); else if(cPeriod==='month')cDate.setMonth(cDate.getMonth()+d); else cDate.setFullYear(cDate.getFullYear()+d); updateCheckinLabel(); loadCheckin(); }
+function setCheckinDate(v)   { cDate=new Date(v); updateCheckinLabel(); loadCheckin(); }
+function goCheckinToday()    { cDate=new Date(); updateCheckinLabel(); loadCheckin(); }
+
+function updateCheckinLabel() {
+  const lbl = document.getElementById('checkinLabel');
+  if (cPeriod==='day')   { lbl.textContent = cDate.toLocaleDateString('vi-VN',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); document.getElementById('checkinPicker').value = cDate.toISOString().split('T')[0]; }
+  else if (cPeriod==='week')  { const ws=new Date(cDate); ws.setDate(cDate.getDate()-cDate.getDay()+1); const we=new Date(ws); we.setDate(ws.getDate()+6); lbl.textContent=ws.toLocaleDateString('vi-VN')+' – '+we.toLocaleDateString('vi-VN'); }
+  else if (cPeriod==='month') { lbl.textContent = cDate.toLocaleDateString('vi-VN',{month:'long',year:'numeric'}); }
+  else { lbl.textContent = 'Năm ' + cDate.getFullYear(); }
 }
 
-// ═══════════════════════════════════════════
-// KPI MANAGEMENT
-// ═══════════════════════════════════════════
-let kpiEcs=[];
-async function loadKpi(){
-  const month=document.getElementById('kpiMonth').value, br=document.getElementById('kpiBranch').value;
-  document.getElementById('kpiMonthLbl').textContent=month;
-  try{
-    const p=new URLSearchParams({month}); if(br) p.append('branchId',br);
-    const {targets=[],missingEcs=[]}=(await api.get('/kpi/targets?'+p)).data||{};
-    document.getElementById('kpiTotalEc').textContent=targets.length+missingEcs.length;
-    document.getElementById('kpiHas').textContent=targets.length;
-    document.getElementById('kpiMiss').textContent=missingEcs.length;
-    document.getElementById('kpiTotalTarget').textContent=fmtCur(targets.reduce((s,t)=>s+(+t.target_revenue||0),0));
-    document.getElementById('kpiTb').innerHTML=targets.length?targets.map(t=>`<tr>
-      <td><strong>${t.ec_name}</strong></td>
-      <td><span class="badge badge-gray">${t.branch_code||'-'}</span></td>
-      <td class="text-right" style="color:#16a34a;font-weight:600">${fmtCur(t.target_revenue)}</td>
-      <td class="text-center">${t.target_checkin||0}</td>
-      <td class="text-center">${t.target_conversion||0}</td>
-      <td class="text-center"><button class="btn btn-sm btn-secondary" onclick="editKpi(${t.ec_id},'${t.ec_name}',${t.branch_id||0},${t.target_revenue||0},${t.target_checkin||0},${t.target_conversion||0})"><i class="fas fa-edit"></i></button></td>
-    </tr>`).join(''):'<tr><td colspan="6" class="text-center text-muted" style="padding:32px">Chưa có KPI nào</td></tr>';
-    const mc=document.getElementById('kpiMissCard');
-    if(missingEcs.length){
-      mc.style.display='block';
-      document.getElementById('kpiMissTb').innerHTML=missingEcs.map(e=>`<tr>
-        <td><strong>${e.full_name}</strong></td>
-        <td><span class="badge badge-gray">${e.branch_name||'-'}</span></td>
-        <td class="text-center"><button class="btn btn-sm btn-primary" onclick="editKpi(${e.id},'${e.full_name}',${e.branch_id||0},0,0,0)"><i class="fas fa-plus"></i> Set KPI</button></td>
-      </tr>`).join('');
-    } else mc.style.display='none';
-    kpiEcs=[...targets.map(t=>({id:t.ec_id,name:t.ec_name,branch_id:t.branch_id,code:t.branch_code,kpi:t.target_revenue})),...missingEcs.map(e=>({id:e.id,name:e.full_name,branch_id:e.branch_id,code:'',kpi:0}))];
-  }catch(e){notify.error('Lỗi tải dữ liệu KPI');}
+async function loadCheckin(page=1) {
+  try {
+    const r   = getCkRange();
+    const p   = new URLSearchParams({start_date:r.start, end_date:r.end, page, limit:50});
+    const br  = document.getElementById('checkinBranch').value;
+    const rol = document.getElementById('checkinRole').value;
+    const q   = document.getElementById('checkinSearch').value;
+    if (br)  p.append('branch_id', br);
+    if (rol) p.append('role',      rol);
+    if (q)   p.append('search',    q);
+    const res = await api.get('/checkin/report?' + p);
+    const s   = res.summary || {};
+    document.getElementById('ckTotal').textContent  = s.total_staff || 0;
+    document.getElementById('ckIn').textContent     = s.checked_in  || 0;
+    document.getElementById('ckOnTime').textContent = s.on_time     || 0;
+    document.getElementById('ckLate').textContent   = s.late        || 0;
+    document.getElementById('ckAbsent').textContent = s.absent      || 0;
+    document.getElementById('ckHours').textContent  = (s.total_hours||0).toFixed(1) + 'h';
+    const items = res.data || [];
+    document.getElementById('checkinTb').innerHTML = items.length
+      ? items.map(x => {
+          const h  = x.total_hours || 0;
+          const hc = h>=8?'full':h>=4?'partial':'low';
+          const sc = x.status==='on_time'?'on-time':x.status==='late'?'late':'absent';
+          const sl = x.status==='on_time'?'Đúng giờ':x.status==='late'?'Đi muộn':'Vắng';
+          return `<tr>
+            <td><div class="person-cell">
+              <div class="person-ava">${(x.full_name||'?')[0].toUpperCase()}</div>
+              <div><div class="person-name">${esc(x.full_name||'-')}</div><div class="person-sub">${x.employee_code||''}</div></div>
+            </div></td>
+            <td><span class="role-tag">${x.role_name||'-'}</span></td>
+            <td>${esc(x.branch_name||'-')}</td>
+            <td>${x.checkin_date ? new Date(x.checkin_date).toLocaleDateString('vi-VN') : '-'}</td>
+            <td class="text-center">${x.checkin_time||'-'}</td>
+            <td class="text-center">${x.checkout_time||'-'}</td>
+            <td class="text-center"><span class="hours-pill ${hc}">${h.toFixed(1)}h</span></td>
+            <td class="text-center"><span class="time-pill ${sc}">${sl}</span></td>
+            <td>${esc(x.note||'')}</td>
+          </tr>`;
+        }).join('')
+      : empty(9, 'Không có dữ liệu');
+    document.getElementById('checkinPg').innerHTML = res.pagination?.totalPages > 1 ? ui.pagination(res.pagination, loadCheckin) : '';
+  } catch(e) {
+    document.getElementById('checkinTb').innerHTML = empty(9, 'Lỗi tải dữ liệu');
+  }
 }
-function editKpi(ecId,ecName,brId,rev,ck,conv){
-  document.getElementById('kpiEcId').value=ecId; document.getElementById('kpiBrId').value=brId;
-  document.getElementById('kpiEcName').value=ecName; document.getElementById('kpiEditMonth').value=document.getElementById('kpiMonth').value;
-  document.getElementById('kpiRev').value=rev; document.getElementById('kpiCkin').value=ck; document.getElementById('kpiConv').value=conv;
-  document.getElementById('kpiEditTitle').innerHTML=`<i class="fas fa-bullseye"></i> Set KPI — ${ecName}`;
+
+function exportCheckin() {
+  const r = getCkRange(), p = new URLSearchParams({start_date:r.start, end_date:r.end});
+  const br=document.getElementById('checkinBranch').value, rol=document.getElementById('checkinRole').value;
+  if (br) p.append('branch_id',br); if (rol) p.append('role',rol);
+  window.open(`${API_URL}/checkin/export?${p}&token=${auth.getToken()}`, '_blank');
+}
+
+// ═══════════════════════════════════════════════════════
+// KPI MANAGEMENT
+// ═══════════════════════════════════════════════════════
+let kpiEcs = [];
+
+async function loadKpi() {
+  const month = document.getElementById('kpiMonth').value;
+  const br    = document.getElementById('kpiBranch').value;
+  document.getElementById('kpiMonthLbl').textContent = month;
+  try {
+    const p = new URLSearchParams({month});
+    if (br) p.append('branchId', br);
+    const { targets=[], missingEcs=[] } = (await api.get('/kpi/targets?' + p)).data || {};
+    document.getElementById('kpiTotalEc').textContent   = targets.length + missingEcs.length;
+    document.getElementById('kpiHas').textContent       = targets.length;
+    document.getElementById('kpiMiss').textContent      = missingEcs.length;
+    document.getElementById('kpiTotalTarget').textContent = fmtCur(targets.reduce((s,t)=>s+(+t.target_revenue||0),0));
+    document.getElementById('kpiTb').innerHTML = targets.length
+      ? targets.map(t => `<tr>
+          <td><strong>${esc(t.ec_name)}</strong></td>
+          <td><span class="badge badge-gray">${t.branch_code||'-'}</span></td>
+          <td class="text-right" style="color:#16a34a;font-weight:600">${fmtCur(t.target_revenue)}</td>
+          <td class="text-center">${t.target_checkin||0}</td>
+          <td class="text-center">${t.target_conversion||0}</td>
+          <td class="text-center"><button class="btn btn-sm btn-secondary" onclick="editKpi(${t.ec_id},'${esc(t.ec_name)}',${t.branch_id||0},${t.target_revenue||0},${t.target_checkin||0},${t.target_conversion||0})"><i class="fas fa-edit"></i></button></td>
+        </tr>`).join('')
+      : empty(6);
+    const mc = document.getElementById('kpiMissCard');
+    if (missingEcs.length) {
+      mc.style.display = 'block';
+      document.getElementById('kpiMissTb').innerHTML = missingEcs.map(e => `<tr>
+        <td><strong>${esc(e.full_name)}</strong></td>
+        <td><span class="badge badge-gray">${e.branch_name||'-'}</span></td>
+        <td class="text-center"><button class="btn btn-sm btn-primary" onclick="editKpi(${e.id},'${esc(e.full_name)}',${e.branch_id||0},0,0,0)"><i class="fas fa-plus"></i> Set KPI</button></td>
+      </tr>`).join('');
+    } else mc.style.display = 'none';
+    kpiEcs = [
+      ...targets.map(t => ({id:t.ec_id, name:t.ec_name, branch_id:t.branch_id, code:t.branch_code, kpi:t.target_revenue})),
+      ...missingEcs.map(e => ({id:e.id, name:e.full_name, branch_id:e.branch_id, code:'', kpi:0}))
+    ];
+  } catch(e) { notify.error('Lỗi tải dữ liệu KPI'); }
+}
+
+function editKpi(ecId, ecName, brId, rev, ck, conv) {
+  document.getElementById('kpiEcId').value      = ecId;
+  document.getElementById('kpiBrId').value      = brId;
+  document.getElementById('kpiEcName').value    = ecName;
+  document.getElementById('kpiEditMonth').value = document.getElementById('kpiMonth').value;
+  document.getElementById('kpiRev').value  = rev;
+  document.getElementById('kpiCkin').value = ck;
+  document.getElementById('kpiConv').value = conv;
+  document.getElementById('kpiEditTitle').innerHTML = `<i class="fas fa-bullseye"></i> Set KPI — ${esc(ecName)}`;
   document.getElementById('kpiEditModal').classList.add('show');
 }
-async function saveKpi(){
-  try{
-    await api.post('/kpi/target',{ec_id:document.getElementById('kpiEcId').value,branch_id:document.getElementById('kpiBrId').value||null,month:document.getElementById('kpiEditMonth').value,target_revenue:document.getElementById('kpiRev').value,target_checkin:document.getElementById('kpiCkin').value||0,target_conversion:document.getElementById('kpiConv').value||0});
+
+async function saveKpi() {
+  try {
+    await api.post('/kpi/target', {
+      ec_id:          document.getElementById('kpiEcId').value,
+      branch_id:      document.getElementById('kpiBrId').value || null,
+      month:          document.getElementById('kpiEditMonth').value,
+      target_revenue: document.getElementById('kpiRev').value,
+      target_checkin: document.getElementById('kpiCkin').value  || 0,
+      target_conversion: document.getElementById('kpiConv').value || 0
+    });
     notify.success('Lưu KPI thành công');
     document.getElementById('kpiEditModal').classList.remove('show');
     loadKpi();
-  }catch(e){notify.error(e.message||'Lỗi lưu KPI');}
+  } catch(e) { notify.error(e.message||'Lỗi lưu KPI'); }
 }
-function openBulkModal(){
-  document.getElementById('bulkMonth').value=document.getElementById('kpiMonth').value;
-  document.getElementById('bulkTb').innerHTML=kpiEcs.length?kpiEcs.map(e=>`<tr>
-    <td><input type="checkbox" class="ec-chk" data-id="${e.id}" data-br="${e.branch_id||''}" checked></td>
-    <td>${e.name}</td><td><span class="badge badge-gray">${e.code||'-'}</span></td>
-    <td><input type="number" class="form-control kpi-inp" data-id="${e.id}" value="${e.kpi||''}" placeholder="KPI" step="1000000"></td>
-  </tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted" style="padding:24px">Không có EC</td></tr>';
+
+function openBulkModal() {
+  document.getElementById('bulkMonth').value = document.getElementById('kpiMonth').value;
+  document.getElementById('bulkTb').innerHTML = kpiEcs.length
+    ? kpiEcs.map(e => `<tr>
+        <td><input type="checkbox" class="ec-chk" data-id="${e.id}" data-br="${e.branch_id||''}" checked></td>
+        <td>${esc(e.name)}</td>
+        <td><span class="badge badge-gray">${e.code||'-'}</span></td>
+        <td><input type="number" class="form-control kpi-inp" data-id="${e.id}" value="${e.kpi||''}" placeholder="KPI" step="1000000"></td>
+      </tr>`).join('')
+    : empty(4, 'Không có EC');
   document.getElementById('bulkModal').classList.add('show');
 }
-function toggleAll(){const v=document.getElementById('checkAll').checked;document.querySelectorAll('.ec-chk').forEach(c=>c.checked=v);}
-function applyDefault(){const v=document.getElementById('defaultKpi').value;if(!v){notify.warning('Nhập KPI mặc định');return;}document.querySelectorAll('.kpi-inp').forEach(i=>{if(!i.value)i.value=v;});}
-async function saveBulk(){
-  const month=document.getElementById('bulkMonth').value, targets=[];
-  document.querySelectorAll('.ec-chk:checked').forEach(c=>{const inp=document.querySelector(`.kpi-inp[data-id="${c.dataset.id}"]`);if(inp?.value)targets.push({ec_id:+c.dataset.id,branch_id:c.dataset.br?+c.dataset.br:null,month,target_revenue:+inp.value});});
-  if(!targets.length){notify.warning('Chưa có KPI nào được nhập');return;}
-  try{await api.post('/kpi/targets/bulk',{targets});notify.success(`Đã lưu ${targets.length} KPI`);document.getElementById('bulkModal').classList.remove('show');loadKpi();}
-  catch(e){notify.error(e.message||'Lỗi lưu');}
+
+function toggleAll()    { const v=document.getElementById('checkAll').checked; document.querySelectorAll('.ec-chk').forEach(c=>c.checked=v); }
+function applyDefault() { const v=document.getElementById('defaultKpi').value; if(!v){notify.warning('Nhập KPI mặc định');return;} document.querySelectorAll('.kpi-inp').forEach(i=>{if(!i.value)i.value=v;}); }
+
+async function saveBulk() {
+  const month = document.getElementById('bulkMonth').value, targets = [];
+  document.querySelectorAll('.ec-chk:checked').forEach(c => {
+    const inp = document.querySelector(`.kpi-inp[data-id="${c.dataset.id}"]`);
+    if (inp?.value) targets.push({ec_id:+c.dataset.id, branch_id:c.dataset.br?+c.dataset.br:null, month, target_revenue:+inp.value});
+  });
+  if (!targets.length) { notify.warning('Chưa có KPI nào được nhập'); return; }
+  try {
+    await api.post('/kpi/targets/bulk', {targets});
+    notify.success(`Đã lưu ${targets.length} KPI`);
+    document.getElementById('bulkModal').classList.remove('show');
+    loadKpi();
+  } catch(e) { notify.error(e.message||'Lỗi lưu'); }
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // MY KPI
-// ═══════════════════════════════════════════
-async function loadMyKpi(){
-  try{
-    const res=await api.get('/dashboard/ec');
-    const{myStats,myReport,myKpi,myRanking,todayLeads,convertedLeads}=res.data;
-    const target=myKpi?.target_revenue||0, cur=myReport?.revenue||0, pct=target>0?Math.round(cur/target*100):0;
-    document.getElementById('myPct').textContent=pct+'%';
-    document.getElementById('myRev').textContent=fmtCur(cur);
-    document.getElementById('myTarget').textContent=fmtCur(target);
-    document.getElementById('myBar').style.width=Math.min(pct,100)+'%';
-    const ra=myRanking?.rank_all||'-', rb=myRanking?.rank_branch||'-';
-    document.getElementById('myRankAll').textContent='#'+ra;
-    document.getElementById('myRankBr').textContent='#'+rb;
-    document.getElementById('myRankAllIco').className='kpi-rank-ico '+(ra==1?'gold':ra==2?'silver':ra==3?'bronze':'');
-    document.getElementById('myRankBrIco').className='kpi-rank-ico '+(rb==1?'gold':rb==2?'silver':rb==3?'bronze':'');
-    document.getElementById('myCkin').textContent=myReport?.checkin_count||myStats?.attended||0;
-    document.getElementById('myConv').textContent=myReport?.leads_converted||0;
-    document.getElementById('myDep').textContent=fmtCur(myReport?.deposit_total||0);
-    document.getElementById('myExp').textContent=fmtCur(myReport?.expected_revenue||0);
-    const stBadge={scheduled:'<span class="badge badge-blue">Đã hẹn</span>',attended:'<span class="badge badge-green">Đã TN</span>',trial:'<span class="badge badge-yellow">Trial</span>',converted:'<span class="badge badge-teal">Converted</span>'};
-    document.getElementById('myTodayTb').innerHTML=todayLeads?.length?todayLeads.map(l=>`<tr><td><strong>${l.student_name||l.customer_name}</strong></td><td>${l.customer_phone}</td><td>${l.scheduled_time||'-'}</td><td>${stBadge[l.status]||'<span class="badge badge-gray">'+l.status+'</span>'}</td></tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted" style="padding:20px">Không có leads hôm nay</td></tr>';
-    document.getElementById('myConvTb').innerHTML=convertedLeads?.length?convertedLeads.map(l=>`<tr><td><strong>${l.student_name}</strong></td><td>${l.converted_date||'-'}</td><td style="color:#16a34a;font-weight:600">${fmtCur(l.actual_revenue)}</td><td style="color:var(--text-muted)">${fmtCur(l.fee_total)}</td></tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted" style="padding:20px">Chưa có chuyển đổi</td></tr>';
-  }catch(e){console.error(e);}
+// ═══════════════════════════════════════════════════════
+async function loadMyKpi() {
+  try {
+    const month = document.getElementById('myKpiMonth').value;
+    const res = await api.get('/dashboard/ec?month=' + month);
+    const { myReport, myKpi, myRanking, todayLeads, convertedLeads } = res.data;
+
+    // KPI hero - dùng cùng logic với sale-reports (revenue từ students)
+    const target = parseFloat(myReport?.kpi_target || myKpi?.target_revenue || 0);
+    const cur    = parseFloat(myReport?.revenue || 0);
+    const pct    = target > 0 ? Math.round(cur / target * 100) : 0;
+    document.getElementById('myPct').textContent    = pct + '%';
+    document.getElementById('myRev').textContent    = fmtCur(cur);
+    document.getElementById('myTarget').textContent = fmtCur(target);
+    document.getElementById('myBar').style.width    = Math.min(pct, 100) + '%';
+
+    // Xếp hạng
+    const ra = myRanking?.rank_all    || '-';
+    const rb = myRanking?.rank_branch || '-';
+    document.getElementById('myRankAll').textContent  = ra !== '-' ? '#' + ra : '#-';
+    document.getElementById('myRankBr').textContent   = rb !== '-' ? '#' + rb : '#-';
+    document.getElementById('myRankAllIco').className = 'kpi-rank-ico ' + (ra==1?'gold':ra==2?'silver':ra==3?'bronze':'');
+    document.getElementById('myRankBrIco').className  = 'kpi-rank-ico ' + (rb==1?'gold':rb==2?'silver':rb==3?'bronze':'');
+
+    // Quick stats - cùng logic sale-reports
+    document.getElementById('myCkin').textContent = myReport?.checkin_count || 0;
+    document.getElementById('myConv').textContent = myReport?.leads_converted || 0;
+    document.getElementById('myDep').textContent  = fmtCur(myReport?.deposit_total || 0);
+    document.getElementById('myExp').textContent  = fmtCur(myReport?.expected_revenue || 0);
+
+    // Bảng leads hôm nay
+    const stBadge = {
+      scheduled: '<span class="badge badge-blue">Đã hẹn</span>',
+      attended:  '<span class="badge badge-green">Đã TN</span>',
+      trial:     '<span class="badge badge-yellow">Trial</span>',
+      converted: '<span class="badge badge-teal">Converted</span>',
+      waiting:   '<span class="badge badge-purple">Chờ TN tiếp</span>',
+    };
+    document.getElementById('myTodayTb').innerHTML = todayLeads?.length
+      ? todayLeads.map(l => `<tr>
+          <td><strong>${esc(l.student_name||l.customer_name)}</strong></td>
+          <td>${l.customer_phone}</td>
+          <td>${l.scheduled_time||'-'}</td>
+          <td>${stBadge[l.status]||'<span class="badge badge-gray">'+esc(l.status)+'</span>'}</td>
+        </tr>`).join('')
+      : empty(4, 'Không có leads hôm nay');
+
+    // Bảng đã chuyển đổi trong tháng (revenue từ students.actual_revenue)
+    document.getElementById('myConvTb').innerHTML = convertedLeads?.length
+      ? convertedLeads.map(l => `<tr>
+          <td><strong>${esc(l.student_name)}</strong></td>
+          <td>${l.converted_date||'-'}</td>
+          <td style="color:#16a34a;font-weight:600">${fmtCur(l.actual_revenue)}</td>
+          <td style="color:var(--text-muted)">${fmtCur(l.fee_total)}</td>
+        </tr>`).join('')
+      : empty(4, 'Chưa có chuyển đổi tháng này');
+  } catch(e) { console.error('loadMyKpi error', e); }
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 async function init() {
   await auth.requireAuth();
   buildSidebar('sidebar');
@@ -1230,9 +1442,9 @@ async function init() {
   await loadBranches();
 
   const nowM = new Date().toISOString().slice(0,7);
-  document.getElementById('saleMonth').value = nowM;
-  document.getElementById('kpiMonth').value = nowM;
-  document.getElementById('myKpiMonth').value = nowM;
+  document.getElementById('saleMonth').value   = nowM;
+  document.getElementById('kpiMonth').value    = nowM;
+  document.getElementById('myKpiMonth').value  = nowM;
 
   document.getElementById('saleMonth').addEventListener('change', loadSale);
   document.getElementById('saleBranch').addEventListener('change', loadSale);
@@ -1242,14 +1454,17 @@ async function init() {
 
   window.addEventListener('branchchange', e => {
     const bid = e.detail?.branch?.id || '';
-    ['saleBranch','trialBranch','checkinBranch','kpiBranch'].forEach(id => { const el=document.getElementById(id); if(el) el.value=bid; });
+    ['saleBranch','trialBranch','checkinBranch','kpiBranch'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = bid;
+    });
     const cur = document.querySelector('.rp-nav-item.active')?.dataset.s;
-    if(cur) sectionLoad(cur);
+    if (cur) sectionLoad(cur);
   });
 
-  const hash = window.location.hash.slice(1);
+  const hash  = window.location.hash.slice(1);
   const valid = ['sale','trial','checkin','kpi','mykpi'];
-  const first = valid.includes(hash) && document.querySelector(`.rp-nav-item[data-s="${hash}"]`) ? hash : document.querySelector('.rp-nav-item')?.dataset.s;
+  const first = valid.includes(hash) && document.querySelector(`.rp-nav-item[data-s="${hash}"]`) ? hash
+               : document.querySelector('.rp-nav-item')?.dataset.s;
   if (first) showSection(first);
 }
 

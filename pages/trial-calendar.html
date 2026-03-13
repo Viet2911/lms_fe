@@ -345,9 +345,11 @@
               <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)"><i
                   class="fas fa-chevron-right"></i></button>
             </div>
-            <div style="display:flex; gap:8px;">
-              <button class="btn btn-secondary btn-sm" onclick="goToday()"><i class="fas fa-calendar-day"></i> Hôm
-                nay</button>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <select id="ecFilter" class="form-control" style="display:none;width:180px;height:32px;font-size:13px;padding:0 8px" onchange="loadCalendar()">
+                <option value="">Tất cả EC</option>
+              </select>
+              <button class="btn btn-secondary btn-sm" onclick="goToday()"><i class="fas fa-calendar-day"></i> Hôm nay</button>
             </div>
           </div>
           <div class="calendar-grid" id="calendarGrid"></div>
@@ -746,7 +748,7 @@
       padding: 12px;
       border: 2px solid #e5e7eb;
       border-radius: 10px;
-      background: white;
+      background: var(--bg-card);
       cursor: pointer;
       transition: all 0.2s;
       font-size: 13px;
@@ -829,10 +831,10 @@
   </div>
 
   <script src="../js/config.js"></script>
-  <script src="../js/app.js"></script>
-  <script src="../js/sidebar.js"></script>
-  <script src="../js/reactive.js"></script>
-  <script src="../js/crud-mixin.js"></script>
+  <script src="../js/app.js?v=4.1"></script>
+  <script src="../js/sidebar.js?v=4.4"></script>
+  <script src="../js/reactive.js?v=4.1"></script>
+  <script src="../js/crud-mixin.js?v=4.1"></script>
   <script>
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth() + 1;
@@ -840,12 +842,34 @@
     let classes = [];
     let currentRating = 0;
 
+    const MANAGER_ROLES = ['ADMIN', 'GDV', 'HOEC', 'OM', 'QLCS', 'CHU'];
+
     async function init() {
       if (!auth.checkAuth()) return;
       buildSidebar('sidebar');
+      const role = auth.user?.role_name?.toUpperCase();
+      if (MANAGER_ROLES.includes(role)) {
+        await loadEcFilter();
+      }
       await loadClasses();
       await loadStats();
       await loadCalendar();
+    }
+
+    async function loadEcFilter() {
+      try {
+        const bq = branch.buildQuery({});
+        const [r1, r2] = await Promise.all([
+          api.get('/users/by-role/EC' + bq).catch(() => ({ data: [] })),
+          api.get('/users/by-role/SALE' + bq).catch(() => ({ data: [] }))
+        ]);
+        const ecUsers = [...(r1.data || []), ...(r2.data || [])];
+        const sel = document.getElementById('ecFilter');
+        if (!ecUsers.length) return;
+        sel.innerHTML = '<option value="">Tất cả EC</option>' +
+          ecUsers.map(u => `<option value="${u.id}">${u.full_name}</option>`).join('');
+        sel.style.display = 'block';
+      } catch (e) { }
     }
 
     async function loadClasses() {
@@ -858,12 +882,19 @@
 
         const scheduleClassEl = document.getElementById('scheduleClass');
         if (scheduleClassEl) scheduleClassEl.innerHTML = classOptions;
-      } catch (e) { console.error(e); }
+      } catch (e) { }
+    }
+
+    function buildCalendarQuery(extra = {}) {
+      const ecId = document.getElementById('ecFilter')?.value || '';
+      const params = { ...extra };
+      if (ecId) params.saleId = ecId;
+      return branch.buildQuery(params);
     }
 
     async function loadStats() {
       try {
-        const query = branch.buildQuery({});
+        const query = buildCalendarQuery();
         const result = await api.get('/leads/stats' + query);
         const s = result.data || {};
 
@@ -885,14 +916,14 @@
             <div class="label">Đã chuyển đổi</div>
           </div>
         `;
-      } catch (e) { console.error(e); }
+      } catch (e) { }
     }
 
     async function loadCalendar() {
       document.getElementById('calendarTitle').textContent = `Tháng ${currentMonth}, ${currentYear}`;
 
       try {
-        const query = branch.buildQuery({ year: currentYear, month: currentMonth });
+        const query = buildCalendarQuery({ year: currentYear, month: currentMonth });
         const result = await api.get('/leads/month' + query);
         trialSessions = result.data || [];
       } catch (e) { trialSessions = []; }
@@ -1169,10 +1200,11 @@
         <p style="margin:0;color:var(--text-muted);">Đặt lịch <strong>Buổi ${sessionNum}</strong></p>
       `;
 
-      // Set default date to tomorrow
+      // Set default date to tomorrow (use local date, not UTC)
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-      document.getElementById('scheduleDate').value = tomorrow.toISOString().split('T')[0];
+      const ty = tomorrow.getFullYear(), tm = String(tomorrow.getMonth()+1).padStart(2,'0'), td = String(tomorrow.getDate()).padStart(2,'0');
+      document.getElementById('scheduleDate').value = `${ty}-${tm}-${td}`;
       document.getElementById('scheduleTime').value = lead?.scheduled_time?.substring(0, 5) || '09:00';
       document.getElementById('scheduleNote').value = '';
 
@@ -1316,16 +1348,12 @@
     async function loadConvertData(lead) {
       try {
         const res = await api.get('/promotions/convert-data');
-        console.log('Convert data API response:', res);
 
         // API trả về tuitionPackages, promotionPrograms, giftItems
         tuitionPackages = res.data?.tuitionPackages || res.data?.packages || res.tuitionPackages || res.packages || [];
         promoPrograms = res.data?.promotionPrograms || res.data?.programs || res.promotionPrograms || res.programs || [];
         giftItems = res.data?.giftItems || res.data?.items || res.giftItems || res.items || [];
 
-        console.log('Packages loaded:', tuitionPackages);
-        console.log('Programs loaded:', promoPrograms);
-        console.log('Gifts loaded:', giftItems);
 
         // Populate tuition packages dropdown
         if (tuitionPackages.length === 0) {
@@ -1357,7 +1385,6 @@
         defaultScholarshipMonths = 0;
 
       } catch (e) {
-        console.error('Load convert data error:', e);
         ui.error('Lỗi tải dữ liệu chuyển đổi');
       }
     }

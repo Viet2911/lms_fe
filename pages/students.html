@@ -44,6 +44,8 @@
     .sli-badge { padding: 2px 7px; border-radius: 10px; font-size: 10px; font-weight: 700; }
     .sli-badge.low { background: #fee2e2; color: #dc2626; }
     .sli-badge.normal { background: #dcfce7; color: #16a34a; }
+    [data-theme="dark"] .sli-badge.low { background: rgba(239,68,68,0.2); color: #f87171; }
+    [data-theme="dark"] .sli-badge.normal { background: rgba(34,197,94,0.2); color: #4ade80; }
 
     /* Right detail panel */
     .sd-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-secondary); }
@@ -82,11 +84,32 @@
     .status-badge.quit_paid { background: #fecaca; color: #dc2626; }
     .status-badge.quit_refund { background: #fed7aa; color: #c2410c; }
     .status-badge.reserved { background: #f3e8ff; color: #7c3aed; }
+    [data-theme="dark"] .status-badge.pending,[data-theme="dark"] .status-badge.expiring_soon { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    [data-theme="dark"] .status-badge.active { background: rgba(34,197,94,0.2); color: #4ade80; }
+    [data-theme="dark"] .status-badge.paused,[data-theme="dark"] .status-badge.reserved { background: rgba(139,92,246,0.2); color: #a78bfa; }
+    [data-theme="dark"] .status-badge.waiting { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    [data-theme="dark"] .status-badge.expired,[data-theme="dark"] .status-badge.quit_paid { background: rgba(239,68,68,0.2); color: #f87171; }
+    [data-theme="dark"] .status-badge.quit_refund { background: rgba(249,115,22,0.2); color: #fb923c; }
+
+    /* Renewal button in list item */
+    .sli { position: relative; }
+    .sli-renew-btn {
+      position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+      width: 28px; height: 28px; border-radius: 50%; border: none; cursor: pointer;
+      background: #f59e0b; color: white; font-size: 12px;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.15s;
+    }
+    .sli:hover .sli-renew-btn { opacity: 1; }
+    .sli-renew-btn:hover { background: #d97706; }
+    [data-theme="dark"] .sli-renew-btn { background: #b45309; }
 
     /* Sessions badge */
     .sessions-badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; }
     .sessions-badge.low { background: #fee2e2; color: #dc2626; }
     .sessions-badge.normal { background: #dcfce7; color: #166534; }
+    [data-theme="dark"] .sessions-badge.low { background: rgba(239,68,68,0.2); color: #f87171; }
+    [data-theme="dark"] .sessions-badge.normal { background: rgba(34,197,94,0.2); color: #4ade80; }
 
     /* Form modal styles */
     .form-section { padding: 16px; border-radius: 12px; margin-bottom: 16px; }
@@ -101,15 +124,42 @@
     .form-section.pink h4 { color: #9d174d; }
     .form-section.purple { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
     .form-section.purple h4 { color: #6b21a8; }
+    [data-theme="dark"] .form-section.blue { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.2); }
+    [data-theme="dark"] .form-section.blue h4 { color: #60a5fa; }
+    [data-theme="dark"] .form-section.yellow { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.2); }
+    [data-theme="dark"] .form-section.yellow h4 { color: #fbbf24; }
+    [data-theme="dark"] .form-section.green { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.2); }
+    [data-theme="dark"] .form-section.green h4 { color: #4ade80; }
+    [data-theme="dark"] .form-section.pink { background: rgba(236,72,153,0.12); border: 1px solid rgba(236,72,153,0.2); }
+    [data-theme="dark"] .form-section.pink h4 { color: #f472b6; }
+    [data-theme="dark"] .form-section.purple { background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.2); }
+    [data-theme="dark"] .form-section.purple h4 { color: #a78bfa; }
 
     .gift-checkbox { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #fdf2f8; border: 1px solid #f9a8d4; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
     .gift-checkbox:hover { background: #fce7f3; }
     .gift-checkbox.checked { background: #db2777; color: white; border-color: #db2777; }
     .gift-checkbox.disabled { opacity: 0.5; cursor: not-allowed; background: #f3f4f6; border-color: #e5e7eb; }
     .gift-checkbox input { display: none; }
+    [data-theme="dark"] .gift-checkbox { background: rgba(219,39,119,0.1); border-color: rgba(219,39,119,0.3); color: var(--text-primary); }
+    [data-theme="dark"] .gift-checkbox:hover { background: rgba(219,39,119,0.2); }
+    [data-theme="dark"] .gift-checkbox.disabled { background: var(--bg-secondary); border-color: var(--border); }
     .gift-qty { font-size: 11px; opacity: 0.7; }
     .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
-    .summary-total { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #374151; }
+    .summary-total { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); }
+    /* formModal luôn tông sáng */
+    #formModal .form-control, #formModal select, #formModal textarea, #formModal input {
+      background: #fff !important; color: #1e293b !important; border-color: #cbd5e1 !important;
+    }
+    #formModal label, #formModal .form-group label { color: #475569 !important; }
+    #formModal .section-title { color: #1e293b !important; border-color: #e2e8f0 !important; }
+    #formModal .pkg-card { background: #f8fafc !important; border-color: #e2e8f0 !important; color: #1e293b !important; }
+    #formModal .pkg-card:hover { background: #eff6ff !important; border-color: #3b82f6 !important; }
+    #formModal .pkg-card.selected { background: #eff6ff !important; border-color: #3b82f6 !important; }
+    #formModal .promo-option { background: #f8fafc !important; border-color: #e2e8f0 !important; color: #1e293b !important; }
+    #formModal .promo-option.selected { background: #eff6ff !important; border-color: #3b82f6 !important; }
+    #formModal .gift-checkbox { background: #fff !important; border-color: #e2e8f0 !important; color: #1e293b !important; }
+    #formModal .payment-summary { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+    #formModal .summary-total { border-color: #e2e8f0 !important; }
   </style>
 </head>
 
@@ -148,6 +198,9 @@
             <option value="2">2 tháng</option>
             <option value="3">3 tháng</option>
           </select>
+          <select id="saleFilter" onchange="loadData()" style="display:none">
+            <option value="">Tất cả Sale</option>
+          </select>
         </div>
         <div id="statusTabs" class="sl-pills"></div>
         <div id="studentsList" class="sl-list"><div style="padding:20px;text-align:center;color:var(--text-secondary)">Đang tải...</div></div>
@@ -166,12 +219,12 @@
 
   <!-- Form Modal -->
   <div class="modal" id="formModal">
-    <div class="modal-content" style="max-width:900px">
-      <div class="modal-header">
-        <div class="modal-title" id="formTitle"><i class="fas fa-user-graduate"></i> Thêm học viên mới</div>
-        <button class="modal-close" onclick="closeFormModal()">&times;</button>
+    <div class="modal-content" style="max-width:900px;background:#fff;color:#1e293b">
+      <div class="modal-header" style="background:#fff;color:#1e293b;border-bottom:1px solid #e2e8f0">
+        <div class="modal-title" id="formTitle" style="color:#1e293b"><i class="fas fa-user-graduate"></i> Thêm học viên mới</div>
+        <button class="modal-close" onclick="closeFormModal()" style="color:#64748b">&times;</button>
       </div>
-      <div class="modal-body" style="max-height:80vh;overflow-y:auto">
+      <div class="modal-body" style="max-height:80vh;overflow-y:auto;background:#fff;color:#1e293b">
         <input type="hidden" id="formId">
         <!-- Thông tin học sinh -->
         <div class="form-section blue">
@@ -293,7 +346,7 @@
         </div>
         <div class="form-group"><label>Ghi chú</label><textarea id="fNote" class="form-control" rows="2"></textarea></div>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer" style="background:#f8fafc;border-top:1px solid #e2e8f0">
         <button class="btn btn-secondary" onclick="closeFormModal()">Hủy</button>
         <button class="btn btn-primary" onclick="saveStudent()"><i class="fas fa-save"></i> Lưu</button>
       </div>
@@ -520,10 +573,10 @@
   </div>
 
   <script src="../js/config.js"></script>
-  <script src="../js/app.js"></script>
-  <script src="../js/reactive.js"></script>
-  <script src="../js/crud-mixin.js"></script>
-  <script src="../js/sidebar.js"></script>
+  <script src="../js/app.js?v=4.1"></script>
+  <script src="../js/reactive.js?v=4.1"></script>
+  <script src="../js/crud-mixin.js?v=4.1"></script>
+  <script src="../js/sidebar.js?v=4.4"></script>
   <script>
     let students = [], packages = [], promoPrograms = [], availableGifts = [];
     let currentFilter = null, currentStudentId = null;
@@ -544,7 +597,7 @@
     async function init() {
       await auth.requireAuth();
       buildSidebar('sidebar');
-      await Promise.all([loadOptions(), loadStats()]);
+      await Promise.all([loadOptions(), loadStats(), loadSaleFilter()]);
       await loadData();
     }
 
@@ -599,7 +652,7 @@
         document.getElementById('statusTabs').innerHTML = tabs.map(t =>
           `<span class="sl-pill ${currentFilter === t.key ? 'active' : ''}" onclick="filterByStatus(${t.key === null ? 'null' : `'${t.key}'`})">${t.label} <strong>${t.count}</strong></span>`
         ).join('');
-      } catch (e) { console.error(e); }
+      } catch (e) { }
     }
 
     function filterByStatus(status) { currentFilter = status; loadStats(); loadData(); }
@@ -609,12 +662,14 @@
         const search = document.getElementById('searchInput').value;
         const classId = document.getElementById('classFilter').value;
         const feeMonth = document.getElementById('feeMonthFilter').value;
+        const saleId = document.getElementById('saleFilter')?.value || '';
         const params = new URLSearchParams();
         if (branch.current?.id) params.append('branchId', branch.current.id);
         if (search) params.append('search', search);
         if (classId) params.append('class_id', classId);
         if (currentFilter) params.append('status', currentFilter);
         if (feeMonth !== '') params.append('fee_end_month', feeMonth);
+        if (saleId) params.append('saleId', saleId);
         params.append('page', page);
         params.append('limit', 20);
 
@@ -641,7 +696,7 @@
       }
       list.innerHTML = items.map(s => {
         const cfg = statusConfig[s.status] || { label: s.status, bar: '#9ca3af' };
-        const sessionsClass = (s.sessions_remaining || 0) <= 4 ? 'low' : 'normal';
+        const sessionsClass = (s.remaining_sessions || 0) <= 4 ? 'low' : 'normal';
         const isActive = s.id === currentStudentId;
 
         let feeEndDisplay = '';
@@ -652,16 +707,18 @@
           feeEndDisplay = `<span style="color:${color};font-size:10px">${feeEnd.toLocaleDateString('vi-VN')}</span>`;
         }
 
+        const needsRenewal = ['expired', 'expiring_soon'].includes(s.status) || (s.remaining_sessions || 0) <= 4;
         return `<div class="sli ${isActive ? 'active' : ''}" onclick="viewStudent(${s.id})">
           <div class="sli-bar" style="background:${cfg.bar}"></div>
           <div class="sli-body">
             <div class="sli-name">${s.full_name}</div>
-            <div class="sli-meta">${s.student_code || ''} • ${s.class_name || 'Chưa xếp lớp'}</div>
+            <div class="sli-meta">${s.student_code || ''} • ${s.class_name || 'Chưa xếp lớp'}${s.sale_name ? ` • <span style="color:#2563eb">${s.sale_name}</span>` : ''}</div>
             <div class="sli-foot">
-              <span class="sli-badge ${sessionsClass}">${s.sessions_remaining || 0} buổi</span>
+              <span class="sli-badge ${sessionsClass}">${s.remaining_sessions || 0} buổi</span>
               ${feeEndDisplay}
             </div>
           </div>
+          ${needsRenewal ? `<button class="sli-renew-btn" title="Tái phí" onclick="event.stopPropagation();openRenewalModal(${s.id})"><i class="fas fa-sync-alt"></i></button>` : ''}
         </div>`;
       }).join('');
 
@@ -691,11 +748,11 @@
       const cfg = statusConfig[s.status] || { label: s.status, bar: '#9ca3af' };
       const avatarColor = cfg.bar;
       const initial = (s.full_name || '?')[0].toUpperCase();
-      const sessionsClass = (s.sessions_remaining || 0) <= 4 ? 'low' : 'normal';
-      const tuitionFee = s.tuition_fee || 0;
-      const paidAmount = s.paid_amount || 0;
+      const sessionsClass = (s.remaining_sessions || 0) <= 4 ? 'low' : 'normal';
+      const tuitionFee = s.fee_total || s.tuition_fee || 0;
+      const paidAmount = s.actual_revenue || s.paid_amount || 0;
       const remaining = Math.max(0, tuitionFee - paidAmount);
-      const showRenewal = ['expired', 'expiring_soon'].includes(s.status) || (s.sessions_remaining || 0) <= 4;
+      const showRenewal = ['expired', 'expiring_soon'].includes(s.status) || (s.remaining_sessions || 0) <= 4;
 
       let feeEndDisplay = '-';
       if (s.fee_end_date) {
@@ -716,7 +773,7 @@
                 <div class="sd-hero-sub">
                   <span>${s.student_code || ''}</span>
                   <span class="status-badge ${s.status}">${cfg.label}</span>
-                  <span class="sessions-badge ${sessionsClass}">${s.sessions_remaining || 0} buổi</span>
+                  <span class="sessions-badge ${sessionsClass}">${s.remaining_sessions || 0} buổi</span>
                 </div>
               </div>
             </div>
@@ -726,6 +783,8 @@
               ${remaining > 0 ? `<button class="btn btn-info btn-sm" onclick="showPaymentQR(${s.id})"><i class="fas fa-qrcode"></i> QR Thu tiền</button>` : ''}
               ${showRenewal && auth.hasRole('CM', 'OM', 'BM', 'HOEC', 'HOCM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ?
                 `<button class="btn btn-warning btn-sm" onclick="openRenewalModal(${s.id})" style="background:#f59e0b;border-color:#f59e0b"><i class="fas fa-sync-alt"></i> Tái phí</button>` : ''}
+              ${auth.hasRole('HOEC', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ?
+                `<button class="btn btn-secondary btn-sm" onclick="openReassignModal(${s.id},'${(s.sale_name||'').replace(/'/g,'')}')"><i class="fas fa-user-tag"></i> Đổi Sale</button>` : ''}
             </div>
           </div>
 
@@ -739,6 +798,7 @@
                   <div class="sd-item"><label>Năm sinh</label><div class="val">${s.birth_year || '-'}</div></div>
                   <div class="sd-item"><label>Giới tính</label><div class="val">${s.gender === 'male' ? 'Nam' : s.gender === 'female' ? 'Nữ' : '-'}</div></div>
                   <div class="sd-item"><label>Địa chỉ</label><div class="val">${s.address || '-'}</div></div>
+                  ${s.sale_name ? `<div class="sd-item"><label>Sale/EC</label><div class="val" style="color:#2563eb;font-weight:600">${s.sale_name}</div></div>` : ''}
                 </div>
               </div>
             </div>
@@ -761,7 +821,7 @@
               <div class="sd-section-bd">
                 <div class="sd-grid">
                   <div class="sd-item"><label>Lớp hiện tại</label><div class="val">${s.class_name || 'Chưa xếp lớp'}</div></div>
-                  <div class="sd-item"><label>Buổi còn lại</label><div class="val"><span class="sessions-badge ${sessionsClass}">${s.sessions_remaining || 0} buổi</span></div></div>
+                  <div class="sd-item"><label>Buổi còn lại</label><div class="val"><span class="sessions-badge ${sessionsClass}">${s.remaining_sessions || 0} buổi</span></div></div>
                   <div class="sd-item"><label>Gói học phí</label><div class="val">${s.package_name || '-'}</div></div>
                   <div class="sd-item"><label>Hết phí ngày</label><div class="val">${feeEndDisplay}</div></div>
                   ${s.scholarship_months ? `<div class="sd-item"><label>Học bổng</label><div class="val" style="color:#2563eb">+${s.scholarship_months} tháng</div></div>` : ''}
@@ -862,11 +922,24 @@
         document.getElementById('fNote').value = s.note || '';
         renderGiftCheckboxes(s.gift_id);
         document.getElementById('fScholarshipMonths').value = s.scholarship_months || 0;
-        populateDropdowns(s.package_id);
-        const paidAmount = s.paid_amount || 0, totalFee = s.tuition_fee || 0;
-        if (paidAmount >= totalFee && totalFee > 0) document.getElementById('fPaymentStatus').value = 'paid';
-        else if (paidAmount > 0) { document.getElementById('fPaymentStatus').value = 'partial'; document.getElementById('fPaidAmount').value = formatCurrency(paidAmount); }
-        else document.getElementById('fPaymentStatus').value = 'pending';
+        populateDropdowns(s.package_id, s.promotion_id);
+
+        // Điền trạng thái thanh toán
+        const actualRevenue = parseFloat(s.actual_revenue || s.paid_amount) || 0;
+        const depositAmount = parseFloat(s.deposit_amount) || 0;
+        const totalFee      = parseFloat(s.fee_total || s.tuition_fee) || 0;
+        if (totalFee > 0 && actualRevenue >= totalFee) {
+          document.getElementById('fPaymentStatus').value = 'paid';
+          document.getElementById('fPaidAmount').value = formatCurrency(actualRevenue);
+        } else if (depositAmount > 0 && actualRevenue <= depositAmount) {
+          document.getElementById('fPaymentStatus').value = 'deposit';
+          document.getElementById('fDepositAmount').value = formatCurrency(depositAmount);
+        } else if (actualRevenue > 0) {
+          document.getElementById('fPaymentStatus').value = 'partial';
+          document.getElementById('fPaidAmount').value = formatCurrency(actualRevenue);
+        } else {
+          document.getElementById('fPaymentStatus').value = 'pending';
+        }
         updatePaymentFields();
         calculateTotals();
         document.getElementById('formModal').classList.add('show');
@@ -895,14 +968,14 @@
       updatePaymentFields();
     }
 
-    function populateDropdowns(pkgId = null) {
+    function populateDropdowns(pkgId = null, promoId = null) {
       const pkgSelect = document.getElementById('fPackage');
       pkgSelect.innerHTML = '<option value="">-- Chọn gói --</option>' + packages.map(p =>
         `<option value="${p.id}" data-price="${p.base_price || p.price}" data-months="${p.months}" data-scholarship="${p.default_scholarship_months || 0}" ${p.id == pkgId ? 'selected' : ''}>${p.name} - ${formatCurrency(p.base_price || p.price)}</option>`
       ).join('');
       const promoSelect = document.getElementById('fPromoProgram');
       promoSelect.innerHTML = '<option value="">-- Không áp dụng --</option>' + promoPrograms.map(p =>
-        `<option value="${p.id}" data-type="${p.discount_type}" data-value="${p.discount_value}">${p.name}</option>`
+        `<option value="${p.id}" data-type="${p.discount_type}" data-value="${p.discount_value}" ${p.id == promoId ? 'selected' : ''}>${p.name}</option>`
       ).join('');
       if (pkgId) onPackageChange();
     }
@@ -1009,24 +1082,34 @@
       const feeTotal = parseCurrency(document.getElementById('fFeeTotal').textContent);
       const { gift_id, gift_name } = getSelectedGift();
 
+      // Tính actual_revenue dựa theo trạng thái thanh toán
+      const actualRevenue = paymentStatus === 'paid'    ? feeTotal
+                          : paymentStatus === 'partial' ? paidRaw
+                          : paymentStatus === 'deposit' ? depositAmount
+                          : 0;
+
       const data = {
-        full_name: name,
-        birth_year: document.getElementById('fBirthYear').value || null,
-        gender: document.getElementById('fGender').value || null,
-        address: document.getElementById('fAddress').value || null,
-        parent_name: document.getElementById('fParentName').value || null,
-        parent_phone: parentPhone,
-        parent_email: document.getElementById('fParentEmail').value || null,
-        package_id: pkgSelect.value ? parseInt(pkgSelect.value) : null,
+        full_name:          name,
+        birth_year:         document.getElementById('fBirthYear').value || null,
+        gender:             document.getElementById('fGender').value || null,
+        address:            document.getElementById('fAddress').value || null,
+        parent_name:        document.getElementById('fParentName').value || null,
+        parent_phone:       parentPhone,
+        parent_email:       document.getElementById('fParentEmail').value || null,
+        package_id:         pkgSelect.value ? parseInt(pkgSelect.value) : null,
+        tuition_fee:        feeTotal,
+        fee_total:          feeTotal,
+        discount_amount:    parseCurrency(document.getElementById('fPromoDiscount').value) || 0,
+        promotion_id:       document.getElementById('fPromoProgram').value || null,
         scholarship_months: parseInt(document.getElementById('fScholarshipMonths').value) || 0,
-        promotion_id: document.getElementById('fPromoProgram').value || null,
-        gift_id: gift_id || null,
-        gift_name: gift_name || null,
-        payment_status: paymentStatus,
-        deposit_amount: paymentStatus === 'deposit' ? depositAmount : 0,
-        paid_amount: paymentStatus === 'paid' ? feeTotal : (paymentStatus === 'partial' ? paidRaw : (paymentStatus === 'deposit' ? depositAmount : 0)),
-        note: document.getElementById('fNote').value || null,
-        branch_id: branch.current?.id || null
+        gift_id:            gift_id || null,
+        gift_name:          gift_name || null,
+        payment_status:     paymentStatus,
+        deposit_amount:     paymentStatus === 'deposit' ? depositAmount : 0,
+        paid_amount:        actualRevenue,
+        actual_revenue:     actualRevenue,
+        note:               document.getElementById('fNote').value || null,
+        branch_id:          branch.current?.id || null
       };
 
       try {
@@ -1184,7 +1267,7 @@
           <div class="form-group"><label>Họ tên</label><div style="font-weight:600;font-size:16px">${currentRenewalStudent.full_name}</div></div>
           <div class="form-group"><label>Mã HV</label><div>${currentRenewalStudent.student_code || '-'}</div></div>
           <div class="form-group"><label>Lớp hiện tại</label><div>${currentRenewalStudent.class_name || 'Chưa xếp lớp'}</div></div>
-          <div class="form-group"><label>Buổi còn</label><div><span class="sessions-badge ${(currentRenewalStudent.sessions_remaining || 0) <= 4 ? 'low' : 'normal'}">${currentRenewalStudent.sessions_remaining || 0} buổi</span></div></div>
+          <div class="form-group"><label>Buổi còn</label><div><span class="sessions-badge ${(currentRenewalStudent.remaining_sessions || 0) <= 4 ? 'low' : 'normal'}">${currentRenewalStudent.remaining_sessions || 0} buổi</span></div></div>
         </div>
       `;
 
@@ -1395,10 +1478,76 @@
       } catch (e) { ui.error(e.message || 'Lỗi xác nhận thanh toán'); }
     }
 
-    window.addEventListener('branchchange', () => { loadOptions(); loadStats(); loadData(); });
+    window.addEventListener('branchchange', () => { ecUsersList = []; loadOptions(); loadStats(); loadSaleFilter(); loadData(); });
+
+    // ===== SALE FILTER & REASSIGN =====
+    let ecUsersList = [];
+    async function loadSaleFilter() {
+      try {
+        const user = auth.user;
+        if (!['ADMIN', 'GDV', 'HOEC', 'OM', 'QLCS', 'CHU'].includes(user?.role_name?.toUpperCase())) return;
+        const bq = branch.buildQuery({});
+        const [r1, r2] = await Promise.allSettled([api.get('/users/by-role/EC' + bq), api.get('/users/by-role/SALE' + bq)]);
+        ecUsersList = [...(r1.value?.data || []), ...(r2.value?.data || [])];
+        const sel = document.getElementById('saleFilter');
+        if (!sel) return;
+        sel.style.display = '';
+        sel.innerHTML = '<option value="">Tất cả Sale</option>' +
+          ecUsersList.map(u => `<option value="${u.id}">${u.full_name}</option>`).join('');
+      } catch (e) { }
+    }
+
+    async function openReassignModal(studentId, currentSaleName) {
+      if (!ecUsersList.length) await loadSaleFilter();
+      document.getElementById('reassignStudentId').value = studentId;
+      document.getElementById('reassignCurrentSale').textContent = currentSaleName || 'Chưa có';
+      const sel = document.getElementById('reassignSaleSelect');
+      sel.innerHTML = '<option value="">-- Chọn Sale/EC --</option>' +
+        ecUsersList.map(u => `<option value="${u.id}">${u.full_name} (${u.role_name})</option>`).join('');
+      document.getElementById('reassignModal').classList.add('show');
+    }
+
+    async function saveReassign() {
+      const studentId = document.getElementById('reassignStudentId').value;
+      const saleId = document.getElementById('reassignSaleSelect').value;
+      if (!saleId) { notify.warning('Chọn Sale/EC'); return; }
+      const btn = document.querySelector('#reassignModal .btn-primary');
+      loading.buttonStart(btn);
+      try {
+        await api.put('/students/' + studentId + '/reassign', { saleId });
+        notify.success('Đã chuyển học sinh thành công');
+        document.getElementById('reassignModal').classList.remove('show');
+        await loadData();
+      } catch (e) { notify.error(e.message); }
+      finally { loading.buttonEnd(btn); }
+    }
 
     init();
   </script>
+
+  <!-- Reassign Student Modal -->
+  <div class="modal" id="reassignModal">
+    <div class="modal-content" style="max-width:420px">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fas fa-user-tag"></i> Chuyển Sale/EC</div>
+        <button class="modal-close" onclick="document.getElementById('reassignModal').classList.remove('show')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="reassignStudentId">
+        <div style="margin-bottom:16px;padding:10px;background:var(--bg-secondary);border-radius:8px;font-size:13px">
+          Sale hiện tại: <strong id="reassignCurrentSale">-</strong>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Chuyển cho Sale/EC</label>
+          <select id="reassignSaleSelect" class="form-control"></select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="document.getElementById('reassignModal').classList.remove('show')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveReassign()"><i class="fas fa-check"></i> Xác nhận</button>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

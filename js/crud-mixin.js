@@ -296,4 +296,3 @@ function createCrud(options) {
 // Export
 window.createCrud = createCrud;
 
-console.log('✅ CRUD Mixin loaded');

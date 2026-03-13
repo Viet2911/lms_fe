@@ -984,4 +984,3 @@ window.ui.error = (msg) => notify.error(msg);
 window.ui.warning = (msg) => notify.warning(msg);
 window.ui.info = (msg) => notify.info(msg);
 
-console.log('✅ LMS Reactive UI System loaded');
