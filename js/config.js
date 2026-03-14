@@ -3,7 +3,7 @@
 
 window.LMS_CONFIG = {
   // Development
-  API_BASE: 'https://recycling-motels-pilot-resolved.trycloudflare.com/api',
+  API_BASE: 'https://drove-cosmetics-demand-thu.trycloudflare.com/api',
 
   // Production - Railway
   // API_BASE: 'https://lms-be-9uuc.onrender.com/api',
