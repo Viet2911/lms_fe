@@ -26,7 +26,7 @@
         <div class="header-right">
           <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i
               class="fas fa-sun"></i></button>
-          <button class="btn btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> Thêm lịch</button>
+          <button class="btn btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> <span class="btn-text">Thêm lịch</span></button>
           <div class="user-menu" onclick="auth.logout()">
             <div class="user-avatar" id="userAvatar">U</div>
             <div class="user-info">
@@ -132,17 +132,16 @@
   <!-- Convert Modal -->
   <div class="modal-overlay" id="convertModal">
     <div class="modal-content" style="max-width:900px">
-      <div class="modal-header" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white">
+      <div class="modal-header">
         <h3 class="modal-title"><i class="fas fa-user-graduate"></i> Chuyển đổi thành học sinh</h3>
-        <button class="modal-close" onclick="modal.hide('convertModal')" style="color:white">&times;</button>
+        <button class="modal-close" onclick="modal.hide('convertModal')">&times;</button>
       </div>
       <div class="modal-body" style="max-height:80vh;overflow-y:auto">
         <input type="hidden" id="convertExpId">
 
         <!-- PHẦN 1: THÔNG TIN HỌC SINH -->
-        <div
-          style="background:linear-gradient(135deg,#dbeafe,#e0e7ff);padding:16px;border-radius:12px;margin-bottom:20px">
-          <h4 style="margin:0 0 12px 0;color:#1e40af"><i class="fas fa-child"></i> Thông tin Học sinh</h4>
+        <div class="form-section blue">
+          <h4><i class="fas fa-child"></i> Thông tin Học sinh</h4>
           <div class="form-row">
             <div class="form-group" style="flex:2">
               <label class="required">Họ tên học sinh</label>
@@ -167,9 +166,8 @@
         </div>
 
         <!-- PHẦN 2: THÔNG TIN PHỤ HUYNH -->
-        <div
-          style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:20px">
-          <h4 style="margin:0 0 12px 0;color:#92400e"><i class="fas fa-users"></i> Thông tin Phụ huynh</h4>
+        <div class="form-section yellow">
+          <h4><i class="fas fa-users"></i> Thông tin Phụ huynh</h4>
           <div class="form-row">
             <div class="form-group" style="flex:2">
               <label class="required">Họ tên phụ huynh</label>
@@ -187,9 +185,8 @@
         </div>
 
         <!-- PHẦN 3: THÔNG TIN KHÓA HỌC -->
-        <div
-          style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:20px">
-          <h4 style="margin:0 0 12px 0;color:#166534"><i class="fas fa-book"></i> Thông tin Khóa học</h4>
+        <div class="form-section green">
+          <h4><i class="fas fa-book"></i> Thông tin Khóa học</h4>
 
           <div class="form-row">
             <div class="form-group" style="flex:2">
@@ -258,7 +255,7 @@
         <!-- PHẦN 4: THANH TOÁN -->
         <div
           style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);padding:16px;border-radius:12px;margin-bottom:20px">
-          <h4 style="margin:0 0 12px 0;color:#9d174d"><i class="fas fa-credit-card"></i> Thanh toán</h4>
+          <h4><i class="fas fa-credit-card"></i> Thanh toán</h4>
           <div class="form-row">
             <div class="form-group">
               <label>Trạng thái</label>
@@ -304,9 +301,9 @@
   <!-- Conversion Success Modal with QR -->
   <div class="modal-overlay" id="convertSuccessModal">
     <div class="modal-content" style="max-width:500px">
-      <div class="modal-header" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:white">
+      <div class="modal-header">
         <h3 class="modal-title"><i class="fas fa-check-circle"></i> Chuyển đổi thành công!</h3>
-        <button class="modal-close" onclick="modal.hide('convertSuccessModal')" style="color:white">&times;</button>
+        <button class="modal-close" onclick="modal.hide('convertSuccessModal')">&times;</button>
       </div>
       <div class="modal-body" style="text-align:center;padding:24px">
         <input type="hidden" id="newStudentId">

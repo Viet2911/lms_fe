@@ -1,4 +1,5 @@
 /* LMS Frontend - Production Ready Design System */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
 
 /* ===== CSS VARIABLES ===== */
 :root {
@@ -83,7 +84,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 14px;
   line-height: 1.6;
   color: var(--text-primary);
@@ -111,7 +112,7 @@ img {
 /* ===== LAYOUT ===== */
 .app-container {
   display: flex;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* ===== SIDEBAR ===== */
@@ -223,8 +224,9 @@ img {
 .main-content {
   flex: 1;
   margin-left: var(--sidebar-width);
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg-main);
+  min-width: 0;
 }
 
 /* ===== HEADER ===== */
@@ -647,45 +649,69 @@ img {
 
 /* ===== FORMS ===== */
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
-.form-group label {
+/* Unified label — works with or without .form-label class */
+.form-group label,
+.form-label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   font-weight: 500;
-  color: var(--text-primary);
-  font-size: 13px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+/* Required asterisk — two patterns: class AND inline span */
+.form-label.required::after,
+label.required::after {
+  content: ' *';
+  color: var(--danger);
 }
 
 .form-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: 14px;
 }
 
-.form-label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: var(--text-primary);
+/* Variant grid helpers for forms */
+.form-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.form-row .form-group,
+.form-row-3 .form-group {
+  margin-bottom: 0;
+}
+
+/* Modal section divider — replaces inline border-bottom hacks */
+.form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+  border-bottom: 2px solid var(--border);
+  font-weight: 700;
   font-size: 13px;
-}
-
-.form-label.required::after {
-  content: ' *';
-  color: var(--danger);
+  color: var(--text-primary);
 }
 
 .form-control {
   width: 100%;
-  padding: 11px 14px;
+  padding: 9px 12px;
   border: 1px solid var(--input-border);
   border-radius: var(--radius);
-  font-size: 14px;
+  font-size: 13px;
   background: var(--input-bg);
   color: var(--text-primary);
   transition: var(--transition);
+  font-family: inherit;
 }
 
 .form-control:focus {
@@ -733,6 +759,8 @@ select.form-control {
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin-top: 20px;
   box-shadow: var(--shadow);
 }
@@ -874,7 +902,7 @@ select.form-control {
   border-radius: var(--radius-xl);
   width: 100%;
   max-width: 520px;
-  max-height: 90vh;
+  max-height: 90dvh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1085,6 +1113,7 @@ select.form-control {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-width: calc(100vw - 24px);
 }
 
 .toast {
@@ -1418,12 +1447,24 @@ select.form-control {
   gap: 20px;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1100px) {
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
+@media (max-width: 900px) {
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
   .grid-2,
   .grid-3,
   .grid-4 {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 
@@ -1502,6 +1543,35 @@ select.form-control {
 .card-body {
   padding: 20px;
 }
+
+/* ===== FORM SECTIONS (colored grouping inside modals) ===== */
+.form-section {
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 14px;
+}
+
+.form-section h4 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-section.blue  { background: rgba(59,130,246,0.07);  border: 1px solid rgba(59,130,246,0.14); }
+.form-section.blue h4  { color: #1e40af; }
+.form-section.yellow{ background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.14); }
+.form-section.yellow h4{ color: #92400e; }
+.form-section.green { background: rgba(34,197,94,0.07);  border: 1px solid rgba(34,197,94,0.14); }
+.form-section.green h4 { color: #166534; }
+.form-section.pink  { background: rgba(236,72,153,0.07); border: 1px solid rgba(236,72,153,0.14); }
+.form-section.pink h4  { color: #9d174d; }
+.form-section.purple{ background: rgba(139,92,246,0.07); border: 1px solid rgba(139,92,246,0.14); }
+.form-section.purple h4{ color: #6b21a8; }
+.form-section.red   { background: rgba(239,68,68,0.07);  border: 1px solid rgba(239,68,68,0.14); }
+.form-section.red h4   { color: #991b1b; }
 
 /* Summary / tổng kết box — replace dark #1f2937 boxes */
 .summary-box {
@@ -1942,14 +2012,30 @@ code {
   background: var(--bg-secondary);
 }
 
+/* ===== SIDEBAR BACKDROP (mobile) ===== */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+}
+
+.sidebar-backdrop.active {
+  display: block;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
+    z-index: 200;
   }
 
   .sidebar.open {
     transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
   }
 
   .main-content {
@@ -1977,25 +2063,116 @@ code {
   }
 
   .header {
-    padding: 0 16px;
+    padding: 0 14px;
+    gap: 8px;
+  }
+
+  .header-right {
+    gap: 6px;
+  }
+
+  /* Hide search on mobile, keep theme + user */
+  .topbar-search {
+    display: none;
+  }
+
+  /* Topbar compact on mobile */
+  .topbar {
+    padding: 10px 12px;
+  }
+
+  .topbar-left h1 {
+    font-size: 16px;
+  }
+
+  .topbar-right .btn-text {
+    display: none;
   }
 
   .page-content {
-    padding: 16px;
+    padding: 14px;
+  }
+
+  /* Compact user menu on mobile */
+  .user-menu {
+    padding: 5px 8px 5px 5px;
+    gap: 6px;
   }
 
   .user-info {
     display: none;
   }
 
-  .modal {
-    margin: 10px;
-    max-height: calc(100vh - 20px);
+  /* Modal full-width on mobile */
+  .modal,
+  .modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    max-width: 100%;
+    max-height: 92dvh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
+  /* Table horizontal scroll */
+  .table-container {
+    border-radius: var(--radius);
+  }
+
+  .table th,
+  .table td {
+    padding: 11px 12px;
+    font-size: 13px;
+  }
+
+  /* Calendar: allow horizontal scroll on mobile */
+  .calendar-container {
+    overflow-x: auto;
+  }
+
+  .calendar-grid {
+    min-width: 560px;
+  }
+
+  .calendar-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .calendar-weekday {
+    padding: 8px 4px;
+    font-size: 11px;
   }
 
   .calendar-day {
     min-height: 70px;
     padding: 6px;
+  }
+
+  /* Page title smaller on mobile */
+  .page-title {
+    font-size: 17px;
+  }
+
+  .page-subtitle {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-right .topbar-btn:not(:last-child) {
+    display: none;
+  }
+
+  .header-right .btn-text {
+    display: none;
+  }
+
+  .page-content {
+    padding: 12px;
   }
 }
 
@@ -2011,10 +2188,16 @@ code {
   .filters-bar {
     flex-direction: column;
     align-items: stretch;
+    gap: 8px;
   }
 
   .search-box {
     max-width: none;
+  }
+
+  .filter-select {
+    width: 100%;
+    min-width: unset;
   }
 
   .modal-footer {
@@ -2023,11 +2206,21 @@ code {
 
   .modal-footer .btn {
     width: 100%;
+    justify-content: center;
   }
 
   .toast {
     min-width: auto;
-    margin: 0 10px;
+    width: calc(100vw - 24px);
+    left: 12px;
+    right: 12px;
+  }
+
+  /* Modal align center again on very small screens */
+  .modal,
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
   }
 }
 

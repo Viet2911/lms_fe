@@ -411,18 +411,20 @@ function buildSidebar(containerId) {
           <button class="modal-close" onclick="closeChangePasswordModal()">&times;</button>
         </div>
         <div class="modal-body">
+          <form id="changePasswordForm" onsubmit="return false">
           <div class="form-group">
             <label>Mật khẩu hiện tại</label>
-            <input type="password" id="cpOldPassword" class="form-control" placeholder="Nhập mật khẩu hiện tại">
+            <input type="password" id="cpOldPassword" class="form-control" placeholder="Nhập mật khẩu hiện tại" autocomplete="current-password">
           </div>
           <div class="form-group">
             <label>Mật khẩu mới</label>
-            <input type="password" id="cpNewPassword" class="form-control" placeholder="Ít nhất 6 ký tự">
+            <input type="password" id="cpNewPassword" class="form-control" placeholder="Ít nhất 6 ký tự" autocomplete="new-password">
           </div>
           <div class="form-group">
             <label>Xác nhận mật khẩu mới</label>
-            <input type="password" id="cpConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới">
+            <input type="password" id="cpConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới" autocomplete="new-password">
           </div>
+          </form>
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary" onclick="closeChangePasswordModal()">Hủy</button>
@@ -680,3 +682,25 @@ window.toggleUserDropdown = toggleUserDropdown;
 window.showChangePasswordModal = showChangePasswordModal;
 window.closeChangePasswordModal = closeChangePasswordModal;
 window.submitChangePassword = submitChangePassword;
+
+// Mobile sidebar backdrop — auto-wires to existing inline toggles via MutationObserver
+(function initSidebarBackdrop() {
+  document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'sidebar-backdrop';
+    backdrop.addEventListener('click', () => sidebar.classList.remove('open'));
+    document.body.appendChild(backdrop);
+
+    const observer = new MutationObserver(() => {
+      backdrop.classList.toggle('active', sidebar.classList.contains('open'));
+    });
+    observer.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') sidebar.classList.remove('open');
+    });
+  });
+})();

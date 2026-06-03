@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../css/style.css">
   <style>
     /* ===== Split Panel Layout ===== */
-    .main-content { padding: 0 !important; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .main-content { padding: 0 !important; display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
     .topbar { flex-shrink: 0; }
     .students-split { display: flex; flex: 1; overflow: hidden; }
 
@@ -112,26 +112,7 @@
     [data-theme="dark"] .sessions-badge.normal { background: rgba(34,197,94,0.2); color: #4ade80; }
 
     /* Form modal styles */
-    .form-section { padding: 16px; border-radius: 12px; margin-bottom: 16px; }
-    .form-section h4 { margin: 0 0 12px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-    .form-section.blue { background: linear-gradient(135deg, #dbeafe, #e0e7ff); }
-    .form-section.blue h4 { color: #1e40af; }
-    .form-section.yellow { background: linear-gradient(135deg, #fef3c7, #fde68a); }
-    .form-section.yellow h4 { color: #92400e; }
-    .form-section.green { background: linear-gradient(135deg, #dcfce7, #bbf7d0); }
-    .form-section.green h4 { color: #166534; }
-    .form-section.pink { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
-    .form-section.pink h4 { color: #9d174d; }
-    .form-section.purple { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
-    .form-section.purple h4 { color: #6b21a8; }
-    [data-theme="dark"] .form-section.blue { background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.2); }
-    [data-theme="dark"] .form-section.blue h4 { color: #60a5fa; }
-    [data-theme="dark"] .form-section.yellow { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.2); }
-    [data-theme="dark"] .form-section.yellow h4 { color: #fbbf24; }
-    [data-theme="dark"] .form-section.green { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.2); }
-    [data-theme="dark"] .form-section.green h4 { color: #4ade80; }
-    [data-theme="dark"] .form-section.pink { background: rgba(236,72,153,0.12); border: 1px solid rgba(236,72,153,0.2); }
-    [data-theme="dark"] .form-section.pink h4 { color: #f472b6; }
+    /* form-section styles now in global style.css */
     [data-theme="dark"] .form-section.purple { background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.2); }
     [data-theme="dark"] .form-section.purple h4 { color: #a78bfa; }
 
@@ -160,6 +141,36 @@
     #formModal .gift-checkbox { background: #fff !important; border-color: #e2e8f0 !important; color: #1e293b !important; }
     #formModal .payment-summary { background: #f8fafc !important; border-color: #e2e8f0 !important; }
     #formModal .summary-total { border-color: #e2e8f0 !important; }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .topbar { padding: 10px 12px; }
+      .topbar-left h1 { font-size: 16px; }
+      #btnCreate .btn-text { display: none; }
+
+      .students-split { flex-direction: column; }
+
+      .sl-panel {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex: 1;
+        min-height: 0;
+      }
+
+      .sd-panel { display: none !important; flex: none; }
+
+      /* When detail is open: hide list, show detail */
+      .students-split.show-detail .sl-panel { display: none !important; }
+      .students-split.show-detail .sd-panel {
+        display: flex !important;
+        flex: 1;
+        min-height: 0;
+      }
+
+      .sd-grid { grid-template-columns: 1fr !important; }
+      .sd-mobile-back { display: block !important; }
+    }
   </style>
 </head>
 
@@ -173,7 +184,7 @@
       </div>
       <div class="topbar-right">
         <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-sync"></i></button>
-        <button class="btn btn-primary" onclick="openCreateModal()" id="btnCreate"><i class="fas fa-plus"></i> Thêm học viên</button>
+        <button class="btn btn-primary" onclick="openCreateModal()" id="btnCreate"><i class="fas fa-plus"></i> <span class="btn-text">Thêm học viên</span></button>
       </div>
     </div>
 
@@ -219,12 +230,12 @@
 
   <!-- Form Modal -->
   <div class="modal" id="formModal">
-    <div class="modal-content" style="max-width:900px;background:#fff;color:#1e293b">
-      <div class="modal-header" style="background:#fff;color:#1e293b;border-bottom:1px solid #e2e8f0">
-        <div class="modal-title" id="formTitle" style="color:#1e293b"><i class="fas fa-user-graduate"></i> Thêm học viên mới</div>
-        <button class="modal-close" onclick="closeFormModal()" style="color:#64748b">&times;</button>
+    <div class="modal-content" style="max-width:900px">
+      <div class="modal-header">
+        <div class="modal-title" id="formTitle"><i class="fas fa-user-graduate"></i> Thêm học viên mới</div>
+        <button class="modal-close" onclick="closeFormModal()">&times;</button>
       </div>
-      <div class="modal-body" style="max-height:80vh;overflow-y:auto;background:#fff;color:#1e293b">
+      <div class="modal-body" style="max-height:80vh;overflow-y:auto">
         <input type="hidden" id="formId">
         <!-- Thông tin học sinh -->
         <div class="form-section blue">
@@ -255,7 +266,20 @@
         </div>
         <!-- Thông tin khóa học -->
         <div class="form-section green">
-          <h4><i class="fas fa-book"></i> Thông tin Khóa học</h4>
+          <h4 style="margin-bottom:10px"><i class="fas fa-book"></i> Thông tin Khóa học</h4>
+          <!-- Tab chọn loại đăng ký -->
+          <div style="display:flex;gap:0;border-radius:8px;overflow:hidden;border:2px solid #bbf7d0;margin-bottom:14px">
+            <button type="button" id="tabEnroll" onclick="switchEnrollTab('enroll')"
+              style="flex:1;padding:9px 8px;border:none;cursor:pointer;font-size:13px;font-weight:700;background:#16a34a;color:#fff;transition:all 0.2s">
+              <i class="fas fa-file-invoice-dollar"></i> Đăng ký + Học bổng
+            </button>
+            <button type="button" id="tabFreeScholarship" onclick="switchEnrollTab('free')"
+              style="flex:1;padding:9px 8px;border:none;cursor:pointer;font-size:13px;font-weight:700;background:#f0fdf4;color:#16a34a;transition:all 0.2s">
+              <i class="fas fa-gift"></i> Chỉ tặng Học bổng
+            </button>
+          </div>
+          <!-- PAID ENROLLMENT PANEL -->
+          <div id="panelEnroll">
           <div class="form-row">
             <div class="form-group" style="flex:2">
               <label class="required">Gói học phí</label>
@@ -283,16 +307,38 @@
             </div>
           </div>
           <!-- Học bổng -->
-          <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;margin:12px 0">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-              <label style="color:#2563eb;font-weight:600;margin:0"><i class="fas fa-graduation-cap"></i> Học bổng tặng kèm</label>
+          <div style="background:#eff6ff;padding:12px;border-radius:8px;margin:12px 0;border:1px solid #bfdbfe">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <label style="color:#2563eb;font-weight:700;margin:0;font-size:14px"><i class="fas fa-graduation-cap"></i> Học bổng tặng kèm</label>
               <span id="fDefaultScholarshipBadge" style="background:#dbeafe;color:#2563eb;padding:4px 10px;border-radius:12px;font-size:12px;display:none">Mặc định: <strong id="fDefaultScholarshipMonths">0</strong> tháng</span>
             </div>
-            <div class="form-row" style="align-items:center">
-              <div class="form-group" style="margin-bottom:0;flex:1">
-                <input type="number" id="fScholarshipMonths" class="form-control" value="0" min="0" max="12" onchange="onScholarshipChange()" style="font-size:18px;font-weight:bold;text-align:center">
+            <!-- Input tháng + nhanh chọn -->
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="display:flex;align-items:center;gap:8px;flex:1">
+                <button type="button" onclick="changeScholarship(-1)" style="width:36px;height:36px;border-radius:50%;border:2px solid #bfdbfe;background:#fff;color:#2563eb;font-size:18px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">−</button>
+                <input type="number" id="fScholarshipMonths" class="form-control" value="0" min="0" max="24" oninput="onScholarshipChange()" style="font-size:22px;font-weight:800;text-align:center;color:#2563eb;border-color:#93c5fd;flex:1;padding:6px">
+                <button type="button" onclick="changeScholarship(1)" style="width:36px;height:36px;border-radius:50%;border:2px solid #bfdbfe;background:#fff;color:#2563eb;font-size:18px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+                <span style="color:#475569;font-size:14px;font-weight:600;white-space:nowrap">tháng</span>
               </div>
-              <span style="padding:0 12px;color:#6b7280">tháng</span>
+            </div>
+            <!-- Preset buttons -->
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+              <button type="button" onclick="setScholarship(0)" class="scholarship-preset" style="padding:4px 12px;border-radius:20px;border:1px solid #bfdbfe;background:#fff;color:#2563eb;font-size:12px;cursor:pointer">0</button>
+              <button type="button" onclick="setScholarship(1)" class="scholarship-preset" style="padding:4px 12px;border-radius:20px;border:1px solid #bfdbfe;background:#fff;color:#2563eb;font-size:12px;cursor:pointer">1 tháng</button>
+              <button type="button" onclick="setScholarship(2)" class="scholarship-preset" style="padding:4px 12px;border-radius:20px;border:1px solid #bfdbfe;background:#fff;color:#2563eb;font-size:12px;cursor:pointer">2 tháng</button>
+              <button type="button" onclick="setScholarship(3)" class="scholarship-preset" style="padding:4px 12px;border-radius:20px;border:1px solid #bfdbfe;background:#fff;color:#2563eb;font-size:12px;cursor:pointer">3 tháng</button>
+              <button type="button" onclick="setScholarship(6)" class="scholarship-preset" style="padding:4px 12px;border-radius:20px;border:1px solid #bfdbfe;background:#fff;color:#2563eb;font-size:12px;cursor:pointer">6 tháng</button>
+            </div>
+            <!-- Tính toán hiển thị -->
+            <div id="fScholarshipCalc" style="display:none;background:#dbeafe;border-radius:6px;padding:10px 14px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:13px;color:#1e40af"><i class="fas fa-calculator"></i> Học bổng:</span>
+                <span style="font-size:15px;font-weight:800;color:#1e40af">
+                  <span id="fScholarshipMonthsDisplay">0</span> tháng
+                  = <span id="fScholarshipSessionsDisplay" style="color:#2563eb;background:#eff6ff;padding:2px 8px;border-radius:4px">0 buổi</span>
+                </span>
+              </div>
+              <div style="font-size:11px;color:#3b82f6;margin-top:4px;text-align:right">1 tháng = 4 buổi</div>
             </div>
             <div id="fScholarshipWarning" style="display:none;background:#fef3c7;color:#92400e;padding:8px 12px;border-radius:6px;margin-top:8px;font-size:12px">
               <i class="fas fa-exclamation-triangle"></i> Vượt mức mặc định, cần GDV duyệt
@@ -305,18 +351,57 @@
               <span class="text-muted">Đang tải...</span>
             </div>
           </div>
+          </div><!-- end panelEnroll -->
+          <!-- FREE SCHOLARSHIP PANEL (chỉ tặng học bổng, không học phí) -->
+          <div id="panelFreeScholarship" style="display:none">
+            <div style="background:#f0fdf4;border:2px dashed #86efac;border-radius:10px;padding:16px;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+                <span style="background:#16a34a;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px">🎁</span>
+                <span style="font-weight:700;color:#15803d;font-size:15px">Tặng Học bổng miễn phí</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <div style="display:flex;align-items:center;gap:8px;flex:1">
+                  <button type="button" onclick="changeFreeScholarship(-1)" style="width:38px;height:38px;border-radius:50%;border:2px solid #86efac;background:#fff;color:#16a34a;font-size:20px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">−</button>
+                  <input type="number" id="fFreeScholarshipMonths" class="form-control" value="1" min="1" max="24" oninput="onFreeScholarshipChange()" style="font-size:26px;font-weight:800;text-align:center;color:#15803d;border-color:#86efac;flex:1;padding:6px">
+                  <button type="button" onclick="changeFreeScholarship(1)" style="width:38px;height:38px;border-radius:50%;border:2px solid #86efac;background:#fff;color:#16a34a;font-size:20px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+                  <span style="color:#475569;font-size:14px;font-weight:600;white-space:nowrap">tháng</span>
+                </div>
+              </div>
+              <!-- Preset buttons -->
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+                <button type="button" onclick="setFreeScholarship(1)" style="padding:5px 14px;border-radius:20px;border:1px solid #86efac;background:#fff;color:#16a34a;font-size:12px;font-weight:600;cursor:pointer">1 tháng</button>
+                <button type="button" onclick="setFreeScholarship(2)" style="padding:5px 14px;border-radius:20px;border:1px solid #86efac;background:#fff;color:#16a34a;font-size:12px;font-weight:600;cursor:pointer">2 tháng</button>
+                <button type="button" onclick="setFreeScholarship(3)" style="padding:5px 14px;border-radius:20px;border:1px solid #86efac;background:#fff;color:#16a34a;font-size:12px;font-weight:600;cursor:pointer">3 tháng</button>
+                <button type="button" onclick="setFreeScholarship(6)" style="padding:5px 14px;border-radius:20px;border:1px solid #86efac;background:#fff;color:#16a34a;font-size:12px;font-weight:600;cursor:pointer">6 tháng</button>
+              </div>
+              <!-- Kết quả tính -->
+              <div id="fFreeScholarshipResult" style="background:#dcfce7;border-radius:8px;padding:12px 16px;text-align:center">
+                <div style="font-size:13px;color:#15803d;margin-bottom:4px"><i class="fas fa-gift"></i> Tặng miễn phí</div>
+                <div style="font-size:28px;font-weight:900;color:#16a34a"><span id="fFreeSessionsCount">4</span> buổi học</div>
+                <div style="font-size:12px;color:#4ade80;margin-top:4px"><span id="fFreeMonthsLabel">1 tháng</span> × 4 buổi/tháng</div>
+              </div>
+              <div style="margin-top:12px;padding:10px 14px;background:#fef9c3;border-radius:6px;border-left:3px solid #facc15;font-size:12px;color:#78350f">
+                <i class="fas fa-info-circle"></i> Học sinh <strong>không cần đóng học phí</strong>. Hệ thống sẽ cấp buổi học ngay.
+              </div>
+            </div>
+          </div>
+
           <!-- Tổng kết -->
-          <div class="summary-box">
-            <div class="summary-row"><span>Khóa học chính:</span><span id="fMainCourseMonths">0 tháng</span></div>
-            <div class="summary-row"><span>Học bổng tặng:</span><span id="fBonusMonths" style="color:#4ade80">+0 tháng</span></div>
+          <div class="summary-box" id="panelEnrollSummary">
+            <div class="summary-row"><span>Khóa học chính:</span><span id="fMainCourseMonths">0 tháng / 0 buổi</span></div>
+            <div class="summary-row"><span>Học bổng tặng:</span><span id="fBonusMonths" style="color:#2563eb;font-weight:600">+0 tháng / +0 buổi</span></div>
+            <div class="summary-row" style="border-top:1px dashed #bfdbfe;padding-top:8px">
+              <span style="font-weight:600">Tổng buổi học:</span>
+              <span id="fTotalSessions" style="font-size:16px;font-weight:800;color:#2563eb">0 buổi</span>
+            </div>
             <div class="summary-total">
-              <span style="font-size:16px"><strong>HỌC PHÍ THỰC ĐÓNG:</strong></span>
-              <span id="fFeeTotal" style="font-size:24px;font-weight:bold;color:#fbbf24">0đ</span>
+              <span style="font-size:15px"><strong>HỌC PHÍ THỰC ĐÓNG:</strong></span>
+              <span id="fFeeTotal" style="font-size:24px;font-weight:bold;color:#f59e0b">0đ</span>
             </div>
           </div>
         </div>
-        <!-- Thanh toán -->
-        <div class="form-section pink">
+        <!-- Thanh toán (ẩn khi chế độ học bổng miễn phí) -->
+        <div id="sectionPayment" class="form-section pink">
           <h4><i class="fas fa-credit-card"></i> Thanh toán</h4>
           <div class="form-row">
             <div class="form-group">
@@ -436,7 +521,7 @@
         <button class="modal-close" onclick="closeRenewalModal()" style="color:white">&times;</button>
       </div>
       <div class="modal-body" style="max-height:80vh;overflow-y:auto">
-        <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);padding:16px;border-radius:12px;margin-bottom:20px">
+        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.15);padding:16px;border-radius:12px;margin-bottom:20px">
           <h4 style="margin:0 0 12px 0;color:#92400e"><i class="fas fa-user-graduate"></i> Thông tin Học viên</h4>
           <div id="renewalStudentInfo"></div>
         </div>
@@ -453,7 +538,7 @@
             <select class="form-control" id="renewalNewClass"></select>
           </div>
         </div>
-        <div style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);padding:16px;border-radius:12px;margin-bottom:20px">
+        <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.15);padding:16px;border-radius:12px;margin-bottom:20px">
           <h4 style="margin:0 0 12px 0;color:#166534"><i class="fas fa-book"></i> Thông tin Khóa học</h4>
           <div class="form-row">
             <div class="form-group" style="flex:2">
@@ -763,8 +848,13 @@
       }
 
       const panel = document.getElementById('studentDetailPanel');
+      // Mobile: show detail panel, hide list
+      document.querySelector('.students-split').classList.add('show-detail');
       panel.innerHTML = `
         <div class="sd-content">
+          <div class="sd-mobile-back" style="display:none;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg-card);position:sticky;top:0;z-index:10">
+            <button class="btn btn-secondary btn-sm" onclick="document.querySelector('.students-split').classList.remove('show-detail')"><i class="fas fa-arrow-left"></i> Danh sách</button>
+          </div>
           <div class="sd-hero">
             <div class="sd-hero-top">
               <div class="sd-avatar" style="background:${avatarColor}">${initial}</div>
@@ -952,6 +1042,7 @@
       document.getElementById('fPackage').value = '';
       document.getElementById('fPromoProgram').value = '';
       document.getElementById('fScholarshipMonths').value = '0';
+      document.getElementById('fFreeScholarshipMonths').value = '1';
       renderGiftCheckboxes();
       document.getElementById('fPaymentStatus').value = 'pending';
       document.getElementById('fDepositAmount').value = '0đ';
@@ -959,19 +1050,22 @@
       document.getElementById('fFeeOriginal').value = '0đ';
       document.getElementById('fPromoDiscount').value = '0đ';
       document.getElementById('fFeeTotal').textContent = '0đ';
-      document.getElementById('fMainCourseMonths').textContent = '0 tháng';
-      document.getElementById('fBonusMonths').textContent = '+0 tháng';
+      document.getElementById('fMainCourseMonths').textContent = '0 tháng / 0 buổi';
+      document.getElementById('fBonusMonths').textContent = '+0 tháng / +0 buổi';
+      document.getElementById('fTotalSessions').textContent = '0 buổi';
       document.getElementById('fDefaultScholarshipBadge').style.display = 'none';
       document.getElementById('fScholarshipWarning').style.display = 'none';
+      document.getElementById('fScholarshipCalc').style.display = 'none';
       selectedPackage = null;
       defaultScholarshipMonths = 0;
+      switchEnrollTab('enroll'); // reset về tab đăng ký thường
       updatePaymentFields();
     }
 
     function populateDropdowns(pkgId = null, promoId = null) {
       const pkgSelect = document.getElementById('fPackage');
       pkgSelect.innerHTML = '<option value="">-- Chọn gói --</option>' + packages.map(p =>
-        `<option value="${p.id}" data-price="${p.base_price || p.price}" data-months="${p.months}" data-scholarship="${p.default_scholarship_months || 0}" ${p.id == pkgId ? 'selected' : ''}>${p.name} - ${formatCurrency(p.base_price || p.price)}</option>`
+        `<option value="${p.id}" data-price="${p.base_price || p.price}" data-months="${p.months}" data-sessions="${p.sessions_count || 0}" data-spw="${p.sessions_per_week || 2}" data-scholarship="${p.default_scholarship_months || 0}" ${p.id == pkgId ? 'selected' : ''}>${p.name} - ${formatCurrency(p.base_price || p.price)}</option>`
       ).join('');
       const promoSelect = document.getElementById('fPromoProgram');
       promoSelect.innerHTML = '<option value="">-- Không áp dụng --</option>' + promoPrograms.map(p =>
@@ -1004,38 +1098,111 @@
       return { gift_id: checked.value, gift_name: checked.dataset.name };
     }
 
+    // ===== TAB: 2 loại đăng ký =====
+    let enrollMode = 'enroll'; // 'enroll' | 'free'
+
+    function switchEnrollTab(mode) {
+      enrollMode = mode;
+      const isPaid = mode === 'enroll';
+      document.getElementById('tabEnroll').style.background = isPaid ? '#16a34a' : '#f0fdf4';
+      document.getElementById('tabEnroll').style.color = isPaid ? '#fff' : '#16a34a';
+      document.getElementById('tabFreeScholarship').style.background = !isPaid ? '#16a34a' : '#f0fdf4';
+      document.getElementById('tabFreeScholarship').style.color = !isPaid ? '#fff' : '#16a34a';
+      document.getElementById('panelEnroll').style.display = isPaid ? '' : 'none';
+      document.getElementById('panelEnrollSummary').style.display = isPaid ? '' : 'none';
+      document.getElementById('panelFreeScholarship').style.display = !isPaid ? '' : 'none';
+      document.getElementById('sectionPayment').style.display = isPaid ? '' : 'none';
+      if (!isPaid) onFreeScholarshipChange();
+    }
+
+    function changeFreeScholarship(delta) {
+      const el = document.getElementById('fFreeScholarshipMonths');
+      el.value = Math.max(1, (parseInt(el.value) || 1) + delta);
+      onFreeScholarshipChange();
+    }
+
+    function setFreeScholarship(months) {
+      document.getElementById('fFreeScholarshipMonths').value = months;
+      onFreeScholarshipChange();
+    }
+
+    function onFreeScholarshipChange() {
+      const months = parseInt(document.getElementById('fFreeScholarshipMonths').value) || 1;
+      const sessions = months * 4;
+      document.getElementById('fFreeSessionsCount').textContent = sessions;
+      document.getElementById('fFreeMonthsLabel').textContent = months + ' tháng';
+    }
+
     function onPackageChange() {
       const select = document.getElementById('fPackage');
       const option = select.options[select.selectedIndex];
       if (!option.value) {
         selectedPackage = null; defaultScholarshipMonths = 0;
         document.getElementById('fFeeOriginal').value = '0đ';
-        document.getElementById('fMainCourseMonths').textContent = '0 tháng';
+        document.getElementById('fMainCourseMonths').textContent = '0 tháng / 0 buổi';
         document.getElementById('fDefaultScholarshipBadge').style.display = 'none';
+        document.getElementById('fTotalSessions').textContent = '0 buổi';
       } else {
-        selectedPackage = { price: parseFloat(option.dataset.price) || 0, months: parseInt(option.dataset.months) || 0 };
+        selectedPackage = {
+          price: parseFloat(option.dataset.price) || 0,
+          months: parseInt(option.dataset.months) || 0,
+          sessions_count: parseInt(option.dataset.sessions) || 0,
+          sessions_per_week: parseInt(option.dataset.spw) || 2
+        };
         defaultScholarshipMonths = parseInt(option.dataset.scholarship) || 0;
         document.getElementById('fFeeOriginal').value = formatCurrency(selectedPackage.price);
-        document.getElementById('fMainCourseMonths').textContent = selectedPackage.months + ' tháng';
+        // Set default scholarship from package
         if (defaultScholarshipMonths > 0) {
+          document.getElementById('fScholarshipMonths').value = defaultScholarshipMonths;
           document.getElementById('fDefaultScholarshipBadge').style.display = 'inline-block';
           document.getElementById('fDefaultScholarshipMonths').textContent = defaultScholarshipMonths;
-        } else { document.getElementById('fDefaultScholarshipBadge').style.display = 'none'; }
+          onScholarshipChange();
+        } else {
+          document.getElementById('fDefaultScholarshipBadge').style.display = 'none';
+        }
       }
       calculateTotals();
     }
 
     function applyPromoProgram() { calculateTotals(); }
 
+    function changeScholarship(delta) {
+      const el = document.getElementById('fScholarshipMonths');
+      const cur = parseInt(el.value) || 0;
+      el.value = Math.max(0, cur + delta);
+      onScholarshipChange();
+    }
+
+    function setScholarship(months) {
+      document.getElementById('fScholarshipMonths').value = months;
+      onScholarshipChange();
+    }
+
     function onScholarshipChange() {
       const months = parseInt(document.getElementById('fScholarshipMonths').value) || 0;
-      document.getElementById('fScholarshipWarning').style.display = (months > defaultScholarshipMonths && defaultScholarshipMonths > 0) ? 'block' : 'none';
-      document.getElementById('fBonusMonths').textContent = '+' + months + ' tháng';
+      const sessions = months * 4;
+
+      // Warning nếu vượt mức mặc định
+      document.getElementById('fScholarshipWarning').style.display =
+        (months > defaultScholarshipMonths && defaultScholarshipMonths > 0) ? 'block' : 'none';
+
+      // Hiện calc box khi có học bổng
+      const calcBox = document.getElementById('fScholarshipCalc');
+      calcBox.style.display = months > 0 ? 'block' : 'none';
+      document.getElementById('fScholarshipMonthsDisplay').textContent = months;
+      document.getElementById('fScholarshipSessionsDisplay').textContent = sessions + ' buổi';
+
       calculateTotals();
     }
 
     function calculateTotals() {
-      if (!selectedPackage) { document.getElementById('fFeeTotal').textContent = '0đ'; return; }
+      if (!selectedPackage) {
+        document.getElementById('fFeeTotal').textContent = '0đ';
+        document.getElementById('fTotalSessions').textContent = '0 buổi';
+        return;
+      }
+
+      // Fee
       let originalFee = selectedPackage.price, discount = 0;
       const promoSelect = document.getElementById('fPromoProgram');
       const promoOption = promoSelect.options[promoSelect.selectedIndex];
@@ -1045,6 +1212,19 @@
       }
       document.getElementById('fPromoDiscount').value = formatCurrency(discount);
       document.getElementById('fFeeTotal').textContent = formatCurrency(Math.max(0, originalFee - discount));
+
+      // Sessions
+      const pkgMonths = selectedPackage.months || 0;
+      const pkgSessionsPerWeek = selectedPackage.sessions_per_week || 2;
+      const mainSessions = selectedPackage.sessions_count || (pkgMonths * pkgSessionsPerWeek * 4);
+      const schMonths = parseInt(document.getElementById('fScholarshipMonths').value) || 0;
+      const schSessions = schMonths * 4;
+      const totalSessions = mainSessions + schSessions;
+
+      document.getElementById('fMainCourseMonths').textContent = `${pkgMonths} tháng / ${mainSessions} buổi`;
+      document.getElementById('fBonusMonths').textContent = `+${schMonths} tháng / +${schSessions} buổi`;
+      document.getElementById('fTotalSessions').textContent = `${totalSessions} buổi`;
+
       updateRemaining();
     }
 
@@ -1075,42 +1255,60 @@
       if (!name) { ui.error('Vui lòng nhập tên học sinh'); return; }
       if (!parentPhone) { ui.error('Vui lòng nhập số điện thoại phụ huynh'); return; }
 
-      const pkgSelect = document.getElementById('fPackage');
-      const paymentStatus = document.getElementById('fPaymentStatus').value;
-      const depositAmount = parseCurrency(document.getElementById('fDepositAmount').value);
-      const paidRaw = parseCurrency(document.getElementById('fPaidAmount').value);
-      const feeTotal = parseCurrency(document.getElementById('fFeeTotal').textContent);
-      const { gift_id, gift_name } = getSelectedGift();
-
-      // Tính actual_revenue dựa theo trạng thái thanh toán
-      const actualRevenue = paymentStatus === 'paid'    ? feeTotal
-                          : paymentStatus === 'partial' ? paidRaw
-                          : paymentStatus === 'deposit' ? depositAmount
-                          : 0;
-
-      const data = {
-        full_name:          name,
-        birth_year:         document.getElementById('fBirthYear').value || null,
-        gender:             document.getElementById('fGender').value || null,
-        address:            document.getElementById('fAddress').value || null,
-        parent_name:        document.getElementById('fParentName').value || null,
-        parent_phone:       parentPhone,
-        parent_email:       document.getElementById('fParentEmail').value || null,
-        package_id:         pkgSelect.value ? parseInt(pkgSelect.value) : null,
-        tuition_fee:        feeTotal,
-        fee_total:          feeTotal,
-        discount_amount:    parseCurrency(document.getElementById('fPromoDiscount').value) || 0,
-        promotion_id:       document.getElementById('fPromoProgram').value || null,
-        scholarship_months: parseInt(document.getElementById('fScholarshipMonths').value) || 0,
-        gift_id:            gift_id || null,
-        gift_name:          gift_name || null,
-        payment_status:     paymentStatus,
-        deposit_amount:     paymentStatus === 'deposit' ? depositAmount : 0,
-        paid_amount:        actualRevenue,
-        actual_revenue:     actualRevenue,
-        note:               document.getElementById('fNote').value || null,
-        branch_id:          branch.current?.id || null
+      let data = {
+        full_name:    name,
+        birth_year:   document.getElementById('fBirthYear').value || null,
+        gender:       document.getElementById('fGender').value || null,
+        address:      document.getElementById('fAddress').value || null,
+        parent_name:  document.getElementById('fParentName').value || null,
+        parent_phone: parentPhone,
+        parent_email: document.getElementById('fParentEmail').value || null,
+        note:         document.getElementById('fNote').value || null,
+        branch_id:    branch.current?.id || null
       };
+
+      if (enrollMode === 'free') {
+        // --- Loại 2: Chỉ tặng học bổng, không học phí ---
+        const freeMonths = parseInt(document.getElementById('fFreeScholarshipMonths').value) || 1;
+        const freeSessions = freeMonths * 4;
+        Object.assign(data, {
+          tuition_fee:        0,
+          fee_total:          0,
+          discount_amount:    0,
+          scholarship_months: freeMonths,
+          payment_status:     'paid',
+          paid_amount:        0,
+          actual_revenue:     0,
+          deposit_amount:     0,
+          total_sessions:     freeSessions,
+          remaining_sessions: freeSessions,
+          status:             'active'
+        });
+      } else {
+        // --- Loại 1: Đăng ký + học bổng tặng kèm ---
+        const pkgSelect = document.getElementById('fPackage');
+        const paymentStatus = document.getElementById('fPaymentStatus').value;
+        const depositAmount = parseCurrency(document.getElementById('fDepositAmount').value);
+        const paidRaw = parseCurrency(document.getElementById('fPaidAmount').value);
+        const feeTotal = parseCurrency(document.getElementById('fFeeTotal').textContent);
+        const { gift_id, gift_name } = getSelectedGift();
+        const actualRevenue = paymentStatus === 'paid'    ? feeTotal
+                            : paymentStatus === 'partial' ? paidRaw
+                            : paymentStatus === 'deposit' ? depositAmount : 0;
+        Object.assign(data, {
+          package_id:         pkgSelect.value ? parseInt(pkgSelect.value) : null,
+          tuition_fee:        feeTotal,
+          fee_total:          feeTotal,
+          discount_amount:    parseCurrency(document.getElementById('fPromoDiscount').value) || 0,
+          scholarship_months: parseInt(document.getElementById('fScholarshipMonths').value) || 0,
+          gift_id:            gift_id || null,
+          gift_name:          gift_name || null,
+          payment_status:     paymentStatus,
+          deposit_amount:     paymentStatus === 'deposit' ? depositAmount : 0,
+          paid_amount:        actualRevenue,
+          actual_revenue:     actualRevenue,
+        });
+      }
 
       try {
         if (id) {

@@ -17,7 +17,7 @@
     .classes-layout {
       display: flex;
       flex: 1;
-      height: calc(100vh - 64px);
+      height: calc(100dvh - 64px);
       overflow: hidden;
     }
 
@@ -912,6 +912,18 @@
     .class-event.session-completed {
       background: linear-gradient(135deg, #6b7280, #4b5563);
     }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .classes-layout { flex-direction: column; height: auto; min-height: calc(100dvh - 64px); }
+      .classes-left { width: 100%; min-width: unset; border-right: none; border-bottom: 1px solid var(--border); max-height: 50dvh; flex-shrink: 0; }
+      .classes-right { flex: 1; }
+
+      .classes-layout.show-detail .classes-left { display: none !important; }
+      .classes-layout.show-detail .classes-right { display: flex !important; }
+
+      .cl-mobile-back { display: block !important; }
+    }
   </style>
 </head>
 
@@ -930,7 +942,7 @@
         </div>
         <div class="header-right">
           <button class="btn btn-secondary btn-sm" onclick="toggleCalendar()" title="Xem lịch tuần">
-            <i class="fas fa-calendar-week"></i> Lịch
+            <i class="fas fa-calendar-week"></i> <span class="btn-text">Lịch</span>
           </button>
           <div class="user-menu" onclick="auth.logout()">
             <div class="user-avatar" id="userAvatar">U</div>
@@ -987,7 +999,11 @@
           </div>
 
           <!-- Calendar view -->
-          <div id="calendarView" style="display:none; padding: 20px;">
+          <div id="calendarView" style="display:none;">
+            <div class="cl-mobile-back" style="display:none;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg-card)">
+              <button class="btn btn-secondary btn-sm" onclick="hideCalendar();document.querySelector('.classes-layout').classList.remove('show-detail')"><i class="fas fa-arrow-left"></i> Danh sách lớp</button>
+            </div>
+            <div style="padding:20px">
             <div class="calendar-wrapper">
               <div class="calendar-header">
                 <div class="calendar-nav">
@@ -1003,10 +1019,16 @@
               </div>
               <div class="week-grid" id="weekGrid"></div>
             </div>
+            </div>
           </div>
 
           <!-- Class detail panel -->
           <div id="classDetailPanel" style="display:none">
+
+            <!-- Mobile back button -->
+            <div class="cl-mobile-back" style="display:none;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg-card)">
+              <button class="btn btn-secondary btn-sm" onclick="document.querySelector('.classes-layout').classList.remove('show-detail')"><i class="fas fa-arrow-left"></i> Danh sách lớp</button>
+            </div>
 
             <!-- Sticky header: hero + tabs -->
             <div class="detail-sticky">
@@ -1454,6 +1476,7 @@
         document.getElementById('classEmpty').style.display = 'none';
         document.getElementById('classDetailPanel').style.display = 'none';
         document.getElementById('calendarView').style.display = 'block';
+        document.querySelector('.classes-layout').classList.add('show-detail');
         loadCalendarData();
       } else {
         hideCalendar();
@@ -1690,6 +1713,7 @@
         document.getElementById('classEmpty').style.display = 'none';
         document.getElementById('calendarView').style.display = 'none';
         document.getElementById('classDetailPanel').style.display = 'flex';
+        document.querySelector('.classes-layout').classList.add('show-detail');
         calendarVisible = false;
 
         renderInfoTab();

@@ -141,6 +141,19 @@
     /* Action footer */
     .rvd-footer { background: var(--bg-card); border-top: 1px solid var(--border);
       padding: 12px 20px; display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .rv-split { flex-direction: column; }
+      .rv-left { width: 100%; border-right: none; border-bottom: 1px solid var(--border); flex: 1; min-height: 0; }
+      .rv-right { display: none !important; flex: none; }
+
+      .rv-split.show-detail .rv-left { display: none !important; }
+      .rv-split.show-detail .rv-right { display: flex !important; flex: 1; min-height: 0; }
+
+      .rv-mobile-back { display: block !important; }
+      .rvd-sec-bd .fg2 { grid-template-columns: 1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -366,7 +379,12 @@
     rType     = 'extend';
     payStatus = 'pending';
 
+    // Mobile: show detail panel, hide list
+    document.querySelector('.rv-split').classList.add('show-detail');
     document.getElementById('rvRight').innerHTML = `
+      <div class="rv-mobile-back" style="display:none;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg-card);flex-shrink:0">
+        <button class="btn btn-secondary btn-sm" onclick="document.querySelector('.rv-split').classList.remove('show-detail')"><i class="fas fa-arrow-left"></i> Danh sách</button>
+      </div>
       <div class="rv-detail" id="rvDetailContent">
         <!-- Hero -->
         <div class="rvd-hero">
@@ -410,7 +428,7 @@
       </div>
       ${s.status !== 'renewed' ? `
       <div class="rvd-footer">
-        <button class="btn btn-secondary" onclick="selectStudent(null);document.getElementById('rvRight').innerHTML='<div class=rv-empty><i class=\\'fas fa-sync-alt\\'></i><p>Chọn học viên để thực hiện tái phí</p></div>'">Đóng</button>
+        <button class="btn btn-secondary" onclick="selectStudent(null);document.getElementById('rvRight').innerHTML='<div class=rv-empty><i class=\\'fas fa-sync-alt\\'></i><p>Chọn học viên để thực hiện tái phí</p></div>';document.querySelector('.rv-split').classList.remove('show-detail')">Đóng</button>
         <button class="btn btn-primary" id="rnwSubmitBtn" onclick="submitRenewal()"><i class="fas fa-check"></i> Xác nhận tái phí</button>
       </div>` : ''}
     `;
@@ -463,12 +481,12 @@
           </div>
 
           <div class="fg" id="newClassFg" style="display:none">
-            <label>Lớp mới <span style="color:#dc2626">*</span></label>
+            <label class="required">Lớp mới</label>
             <select class="form-control" id="newClassSel">${clsHtml}</select>
           </div>
 
           <div class="fg">
-            <label>Chọn gói học <span style="color:#dc2626">*</span></label>
+            <label class="required">Chọn gói học</label>
             <div class="pkg-list">${pkgHtml}</div>
           </div>
 
