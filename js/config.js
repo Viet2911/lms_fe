@@ -6,7 +6,7 @@ window.LMS_CONFIG = {
   // API_BASE: 'http://localhost:8080/api',
 
   // Production - Railway
-  API_BASE: 'https://lms-be-9uuc.onrender.com/api',
+  API_BASE: 'https://lms-be-03fm.onrender.com/api',
 
   // App info
   APP_NAME: 'LMS System',
