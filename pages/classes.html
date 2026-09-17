@@ -1056,6 +1056,9 @@
                     <button class="btn btn-sm btn-secondary" onclick="viewClass(currentClass?.id)" title="Tải lại">
                       <i class="fas fa-sync"></i>
                     </button>
+                    <button class="btn btn-sm btn-danger" id="btnDeleteClass" onclick="deleteClass(currentClass?.id)" style="display:none" title="Xóa lớp học">
+                      <i class="fas fa-trash"></i>
+                    </button>
                   </div>
                 </div>
 
@@ -1434,7 +1437,7 @@
     async function init() {
       if (!auth.checkAuth()) return;
       buildSidebar('sidebar');
-      if (!auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN')) {
+      if (!auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'TEACHER_PLUS')) {
         document.getElementById('btnCreateWrap').style.display = 'none';
       }
       setupBranchSelect();
@@ -1591,8 +1594,19 @@
         ]);
         document.getElementById('subjectSelect').innerHTML = '<option value="">Chọn</option>' + (subjects.data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
         document.getElementById('levelSelect').innerHTML = '<option value="">Chọn</option>' + (levels.data || []).map(l => `<option value="${l.id}">${l.name}</option>`).join('');
-        document.getElementById('teacherSelect').innerHTML = '<option value="">Chọn</option>' + (teachers.data || []).map(t => `<option value="${t.id}">${t.full_name}</option>`).join('');
-        document.getElementById('cmSelect').innerHTML = '<option value="">Chọn</option>' + (cms.data || []).map(c => `<option value="${c.id}">${c.full_name}</option>`).join('');
+
+        // TEACHER_PLUS: thêm bản thân vào cả 2 dropdown nếu chưa có
+        const teacherList = teachers.data || [];
+        const cmList = cms.data || [];
+        if (auth.user?.role_name === 'TEACHER_PLUS') {
+          const self = { id: auth.user.id, full_name: auth.user.full_name };
+          if (!teacherList.find(t => t.id === self.id)) teacherList.unshift(self);
+          if (!cmList.find(c => c.id === self.id)) cmList.unshift(self);
+        }
+
+        console.log('[OPTIONS] teachers:', teacherList, '| cms:', cmList);
+        document.getElementById('teacherSelect').innerHTML = '<option value="">Chọn</option>' + teacherList.map(t => `<option value="${t.id}">${escapeHtml(t.full_name)}</option>`).join('');
+        document.getElementById('cmSelect').innerHTML = '<option value="">Chọn</option>' + cmList.map(c => `<option value="${c.id}">${escapeHtml(c.full_name)}</option>`).join('');
       } catch (e) { }
     }
 
@@ -1608,6 +1622,7 @@
         const query = branch.buildQuery(params);
         const result = await api.get('/classes' + query);
         classes = result.data || [];
+        console.log('[CLASS LIST] total:', classes.length, '| classes:', classes);
         renderClasses();
       } catch (e) {
         list.innerHTML = '<p style="padding:20px;color:var(--danger);font-size:13px">Lỗi: ' + e.message + '</p>';
@@ -1683,6 +1698,10 @@
         currentSessions = sessionsRes.data || [];
         currentAssignments = assignmentsRes.data || [];
 
+        console.log('[CLASS DETAIL] class:', currentClass);
+        console.log('[CLASS DETAIL] students:', currentStudents);
+        console.log('[CLASS DETAIL] sessions:', currentSessions);
+
         const completedSessions = currentSessions.filter(s => s.attendance_submitted).length;
 
         // Populate hero
@@ -1705,9 +1724,13 @@
         document.getElementById('assignmentCount').textContent = currentAssignments.length;
 
         // Show promote button only for completed classes (authorized roles)
-        const canPromote = auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN');
+        const canPromote = auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'TEACHER_PLUS');
         const promoteBtn = document.getElementById('btnPromoteClass');
         promoteBtn.style.display = (currentClass.status === 'completed' && canPromote) ? 'inline-flex' : 'none';
+
+        // Show delete button only for ADMIN/GDV
+        const deleteBtn = document.getElementById('btnDeleteClass');
+        deleteBtn.style.display = auth.hasRole('ADMIN', 'GDV') ? 'inline-flex' : 'none';
 
         // Show panel
         document.getElementById('classEmpty').style.display = 'none';
@@ -1741,6 +1764,11 @@
       document.getElementById('modalTitle').textContent = 'Thêm lớp học';
       document.getElementById('classId').value = '';
       form.reset(document.getElementById('classForm'));
+      // TEACHER_PLUS: tự động chọn bản thân làm GV và CM
+      if (auth.user?.role_name === 'TEACHER_PLUS') {
+        document.getElementById('teacherSelect').value = auth.user.id;
+        document.getElementById('cmSelect').value = auth.user.id;
+      }
       modal.show('formModal');
     }
 
@@ -1779,6 +1807,24 @@
         notify.error(e.message);
         animate.shake(formEl);
       } finally { loading.buttonEnd(submitBtn); }
+    }
+
+    async function deleteClass(id) {
+      if (!id) return;
+      if (!confirm(`Xóa lớp "${currentClass?.class_name}"?\nThao tác này sẽ chuyển lớp về trạng thái ngừng hoạt động.`)) return;
+      const btn = document.getElementById('btnDeleteClass');
+      loading.buttonStart(btn, '...');
+      try {
+        await api.delete(`/classes/${id}`);
+        notify.success('Đã xóa lớp học');
+        currentClass = null;
+        document.getElementById('classDetailPanel').style.display = 'none';
+        document.getElementById('classEmpty').style.display = 'flex';
+        await loadData();
+      } catch (e) {
+        notify.error(e.message);
+        loading.buttonEnd(btn);
+      }
     }
 
     // ============================================
@@ -1888,7 +1934,7 @@
           </div>
         </div>
 
-        ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `
+        ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'TEACHER_PLUS') && currentSessions.length === 0 ? `
           <button class="btn btn-primary" onclick="generateSessions()">
             <i class="fas fa-magic"></i> Tạo buổi học tự động
           </button>
@@ -1903,7 +1949,7 @@
       document.getElementById('tab-students').innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
           <h4 style="margin:0;font-size:15px"><i class="fas fa-users" style="color:var(--primary)"></i> Danh sách học sinh (${currentStudents.length})</h4>
-          ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `
+          ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'TEACHER_PLUS') ? `
             <button class="btn btn-primary btn-sm" onclick="openAddStudentModal()"><i class="fas fa-user-plus"></i> Thêm học sinh</button>
           ` : ''}
         </div>
@@ -1927,7 +1973,7 @@
                   <td style="text-align:center"><span class="badge badge-warning">${s.late_count || 0}</span></td>
                   <td style="text-align:center"><span class="badge badge-danger">${s.absent_count || 0}</span></td>
                   <td>
-                    ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `
+                    ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'TEACHER_PLUS') ? `
                       <button class="btn btn-sm btn-danger" onclick="removeStudent(${s.id})" title="Xóa khỏi lớp"><i class="fas fa-times"></i></button>
                     ` : ''}
                   </td>
@@ -1956,7 +2002,7 @@
           <div class="empty-state" style="padding:40px">
             <i class="fas fa-calendar-alt" style="font-size:48px;color:#d1d5db"></i>
             <p>Chưa có buổi học</p>
-            ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN') ? `<button class="btn btn-primary" onclick="generateSessions()"><i class="fas fa-magic"></i> Tạo buổi học</button>` : ''}
+            ${auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'TEACHER_PLUS') ? `<button class="btn btn-primary" onclick="generateSessions()"><i class="fas fa-magic"></i> Tạo buổi học</button>` : ''}
           </div>`;
         return;
       }
@@ -2001,7 +2047,7 @@
       const attendanceWindowStart = new Date(sessionStart.getTime() - 5 * 60 * 1000);
       const attendanceWindowEnd = new Date(sessionEnd.getTime() + 15 * 60 * 1000);
       const isTeacher = auth.user?.role_name === 'TEACHER';
-      const canAlwaysAttend = auth.hasRole('CM', 'OM', 'HOEC', 'ADMIN');
+      const canAlwaysAttend = auth.hasRole('CM', 'OM', 'HOEC', 'ADMIN', 'TEACHER_PLUS');
       let statusClass, statusText, canAttend, tooltip;
 
       if (session.attendance_submitted) {
@@ -2062,7 +2108,7 @@
     function renderAttendanceForm() {
       const session = currentSessions.find(s => s.id === selectedSessionId);
       if (!session) return;
-      const canManage = auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN');
+      const canManage = auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'TEACHER_PLUS');
       const originalInfo = session.original_date
         ? `<span style="color:#f59e0b;font-size:12px;margin-left:8px" title="Ngày gốc: ${formatDate(session.original_date)}"><i class="fas fa-history"></i> Đã dời</span>` : '';
 
@@ -2139,11 +2185,16 @@
       const attendances = Object.entries(attendanceData).map(([studentId, status]) => ({
         studentId: parseInt(studentId), status
       }));
+      const btn = document.querySelector('[onclick="saveAttendance()"]');
+      if (btn) loading.buttonStart(btn, 'Đang lưu...');
       try {
         await api.post(`/attendance/session/${selectedSessionId}/mark`, { attendances });
         notify.success('Lưu điểm danh thành công');
         viewClass(currentClass.id);
-      } catch (e) { notify.error(e.message); }
+      } catch (e) {
+        notify.error(e.message);
+        if (btn) loading.buttonEnd(btn);
+      }
     }
 
     // ============================================
@@ -2253,13 +2304,19 @@
 
     async function saveFeedbacks() {
       if (!feedbackSessionId) { notify.warning('Chưa chọn buổi học'); return; }
+      const btn = document.querySelector('[onclick="saveFeedbacks()"]');
+      if (btn) loading.buttonStart(btn, 'Đang lưu...');
       try {
         for (const studentId of Object.keys(feedbackData)) {
           const fb = feedbackData[studentId];
           await api.post(`/sessions/${feedbackSessionId}/feedbacks`, { student_id: parseInt(studentId), rating: fb.rating, feedback: fb.feedback, homework_assigned: fb.homework_assigned, parent_notified: fb.parent_notified });
         }
         notify.success('Đã lưu nhận xét thành công');
-      } catch (e) { notify.error(e.message); }
+      } catch (e) {
+        notify.error(e.message);
+      } finally {
+        if (btn) loading.buttonEnd(btn);
+      }
     }
 
     // ============================================
@@ -2459,12 +2516,17 @@
 
     async function addSelectedStudents() {
       if (!selectedStudentIds.length) { notify.warning('Vui lòng chọn ít nhất 1 học sinh'); return; }
+      const btn = document.querySelector('#addStudentModal .btn-primary');
+      if (btn) loading.buttonStart(btn, 'Đang thêm...');
       try {
         for (const studentId of selectedStudentIds) { await api.post(`/classes/${currentClass.id}/students`, { studentId }); }
         notify.success(`Đã thêm ${selectedStudentIds.length} học sinh vào lớp`);
         modal.hide('addStudentModal');
         viewClass(currentClass.id);
-      } catch (e) { notify.error(e.message); }
+      } catch (e) {
+        notify.error(e.message);
+        if (btn) loading.buttonEnd(btn);
+      }
     }
 
     async function removeStudent(studentId) {
@@ -2478,11 +2540,16 @@
 
     async function generateSessions() {
       if (!confirm('Tạo buổi học tự động dựa trên lịch học?')) return;
+      const btn = document.querySelector('[onclick="generateSessions()"]');
+      if (btn) loading.buttonStart(btn, 'Đang tạo...');
       try {
         await api.post('/sessions/generate', { classId: currentClass.id });
         notify.success('Đã tạo buổi học');
         viewClass(currentClass.id);
-      } catch (e) { notify.error(e.message); }
+      } catch (e) {
+        notify.error(e.message);
+        if (btn) loading.buttonEnd(btn);
+      }
     }
 
     // ============================================

@@ -311,11 +311,12 @@ function buildSidebar(containerId) {
   html += `<a href="${homeLink}" class="sb-top ${dashActive}"><i class="fas fa-home"></i><span>Dashboard</span></a>`;
 
   // ── Tuyển sinh ──
-  if (canAny('leads.view', 'trial.view')) {
+  const isTeacherPlus = auth.hasRole('TEACHER_PLUS');
+  if (canAny('leads.view', 'trial.view') || isTeacherPlus) {
     let links = '';
-    if (can('leads.view')) links += link('leads.html', 'fas fa-user-plus', 'Leads');
-    if (can('trial.view')) links += link('trial-calendar.html', 'fas fa-calendar-alt', 'Lịch trải nghiệm');
-    if (can('trial.view')) links += link('trial.html', 'fas fa-user-clock', 'Học sinh thử');
+    if (can('leads.view') || isTeacherPlus) links += link('leads.html', 'fas fa-user-plus', 'Leads');
+    if (can('trial.view') || isTeacherPlus) links += link('trial-calendar.html', 'fas fa-calendar-alt', 'Lịch trải nghiệm');
+    if (can('trial.view') || isTeacherPlus) links += link('trial.html', 'fas fa-user-clock', 'Học sinh thử');
     html += group('grp-tuyen-sinh', 'fas fa-bullhorn', 'Tuyển sinh', links);
   }
 
@@ -340,7 +341,7 @@ function buildSidebar(containerId) {
   }
 
   // ── Báo cáo & KPI ──
-  const canReports = can('reports.view') || auth.hasRole('HOEC', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'OM', 'CM', 'EC', 'ACCOUNTANT', 'SALE');
+  const canReports = can('reports.view') || auth.hasRole('HOEC', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'OM', 'CM', 'EC', 'ACCOUNTANT', 'SALE', 'TEACHER_PLUS');
   if (canReports) {
     let links = link('reports.html', 'fas fa-chart-pie', 'Báo cáo & KPI');
     html += group('grp-baocao', 'fas fa-chart-pie', 'Báo cáo & KPI', links);
@@ -358,6 +359,10 @@ function buildSidebar(containerId) {
   if (auth.hasRole('ADMIN', 'GDV')) {
     let links = '';
     links += link('admin-settings.html', 'fas fa-cog', 'Cài đặt hệ thống');
+    links += link('promotions.html', 'fas fa-gift', 'Khuyến mại & học bổng');
+    if (auth.user?.role_name?.toUpperCase() === 'ADMIN') {
+      links += link('kit-handover.html', 'fas fa-box-open', 'Bàn giao kit');
+    }
     html += group('grp-hethong', 'fas fa-shield-alt', 'Hệ thống', links);
   }
 
@@ -474,6 +479,7 @@ function getRoleDisplay(role) {
     'EC': 'Tư vấn viên',
     'SALE': 'Tư vấn viên',
     'TEACHER': 'Giáo viên',
+    'TEACHER_PLUS': 'Giáo viên kiêm nhiệm',
     'HEAD_TEACHER': 'Trưởng giáo viên',
     'TA': 'Trợ giảng',
     'ACCOUNTANT': 'Kế toán',

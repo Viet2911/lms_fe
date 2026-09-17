@@ -203,7 +203,7 @@
 
     .lli-chk {
       position: absolute;
-      left: 22px;
+      left: 20px;
       top: 50%;
       transform: translateY(-50%);
       width: 14px;
@@ -214,6 +214,7 @@
     }
     .lli-chk:checked { opacity: 1; }
     .lli { position: relative; }
+    .lli-body-chk { padding-left: 36px !important; }
 
     .lli-badge {
       padding: 3px 8px;
@@ -1146,7 +1147,7 @@
         return `<div class="lli${isActive}" data-id="${l.id}" onclick="viewLead(${l.id})">
           <div class="lli-bar" style="background:${cfg.bar}"></div>
           ${canManage ? `<input type="checkbox" class="lli-chk" data-id="${l.id}"${isChecked} onclick="toggleLeadSelect(event,${l.id})" title="Chọn">` : ''}
-          <div class="lli-body">
+          <div class="lli-body${canManage ? ' lli-body-chk' : ''}">
             <div class="lli-name">${escapeHtml(l.student_name)}</div>
             <div class="lli-meta">${escapeHtml(l.customer_phone)}${sessions}${l.sale_name ? ` · <span style="color:#2563eb">${escapeHtml(l.sale_name)}</span>` : ''}</div>
             <div class="lli-foot">

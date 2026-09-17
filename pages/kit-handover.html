@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bàn giao Kit - LMS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i
+              class="fas fa-bars"></i></button>
+          <div>
+            <h1 class="page-title">Bàn giao Kit</h1>
+            <p class="page-subtitle">Quản lý bàn giao kit dạy học (trial/lớp/event)</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle" onclick="theme.toggle()" title="Đổi giao diện"><i class="fas fa-moon"></i><i
+              class="fas fa-sun"></i></button>
+          <button class="btn btn-primary" onclick="openCreateModal()"><i class="fas fa-plus"></i> <span
+              class="btn-text">Bàn giao kit</span></button>
+          <div class="user-menu" onclick="auth.logout()">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <div class="user-info">
+              <div class="user-name" id="userName">User</div>
+              <div class="user-role" id="userRole">Role</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <div class="filters-bar">
+          <select id="branchFilter" class="filter-select" onchange="loadData()">
+            <option value="">Tất cả cơ sở</option>
+          </select>
+          <select id="typeFilter" class="filter-select" onchange="loadData()">
+            <option value="">Tất cả loại dạy</option>
+            <option value="trial">Trial</option>
+            <option value="class">Lớp</option>
+            <option value="event">Event</option>
+          </select>
+          <select id="statusFilter" class="filter-select" onchange="loadData()">
+            <option value="">Tất cả trạng thái</option>
+            <option value="pending">Chưa bàn giao</option>
+            <option value="delivered">Đã bàn giao</option>
+            <option value="returned">Đã trả</option>
+          </select>
+          <input type="text" id="searchInput" class="filter-select" placeholder="Tìm tên kit / người nhận..."
+            onkeyup="if(event.key==='Enter') loadData()">
+          <button class="btn btn-secondary" onclick="loadData()"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="table-container" id="dataTable"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Create/Edit Modal -->
+  <div class="modal-overlay" id="formModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Bàn giao kit</h3>
+        <button class="modal-close" onclick="modal.hide('formModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="dataForm">
+          <input type="hidden" id="editId">
+          <div class="form-group">
+            <label class="form-label required">Cơ sở</label>
+            <select name="branchId" class="form-control" id="branchFormSelect" required>
+              <option value="">Đang tải...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label required">Loại dạy</label>
+            <select name="teachingType" class="form-control" required>
+              <option value="">Chọn loại dạy</option>
+              <option value="trial">Trial</option>
+              <option value="class">Lớp</option>
+              <option value="event">Event</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label class="form-label required">Tên/loại kit</label>
+              <input type="text" name="kitName" class="form-control" placeholder="VD: Kit Tiếng Anh lớp 1" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">Số lượng</label>
+              <input type="number" name="quantity" class="form-control" min="1" value="1" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label required">Người nhận</label>
+            <input type="text" name="recipientName" class="form-control" placeholder="Tên người nhận kit" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ghi chú</label>
+            <textarea name="note" class="form-control" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="modal.hide('formModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="saveData()"><i class="fas fa-save"></i> Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/app.js?v=4.1"></script>
+  <script src="../js/sidebar.js?v=4.4"></script>
+  <script src="../js/reactive.js?v=4.1"></script>
+  <script src="../js/crud-mixin.js?v=4.1"></script>
+  <script>
+    let allBranches = [];
+    let currentItems = [];
+
+    async function init() {
+      if (!auth.checkAuth()) return;
+      if (auth.user?.role_name?.toUpperCase() !== 'ADMIN') {
+        window.location.href = '../index.html'; return;
+      }
+      buildSidebar('sidebar');
+      await loadBranches();
+      await loadData();
+    }
+
+    async function loadBranches() {
+      try {
+        const result = await api.get('/branches');
+        allBranches = result.data || [];
+        const options = allBranches.map(b => `<option value="${b.id}">${security.escapeHtml(b.name)}</option>`).join('');
+        document.getElementById('branchFilter').innerHTML = '<option value="">Tất cả cơ sở</option>' + options;
+        document.getElementById('branchFormSelect').innerHTML = '<option value="">Chọn cơ sở</option>' + options;
+      } catch (e) { }
+    }
+
+    async function loadData() {
+      const container = document.getElementById('dataTable');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+      try {
+        const params = new URLSearchParams();
+        const branchId = document.getElementById('branchFilter').value;
+        const teachingType = document.getElementById('typeFilter').value;
+        const status = document.getElementById('statusFilter').value;
+        const search = document.getElementById('searchInput').value.trim();
+        if (branchId) params.set('branchId', branchId);
+        if (teachingType) params.set('teachingType', teachingType);
+        if (status) params.set('status', status);
+        if (search) params.set('search', search);
+        params.set('limit', 100);
+
+        const result = await api.get('/kit-handovers?' + params.toString());
+        currentItems = result.data || [];
+        renderTable(currentItems);
+      } catch (e) { container.innerHTML = '<p>Lỗi: ' + e.message + '</p>'; }
+    }
+
+    const TYPE_LABELS = { trial: 'Trial', class: 'Lớp', event: 'Event' };
+    const TYPE_BADGES = { trial: 'badge-info', class: 'badge-success', event: 'badge-warning' };
+
+    function renderTable(items) {
+      if (!items.length) {
+        document.getElementById('dataTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-box-open"></i></div><h3>Chưa có bàn giao kit nào</h3><p>Nhấn "Bàn giao kit" để tạo mới</p></div>';
+        return;
+      }
+
+      let html = `<table class="table"><thead><tr>
+        <th>Cơ sở</th><th>Loại dạy</th><th>Tên kit</th><th>SL</th><th>Người nhận</th>
+        <th>Ngày tạo</th><th>Đã bàn giao</th><th>Đã trả</th><th>Ghi chú</th><th>Thao tác</th>
+      </tr></thead><tbody>`;
+
+      items.forEach(k => {
+        html += `<tr>
+          <td>${security.escapeHtml(k.branch_name || '-')}</td>
+          <td><span class="badge ${TYPE_BADGES[k.teaching_type] || ''}">${TYPE_LABELS[k.teaching_type] || k.teaching_type}</span></td>
+          <td><strong>${security.escapeHtml(k.kit_name)}</strong></td>
+          <td>${k.quantity}</td>
+          <td>${security.escapeHtml(k.recipient_name)}</td>
+          <td>${ui.formatDate(k.created_at)}</td>
+          <td><input type="checkbox" ${k.delivered ? 'checked' : ''} onchange="toggleStatus(${k.id}, 'delivered', this.checked)"></td>
+          <td><input type="checkbox" ${k.returned ? 'checked' : ''} onchange="toggleStatus(${k.id}, 'returned', this.checked)"></td>
+          <td>${security.escapeHtml(k.note || '-')}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="exportForm(${k.id})" title="Xuất biên bản"><i class="fas fa-file-excel"></i></button>
+            <button class="btn btn-sm btn-secondary" onclick="editKit(${k.id})" title="Sửa"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-danger" onclick="deleteKit(${k.id})" title="Xóa"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      document.getElementById('dataTable').innerHTML = html;
+    }
+
+    async function toggleStatus(id, field, checked) {
+      try {
+        await api.put(`/kit-handovers/${id}/status`, { [field]: checked });
+        notify.success('Đã cập nhật trạng thái');
+      } catch (e) {
+        notify.error(e.message);
+      } finally {
+        loadData();
+      }
+    }
+
+    function openCreateModal() {
+      document.getElementById('modalTitle').textContent = 'Bàn giao kit';
+      document.getElementById('editId').value = '';
+      form.reset(document.getElementById('dataForm'));
+      modal.show('formModal');
+    }
+
+    function editKit(id) {
+      const k = currentItems.find(item => item.id === id);
+      if (!k) { notify.error('Không tìm thấy bản ghi'); return; }
+
+      document.getElementById('modalTitle').textContent = 'Sửa bàn giao kit';
+      document.getElementById('editId').value = id;
+      form.setData(document.getElementById('dataForm'), {
+        branchId: k.branch_id,
+        teachingType: k.teaching_type,
+        kitName: k.kit_name,
+        quantity: k.quantity,
+        recipientName: k.recipient_name,
+        note: k.note || ''
+      });
+      modal.show('formModal');
+    }
+
+    async function saveData() {
+      const formEl = document.getElementById('dataForm');
+      const submitBtn = document.querySelector('#formModal .btn-primary');
+
+      const schema = {
+        branchId: [validate.rules.required],
+        teachingType: [validate.rules.required],
+        kitName: [validate.rules.required],
+        quantity: [validate.rules.required, validate.rules.number, validate.rules.min(1)],
+        recipientName: [validate.rules.required]
+      };
+
+      const { isValid } = validate.validateForm(formEl, schema);
+      if (!isValid) {
+        notify.warning('Vui lòng kiểm tra lại thông tin');
+        return;
+      }
+
+      const data = form.getData(formEl);
+      const id = document.getElementById('editId').value;
+
+      loading.buttonStart(submitBtn, id ? 'Đang cập nhật...' : 'Đang tạo...');
+
+      try {
+        if (id) {
+          await api.put(`/kit-handovers/${id}`, data);
+          notify.success('Cập nhật thành công');
+        } else {
+          await api.post('/kit-handovers', data);
+          notify.success('Bàn giao kit thành công');
+        }
+        modal.hide('formModal');
+        loadData();
+      } catch (e) {
+        notify.error(e.message);
+        animate.shake(formEl);
+      } finally {
+        loading.buttonEnd(submitBtn);
+      }
+    }
+
+    async function deleteKit(id) {
+      const confirmed = await ui.confirm('Bạn có chắc muốn xóa bản ghi bàn giao kit này?', 'Xác nhận xóa');
+      if (!confirmed) return;
+      try {
+        await api.delete(`/kit-handovers/${id}`);
+        notify.success('Xóa thành công');
+        loadData();
+      } catch (e) { notify.error(e.message); }
+    }
+
+    async function exportForm(id) {
+      try {
+        const res = await fetch(window.API_BASE + `/kit-handovers/${id}/export-form`, {
+          headers: { Authorization: 'Bearer ' + api.getToken() }
+        });
+        if (!res.ok) throw new Error('Lỗi xuất biên bản');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `bien_ban_ban_giao_kit_${id}.xlsx`; a.click();
+        URL.revokeObjectURL(url);
+      } catch (e) { notify.error(e.message); }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+
+</html>

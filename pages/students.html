@@ -1001,7 +1001,7 @@
         const res = await api.get('/students/' + id);
         const s = res.data;
         document.getElementById('formId').value = s.id;
-        document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa: ' + s.full_name;
+        document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit"></i> Sửa: ' + escapeHtml(s.full_name);
         document.getElementById('fStudentName').value = s.full_name || '';
         document.getElementById('fBirthYear').value = s.birth_year || '';
         document.getElementById('fGender').value = s.gender || '';
@@ -1409,7 +1409,7 @@
         const qrAmount = remaining > 0 ? remaining : tuitionFee;
         document.getElementById('qrStudentId').value = id;
         document.getElementById('qrRemainingRaw').value = qrAmount;
-        document.getElementById('qrStudentInfo').innerHTML = `<h3 style="margin:0">${s.full_name}</h3><div style="color:var(--text-secondary)">${s.student_code}</div>`;
+        document.getElementById('qrStudentInfo').innerHTML = `<h3 style="margin:0">${escapeHtml(s.full_name)}</h3><div style="color:var(--text-secondary)">${escapeHtml(s.student_code)}</div>`;
         const qrUrl = `https://img.vietqr.io/image/970422-0866766189-compact2.png?amount=${qrAmount}&addInfo=${encodeURIComponent('HP ' + s.student_code)}`;
         document.getElementById('qrImage').src = qrUrl;
         document.getElementById('qrPaidAmount').textContent = formatCurrency(paidAmount);

@@ -521,6 +521,15 @@
                     <p class="text-muted text-center">Không có yêu cầu nào</p>
                 </div>
             </div>
+
+            <div class="card" style="margin-top:20px">
+                <div class="card-header">
+                    <h3><i class="fas fa-graduation-cap"></i> Yêu cầu học bổng vượt mức</h3>
+                </div>
+                <div class="card-body" id="pendingScholarshipList">
+                    <p class="text-muted text-center">Không có yêu cầu nào</p>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -713,7 +722,7 @@
     <script src="../js/crud-mixin.js?v=4.1"></script>
     <script src="../js/sidebar.js?v=4.4"></script>
     <script>
-        let programs = [], items = [], scholarships = [], pending = [];
+        let programs = [], items = [], scholarships = [], pending = [], pendingScholarships = [];
 
         async function init() {
             if (!auth.checkAuth()) return;
@@ -734,7 +743,7 @@
         }
 
         async function loadAll() {
-            await Promise.all([loadPrograms(), loadItems(), loadScholarships(), loadPending()]);
+            await Promise.all([loadPrograms(), loadItems(), loadScholarships(), loadPending(), loadPendingScholarships()]);
             updateStats();
         }
 
@@ -742,7 +751,7 @@
             document.getElementById('statPrograms').textContent = programs.length;
             document.getElementById('statItems').textContent = items.length;
             document.getElementById('statScholarships').textContent = scholarships.length;
-            document.getElementById('statPending').textContent = pending.length;
+            document.getElementById('statPending').textContent = pending.length + pendingScholarships.length;
         }
 
         // ==================== PROGRAMS ====================
@@ -1002,6 +1011,57 @@
                 await api.post('/promotions/lead/' + leadId + '/approve', { approved });
                 notify.success(approved ? 'Đã duyệt giảm giá' : 'Đã từ chối');
                 loadPending();
+            } catch (e) { notify.error(e.message); }
+        }
+
+        // ==================== SCHOLARSHIP APPROVALS ====================
+        async function loadPendingScholarships() {
+            try {
+                const res = await api.get('/scholarships/pending');
+                pendingScholarships = res.data || [];
+                renderPendingScholarships();
+            } catch (e) { }
+        }
+
+        function renderPendingScholarships() {
+            const container = document.getElementById('pendingScholarshipList');
+            if (!pendingScholarships.length) {
+                container.innerHTML = '<p class="text-muted text-center">Không có yêu cầu nào chờ duyệt 🎉</p>';
+                return;
+            }
+            container.innerHTML = pendingScholarships.map(s => `
+        <div class="approval-card">
+          <div class="student-info">
+            ${escapeHtml(s.student_name || s.lead_student_name || s.trial_student_name || '-')}
+            <span style="color:#6b7280;font-weight:normal"> (${escapeHtml(s.branch_name || '-')})</span>
+          </div>
+          <div style="font-size:13px;color:#6b7280">
+            Gói: ${escapeHtml(s.package_name || '-')} | Người yêu cầu: ${escapeHtml(s.requested_by_name || '-')}
+          </div>
+          <div class="discount-info">
+            Học bổng: ${s.requested_months} tháng (mặc định ${s.default_months} tháng, vượt <strong>${s.extra_months} tháng</strong>)
+          </div>
+          <div style="font-size:13px;margin-bottom:12px">
+            Lý do: ${escapeHtml(s.request_reason || 'Không có')}
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-success btn-sm" onclick="approveScholarshipRequest(${s.id}, true)">
+              <i class="fas fa-check"></i> Duyệt
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="approveScholarshipRequest(${s.id}, false)">
+              <i class="fas fa-times"></i> Từ chối
+            </button>
+          </div>
+        </div>
+      `).join('');
+        }
+
+        async function approveScholarshipRequest(id, approved) {
+            if (!confirm(approved ? 'Duyệt học bổng này? Hệ thống sẽ tự cộng buổi học cho học viên.' : 'Từ chối yêu cầu học bổng này?')) return;
+            try {
+                await api.post(`/scholarships/${id}/${approved ? 'approve' : 'reject'}`, {});
+                notify.success(approved ? 'Đã duyệt học bổng' : 'Đã từ chối');
+                loadPendingScholarships();
             } catch (e) { notify.error(e.message); }
         }
 

@@ -259,7 +259,7 @@
 
         async function loadSubjects() {
             try {
-                const res = await api.get('/subjects');
+                const res = await api.get('/common/subjects');
                 subjects = res.data || [];
 
                 // Populate filter

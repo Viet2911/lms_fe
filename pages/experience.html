@@ -777,7 +777,7 @@
       let promoDiscount = 0;
       if (discountType === 'percent') {
         promoDiscount = Math.round(feeOriginal * discountValue / 100);
-      } else if (discountType === 'fixed') {
+      } else if (discountType) {
         promoDiscount = discountValue;
       }
 
@@ -824,6 +824,7 @@
       const parentJob = document.getElementById('cvParentJob').value;
 
       const packageId = document.getElementById('cvTuitionPackage').value;
+      const programId = document.getElementById('cvPromoProgram').value || null;
       const feeOriginal = parseCurrency(document.getElementById('cvFeeOriginal').value);
       const promoDiscount = parseCurrency(document.getElementById('cvPromoDiscount').value.replace('-', ''));
       const feeTotal = parseFloat(document.getElementById('cvFeeTotal').dataset.rawValue) || 0;
@@ -850,7 +851,7 @@
         const result = await api.post(`/experience/${id}/convert`, {
           studentName, birthYear: studentBirthYear, address: studentAddress, school: studentSchool,
           customerName: parentName, customerPhone: parentPhone, parentJob,
-          packageId, feeOriginal, feeDiscount: promoDiscount, feeTotal,
+          packageId, programId, feeOriginal, feeDiscount: promoDiscount, feeTotal,
           scholarshipMonths, defaultScholarshipMonths, scholarshipNeedsApproval: needsApproval,
           depositAmount, paidAmount, actualRevenue, paymentStatus,
           note

@@ -167,6 +167,38 @@
       padding: 2px 8px;
     }
 
+    /* Branch tag + unconfirmed-schedule indicator on calendar events */
+    .trial-branch-tag {
+      font-size: 9px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.9);
+      color: #1f2937;
+      padding: 1px 6px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    .trial-event.needs-confirm {
+      box-shadow: 0 0 0 2px #f59e0b inset;
+    }
+
+    .trial-event .confirm-flag {
+      color: #fef08a;
+    }
+
+    .confirm-notice {
+      background: #fef3c7;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-top: 16px;
+      border-left: 4px solid #f59e0b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
     /* Legend */
     .calendar-legend {
       display: flex;
@@ -999,13 +1031,16 @@
 
           const branchCode = s.branch_code || '';
           const timeStr = s.scheduled_time ? s.scheduled_time.substring(0, 5) : '';
+          const needsConfirm = !!s.scheduled_date && !s.schedule_confirmed &&
+            ['scheduled', 'trial', 'waiting'].includes(s.status);
 
           return `
-            <div class="trial-event ${statusClass}" onclick="viewSession(${s.id}); event.stopPropagation();">
+            <div class="trial-event ${statusClass}${needsConfirm ? ' needs-confirm' : ''}" onclick="viewSession(${s.id}); event.stopPropagation();">
               ${timeStr ? `<span style="font-size:10px;opacity:0.9;margin-right:4px;">${timeStr}</span>` : ''}
               <span class="session-badge">${badgeText}</span>
               <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${s.student_name}</span>
-              ${branchCode ? `<span style="font-size:9px;opacity:0.8;">${branchCode}</span>` : ''}
+              ${needsConfirm ? `<i class="fas fa-exclamation-circle confirm-flag" title="Cơ sở chưa xác nhận nhận lịch"></i>` : ''}
+              ${branchCode ? `<span class="trial-branch-tag">${branchCode}</span>` : ''}
             </div>
           `;
         }).join('');
@@ -1083,9 +1118,33 @@
             <div style="background: #fef3c7; padding: 12px 16px; border-radius: 8px; margin-top: 16px; border-left: 4px solid #f59e0b;">
               <i class="fas fa-clock" style="color: #f59e0b;"></i>
               <span style="font-size: 13px; color: #92400e;">
-                <strong>Đang chờ:</strong> Đã hoàn thành ${completedSessions} buổi. 
+                <strong>Đang chờ:</strong> Đã hoàn thành ${completedSessions} buổi.
                 Vui lòng đặt lịch buổi tiếp hoặc chuyển đổi thành học viên.
               </span>
+            </div>
+          `;
+        }
+
+        // Xác nhận nhận lịch - chỉ áp dụng khi đã có lịch và còn đang trong quá trình (chưa hủy/chuyển đổi)
+        const needsConfirm = !!l.scheduled_date && !l.schedule_confirmed &&
+          ['scheduled', 'trial', 'waiting'].includes(l.status);
+        let confirmNotice = '';
+        if (needsConfirm) {
+          confirmNotice = `
+            <div class="confirm-notice">
+              <span style="font-size:13px;color:#92400e;">
+                <i class="fas fa-exclamation-circle" style="color:#f59e0b;"></i>
+                <strong>Chưa xác nhận:</strong> Cơ sở chưa xác nhận đã nhận được lịch này.
+              </span>
+              <button class="btn btn-warning btn-sm" onclick="confirmScheduleReceived(${l.id})">
+                <i class="fas fa-check-circle"></i> Xác nhận đã nhận lịch
+              </button>
+            </div>
+          `;
+        } else if (l.scheduled_date && l.schedule_confirmed) {
+          confirmNotice = `
+            <div style="margin-top:12px;font-size:12px;color:#16a34a;">
+              <i class="fas fa-check-circle"></i> Cơ sở đã xác nhận nhận lịch${l.schedule_confirmed_at ? ' lúc ' + ui.formatDateTime(l.schedule_confirmed_at) : ''}
             </div>
           `;
         }
@@ -1094,6 +1153,7 @@
           <div class="session-detail">
             <h4>
               <i class="fas fa-user"></i> ${l.student_name}
+              ${l.branch_name ? `<span class="badge badge-info" style="margin-left:8px;"><i class="fas fa-building"></i> ${l.branch_name}</span>` : ''}
               <span class="badge badge-${statusInfo.class}" style="margin-left:auto;">
                 ${statusInfo.icon ? `<i class="fas ${statusInfo.icon}"></i> ` : ''}${statusInfo.text}
               </span>
@@ -1117,7 +1177,8 @@
             </div>
             
             ${waitingNotice}
-            
+            ${confirmNotice}
+
             ${l.note ? `<div style="margin-top:12px;padding:10px;background:var(--bg-primary);border-radius:6px;font-size:13px;"><i class="fas fa-sticky-note" style="color:var(--text-muted);"></i> ${l.note}</div>` : ''}
           </div>
         `;
@@ -1198,6 +1259,16 @@
         modal.hide('viewModal');
         loadCalendar();
         loadStats();
+      } catch (e) { ui.error(e.message); }
+    }
+
+    // Cơ sở xác nhận đã nhận được lịch
+    async function confirmScheduleReceived(leadId) {
+      try {
+        await api.post(`/leads/${leadId}/confirm-schedule`);
+        ui.success('Đã xác nhận nhận lịch');
+        modal.hide('viewModal');
+        loadCalendar();
       } catch (e) { ui.error(e.message); }
     }
 

@@ -783,6 +783,10 @@ const branch = {
   // Khôi phục cơ sở đã chọn: localStorage → primaryBranch → cơ sở đầu tiên
   _restoreCurrent() {
     const savedId = localStorage.getItem('currentBranchId');
+    if (savedId === 'all') {
+      // Đã chọn "Tất cả cơ sở" ở trang khác — chỉ áp dụng cho is_system_wide (phòng khi quyền bị thu hồi)
+      return auth.user?.is_system_wide ? null : (auth.user?.primaryBranch || this.list[0] || null);
+    }
     if (savedId) {
       const found = this.list.find(b => b.id == savedId);
       if (found) return found;
@@ -803,7 +807,7 @@ const branch = {
       // "Tất cả cơ sở" — chỉ admin/is_system_wide mới có option này
       if (!auth.user?.is_system_wide) return;
       this.current = null;
-      localStorage.removeItem('currentBranchId');
+      localStorage.setItem('currentBranchId', 'all'); // lưu sentinel để phân biệt với "chưa chọn gì"
       notify.info('Đang xem tất cả cơ sở');
     } else {
       const found = this.list.find(b => b.id == branchId);
