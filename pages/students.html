@@ -209,7 +209,7 @@
             <option value="2">2 tháng</option>
             <option value="3">3 tháng</option>
           </select>
-          <select id="saleFilter" onchange="loadData()" style="display:none">
+          <select id="saleFilter" onchange="loadStats(); loadData()" style="display:none">
             <option value="">Tất cả Sale</option>
           </select>
         </div>
@@ -658,7 +658,7 @@
   </div>
 
   <script src="../js/config.js"></script>
-  <script src="../js/app.js?v=4.1"></script>
+  <script src="../js/app.js?v=4.2"></script>
   <script src="../js/reactive.js?v=4.1"></script>
   <script src="../js/crud-mixin.js?v=4.1"></script>
   <script src="../js/sidebar.js?v=4.4"></script>
@@ -682,6 +682,10 @@
     async function init() {
       await auth.requireAuth();
       buildSidebar('sidebar');
+      // Chờ branch.init() nạp xong danh sách cơ sở. Nếu không chờ, loadStats()
+      // chạy lúc branch.current còn null (gửi request thiếu branchId) trong khi
+      // loadData() chạy sau lại có -> chip đếm cả 3 cơ sở, danh sách chỉ 1 cơ sở.
+      await branch.ready;
       await Promise.all([loadOptions(), loadStats(), loadSaleFilter()]);
       await loadData();
     }
@@ -709,8 +713,13 @@
 
     async function loadStats() {
       try {
-        const params = branch.current?.id ? `?branchId=${branch.current.id}` : '';
-        const res = await api.get('/students/stats' + params);
+        // Phải gửi CÙNG bộ lọc như loadData(), nếu không chip và danh sách
+        // sẽ ra hai con số khác nhau trên cùng một màn hình.
+        const sp = new URLSearchParams();
+        if (branch.current?.id) sp.append('branchId', branch.current.id);
+        const saleId = document.getElementById('saleFilter')?.value || '';
+        if (saleId) sp.append('saleId', saleId);
+        const res = await api.get('/students/stats' + (sp.toString() ? '?' + sp : ''));
         const stats = res.data || {};
 
         // Update fee filter with counts
@@ -725,14 +734,20 @@
         `;
         feeFilter.value = feeVal;
 
+        // pending + quit_paid trước đây không có chip nào -> học viên vẫn nằm
+        // trong danh sách và trong "Tất cả" nhưng không lọc ra được, và tổng
+        // các chip không bao giờ bằng "Tất cả".
         const tabs = [
           { key: null,           label: 'Tất cả',      count: stats.total || 0 },
           { key: 'active',       label: 'Đang học',    count: stats.active || 0 },
+          { key: 'pending',      label: 'Chờ xếp lớp', count: stats.pending || 0 },
           { key: 'waiting',      label: 'Đợi lớp',     count: stats.waiting || 0 },
           { key: 'expiring_soon',label: 'Sắp hết phí', count: stats.expiring_soon || 0 },
           { key: 'expired',      label: 'Hết phí',     count: stats.expired || 0 },
           { key: 'paused',       label: 'Tạm dừng',    count: stats.paused || 0 },
           { key: 'reserved',     label: 'Bảo lưu',     count: stats.reserved || 0 },
+          { key: 'quit_paid',    label: 'Nghỉ bỏ phí', count: stats.quit_paid || 0 },
+          { key: 'quit_refund',  label: 'Nghỉ rút phí',count: stats.quit_refund || 0 },
         ];
         document.getElementById('statusTabs').innerHTML = tabs.map(t =>
           `<span class="sl-pill ${currentFilter === t.key ? 'active' : ''}" onclick="filterByStatus(${t.key === null ? 'null' : `'${t.key}'`})">${t.label} <strong>${t.count}</strong></span>`

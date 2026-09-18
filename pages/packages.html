@@ -171,7 +171,7 @@
   </div>
 
   <script src="../js/config.js"></script>
-  <script src="../js/app.js?v=4.1"></script>
+  <script src="../js/app.js?v=4.2"></script>
   <script src="../js/reactive.js?v=4.1"></script>
   <script src="../js/crud-mixin.js?v=4.1"></script>
   <script src="../js/sidebar.js?v=4.4"></script>
@@ -259,7 +259,9 @@
       }
 
       try {
-        const res = await api.get('/packages?branch_id=' + branchId);
+        // 'branchId' chứ không phải 'branch_id' — xem getBranchFilter() ở backend.
+        // Gửi sai tên thì giá theo cơ sở không được áp dụng mà không báo lỗi gì.
+        const res = await api.get('/packages?branchId=' + branchId);
         const data = res.data;
 
         tbody.innerHTML = data.map(p => `

@@ -267,7 +267,7 @@
   </div>
 
   <script src="../js/config.js"></script>
-  <script src="../js/app.js?v=4.1"></script>
+  <script src="../js/app.js?v=4.2"></script>
   <script src="../js/sidebar.js?v=4.4"></script>
   <script src="../js/reactive.js?v=4.1"></script>
   <script src="../js/crud-mixin.js?v=4.1"></script>
@@ -277,6 +277,7 @@
     async function init() {
       if (!auth.checkAuth()) return;
       buildSidebar('sidebar');
+      await branch.ready; // xem chú thích branch.ready trong js/app.js
       await loadOptions();
       await loadStats();
       await loadData();
@@ -414,7 +415,10 @@
         const params = new URLSearchParams();
         if (search) params.append('search', search);
         if (status) params.append('status', status);
-        if (branch.current?.id) params.append('branch_id', branch.current.id);
+        // PHẢI là 'branchId': getBranchFilter() ở backend chỉ đọc tên này,
+        // 'branch_id' bị bỏ qua im lặng -> danh sách không lọc theo cơ sở
+        // trong khi /trial-students/stats (dùng branch.buildQuery) thì có.
+        if (branch.current?.id) params.append('branchId', branch.current.id);
         params.append('page', page);
         params.append('limit', 20);
         const result = await api.get('/trial-students?' + params.toString());

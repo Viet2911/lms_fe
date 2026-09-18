@@ -753,6 +753,22 @@ const branch = {
   current: null,
   list: [],
 
+  // Promise hoàn tất khi init() đã nạp xong danh sách cơ sở từ API.
+  // Các trang PHẢI await branch.ready trước khi gọi API có lọc theo cơ sở.
+  //
+  // Lý do: với user không được gán cơ sở (admin/is_system_wide), bước 1 của
+  // init() cho current = null, chỉ sau khi GET /branches trả về thì current
+  // mới có giá trị. Trang nào gọi API trong khoảng đó sẽ gửi request KHÔNG
+  // kèm branchId, còn request gọi muộn hơn lại có -> hai con số lệch nhau
+  // trên cùng một màn hình (đã gặp: chip thống kê 120 nhưng danh sách 99).
+  //
+  // Phải là deferred tạo sẵn ngay từ đầu, KHÔNG phải promise gán lại trong
+  // DOMContentLoaded: nhiều trang gọi init() trực tiếp lúc parse script, tức
+  // trước DOMContentLoaded, nên lúc đó chúng sẽ await phải promise cũ và chạy
+  // tiếp ngay lập tức.
+  ready: null,
+  _markReady: null,
+
   async init() {
     // Step 1: Set immediately from localStorage so branch.current is available synchronously
     // (pages call loadOptions right after branch.init() without await)
@@ -778,6 +794,10 @@ const branch = {
         }
       } catch { /* keep localStorage data */ }
     }
+
+    // Luôn báo ready, kể cả khi GET /branches lỗi — nếu không, mọi trang đang
+    // await branch.ready sẽ treo vô hạn và không hiện được gì.
+    if (this._markReady) { this._markReady(); this._markReady = null; }
   },
 
   // Khôi phục cơ sở đã chọn: localStorage → primaryBranch → cơ sở đầu tiên
@@ -914,6 +934,11 @@ const branch = {
   }
 };
 
+// Tạo deferred cho branch.ready ngay khi file được nạp, trước khi bất kỳ
+// script trang nào chạy. Nhờ vậy trang gọi init() lúc parse vẫn await đúng
+// promise này và chỉ chạy tiếp sau khi branch.init() xong.
+branch.ready = new Promise(resolve => { branch._markReady = resolve; });
+
 // ===========================================
 // THEME MODULE
 // ===========================================
@@ -999,7 +1024,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Init user info
   auth.init();
 
-  // Init branch selector
+  // Init branch selector. Không gán lại branch.ready ở đây — nó đã là deferred
+  // tạo sẵn lúc nạp file, và init() sẽ tự resolve khi xong.
   branch.init();
 
   // Update user info in header

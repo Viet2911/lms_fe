@@ -1410,7 +1410,7 @@
   </select>
 
   <script src="../js/config.js"></script>
-  <script src="../js/app.js?v=4.1"></script>
+  <script src="../js/app.js?v=4.2"></script>
   <script src="../js/reactive.js?v=4.1"></script>
   <script src="../js/crud-mixin.js?v=4.1"></script>
   <script src="../js/sidebar.js?v=4.4"></script>
@@ -1437,6 +1437,7 @@
     async function init() {
       if (!auth.checkAuth()) return;
       buildSidebar('sidebar');
+      await branch.ready; // xem chú thích branch.ready trong js/app.js
       if (!auth.hasRole('CM', 'OM', 'QLCS', 'CHU', 'GDV', 'ADMIN', 'TEACHER_PLUS')) {
         document.getElementById('btnCreateWrap').style.display = 'none';
       }
